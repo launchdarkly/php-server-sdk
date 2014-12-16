@@ -19,7 +19,6 @@ class FeatureRep {
 
     public function evaluate($user) {
         if (!$this->_on || !$user) {
-            error_log(__FILE__ . ':'. __LINE__);
             return null;
         }
 
