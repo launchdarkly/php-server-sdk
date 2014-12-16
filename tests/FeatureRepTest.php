@@ -1,6 +1,12 @@
 <?php
+namespace LaunchDarkly\Tests;
 
-class FeatureRepTest extends PHPUnit_Framework_TestCase {
+use LaunchDarkly\FeatureRep;
+use LaunchDarkly\LDUser;
+use LaunchDarkly\TargetRule;
+use LaunchDarkly\Variation;
+
+class FeatureRepTest extends \PHPUnit_Framework_TestCase {
 
     protected $_simpleFlag   = null;
     protected $_disabledFlag = null;

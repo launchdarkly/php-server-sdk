@@ -14,13 +14,22 @@
         }
     ],
     "require": {
-        "php": ">=5.4"
+        "php": ">=5.4",
+        "guzzlehttp/guzzle": "5.0.*",
+        "guzzlehttp/cache-subscriber": "0.1.*"
     },
     "require-dev": {
         "phpunit/phpunit": "4.3.*",
         "phpdocumentor/phpdocumentor": "2.*"
     },
     "autoload": {
-        "files": ["lib/LaunchDarkly.php"]
+        "psr-4": {
+            "": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "": "tests/"
+        }
     }
 }

@@ -1,4 +1,5 @@
 <?php
+namespace LaunchDarkly;
 
 class LDUser {
     protected $_key = null;

@@ -1,4 +1,5 @@
 <?php
+namespace LaunchDarkly;
 
 class FeatureRep {
     protected static $LONG_SCALE = 0xFFFFFFFFFFFFFFF;

@@ -1,4 +1,5 @@
 <?php
+namespace LaunchDarkly;
 
 class TargetRule {
     protected $_attribute = null;
