@@ -4,6 +4,9 @@ namespace LaunchDarkly;
 use \GuzzleHttp\Exception\BadResponseException;
 use \GuzzleHttp\Subscriber\Cache\CacheSubscriber;
 
+/**
+ * A client for the LaunchDarkly API.
+ */
 class LDClient {
     const DEFAULT_BASE_URI = 'https://app.launchdarkly.com';
     const VERSION = '0.1.0';
@@ -12,6 +15,16 @@ class LDClient {
     protected $_baseUri;
     protected $_client;
 
+    /**
+     * Creates a new client instance that connects to LaunchDarkly.
+     *
+     * @param string $apiKey  The API key for your account
+     * @param array  $options Client configuration settings
+     *     - base_uri: Base URI of the LaunchDarkly API. Defaults to `DEFAULT_BASE_URI`
+     *     - timeout: Float describing the maximum length of a request in seconds. Defaults to 3
+     *     - connect_timeout: Float describing the number of seconds to wait while trying to connect to a server. Defaults to 3
+     *     - cache_storage: An optional GuzzleHttp\Subscriber\Cache\CacheStorageInterface. Defaults to an in-memory cache.
+     */
     public function __construct($apiKey, $options = []) {
         $this->_apiKey = $apiKey;
         $this->_baseUri = $options['base_uri'] ? rtrim($options['base_uri'], '/') : self::DEFAULT_BASE_URI;
@@ -25,6 +38,15 @@ class LDClient {
         $this->_client = $this->_make_client($options);
     }
 
+   /** 
+    * Calculates the value of a feature flag for a given user.
+    *
+    * @param string  $key     The unique key for the feature flag
+    * @param LDUser  $user    The end user requesting the flag
+    * @param boolean $default The default value of the flag
+    *
+    * @return boolean Whether or not the flag should be enabled, or `default` if the flag is disabled in the LaunchDarkly control panel
+    */
     public function getFlag($key, $user, $default = false) {
         try {
             $flag = $this->_getFlag($key, $user, $default);

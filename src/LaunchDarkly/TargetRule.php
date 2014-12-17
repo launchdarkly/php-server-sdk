@@ -1,6 +1,9 @@
 <?php
 namespace LaunchDarkly;
 
+/**
+ * @internal
+ */
 class TargetRule {
     protected $_attribute = null;
     protected $_operator = null;

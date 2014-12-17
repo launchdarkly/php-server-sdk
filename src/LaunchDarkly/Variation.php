@@ -1,6 +1,9 @@
 <?php
 namespace LaunchDarkly;
 
+/**
+ * @internal
+ */
 class Variation {
     protected $_value = null;
     protected $_weight = 0;
