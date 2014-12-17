@@ -12,10 +12,17 @@ class LDClient {
     protected $_baseUri;
     protected $_client;
 
-    public function __construct($apiKey, $baseUri = self::DEFAULT_BASE_URI) {
+    public function __construct($apiKey, $options = []) {
         $this->_apiKey = $apiKey;
-        $this->_baseUri = $baseUri;
-        $this->_client = $this->_make_client();
+        $this->_baseUri = $options['base_uri'] ? rtrim($options['base_uri'], '/') : self::DEFAULT_BASE_URI;
+        if (!isset($options['timeout'])) {
+            $options['timeout'] = 3;
+        }
+        if (!isset($options['connect_timeout'])) {
+            $options['connect_timeout'] = 3;
+        }
+
+        $this->_client = $this->_make_client($options);
     }
 
     public function getFlag($key, $user, $default = false) {
@@ -47,11 +54,14 @@ class LDClient {
                     'Authorization' => "api_key {$this->_apiKey}",
                     'Content-Type'  => 'application/json',
                     'User-Agent'    => 'PHPClient/' . VERSION
-                ]
+                ],
+                'timeout'         => $options['timeout'],
+                'connect_timeout' => $options['connect_timeout']
             ]
         ]);
 
-        CacheSubscriber::attach($client);
+        $csOptions = $options['cache_storage'] ? ['storage' => $options['cache_storage']] : [];
+        CacheSubscriber::attach($client, $csOptions);
         return $client;
     }
 
