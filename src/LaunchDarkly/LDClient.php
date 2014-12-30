@@ -27,7 +27,11 @@ class LDClient {
      */
     public function __construct($apiKey, $options = []) {
         $this->_apiKey = $apiKey;
-        $this->_baseUri = $options['base_uri'] ? rtrim($options['base_uri'], '/') : self::DEFAULT_BASE_URI;
+        if (!isset($options['base_uri'])) {
+            $this->_baseUri = self::DEFAULT_BASE_URI;
+        } else {
+            $this->_baseUri = rtrim($options['base_uri'], '/');
+        }
         if (!isset($options['timeout'])) {
             $options['timeout'] = 3;
         }
@@ -68,21 +72,26 @@ class LDClient {
         }
     }
 
-    protected function _make_client() {
+    protected function _make_client($options) {
         $client = new \GuzzleHttp\Client([
             'base_url' => $this->_baseUri,
             'defaults' => [
                 'headers' => [
                     'Authorization' => "api_key {$this->_apiKey}",
                     'Content-Type'  => 'application/json',
-                    'User-Agent'    => 'PHPClient/' . VERSION
+                    'User-Agent'    => 'PHPClient/' . self::VERSION
                 ],
                 'timeout'         => $options['timeout'],
                 'connect_timeout' => $options['connect_timeout']
             ]
         ]);
 
-        $csOptions = $options['cache_storage'] ? ['storage' => $options['cache_storage']] : [];
+        if (!isset($options['cache_storage'])) {
+            $csOptions = [];
+        } else {
+            $csOptions = ['storage' => $options['cache_storage']];
+        }
+
         CacheSubscriber::attach($client, $csOptions);
         return $client;
     }
