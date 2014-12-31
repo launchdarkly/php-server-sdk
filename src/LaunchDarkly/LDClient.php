@@ -81,7 +81,7 @@ class LDClient {
                     'Content-Type'  => 'application/json',
                     'User-Agent'    => 'PHPClient/' . self::VERSION
                 ],
-                'debug' => true,
+                'debug' => false,
                 'timeout'         => $options['timeout'],
                 'connect_timeout' => $options['connect_timeout']
             ]
