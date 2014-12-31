@@ -81,15 +81,16 @@ class LDClient {
                     'Content-Type'  => 'application/json',
                     'User-Agent'    => 'PHPClient/' . self::VERSION
                 ],
+                'debug' => true,
                 'timeout'         => $options['timeout'],
                 'connect_timeout' => $options['connect_timeout']
             ]
         ]);
 
         if (!isset($options['cache_storage'])) {
-            $csOptions = [];
+            $csOptions = ['validate' => false];
         } else {
-            $csOptions = ['storage' => $options['cache_storage']];
+            $csOptions = ['storage' => $options['cache_storage'], 'validate' => false];
         }
 
         CacheSubscriber::attach($client, $csOptions);
