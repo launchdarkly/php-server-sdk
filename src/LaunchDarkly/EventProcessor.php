@@ -26,7 +26,12 @@ class EventProcessor {
         $url = parse_url($options['base_uri']);
         $this->_host = $url['host'];
         $this->_ssl = $url['scheme'] === 'https';
-        $this->_port = $this->_ssl ? 443 : 80;
+        if (isset($url['port'])) {
+          $this->_port = $url['port']
+        } 
+        else {
+          $this->_port = $this->_ssl ? 443 : 80;
+        }
     }
 
     $this->_capacity = $options['capacity'];
@@ -95,7 +100,7 @@ class EventProcessor {
     $req.= "Host: " . $this->_host . "\r\n";
     $req.= "Content-Type: application/json\r\n";
     $req.= "Authorization: api_key " . base64_encode($this->_apiKey) . "\r\n";
-    $req.= "User-Agent: PHPClient/" . LaunchDarkly\LDClient::VERSION . "\r\n";
+    $req.= "User-Agent: PHPClient/" . LDClient::VERSION . "\r\n";
     $req.= "Accept: application/json\r\n";
     $req.= "Content-length: " . strlen($content) . "\r\n";
     $req.= "\r\n";
