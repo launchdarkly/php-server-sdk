@@ -25,8 +25,8 @@ class EventProcessor {
     else {
         $url = parse_url($options['base_uri']);
         $this->_host = $url['host'];
-        $this->_port = $url['port'];
         $this->_ssl = $url['scheme'] === 'https';
+        $this->_port = $this->_ssl ? 443 : 80;
     }
 
     $this->_capacity = $options['capacity'];
