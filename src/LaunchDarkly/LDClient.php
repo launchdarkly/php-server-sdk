@@ -94,7 +94,7 @@ class LDClient {
         if (isset($data)) {
             $event['data'] = $data;
         }
-        $this->_eventProcessor.enqueue($event);
+        $this->_eventProcessor->enqueue($event);
     }
 
     protected function _sendFlagRequestEvent($key, $user, $value) {
@@ -104,7 +104,7 @@ class LDClient {
         $event['kind'] = "feature";
         $event['creationDate'] = round(microtime(1) * 1000);
         $event['key'] = $key;
-        $this->_eventProcessor.enqueue($event); 
+        $this->_eventProcessor->enqueue($event); 
     }
 
     protected function _getFlag($key, $user, $default) {
