@@ -87,7 +87,7 @@ class LDClient {
      */
     public function sendEvent($eventName, $user, $data) {
         $event = array();
-        $event['user'] = $user.toJSON();
+        $event['user'] = $user->toJSON();
         $event['kind'] = "custom";
         $event['creationDate'] = round(microtime(1) * 1000);
         $event['key'] = $eventName;
@@ -99,7 +99,7 @@ class LDClient {
 
     protected function _sendFlagRequestEvent($key, $user, $value) {
         $event = array();
-        $event['user'] = $user.toJSON();
+        $event['user'] = $user->toJSON();
         $event['value'] = $value;
         $event['kind'] = "feature";
         $event['creationDate'] = round(microtime(1) * 1000);
