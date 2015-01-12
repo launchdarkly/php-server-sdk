@@ -64,16 +64,16 @@ class LDClient {
             $flag = $this->_getFlag($key, $user, $default);
 
             if (is_null($flag)) {
-                _sendFlagRequestEvent($key, $user, $default);
+                $this->_sendFlagRequestEvent($key, $user, $default);
                 return $default;
             }
             else {
-                _sendFlagRequestEvent($key, $user, $flag);                
+                $this->_sendFlagRequestEvent($key, $user, $flag);                
                 return $flag;
             }
         } catch (Exception $e) {
             error_log("LaunchDarkly caught $e");
-            _sendFlagRequestEvent($key, $user, $default);            
+            $this->_sendFlagRequestEvent($key, $user, $default);            
             return $default;
         }
     }
@@ -85,12 +85,15 @@ class LDClient {
      * @param LDUser $user The user that performed the event
      *
      */
-    public function sendEvent($eventName, $user) {
+    public function sendEvent($eventName, $user, $data) {
         $event = array();
         $event['user'] = $user.toJSON();
         $event['kind'] = "custom";
         $event['creationDate'] = round(microtime(1) * 1000);
         $event['key'] = $eventName;
+        if (isset($data)) {
+            $event['data'] = $data;
+        }
         $this->_eventProcessor.enqueue($event);
     }
 
