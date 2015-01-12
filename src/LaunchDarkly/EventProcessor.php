@@ -92,7 +92,7 @@ class EventProcessor {
   private function createBody($content) {
     $req = "";
     $req.= "POST /api/events/bulk HTTP/1.1\r\n";
-    $req.= "Host: " . $this->host() . "\r\n";
+    $req.= "Host: " . $this->_host . "\r\n";
     $req.= "Content-Type: application/json\r\n";
     $req.= "Authorization: api_key " . base64_encode($this->_apiKey) . "\r\n";
     $req.= "User-Agent: PHPClient/" . LaunchDarkly\LDClient::VERSION . "\r\n";
