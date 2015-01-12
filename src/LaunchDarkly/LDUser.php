@@ -47,4 +47,23 @@ class LDUser {
     public function getSecondary() {
         return $this->_secondary;
     }
+
+    public function toJSON() {
+        $json = ["key" => $this->_key];
+
+        if (isset($this->_secondary)) {
+            $json['secondary'] = $this->_secondary;
+        }
+        if (isset($this->ip)) {
+            $json['ip'] = $this->ip;
+        }
+        if (isset($this->country)) {
+            $json['country'] = $this->country;
+        }
+        if (isset($this->custom)) {
+            $json['custom'] = $this->custom;
+        }
+
+        return json_encode($json);
+    }
 }

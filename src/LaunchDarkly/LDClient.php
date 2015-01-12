@@ -14,6 +14,7 @@ class LDClient {
     protected $_apiKey;
     protected $_baseUri;
     protected $_client;
+    protected $_eventProcessor;
 
     /**
      * Creates a new client instance that connects to LaunchDarkly.
@@ -29,7 +30,8 @@ class LDClient {
         $this->_apiKey = $apiKey;
         if (!isset($options['base_uri'])) {
             $this->_baseUri = self::DEFAULT_BASE_URI;
-        } else {
+        } 
+        else {
             $this->_baseUri = rtrim($options['base_uri'], '/');
         }
         if (!isset($options['timeout'])) {
@@ -38,6 +40,12 @@ class LDClient {
         if (!isset($options['connect_timeout'])) {
             $options['connect_timeout'] = 3;
         }
+
+        if (!isset($options['capacity'])) {
+            $options['capacity'] = 1000;
+        }
+
+        $this->_eventProcessor = new \LaunchDarkly\EventProcessor($apiKey, $options);
 
         $this->_client = $this->_make_client($options);
     }
@@ -54,11 +62,46 @@ class LDClient {
     public function getFlag($key, $user, $default = false) {
         try {
             $flag = $this->_getFlag($key, $user, $default);
-            return is_null($flag) ? $default : $flag;
+
+            if (is_null($flag)) {
+                _sendFlagRequestEvent($key, $user, $default);
+                return $default;
+            }
+            else {
+                _sendFlagRequestEvent($key, $user, $flag);                
+                return $flag;
+            }
         } catch (Exception $e) {
             error_log("LaunchDarkly caught $e");
+            _sendFlagRequestEvent($key, $user, $default);            
             return $default;
         }
+    }
+
+    /**
+     * Tracks that a user performed an event.
+     *
+     * @param string $eventName The name of the event
+     * @param LDUser $user The user that performed the event
+     *
+     */
+    public function sendEvent($eventName, $user) {
+        $event = array();
+        $event['user'] = $user.toJSON();
+        $event['kind'] = "custom";
+        $event['creationDate'] = round(microtime(1) * 1000);
+        $event['key'] = $eventName;
+        $this->_eventProcessor.enqueue($event);
+    }
+
+    protected function _sendFlagRequestEvent($key, $user, $value) {
+        $event = array();
+        $event['user'] = $user.toJSON();
+        $event['value'] = $value;
+        $event['kind'] = "feature";
+        $event['creationDate'] = round(microtime(1) * 1000);
+        $event['key'] = $key;
+        $this->_eventProcessor.enqueue($event); 
     }
 
     protected function _getFlag($key, $user, $default) {
