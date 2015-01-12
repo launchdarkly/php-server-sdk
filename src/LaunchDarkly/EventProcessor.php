@@ -43,7 +43,7 @@ class EventProcessor {
     return $this->enqueue($event);
   }
 
-  protected function enqueue($event) {
+  public function enqueue($event) {
     if (count($this->_queue) > $this->_capacity) {
       return false;
     }
