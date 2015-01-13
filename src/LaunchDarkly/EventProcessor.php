@@ -27,7 +27,7 @@ class EventProcessor {
         $this->_host = $url['host'];
         $this->_ssl = $url['scheme'] === 'https';
         if (isset($url['port'])) {
-          $this->_port = $url['port']
+          $this->_port = $url['port'];
         } 
         else {
           $this->_port = $this->_ssl ? 443 : 80;
