@@ -62,6 +62,7 @@ class EventProcessor {
     $socket = $this->createSocket();
     
     if (!$socket) {
+      error_log("LaunchDarkly unable to open socket");
       return;
     }
     $payload = json_encode($this->_queue);
@@ -79,6 +80,7 @@ class EventProcessor {
     $protocol = $this->_ssl ? "ssl" : "tcp";
   
     try {
+
       $socket = @pfsockopen($protocol . "://" . $this->_host, $this->_port, $errno, $errstr, $this->_timeout);
 
       if ($errno != 0) {
@@ -87,8 +89,8 @@ class EventProcessor {
       }
 
       return $socket;
-
     } catch (Exception $e) {
+      error_log("LaunchDarkly caught $e");
       $this->socket_failed = true;
       return false;
     }
@@ -99,7 +101,7 @@ class EventProcessor {
     $req.= "POST /api/events/bulk HTTP/1.1\r\n";
     $req.= "Host: " . $this->_host . "\r\n";
     $req.= "Content-Type: application/json\r\n";
-    $req.= "Authorization: api_key " . base64_encode($this->_apiKey) . "\r\n";
+    $req.= "Authorization: api_key " . $this->_apiKey . "\r\n";
     $req.= "User-Agent: PHPClient/" . LDClient::VERSION . "\r\n";
     $req.= "Accept: application/json\r\n";
     $req.= "Content-length: " . strlen($content) . "\r\n";
@@ -112,13 +114,12 @@ class EventProcessor {
     $bytes_written = 0;
     $bytes_total = strlen($req);
     $closed = false;
-    # Write the request
+
     while (!$closed && $bytes_written < $bytes_total) {
       try {
-        # Since we're try catch'ing prevent PHP logs.
         $written = @fwrite($socket, substr($req, $bytes_written));
       } catch (Exception $e) {
-        // $this->handleError($e->getCode(), $e->getMessage());
+        error_log("LaunchDarkly caught $e");
         $closed = true;
       }
       if (!isset($written) || !$written) {
@@ -127,25 +128,17 @@ class EventProcessor {
         $bytes_written += $written;
       }
     }
-    # If the socket has been closed, attempt to retry a single time.
+
     if ($closed) {
       fclose($socket);
       if ($retry) {
+        error_log("LaunchDarkly retrying send");
         $socket = $this->createSocket();
         if ($socket) return $this->makeRequest($socket, $req, false);
       }
       return false;
     }
-    /*
-    $success = true;
-    if ($this->debug()) {
-      $res = $this->parseResponse(fread($socket, 2048));
-      if ($res["status"] != "200") {
-        $this->handleError($res["status"], $res["message"]);
-        $success = false;
-      }
-    }
-    */
+
     return true;
   }
 

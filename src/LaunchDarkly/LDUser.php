@@ -63,7 +63,6 @@ class LDUser {
         if (isset($this->custom)) {
             $json['custom'] = $this->custom;
         }
-
-        return json_encode($json);
+        return $json;
     }
 }
