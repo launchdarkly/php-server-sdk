@@ -53,7 +53,7 @@ class EventProcessor {
       return false;
     }
 
-    array_push($this->queue, $event);
+    array_push($this->_queue, $event);
 
     return true;
   }
