@@ -59,6 +59,10 @@ class EventProcessor {
   }
 
   protected function flush() {
+    if (empty($this->_queue)) {
+      return;
+    }
+
     $socket = $this->createSocket();
     
     if (!$socket) {
