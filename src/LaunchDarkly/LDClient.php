@@ -15,6 +15,7 @@ class LDClient {
     protected $_baseUri;
     protected $_client;
     protected $_eventProcessor;
+    protected $_offline;
 
     /**
      * Creates a new client instance that connects to LaunchDarkly.
@@ -60,6 +61,10 @@ class LDClient {
     * @return boolean Whether or not the flag should be enabled, or `default` if the flag is disabled in the LaunchDarkly control panel
     */
     public function getFlag($key, $user, $default = false) {
+        if ($this->_offline) {
+            return $default;
+        }
+
         try {
             $flag = $this->_getFlag($key, $user, $default);
 
@@ -79,6 +84,31 @@ class LDClient {
     }
 
     /**
+     * Puts the LaunchDarkly client in offline mode.
+     * In offline mode, all calls to `getFlag` will return the default value, and `sendEvent` will be a no-op.
+     *
+     */
+    public function setOffline() {
+        $this->_offline = true;
+    }
+
+    /**
+     * Puts the LaunchDarkly client in online mode.
+     *
+     */
+    public function setOnline() {
+        $this->_offline = false;
+    }
+
+    /**
+     * Returns whether the LaunchDarlkly client is in offline mode.
+     *
+     */
+    public function isOffline() {
+        return $this->_offline;
+    }
+
+    /**
      * Tracks that a user performed an event.
      *
      * @param string $eventName The name of the event
@@ -86,6 +116,10 @@ class LDClient {
      *
      */
     public function sendEvent($eventName, $user, $data) {
+        if ($this->isOffline()) {
+            return;
+        }
+
         $event = array();
         $event['user'] = $user->toJSON();
         $event['kind'] = "custom";
@@ -98,6 +132,10 @@ class LDClient {
     }
 
     protected function _sendFlagRequestEvent($key, $user, $value) {
+        if ($this->isOffline()) {
+            return;
+        }
+
         $event = array();
         $event['user'] = $user->toJSON();
         $event['value'] = $value;
