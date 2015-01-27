@@ -78,7 +78,12 @@ class LDClient {
             }
         } catch (Exception $e) {
             error_log("LaunchDarkly caught $e");
-            $this->_sendFlagRequestEvent($key, $user, $default);            
+            try {
+                $this->_sendFlagRequestEvent($key, $user, $default);            
+            }
+            catch (Exception $e) {
+                error_log("LaunchDarkly caught $e");
+            }
             return $default;
         }
     }
