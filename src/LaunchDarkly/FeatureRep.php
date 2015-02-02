@@ -31,6 +31,12 @@ class FeatureRep {
             return null;
         } else {
             foreach ($this->_variations as $variation) {
+                if ($variation->matchUser($user)) {
+                    return $variation->getValue();
+                }
+            }
+
+            foreach ($this->_variations as $variation) {
                 if ($variation->matchTarget($user)) {
                     return $variation->getValue();
                 }
