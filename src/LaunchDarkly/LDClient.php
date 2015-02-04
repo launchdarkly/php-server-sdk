@@ -78,14 +78,19 @@ class LDClient {
             }
         } catch (Exception $e) {
             error_log("LaunchDarkly caught $e");
-            $this->_sendFlagRequestEvent($key, $user, $default);            
+            try {
+                $this->_sendFlagRequestEvent($key, $user, $default);            
+            }
+            catch (Exception $e) {
+                error_log("LaunchDarkly caught $e");
+            }
             return $default;
         }
     }
 
     /**
      * Puts the LaunchDarkly client in offline mode.
-     * In offline mode, all calls to `getFlag` will return the default value, and `sendEvent` will be a no-op.
+     * In offline mode, all calls to `getFlag` will return the default value, and `track` will be a no-op.
      *
      */
     public function setOffline() {
@@ -115,7 +120,7 @@ class LDClient {
      * @param LDUser $user The user that performed the event
      *
      */
-    public function sendEvent($eventName, $user, $data) {
+    public function track($eventName, $user, $data) {
         if ($this->isOffline()) {
             return;
         }
@@ -129,6 +134,19 @@ class LDClient {
             $event['data'] = $data;
         }
         $this->_eventProcessor->enqueue($event);
+    }
+
+    public function identify($user) {
+        if ($this->isOffline()) {
+            return;
+        }
+
+        $event = array();
+        $event['user'] = $user->toJSON();
+        $event['kind'] = "identify";
+        $event['creationDate'] = round(microtime(1) * 1000);
+        $event['key'] = $user->getKey();
+        $this->_eventProcessor->enqueue($event);        
     }
 
     protected function _sendFlagRequestEvent($key, $user, $value) {
