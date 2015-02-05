@@ -50,7 +50,6 @@ class FeatureRepTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testFlagForTargetGroupOn() {
-//        $user = new LDUser("targetOther@test.com", null, null, null, null, null, null, null, null, ["groups" => ["google", "microsoft"]]);
         $user = (new LDUserBuilder("targetOther@test.com"))->custom(["groups" => ["google", "microsoft"]])->build();
         $b = $this->_simpleFlag->evaluate($user);
         $this->assertEquals(true, $b);
