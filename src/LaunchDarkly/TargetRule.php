@@ -29,6 +29,21 @@ class TargetRule {
             case "country":
                 $u_value = $user->getCountryCode();
                 break;
+            case "email":
+                $u_value = $user->getEmail();
+                break;
+            case "name":
+                $u_value = $user->getName();
+                break;
+            case "avatar":
+                $u_value = $user->getAvatar();
+                break;
+            case "firstName":
+                $u_value = $user->getFirstName();
+                break;
+            case "lastName":
+                $u_value = $user->getLastName();
+                break;                
             default: 
                 $custom = $user->getCustom();
                 if (is_array($custom)) {

@@ -207,7 +207,12 @@ class LDClient {
 
             $ts = empty($v['targets']) ? [] : $v['targets'];
             $targets = array_map($makeTarget, $ts);
-            return new Variation($v['value'], $v['weight'], $targets);
+            if (isset($v['userTarget'])) {
+                return new Variation($v['value'], $v['weight'], $targets, $v['userTarget']);
+            }
+            else {
+                return new Variation($v['value'], $v['weight'], $targets, null);
+            }
         };
 
         $vs = empty($json['variations']) ? [] : $json['variations'];
