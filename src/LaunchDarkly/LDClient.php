@@ -9,7 +9,7 @@ use \GuzzleHttp\Subscriber\Cache\CacheSubscriber;
  */
 class LDClient {
     const DEFAULT_BASE_URI = 'https://app.launchdarkly.com';
-    const VERSION = '0.3.0';
+    const VERSION = '0.3.1';
 
     protected $_apiKey;
     protected $_baseUri;
