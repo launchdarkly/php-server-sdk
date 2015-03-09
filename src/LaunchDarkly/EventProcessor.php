@@ -73,17 +73,17 @@ class EventProcessor {
   private function createArgs($payload) {
     $args = " -X POST";
     $args.= " -H 'Content-Type: application/json'";
-    $args.= " -H 'Authorization: api_key " . escapeshellcmd($this->_apiKey) . "'";
+    $args.= " -H 'Authorization: api_key " . $this->_apiKey . "'";
     $args.= " -H 'User-Agent: PHPClient/" . LDClient::VERSION . "'";
     $args.= " -H 'Accept: application/json'";
-    $args.= " -d " . escapeshellcmd($payload);
-    $args.= " " . escapeshellcmd($this->_host) . "/api/events/bulk";
+    $args.= " -d " . $payload;
+    $args.= " " . $this->_host . "/api/events/bulk";
     return $args;
   }
 
   private function makeRequest($args) {
-    $command = "/usr/bin/env curl " . $args . "> /dev/null 2>&1 &"
-    shell_exec($command)
+    $cmd = "/usr/bin/env curl " . escapeshellcmd($args) . "> /dev/null 2>&1 &";
+    $out = shell_exec($cmd);
     return true;
   }
 
