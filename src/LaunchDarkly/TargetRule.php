@@ -43,18 +43,27 @@ class TargetRule {
                 break;
             case "lastName":
                 $u_value = $user->getLastName();
+                break;
+            case "anonymous":
+                $u_value = $user->getAnonymous();
                 break;                
-            default: 
+            default:
                 $custom = $user->getCustom();
-                if (is_array($custom)) {
-                    foreach ($custom as $elt) {
+                if (is_null($custom)) {
+                    return false;
+                }
+                if (!array_key_exists($this->_attribute, $custom)) {
+                    return false;
+                }
+                $u_value = $custom[$this->_attribute];
+            
+                if (is_array($u_value)) {
+                    foreach ($u_value as $elt) {
                         if (in_array($elt, $this->_values)) {
                             return true;
                         }
                     }
                     return false;
-                } else {
-                    $u_value = $custom;
                 }
                 break;
         }

@@ -56,7 +56,7 @@ class FeatureRepTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testFlagForTargetGroupOff() {
-        $user = new LDUser("targetOther@test.com", null, null, null, null, null, null, null, null, ["groups" => "oracle"]);
+        $user = (new LDUserBuilder("targetOther@test.com"))->custom(["groups" => ["oracle"]])->build();
         $b = $this->_simpleFlag->evaluate($user);
         $this->assertEquals(false, $b);
     }
