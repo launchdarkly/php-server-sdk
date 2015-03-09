@@ -59,15 +59,16 @@ class EventProcessor {
   }
 
   protected function flush() {
-    if (empty($this->_queue)) {
-      return;
-    }
+  //   if (empty($this->_queue)) {
+  //     return;
+  //   }
 
-    $payload = json_encode($this->_queue);
+  //   $payload = json_encode($this->_queue);
 
-    $args = $this->createArgs($payload);
+  //   $args = $this->createArgs($payload);
 
-    return $this->makeRequest($args);
+  //   return $this->makeRequest($args);
+    return true;
   }
 
   private function createArgs($payload) {
@@ -82,7 +83,7 @@ class EventProcessor {
   }
 
   private function makeRequest($args) {
-    $cmd = "/usr/bin/env curl " . escapeshellcmd($args) . "> /dev/null 2>&1 &";
+    $cmd = "/usr/bin/env curl " . escapeshellcmd($args) . ">> /tmp/curl.log 2>&1 &";
     $out = shell_exec($cmd);
     return true;
   }
