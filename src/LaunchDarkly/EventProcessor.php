@@ -59,16 +59,15 @@ class EventProcessor {
   }
 
   protected function flush() {
-  //   if (empty($this->_queue)) {
-  //     return;
-  //   }
+    if (empty($this->_queue)) {
+      return;
+    }
 
-  //   $payload = json_encode($this->_queue);
+    $payload = json_encode($this->_queue);
 
-  //   $args = $this->createArgs($payload);
+    $args = $this->createArgs($payload);
 
-  //   return $this->makeRequest($args);
-    return true;
+    return $this->makeRequest($args);
   }
 
   private function createArgs($payload) {
