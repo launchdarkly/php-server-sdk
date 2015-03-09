@@ -51,6 +51,10 @@ class LDClient {
         $this->_client = $this->_make_client($options);
     }
 
+    public function getFlag($key, $user, $default = false) {
+        return $this->toggle($key, $user, $default);
+    }
+
    /** 
     * Calculates the value of a feature flag for a given user.
     *
@@ -60,13 +64,13 @@ class LDClient {
     *
     * @return boolean Whether or not the flag should be enabled, or `default` if the flag is disabled in the LaunchDarkly control panel
     */
-    public function getFlag($key, $user, $default = false) {
+    public function toggle($key, $user, $default = false) {
         if ($this->_offline) {
             return $default;
         }
 
         try {
-            $flag = $this->_getFlag($key, $user, $default);
+            $flag = $this->_toggle($key, $user, $default);
 
             if (is_null($flag)) {
                 $this->_sendFlagRequestEvent($key, $user, $default);
@@ -90,7 +94,7 @@ class LDClient {
 
     /**
      * Puts the LaunchDarkly client in offline mode.
-     * In offline mode, all calls to `getFlag` will return the default value, and `track` will be a no-op.
+     * In offline mode, all calls to `toggle` will return the default value, and `track` will be a no-op.
      *
      */
     public function setOffline() {
@@ -163,13 +167,13 @@ class LDClient {
         $this->_eventProcessor->enqueue($event); 
     }
 
-    protected function _getFlag($key, $user, $default) {
+    protected function _toggle($key, $user, $default) {
         try {
             $response = $this->_client->get("/api/eval/features/$key");
             return self::_decode($response->json(), $user);
         } catch (BadResponseException $e) {
             $code = $e->getResponse()->getStatusCode();
-            error_log("LDClient::getFlag received HTTP status code $code, using default");
+            error_log("LDClient::toggle received HTTP status code $code, using default");
             return $default;
         }
     }
