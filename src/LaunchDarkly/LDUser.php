@@ -16,21 +16,23 @@ class LDUser {
     protected $_avatar = null;
     protected $_firstName = null;
     protected $_lastName = null;
+    protected $_anonyomus = false;
     protected $_custom = [];
 
     /**
-     * @param string      $key       Unique key for the user. For authenticated users, this may be a username or e-mail address. For anonymous users, this could be an IP address or session ID.
-     * @param string|null $secondary An optional secondary identifier
-     * @param string|null $ip        The user's IP address (optional)
-     * @param string|null $country   The user's country, as an ISO 3166-1 alpha-2 code (e.g. 'US') (optional)
-     * @param string|null $email     The user's e-mail address (optional)
-     * @param string|null $name      The user's full name (optional)
-     * @param string|null $avatar    A URL pointing to the user's avatar image (optional)
-     * @param string|null $firstName The user's first name (optional)
-     * @param string|null $lastName  The user's last name (optional)
-     * @param array|null  $custom    Other custom attributes that can be used to create custom rules
+     * @param string       $key       Unique key for the user. For authenticated users, this may be a username or e-mail address. For anonymous users, this could be an IP address or session ID.
+     * @param string|null  $secondary An optional secondary identifier
+     * @param string|null  $ip        The user's IP address (optional)
+     * @param string|null  $country   The user's country, as an ISO 3166-1 alpha-2 code (e.g. 'US') (optional)
+     * @param string|null  $email     The user's e-mail address (optional)
+     * @param string|null  $name      The user's full name (optional)
+     * @param string|null  $avatar    A URL pointing to the user's avatar image (optional)
+     * @param string|null  $firstName The user's first name (optional)
+     * @param string|null  $lastName  The user's last name (optional)
+     * @param boolean|null $anonymous Whether this is an anonymous user
+     * @param array|null   $custom    Other custom attributes that can be used to create custom rules
      */
-    public function __construct($key, $secondary = null, $ip = null, $country = null, $email = null, $name = null, $avatar = null, $firstName = null, $lastName= null, $custom = []) {
+    public function __construct($key, $secondary = null, $ip = null, $country = null, $email = null, $name = null, $avatar = null, $firstName = null, $lastName= null, $anonymous = false, $custom = []) {
         $this->_key = $key;
         $this->_secondary = $secondary;
         $this->_ip = $ip;
@@ -40,6 +42,7 @@ class LDUser {
         $this->_avatar = $avatar;
         $this->_firstName = $firstName;
         $this->_lastName = $lastName;
+        $this->_anonymous = $anonymous;
         $this->_custom = $custom;
     }
 
@@ -83,6 +86,10 @@ class LDUser {
         return $this->_lastName;
     }
 
+    public function getAnonymous() {
+        return $this->_anonymous;
+    }
+
     public function toJSON() {
         $json = ["key" => $this->_key];
 
@@ -113,6 +120,9 @@ class LDUser {
         if (isset($this->_custom)) {
             $json['custom'] = $this->_custom;
         }
+        if (isset($this->_anonymous)) {
+            $json['anonymous'] = $this->_anonymous;
+        }        
         return $json;
     }
 }

@@ -59,5 +59,12 @@ class LDUserTest extends \PHPUnit_Framework_TestCase {
       $this->assertEquals("Bar", $user->getLastName());
       $this->assertEquals("Bar", $user->toJSON()['lastName']);
     }  
+
+    public function testLDUserAnonymous() {
+      $user = (new LDUserBuilder("foo@bar.com"))->anonymous(true)->build();
+      $this->assertEquals(true, $user->getAnonymous());
+      $this->assertEquals(true, $user->toJSON()['anonymous']);
+
+    }
 }
 
