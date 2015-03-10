@@ -11,6 +11,7 @@ class LDUserBuilder {
     protected $_avatar = null;
     protected $_firstName = null;
     protected $_lastName = null;
+    protected $_anonymous = false;
     protected $_custom = [];    
 
     public function __construct($key) {
@@ -57,13 +58,18 @@ class LDUserBuilder {
         return $this;
     }
 
+    public function anonymous($anonymous) {
+        $this->_anonymous = $anonymous;
+        return $this;
+    }
+
     public function custom($custom) {
         $this->_custom = $custom;
         return $this;
     }
 
     public function build() {
-        return new LDUser($this->_key, $this->_secondary, $this->_ip, $this->_country, $this->_email, $this->_name, $this->_avatar, $this->_firstName, $this->_lastName, $this->_custom);
+        return new LDUser($this->_key, $this->_secondary, $this->_ip, $this->_country, $this->_email, $this->_name, $this->_avatar, $this->_firstName, $this->_lastName, $this->_anonymous, $this->_custom);
     }
 
 }
