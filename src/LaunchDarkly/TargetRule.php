@@ -15,6 +15,10 @@ class TargetRule {
         $this->_values    = $values;
     }
 
+    public function isKey() {
+        return $this->_attribute == "key";
+    }
+
 
     public function matchTarget($user) {
         $u_value = null;

@@ -27,7 +27,7 @@ class Variation {
 
     public function matchTarget($user) {
         foreach($this->_targets as $target) {
-            if ($this->_userTarget != null && $target->_attribute == "key") {
+            if ($this->_userTarget != null && $target->isKey()) {
                 continue;
             }
             if ($target->matchTarget($user)) {
