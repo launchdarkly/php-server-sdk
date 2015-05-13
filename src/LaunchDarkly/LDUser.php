@@ -32,7 +32,7 @@ class LDUser {
      * @param boolean|null $anonymous Whether this is an anonymous user
      * @param array|null   $custom    Other custom attributes that can be used to create custom rules
      */
-    public function __construct($key, $secondary = null, $ip = null, $country = null, $email = null, $name = null, $avatar = null, $firstName = null, $lastName= null, $anonymous = false, $custom = []) {
+    public function __construct($key, $secondary = null, $ip = null, $country = null, $email = null, $name = null, $avatar = null, $firstName = null, $lastName= null, $anonymous = null, $custom = []) {
         $this->_key = $key;
         $this->_secondary = $secondary;
         $this->_ip = $ip;
