@@ -11,7 +11,7 @@ class LDUserBuilder {
     protected $_avatar = null;
     protected $_firstName = null;
     protected $_lastName = null;
-    protected $_anonymous = false;
+    protected $_anonymous = null;
     protected $_custom = [];    
 
     public function __construct($key) {
