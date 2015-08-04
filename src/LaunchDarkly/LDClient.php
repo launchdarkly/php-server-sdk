@@ -80,12 +80,12 @@ class LDClient {
                 $this->_sendFlagRequestEvent($key, $user, $flag);                
                 return $flag;
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             error_log("LaunchDarkly caught $e");
             try {
                 $this->_sendFlagRequestEvent($key, $user, $default);            
             }
-            catch (Exception $e) {
+            catch (\Exception $e) {
                 error_log("LaunchDarkly caught $e");
             }
             return $default;
