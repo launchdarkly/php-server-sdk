@@ -171,7 +171,7 @@ class LDClient {
         try {
             $response = $this->_client->get("/api/eval/features/$key");
             return self::_decode($response->json(), $user);
-        } catch (BadResponseException $e) {
+        } catch (\BadResponseException $e) {
             $code = $e->getResponse()->getStatusCode();
             error_log("LDClient::toggle received HTTP status code $code, using default");
             return $default;
