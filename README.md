@@ -3,6 +3,8 @@ LaunchDarkly SDK for PHP
 
 [![Code Climate](https://codeclimate.com/github/launchdarkly/php-client/badges/gpa.svg)](https://codeclimate.com/github/launchdarkly/php-client)
 
+[![Circle CI](https://circleci.com/gh/launchdarkly/php-client.svg?style=svg)](https://circleci.com/gh/launchdarkly/php-client)
+
 Quick setup
 -----------
 
