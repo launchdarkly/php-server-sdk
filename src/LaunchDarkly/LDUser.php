@@ -17,7 +17,7 @@ class LDUser {
     protected $_firstName = null;
     protected $_lastName = null;
     protected $_anonyomus = false;
-    protected $_custom = [];
+    protected $_custom = array();
 
     /**
      * @param string       $key       Unique key for the user. For authenticated users, this may be a username or e-mail address. For anonymous users, this could be an IP address or session ID.
@@ -32,7 +32,7 @@ class LDUser {
      * @param boolean|null $anonymous Whether this is an anonymous user
      * @param array|null   $custom    Other custom attributes that can be used to create custom rules
      */
-    public function __construct($key, $secondary = null, $ip = null, $country = null, $email = null, $name = null, $avatar = null, $firstName = null, $lastName= null, $anonymous = null, $custom = []) {
+    public function __construct($key, $secondary = null, $ip = null, $country = null, $email = null, $name = null, $avatar = null, $firstName = null, $lastName= null, $anonymous = null, $custom = array()) {
         $this->_key = strval($key);
         $this->_secondary = $secondary;
         $this->_ip = $ip;
@@ -91,7 +91,7 @@ class LDUser {
     }
 
     public function toJSON() {
-        $json = ["key" => $this->_key];
+        $json = array("key" => $this->_key);
 
         if (isset($this->_secondary)) {
             $json['secondary'] = $this->_secondary;

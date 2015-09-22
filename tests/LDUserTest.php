@@ -2,74 +2,95 @@
 namespace LaunchDarkly\Tests;
 
 use LaunchDarkly\LDUserBuilder;
-use LaunchDarkly\LDUser;
 
 class LDUserTest extends \PHPUnit_Framework_TestCase {
 
     public function testLDUserKey() {
-      $user = (new LDUserBuilder("foo@bar.com"))->build();
-      $this->assertEquals("foo@bar.com", $user->getKey());
-      $this->assertEquals("foo@bar.com", $user->toJSON()['key']);
+        $builder = new LDUserBuilder("foo@bar.com");
+        $user = $builder->build();
+        $this->assertEquals("foo@bar.com", $user->getKey());
+        $json = $user->toJSON();
+        $this->assertEquals("foo@bar.com", $json['key']);
     }
 
     public function testCoerceLDUserKey() {
-      $user = (new LDUserBuilder(3))->build();
-      $this->assertEquals("string", gettype($user->getKey()));
-      $this->assertEquals("string", gettype($user->toJSON()['key']));
+        $builder = new LDUserBuilder(3);
+        $user = $builder->build();
+        $this->assertEquals("string", gettype($user->getKey()));
+        $json = $user->toJSON();
+        $this->assertEquals("string", gettype($json['key']));
     }
 
     public function testLDUserSecondary() {
-      $user = (new LDUserBuilder("foo@bar.com"))->secondary("secondary")->build();
-      $this->assertEquals("secondary", $user->getSecondary());
-      $this->assertEquals("secondary", $user->toJSON()['secondary']);
+        $builder = new LDUserBuilder("foo@bar.com");
+        $user = $builder->secondary("secondary")->build();
+        $this->assertEquals("secondary", $user->getSecondary());
+        $json = $user->toJSON();
+        $this->assertEquals("secondary", $json['secondary']);
     }
 
     public function testLDUserIP() {
-      $user = (new LDUserBuilder("foo@bar.com"))->ip("127.0.0.1")->build();
-      $this->assertEquals("127.0.0.1", $user->getIP());
-      $this->assertEquals("127.0.0.1", $user->toJSON()['ip']);
+        $builder = new LDUserBuilder("foo@bar.com");
+        $user = $builder->ip("127.0.0.1")->build();
+        $this->assertEquals("127.0.0.1", $user->getIP());
+        $json = $user->toJSON();
+        $this->assertEquals("127.0.0.1", $json['ip']);
     }
 
     public function testLDUserCountry() {
-      $user = (new LDUserBuilder("foo@bar.com"))->country("US")->build();
-      $this->assertEquals("US", $user->getCountry());
-      $this->assertEquals("US", $user->toJSON()['country']);
+        $builder = new LDUserBuilder("foo@bar.com");
+        $user = $builder->country("US")->build();
+        $this->assertEquals("US", $user->getCountry());
+        $json = $user->toJSON();
+        $this->assertEquals("US", $json['country']);
     }
 
     public function testLDUserEmail() {
-      $user = (new LDUserBuilder("foo@bar.com"))->email("foo+test@bar.com")->build();
-      $this->assertEquals("foo+test@bar.com", $user->getEmail());
-      $this->assertEquals("foo+test@bar.com", $user->toJSON()['email']);
+        $builder = new LDUserBuilder("foo@bar.com");
+        $user = $builder->email("foo+test@bar.com")->build();
+        $this->assertEquals("foo+test@bar.com", $user->getEmail());
+        $json = $user->toJSON();
+        $this->assertEquals("foo+test@bar.com", $json['email']);
     }
 
     public function testLDUserName() {
-      $user = (new LDUserBuilder("foo@bar.com"))->name("Foo Bar")->build();
-      $this->assertEquals("Foo Bar", $user->getName());
-      $this->assertEquals("Foo Bar", $user->toJSON()['name']);
-    }    
+        $builder = new LDUserBuilder("foo@bar.com");
+        $user = $builder->name("Foo Bar")->build();
+        $this->assertEquals("Foo Bar", $user->getName());
+        $json = $user->toJSON();
+        $this->assertEquals("Foo Bar", $json['name']);
+    }
 
     public function testLDUserAvatar() {
-      $user = (new LDUserBuilder("foo@bar.com"))->avatar("http://www.gravatar.com/avatar/1")->build();
-      $this->assertEquals("http://www.gravatar.com/avatar/1", $user->getAvatar());
-      $this->assertEquals("http://www.gravatar.com/avatar/1", $user->toJSON()['avatar']);
-    }    
+        $builder = new LDUserBuilder("foo@bar.com");
+        $user = $builder->avatar("http://www.gravatar.com/avatar/1")->build();
+        $this->assertEquals("http://www.gravatar.com/avatar/1", $user->getAvatar());
+        $json = $user->toJSON();
+        $this->assertEquals("http://www.gravatar.com/avatar/1", $json['avatar']);
+    }
 
     public function testLDUserFirstName() {
-      $user = (new LDUserBuilder("foo@bar.com"))->firstName("Foo")->build();
-      $this->assertEquals("Foo", $user->getFirstName());
-      $this->assertEquals("Foo", $user->toJSON()['firstName']);
-    }  
+        $builder = new LDUserBuilder("foo@bar.com");
+        $user = $builder->firstName("Foo")->build();
+        $this->assertEquals("Foo", $user->getFirstName());
+        $json = $user->toJSON();
+        $this->assertEquals("Foo", $json['firstName']);
+    }
 
     public function testLDUserLastName() {
-      $user = (new LDUserBuilder("foo@bar.com"))->lastName("Bar")->build();
-      $this->assertEquals("Bar", $user->getLastName());
-      $this->assertEquals("Bar", $user->toJSON()['lastName']);
-    }  
+        $builder = new LDUserBuilder("foo@bar.com");
+        $user = $builder->lastName("Bar")->build();
+        $this->assertEquals("Bar", $user->getLastName());
+        $json = $user->toJSON();
+        $this->assertEquals("Bar", $json['lastName']);
+    }
 
     public function testLDUserAnonymous() {
-      $user = (new LDUserBuilder("foo@bar.com"))->anonymous(true)->build();
-      $this->assertEquals(true, $user->getAnonymous());
-      $this->assertEquals(true, $user->toJSON()['anonymous']);
+        $builder = new LDUserBuilder("foo@bar.com");
+        $user = $builder->anonymous(true)->build();
+        $this->assertEquals(true, $user->getAnonymous());
+        $json = $user->toJSON();
+        $this->assertEquals(true, $json['anonymous']);
 
     }
 }

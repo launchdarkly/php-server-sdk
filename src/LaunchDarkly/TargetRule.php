@@ -7,7 +7,7 @@ namespace LaunchDarkly;
 class TargetRule {
     protected $_attribute = null;
     protected $_operator = null;
-    protected $_values = [];
+    protected $_values = array();
 
     public function __construct($attribute, $operator, $values) {
         $this->_attribute = $attribute;
@@ -20,6 +20,10 @@ class TargetRule {
     }
 
 
+    /**
+     * @param $user LDUser
+     * @return bool
+     */
     public function matchTarget($user) {
         $u_value = null;
 
@@ -31,7 +35,7 @@ class TargetRule {
                 $u_value = $user->getIP();
                 break;
             case "country":
-                $u_value = $user->getCountryCode();
+                $u_value = $user->getCountry();
                 break;
             case "email":
                 $u_value = $user->getEmail();

@@ -9,27 +9,30 @@ use LaunchDarkly\Variation;
 
 class FeatureRepTest extends \PHPUnit_Framework_TestCase {
 
+    /** @var FeatureRep */
     protected $_simpleFlag   = null;
+    /** @var FeatureRep */
     protected $_disabledFlag = null;
+    /** @var FeatureRep */
     protected $_userTargetFlag = null;
 
     protected function setUp() {
         parent::setUp();
-        $targetUserOn = new TargetRule("key", "in", ["targetOn@test.com"]);
-        $targetGroupOn = new TargetRule("groups", "in", ["google", "microsoft"]);
-        $targetUserOff = new TargetRule("key", "in", ["targetOff@test.com"]);
-        $targetGroupOff = new TargetRule("groups", "in", ["oracle"]);
-        $targetEmailOn = new TargetRule("email", "in", ["targetEmailOn@test.com"]);
+        $targetUserOn = new TargetRule("key", "in", array("targetOn@test.com"));
+        $targetGroupOn = new TargetRule("groups", "in", array("google", "microsoft"));
+        $targetUserOff = new TargetRule("key", "in", array("targetOff@test.com"));
+        $targetGroupOff = new TargetRule("groups", "in", array("oracle"));
+        $targetEmailOn = new TargetRule("email", "in", array("targetEmailOn@test.com"));
 
-        $trueVariation = new Variation(true, 80, [$targetUserOn, $targetGroupOn, $targetEmailOn], null);
-        $falseVariation = new Variation(false, 20, [$targetUserOff, $targetGroupOff], null);
+        $trueVariation = new Variation(true, 80, array($targetUserOn, $targetGroupOn, $targetEmailOn), null);
+        $falseVariation = new Variation(false, 20, array($targetUserOff, $targetGroupOff), null);
 
-        $this->_simpleFlag   = new FeatureRep("Sample flag", "sample.flag", "feefifofum", true,  [$trueVariation, $falseVariation]);
-        $this->_disabledFlag = new FeatureRep("Sample flag", "sample.flag", "feefifofum", false, [$trueVariation, $falseVariation]);
+        $this->_simpleFlag   = new FeatureRep("Sample flag", "sample.flag", "feefifofum", true,  array($trueVariation, $falseVariation));
+        $this->_disabledFlag = new FeatureRep("Sample flag", "sample.flag", "feefifofum", false, array($trueVariation, $falseVariation));
 
-        $userTargetVariation = new Variation(false, 20, [], $targetUserOn);
+        $userTargetVariation = new Variation(false, 20, array(), $targetUserOn);
 
-        $this->_userTargetFlag = new FeatureRep("Sample flag", "sample.flag", "feefifofum", true, [$trueVariation, $userTargetVariation]);
+        $this->_userTargetFlag = new FeatureRep("Sample flag", "sample.flag", "feefifofum", true, array($trueVariation, $userTargetVariation));
     }
 
     protected function tearDown() {
@@ -50,13 +53,15 @@ class FeatureRepTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testFlagForTargetGroupOn() {
-        $user = (new LDUserBuilder("targetOther@test.com"))->custom(["groups" => ["google", "microsoft"]])->build();
+        $builder = new LDUserBuilder("targetOther@test.com");
+        $user = $builder->custom(array("groups" => array("google", "microsoft")))->build();
         $b = $this->_simpleFlag->evaluate($user);
         $this->assertEquals(true, $b);
     }
 
     public function testFlagForTargetGroupOff() {
-        $user = (new LDUserBuilder("targetOther@test.com"))->custom(["groups" => ["oracle"]])->build();
+        $builder = new LDUserBuilder("targetOther@test.com");
+        $user = $builder->custom(array("groups" => array("oracle")))->build();
         $b = $this->_simpleFlag->evaluate($user);
         $this->assertEquals(false, $b);
     }
@@ -68,13 +73,15 @@ class FeatureRepTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testUserRuleFlagForTargetUserOff() {
-        $user = (new LDUserBuilder("targetOff@test.com"))->build();
+        $builder = new LDUserBuilder("targetOff@test.com");
+        $user = $builder->build();
         $b = $this->_userTargetFlag->evaluate($user);
         $this->assertEquals(false, $b);
     }
 
     public function testFlagForTargetEmailOff() {
-        $user = (new LDUserBuilder("targetOff@test.com"))->email("targetEmailOn@test.com")->build();
+        $builder = new LDUserBuilder("targetOff@test.com");
+        $user = $builder->email("targetEmailOn@test.com")->build();
         $b = $this->_simpleFlag->evaluate($user);
         $this->assertEquals(true,$b);
     }

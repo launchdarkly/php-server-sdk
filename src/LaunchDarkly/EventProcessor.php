@@ -10,12 +10,11 @@ class EventProcessor {
   private $_queue;
   private $_capacity;
   private $_timeout;
-  private $_socket_failed;
   private $_host;
   private $_port;
   private $_ssl;
 
-  public function __construct($apiKey, $options = []) {
+  public function __construct($apiKey, $options = array()) {
     $this->_apiKey = $apiKey;
     if (!isset($options['base_uri'])) {
         $this->_host = 'app.launchdarkly.com';
@@ -60,7 +59,7 @@ class EventProcessor {
 
   protected function flush() {
     if (empty($this->_queue)) {
-      return;
+      return null;
     }
 
     $payload = json_encode($this->_queue);
