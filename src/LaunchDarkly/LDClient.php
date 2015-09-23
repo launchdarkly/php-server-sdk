@@ -17,7 +17,7 @@ class LDClient {
     protected $_offline;
 
     /** @var  FeatureRequester */
-    protected $_featureRetriever;
+    protected $_featureRequester;
 
     /**
      * Creates a new client instance that connects to LaunchDarkly.
@@ -50,12 +50,12 @@ class LDClient {
 
         $this->_eventProcessor = new EventProcessor($apiKey, $options);
 
-        if (isset($options['feature_retriever_class'])) {
-            $featureRetrieverClass = $options['feature_retriever_class'];
+        if (isset($options['feature_requester_class'])) {
+            $featureRequesterClass = $options['feature_requester_class'];
         } else {
-            $featureRetrieverClass = '\\LaunchDarkly\\GuzzleFeatureRequester';
+            $featureRequesterClass = '\\LaunchDarkly\\GuzzleFeatureRequester';
         }
-        $this->_featureRetriever = new $featureRetrieverClass($this->_baseUri, $apiKey, $options);
+        $this->_featureRequester = new $featureRequesterClass($this->_baseUri, $apiKey, $options);
     }
 
     public function getFlag($key, $user, $default = false) {
@@ -184,7 +184,7 @@ class LDClient {
 
     protected function _toggle($key, $user, $default) {
         try {
-            $data = $this->_featureRetriever->get($key);
+            $data = $this->_featureRequester->get($key);
             if ($data == null) {
                 error_log("LDClient::_toggle received null from retriever, using default");
                 return $default;
