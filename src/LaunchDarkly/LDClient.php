@@ -1,8 +1,7 @@
 <?php
 namespace LaunchDarkly;
 
-use \GuzzleHttp\Exception\BadResponseException;
-use \GuzzleHttp\Subscriber\Cache\CacheSubscriber;
+use Exception;
 
 /**
  * A client for the LaunchDarkly API.
@@ -17,6 +16,9 @@ class LDClient {
     protected $_eventProcessor;
     protected $_offline;
 
+    /** @var  FeatureRequester */
+    protected $_featureRequester;
+
     /**
      * Creates a new client instance that connects to LaunchDarkly.
      *
@@ -27,7 +29,7 @@ class LDClient {
      *     - connect_timeout: Float describing the number of seconds to wait while trying to connect to a server. Defaults to 3
      *     - cache_storage: An optional GuzzleHttp\Subscriber\Cache\CacheStorageInterface. Defaults to an in-memory cache.
      */
-    public function __construct($apiKey, $options = []) {
+    public function __construct($apiKey, $options = array()) {
         $this->_apiKey = $apiKey;
         if (!isset($options['base_uri'])) {
             $this->_baseUri = self::DEFAULT_BASE_URI;
@@ -46,9 +48,14 @@ class LDClient {
             $options['capacity'] = 1000;
         }
 
-        $this->_eventProcessor = new \LaunchDarkly\EventProcessor($apiKey, $options);
+        $this->_eventProcessor = new EventProcessor($apiKey, $options);
 
-        $this->_client = $this->_make_client($options);
+        if (isset($options['feature_requester_class'])) {
+            $featureRequesterClass = $options['feature_requester_class'];
+        } else {
+            $featureRequesterClass = '\\LaunchDarkly\\GuzzleFeatureRequester';
+        }
+        $this->_featureRequester = new $featureRequesterClass($this->_baseUri, $apiKey, $options);
     }
 
     public function getFlag($key, $user, $default = false) {
@@ -120,9 +127,9 @@ class LDClient {
     /**
      * Tracks that a user performed an event.
      *
-     * @param string $eventName The name of the event
-     * @param LDUser $user The user that performed the event
-     *
+     * @param $eventName string The name of the event
+     * @param $user LDUser The user that performed the event
+     * @param $data mixed
      */
     public function track($eventName, $user, $data) {
         if ($this->isOffline()) {
@@ -140,6 +147,9 @@ class LDClient {
         $this->_eventProcessor->enqueue($event);
     }
 
+    /**
+     * @param $user LDUser
+     */
     public function identify($user) {
         if ($this->isOffline()) {
             return;
@@ -153,6 +163,11 @@ class LDClient {
         $this->_eventProcessor->enqueue($event);        
     }
 
+    /**
+     * @param $key string
+     * @param $user LDUser
+     * @param $value mixed
+     */
     protected function _sendFlagRequestEvent($key, $user, $value) {
         if ($this->isOffline()) {
             return;
@@ -169,38 +184,17 @@ class LDClient {
 
     protected function _toggle($key, $user, $default) {
         try {
-            $response = $this->_client->get("/api/eval/features/$key");
-            return self::_decode($response->json(), $user);
-        } catch (BadResponseException $e) {
-            $code = $e->getResponse()->getStatusCode();
-            error_log("LDClient::toggle received HTTP status code $code, using default");
+            $data = $this->_featureRequester->get($key);
+            if ($data == null) {
+                error_log("LDClient::_toggle received null from retriever, using default");
+                return $default;
+            }
+            return self::_decode($data, $user);
+        } catch (Exception $e) {
+            $msg = $e->getMessage();
+            error_log("LDClient::_toggle received error $msg, using default");
             return $default;
         }
-    }
-
-    protected function _make_client($options) {
-        $client = new \GuzzleHttp\Client([
-            'base_url' => $this->_baseUri,
-            'defaults' => [
-                'headers' => [
-                    'Authorization' => "api_key {$this->_apiKey}",
-                    'Content-Type'  => 'application/json',
-                    'User-Agent'    => 'PHPClient/' . self::VERSION
-                ],
-                'debug' => false,
-                'timeout'         => $options['timeout'],
-                'connect_timeout' => $options['connect_timeout']
-            ]
-        ]);
-
-        if (!isset($options['cache_storage'])) {
-            $csOptions = ['validate' => false];
-        } else {
-            $csOptions = ['storage' => $options['cache_storage'], 'validate' => false];
-        }
-
-        CacheSubscriber::attach($client, $csOptions);
-        return $client;
     }
 
     protected static function _decode($json, $user) {
@@ -209,7 +203,7 @@ class LDClient {
                 return new TargetRule($t['attribute'], $t['op'], $t['values']);
             };
 
-            $ts = empty($v['targets']) ? [] : $v['targets'];
+            $ts = empty($v['targets']) ? array() : $v['targets'];
             $targets = array_map($makeTarget, $ts);
             if (isset($v['userTarget'])) {
                 return new Variation($v['value'], $v['weight'], $targets, $makeTarget($v['userTarget']));
@@ -219,7 +213,7 @@ class LDClient {
             }
         };
 
-        $vs = empty($json['variations']) ? [] : $json['variations'];
+        $vs = empty($json['variations']) ? array() : $json['variations'];
         $variations = array_map($makeVariation, $vs);
         $feature = new FeatureRep($json['name'], $json['key'], $json['salt'], $json['on'], $variations);
 

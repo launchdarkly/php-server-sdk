@@ -1,2 +1,7 @@
 /vendor/
 /doc/
+*.iml
+composer.phar
+.vagrant
+integration-tests/vendor
+integration-tests/composer.lock

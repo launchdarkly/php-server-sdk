@@ -11,16 +11,22 @@ class FeatureRep {
     protected $_key = null;
     protected $_salt = null;
     protected $_on = false;
-    protected $_variations = [];
 
-    public function __construct($name, $key, $salt, $on = true, $variations = []) {
+    /** @var Variation[] */
+    protected $_variations = array();
+
+    public function __construct($name, $key, $salt, $on = true, $variations = array()) {
         $this->_name = $name;
-        $this->_key  = $key;
+        $this->_key = $key;
         $this->_salt = $salt;
-        $this->_on   = $on;
+        $this->_on = $on;
         $this->_variations = $variations;
     }
 
+    /**
+     * @param $user LDUser
+     * @return mixed
+     */
     public function evaluate($user) {
         if (!$this->_on || !$user) {
             return null;
@@ -29,7 +35,8 @@ class FeatureRep {
         $param = $this->_get_param($user);
         if (is_null($param)) {
             return null;
-        } else {
+        }
+        else {
             foreach ($this->_variations as $variation) {
                 if ($variation->matchUser($user)) {
                     return $variation->getValue();
@@ -55,18 +62,23 @@ class FeatureRep {
         return null;
     }
 
+    /**
+     * @param $user LDUser
+     * @return float|null
+     */
     private function _get_param($user) {
         $id_hash = null;
         $hash = null;
 
         if ($user->getKey()) {
             $id_hash = $user->getKey();
-        } else {
+        }
+        else {
             return null;
         }
 
         if ($user->getSecondary()) {
-            $id_hash += "." . $user->getSecondary();
+            $id_hash .= "." . $user->getSecondary();
         }
 
         $hash = substr(sha1($this->_key . "." . $this->_salt . "." . $id_hash), 0, 15);

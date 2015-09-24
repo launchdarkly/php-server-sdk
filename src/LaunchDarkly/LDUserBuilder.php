@@ -12,7 +12,7 @@ class LDUserBuilder {
     protected $_firstName = null;
     protected $_lastName = null;
     protected $_anonymous = null;
-    protected $_custom = [];    
+    protected $_custom = array();
 
     public function __construct($key) {
         $this->_key = $key;

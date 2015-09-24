@@ -8,8 +8,12 @@ class Variation {
     protected $_value = null;
     protected $_weight = 0;
     protected $_targetRule = null;
+
+    /** @var TargetRule */
     protected $_userTarget = null;
-    protected $_targets = [];
+
+    /** @var TargetRule[] */
+    protected $_targets = array();
 
     public function __construct($value, $weight, $targets, $userTarget) {
         $this->_value   = $value;
@@ -18,6 +22,10 @@ class Variation {
         $this->_userTarget = $userTarget;
     }
 
+    /**
+     * @param $user LDUser
+     * @return bool
+     */
     public function matchUser($user) {
         if ($this->_userTarget != null) {
             return $this->_userTarget->matchTarget($user);
