@@ -15,6 +15,8 @@ class LDClient {
     protected $_client;
     protected $_eventProcessor;
     protected $_offline;
+    protected $_events = true;
+    protected $_defaults = array();
 
     /** @var  FeatureRequester */
     protected $_featureRequester;
@@ -37,6 +39,13 @@ class LDClient {
         else {
             $this->_baseUri = rtrim($options['base_uri'], '/');
         }
+        if (isset($options['events'])) {
+            $this->_events = $options['events'];
+        }
+        if (isset($options['defaults'])) {
+            $this->_defaults = $options['defaults'];
+        }
+
         if (!isset($options['timeout'])) {
             $options['timeout'] = 3;
         }
@@ -77,7 +86,8 @@ class LDClient {
         }
 
         try {
-            $flag = $this->_toggle($key, $user, $default);
+            $default = $this->_get_default($key, $default);
+            $flag = $this->_toggle($key, $user);
 
             if (is_null($flag)) {
                 $this->_sendFlagRequestEvent($key, $user, $default);
@@ -169,7 +179,7 @@ class LDClient {
      * @param $value mixed
      */
     protected function _sendFlagRequestEvent($key, $user, $value) {
-        if ($this->isOffline()) {
+        if ($this->isOffline() || !$this->_events) {
             return;
         }
 
@@ -182,17 +192,25 @@ class LDClient {
         $this->_eventProcessor->enqueue($event); 
     }
 
-    protected function _toggle($key, $user, $default) {
+    protected function _toggle($key, $user) {
         try {
             $data = $this->_featureRequester->get($key);
             if ($data == null) {
                 error_log("LDClient::_toggle received null from retriever, using default");
-                return $default;
+                return null;
             }
             return self::_decode($data, $user);
         } catch (Exception $e) {
             $msg = $e->getMessage();
             error_log("LDClient::_toggle received error $msg, using default");
+            return null;
+        }
+    }
+
+    protected function _get_default($key, $default) {
+        if (array_key_exists($key, $this->_defaults)) {
+            return $this->_defaults[$key];
+        } else {
             return $default;
         }
     }
