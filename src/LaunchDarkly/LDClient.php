@@ -196,7 +196,6 @@ class LDClient {
         try {
             $data = $this->_featureRequester->get($key);
             if ($data == null) {
-                error_log("LDClient::_toggle received null from retriever, using default");
                 return null;
             }
             return self::_decode($data, $user);
