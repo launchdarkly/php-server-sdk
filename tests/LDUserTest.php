@@ -21,6 +21,13 @@ class LDUserTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals("string", gettype($json['key']));
     }
 
+    public function testEmptyCustom() {        
+        $builder = new LDUserBuilder("foo@bar.com");
+        $user = $builder->build();
+        $json = $user->toJSON();
+        $this->assertTrue(!isset($json['custom']));
+    }
+
     public function testLDUserSecondary() {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->secondary("secondary")->build();

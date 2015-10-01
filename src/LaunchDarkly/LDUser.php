@@ -117,7 +117,7 @@ class LDUser {
         if (isset($this->_lastName)) {
             $json['lastName'] = $this->_lastName;
         }
-        if (isset($this->_custom)) {
+        if (isset($this->_custom) && !empty($this->_custom)) {
             $json['custom'] = $this->_custom;
         }
         if (isset($this->_anonymous)) {
