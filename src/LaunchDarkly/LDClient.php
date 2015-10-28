@@ -8,7 +8,7 @@ use Exception;
  */
 class LDClient {
     const DEFAULT_BASE_URI = 'https://app.launchdarkly.com';
-    const VERSION = '0.5.1';
+    const VERSION = '0.6.3';
 
     protected $_apiKey;
     protected $_baseUri;
