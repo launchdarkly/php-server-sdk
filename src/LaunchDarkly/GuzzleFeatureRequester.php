@@ -1,14 +1,15 @@
 <?php
 namespace LaunchDarkly;
 
+use Doctrine\Common\Cache\ArrayCache;
 use Guzzle\Http\Client;
-use Guzzle\Plugin\Cache;
+use Guzzle\Cache\DoctrineCacheAdapter;
+use Guzzle\Plugin\Cache\CachePlugin;
 
 class GuzzleFeatureRequester implements FeatureRequester {
     function __construct($baseUri, $apiKey, $options) {
         $this->_client = new Client($baseUri,
                                         array(
-                                        'plugins' => array(new Guzzle\Plugin\Cache\CachePlugin()),                                        
                                         'debug' => false,
                                         'curl.options' => array('CURLOPT_TCP_NODELAY' => 1),
                                         'request.options' => array(
@@ -21,6 +22,12 @@ class GuzzleFeatureRequester implements FeatureRequester {
                                         )
                                     ));
         $this->_client->setUserAgent('PHPClient/' . LDClient::VERSION);
+
+        if (isset($options['cache_storage'])) {
+            $cachePlugin = new CachePlugin(array('storage' => $options['cache_storage'], 'validate' => false));
+            $this->_client->addSubscriber($cachePlugin);
+        }
+
     }
 
 
