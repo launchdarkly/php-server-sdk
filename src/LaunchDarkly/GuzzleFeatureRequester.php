@@ -10,6 +10,7 @@ class GuzzleFeatureRequester implements FeatureRequester {
                                         array(
                                         'plugins' => array(new Guzzle\Plugin\Cache\CachePlugin()),                                        
                                         'debug' => false,
+                                        'curl.options' => array('CURLOPT_TCP_NODELAY' => 1),
                                         'request.options' => array(
                                             'headers' => array(
                                                 'Authorization' => "api_key {$apiKey}",
