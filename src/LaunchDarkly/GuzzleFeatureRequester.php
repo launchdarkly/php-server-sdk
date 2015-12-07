@@ -39,7 +39,8 @@ class GuzzleFeatureRequester implements FeatureRequester {
      */
     public function get($key) {
         try {
-            $response = $this->_client->get("/api/eval/features/$key");
+            $request = $this->_client->get("/api/eval/features/$key");
+            $response = $request->send();
             return $response->json();
         } catch (BadResponseException $e) {
             $code = $e->getResponse()->getStatusCode();
