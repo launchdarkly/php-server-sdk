@@ -1,34 +1,25 @@
 <?php
 namespace LaunchDarkly;
 
-use GuzzleHttp\Client;
-use \GuzzleHttp\Exception\BadResponseException;
-use \GuzzleHttp\Subscriber\Cache\CacheSubscriber;
+use Guzzle\Http\Client;
+use Guzzle\Plugin\Cache;
 
 class GuzzleFeatureRequester implements FeatureRequester {
     function __construct($baseUri, $apiKey, $options) {
-        $this->_client = new Client(array(
-                                        'base_url' => $baseUri,
-                                        'defaults' => array(
+        $this->_client = new Client($baseUri,
+                                        array(
+                                        'plugins' => array(new Guzzle\Plugin\Cache\CachePlugin()),                                        
+                                        'debug' => false,
+                                        'request.options' => array(
                                             'headers' => array(
                                                 'Authorization' => "api_key {$apiKey}",
-                                                'Content-Type' => 'application/json',
-                                                'User-Agent' => 'PHPClient/' . LDClient::VERSION
+                                                'Content-Type' => 'application/json'
                                             ),
-                                            'debug' => false,
                                             'timeout' => $options['timeout'],
                                             'connect_timeout' => $options['connect_timeout']
                                         )
                                     ));
-
-        if (!isset($options['cache_storage'])) {
-            $csOptions = array('validate' => false);
-        }
-        else {
-            $csOptions = array('storage' => $options['cache_storage'], 'validate' => false);
-        }
-
-        CacheSubscriber::attach($this->_client, $csOptions);
+        $this->_client->setUserAgent('PHPClient/' . LDClient::VERSION);
     }
 
 
