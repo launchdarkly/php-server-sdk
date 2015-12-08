@@ -21,7 +21,7 @@
     ],
     "require": {
         "php": ">=5.3",
-        "guzzle/guzzle": "dev-master#cc55d8c884f44c68bedf0d6077ce9022de0b2305"
+        "guzzle/guzzle": "dev-master#7c722287e5d12bf162da98ad0f12087ed904803f"
     },
     "require-dev": {
         "phpunit/phpunit": "4.3.*",
