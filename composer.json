@@ -5,6 +5,12 @@
         "launchdarkly",
         "launchdarkly php"
     ],
+    "repositories": [
+      {
+        "type": "git",
+        "url": "git://github.com/launchdarkly/guzzle3.git"
+      }
+    ],    
     "homepage": "https://github.com/launchdarkly/php-client",
     "license": "Apache-2.0",
     "authors": [
@@ -15,7 +21,7 @@
     ],
     "require": {
         "php": ">=5.3",
-        "guzzle/guzzle": "3.9.*"
+        "guzzle/guzzle": "dev-master#cc55d8c884f44c68bedf0d6077ce9022de0b2305"
     },
     "require-dev": {
         "phpunit/phpunit": "4.3.*",

@@ -4,22 +4,16 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "d2553358c98b625f026f02c26cbe5948",
-    "content-hash": "fc7d8f995bbf32cef906a24fef145673",
+    "hash": "55d557209f91568532d25042be26de06",
+    "content-hash": "64be38fda51e122b0081f7a9bd5ee429",
     "packages": [
         {
             "name": "guzzle/guzzle",
-            "version": "v3.9.3",
+            "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/guzzle/guzzle3.git",
-                "reference": "0645b70d953bc1c067bbc8d5bc53194706b628d9"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle3/zipball/0645b70d953bc1c067bbc8d5bc53194706b628d9",
-                "reference": "0645b70d953bc1c067bbc8d5bc53194706b628d9",
-                "shasum": ""
+                "url": "git://github.com/launchdarkly/guzzle3.git",
+                "reference": "cc55d8c884f44c68bedf0d6077ce9022de0b2305"
             },
             "require": {
                 "ext-curl": "*",
@@ -74,7 +68,11 @@
                     "Guzzle\\Tests": "tests/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "scripts": {
+                "test": [
+                    "phpunit"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -92,15 +90,15 @@
             "description": "PHP HTTP client. This library is deprecated in favor of https://packagist.org/packages/guzzlehttp/guzzle",
             "homepage": "http://guzzlephp.org/",
             "keywords": [
+                "HTTP client",
                 "client",
                 "curl",
                 "framework",
                 "http",
-                "http client",
                 "rest",
                 "web service"
             ],
-            "time": "2015-03-18 18:23:50"
+            "time": "2015-12-08 02:04:01"
         },
         {
             "name": "symfony/event-dispatcher",
@@ -3520,7 +3518,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "guzzle/guzzle": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
