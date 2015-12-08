@@ -1,34 +1,33 @@
 <?php
 namespace LaunchDarkly;
 
-use GuzzleHttp\Client;
-use \GuzzleHttp\Exception\BadResponseException;
-use \GuzzleHttp\Subscriber\Cache\CacheSubscriber;
+use Doctrine\Common\Cache\ArrayCache;
+use Guzzle\Http\Client;
+use Guzzle\Cache\DoctrineCacheAdapter;
+use Guzzle\Plugin\Cache\CachePlugin;
 
 class GuzzleFeatureRequester implements FeatureRequester {
     function __construct($baseUri, $apiKey, $options) {
-        $this->_client = new Client(array(
-                                        'base_url' => $baseUri,
-                                        'defaults' => array(
+        $this->_client = new Client($baseUri,
+                                        array(
+                                        'debug' => false,
+                                        'curl.options' => array('CURLOPT_TCP_NODELAY' => 1),
+                                        'request.options' => array(
                                             'headers' => array(
                                                 'Authorization' => "api_key {$apiKey}",
-                                                'Content-Type' => 'application/json',
-                                                'User-Agent' => 'PHPClient/' . LDClient::VERSION
+                                                'Content-Type' => 'application/json'
                                             ),
-                                            'debug' => false,
                                             'timeout' => $options['timeout'],
                                             'connect_timeout' => $options['connect_timeout']
                                         )
                                     ));
+        $this->_client->setUserAgent('PHPClient/' . LDClient::VERSION);
 
-        if (!isset($options['cache_storage'])) {
-            $csOptions = array('validate' => false);
-        }
-        else {
-            $csOptions = array('storage' => $options['cache_storage'], 'validate' => false);
+        if (isset($options['cache_storage'])) {
+            $cachePlugin = new CachePlugin(array('storage' => $options['cache_storage'], 'validate' => false));
+            $this->_client->addSubscriber($cachePlugin);
         }
 
-        CacheSubscriber::attach($this->_client, $csOptions);
     }
 
 
@@ -40,7 +39,8 @@ class GuzzleFeatureRequester implements FeatureRequester {
      */
     public function get($key) {
         try {
-            $response = $this->_client->get("/api/eval/features/$key");
+            $request = $this->_client->get("/api/eval/features/$key");
+            $response = $request->send();
             return $response->json();
         } catch (BadResponseException $e) {
             $code = $e->getResponse()->getStatusCode();
