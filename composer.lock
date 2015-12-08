@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "55d557209f91568532d25042be26de06",
-    "content-hash": "64be38fda51e122b0081f7a9bd5ee429",
+    "hash": "cd334a84603889124e9d169092be41da",
+    "content-hash": "4f8b242953aacc692be716c0637eb7d0",
     "packages": [
         {
             "name": "guzzle/guzzle",
@@ -13,7 +13,7 @@
             "source": {
                 "type": "git",
                 "url": "git://github.com/launchdarkly/guzzle3.git",
-                "reference": "cc55d8c884f44c68bedf0d6077ce9022de0b2305"
+                "reference": "7c722287e5d12bf162da98ad0f12087ed904803f"
             },
             "require": {
                 "ext-curl": "*",
@@ -98,7 +98,7 @@
                 "rest",
                 "web service"
             ],
-            "time": "2015-12-08 02:04:01"
+            "time": "2015-12-08 22:41:05"
         },
         {
             "name": "symfony/event-dispatcher",
@@ -1946,23 +1946,23 @@
         },
         {
             "name": "sebastian/diff",
-            "version": "1.4.0",
+            "version": "1.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/diff.git",
-                "reference": "2b0112e42c338afa9ad9dfeb94d66f6d84c2f828"
+                "reference": "13edfd8706462032c2f52b4b862974dd46b71c9e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/diff/zipball/2b0112e42c338afa9ad9dfeb94d66f6d84c2f828",
-                "reference": "2b0112e42c338afa9ad9dfeb94d66f6d84c2f828",
+                "url": "https://api.github.com/repos/sebastianbergmann/diff/zipball/13edfd8706462032c2f52b4b862974dd46b71c9e",
+                "reference": "13edfd8706462032c2f52b4b862974dd46b71c9e",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3"
             },
             "require-dev": {
-                "phpunit/phpunit": "~5"
+                "phpunit/phpunit": "~4.8"
             },
             "type": "library",
             "extra": {
@@ -1994,7 +1994,7 @@
             "keywords": [
                 "diff"
             ],
-            "time": "2015-12-06 07:21:36"
+            "time": "2015-12-08 07:14:41"
         },
         {
             "name": "sebastian/environment",
