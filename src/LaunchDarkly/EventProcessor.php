@@ -77,7 +77,7 @@ class EventProcessor {
     $args.= " -H 'User-Agent: PHPClient/" . LDClient::VERSION . "'";
     $args.= " -H 'Accept: application/json'";
     $args.= " -d " . escapeshellarg($payload);
-    $args.= " " . escapeshellarg($scheme . $this->_host . ":" . $this->_port . "/api/events/bulk");
+    $args.= " " . escapeshellarg($scheme . $this->_host . ":" . $this->_port . "/bulk");
     return $args;
   }
 
