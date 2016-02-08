@@ -16,13 +16,13 @@ class EventProcessor {
 
   public function __construct($apiKey, $options = array()) {
     $this->_apiKey = $apiKey;
-    if (!isset($options['base_uri'])) {
-        $this->_host = 'app.launchdarkly.com';
+    if (!isset($options['events_uri'])) {
+        $this->_host = 'events.launchdarkly.com';
         $this->_port = 443;
         $this->_ssl = true;
     } 
     else {
-        $url = parse_url($options['base_uri']);
+        $url = parse_url($options['events_uri']);
         $this->_host = $url['host'];
         $this->_ssl = $url['scheme'] === 'https';
         if (isset($url['port'])) {
