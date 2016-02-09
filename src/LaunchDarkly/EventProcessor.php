@@ -20,9 +20,10 @@ class EventProcessor {
         $this->_host = 'events.launchdarkly.com';
         $this->_port = 443;
         $this->_ssl = true;
+        $this->_path = '';
     } 
     else {
-        $url = parse_url($options['events_uri']);
+        $url = parse_url(rtrim($options['events_uri'],'/'));
         $this->_host = $url['host'];
         $this->_ssl = $url['scheme'] === 'https';
         if (isset($url['port'])) {
@@ -30,6 +31,12 @@ class EventProcessor {
         } 
         else {
           $this->_port = $this->_ssl ? 443 : 80;
+        }
+        if (isset($url['path'])) {
+          $this->_path = $url['path'];
+        }
+        else {
+          $this->_path = '';
         }
     }
 
@@ -77,7 +84,7 @@ class EventProcessor {
     $args.= " -H 'User-Agent: PHPClient/" . LDClient::VERSION . "'";
     $args.= " -H 'Accept: application/json'";
     $args.= " -d " . escapeshellarg($payload);
-    $args.= " " . escapeshellarg($scheme . $this->_host . ":" . $this->_port . "/bulk");
+    $args.= " " . escapeshellarg($scheme . $this->_host . ":" . $this->_port . $this->_path . "/bulk");
     return $args;
   }
 
