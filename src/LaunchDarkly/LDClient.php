@@ -90,17 +90,17 @@ class LDClient {
             $flag = $this->_toggle($key, $user);
 
             if (is_null($flag)) {
-                $this->_sendFlagRequestEvent($key, $user, $default);
+                $this->_sendFlagRequestEvent($key, $user, $default, $default);
                 return $default;
             }
             else {
-                $this->_sendFlagRequestEvent($key, $user, $flag);                
+                $this->_sendFlagRequestEvent($key, $user, $flag, $default);                
                 return $flag;
             }
         } catch (\Exception $e) {
             error_log("LaunchDarkly caught $e");
             try {
-                $this->_sendFlagRequestEvent($key, $user, $default);            
+                $this->_sendFlagRequestEvent($key, $user, $default, $default);            
             }
             catch (\Exception $e) {
                 error_log("LaunchDarkly caught $e");
@@ -178,7 +178,7 @@ class LDClient {
      * @param $user LDUser
      * @param $value mixed
      */
-    protected function _sendFlagRequestEvent($key, $user, $value) {
+    protected function _sendFlagRequestEvent($key, $user, $value, $default) {
         if ($this->isOffline() || !$this->_events) {
             return;
         }
@@ -189,6 +189,7 @@ class LDClient {
         $event['kind'] = "feature";
         $event['creationDate'] = round(microtime(1) * 1000);
         $event['key'] = $key;
+        $event['default'] = $default;
         $this->_eventProcessor->enqueue($event); 
     }
 
