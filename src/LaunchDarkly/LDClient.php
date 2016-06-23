@@ -64,6 +64,10 @@ class LDClient {
         } else {
             $featureRequesterClass = '\\LaunchDarkly\\GuzzleFeatureRequester';
         }
+
+        if (!is_a($featureRequesterClass, FeatureRequester::class, true)) {
+            throw new \InvalidArgumentException;
+        }
         $this->_featureRequester = new $featureRequesterClass($this->_baseUri, $apiKey, $options);
     }
 

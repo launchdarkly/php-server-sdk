@@ -1,6 +1,7 @@
 <?php
 namespace LaunchDarkly\Tests;
 
+use InvalidArgumentException;
 use LaunchDarkly\FeatureRequester;
 use LaunchDarkly\LDClient;
 use LaunchDarkly\LDUserBuilder;
@@ -65,6 +66,11 @@ class LDClientTest extends \PHPUnit_Framework_TestCase {
         $proc = getPrivateField($client, '_eventProcessor');
         $queue = getPrivateField($proc, '_queue');
         $this->assertEquals(0, sizeof($queue));
+    }
+
+    public function testOnlyValidFeatureRequester() {
+        $this->expectException(InvalidArgumentException::class);
+        new LDClient("BOGUS_API_KEY", ['feature_requester_class' => 'stdClass']);
     }
 }
 
