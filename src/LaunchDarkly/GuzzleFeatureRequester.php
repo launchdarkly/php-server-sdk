@@ -6,6 +6,9 @@ use \GuzzleHttp\Exception\BadResponseException;
 use \GuzzleHttp\Subscriber\Cache\CacheSubscriber;
 
 class GuzzleFeatureRequester implements FeatureRequester {
+
+    private $_client;
+
     function __construct($baseUri, $apiKey, $options) {
         $this->_client = new Client(array(
                                         'base_url' => $baseUri,
