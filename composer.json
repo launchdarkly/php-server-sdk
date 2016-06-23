@@ -21,7 +21,8 @@
         "phpdocumentor/phpdocumentor": "2.*",
         "predis/predis": "1.0.*",
         "guzzlehttp/guzzle": "5.*",
-        "guzzlehttp/cache-subscriber": "0.1.*"
+        "guzzlehttp/cache-subscriber": "0.1.*",
+        "zendframework/zend-serializer": "2.7.*"
     },
     "suggested": {
         "predis/predis": "1.0.*",
