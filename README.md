@@ -11,6 +11,8 @@ Quick setup
 0. Install the PHP SDK with [Composer](https://getcomposer.org/)
 
         php composer.phar require launchdarkly/launchdarkly-php
+        php composer.phar require "guzzlehttp/guzzle:5.*"
+        php composer.phar require "guzzlehttp/cache-subscriber:0.1.*"
 
 1. After installing, require Composer's autoloader:
 
@@ -33,6 +35,35 @@ Your first feature flag
         } else {
             # the code to run if the feature is off
         }
+
+Fetching flags
+--------------
+
+There are two approaches to fetching the flag rules from LaunchDarkly:
+
+* Making HTTP requests (using Guzzle)
+* Setting up the [ld-daemon](https://github.com/launchdarkly/ld-daemon) to store the flags in Redis
+
+Using Guzzle
+============
+
+To use Guzzle it must be required as a dependency:
+
+  php composer.phar require "guzzlehttp/guzzle:5.*"
+  php composer.phar require "guzzlehttp/cache-subscriber:0.1.*"
+
+It will then be used as the default way of fetching flags.
+
+Using Redis
+===========
+
+1. Require Predis as a dependency:
+
+    php composer.phar require "predis/predis:1.0.*"
+
+2. Create the LDClient with the Redis feature requester as an option:
+
+    $client = new LaunchDarkly\LDClient("your_api_key", ['feature_requester_class' => 'LaunchDarkly\LDDFeatureRequester']);
 
 Learn more
 -----------
