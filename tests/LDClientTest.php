@@ -69,7 +69,7 @@ class LDClientTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testOnlyValidFeatureRequester() {
-        $this->expectException(InvalidArgumentException::class);
+        $this->setExpectedException(InvalidArgumentException::class);
         new LDClient("BOGUS_API_KEY", ['feature_requester_class' => 'stdClass']);
     }
 }
