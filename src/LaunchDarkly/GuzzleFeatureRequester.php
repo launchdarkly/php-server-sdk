@@ -3,15 +3,19 @@ namespace LaunchDarkly;
 
 use GuzzleHttp\Client;
 use \GuzzleHttp\Exception\BadResponseException;
-use \GuzzleHttp\Subscriber\Cache\CacheSubscriber;
+use GuzzleHttp\HandlerStack;
+use Kevinrob\GuzzleCache\CacheMiddleware;
 
 class GuzzleFeatureRequester implements FeatureRequester {
 
     private $_client;
 
     function __construct($baseUri, $apiKey, $options) {
+        $stack = HandlerStack::create();
+        $stack->push(new CacheMiddleware(), 'cache');
         $this->_client = new Client(array(
                                         'base_url' => $baseUri,
+                                        'handler' => $stack,
                                         'defaults' => array(
                                             'headers' => array(
                                                 'Authorization' => "api_key {$apiKey}",
@@ -23,15 +27,6 @@ class GuzzleFeatureRequester implements FeatureRequester {
                                             'connect_timeout' => $options['connect_timeout']
                                         )
                                     ));
-
-        if (!isset($options['cache_storage'])) {
-            $csOptions = array('validate' => false);
-        }
-        else {
-            $csOptions = array('storage' => $options['cache_storage'], 'validate' => false);
-        }
-
-        CacheSubscriber::attach($this->_client, $csOptions);
     }
 
 

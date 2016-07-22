@@ -20,14 +20,14 @@
         "phpunit/phpunit": "4.8.26",
         "phpdocumentor/phpdocumentor": "2.*",
         "predis/predis": "1.0.*",
-        "guzzlehttp/guzzle": "5.*",
-        "guzzlehttp/cache-subscriber": "0.1.*",
+        "guzzlehttp/guzzle": "6.2.1",
+        "kevinrob/guzzle-cache-middleware": "1.4.1",
         "zendframework/zend-serializer": "2.7.*"
     },
     "suggested": {
         "predis/predis": "1.0.*",
-        "guzzlehttp/guzzle": "5.*",
-        "guzzlehttp/cache-subscriber": "0.1.*"
+        "guzzlehttp/guzzle": "6.2.1",
+        "kevinrob/guzzle-cache-middleware": "1.4.1"
     },
     "autoload": {
         "psr-4": {
