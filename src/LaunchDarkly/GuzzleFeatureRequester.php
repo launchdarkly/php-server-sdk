@@ -1,10 +1,11 @@
 <?php
 namespace LaunchDarkly;
 
-use \GuzzleHttp\Client;
-use \GuzzleHttp\Exception\BadResponseException;
-use \GuzzleHttp\HandlerStack;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\BadResponseException;
+use GuzzleHttp\HandlerStack;
 use Kevinrob\GuzzleCache\CacheMiddleware;
+use Kevinrob\GuzzleCache\Strategy\PublicCacheStrategy;
 
 class GuzzleFeatureRequester implements FeatureRequester
 {
@@ -17,7 +18,7 @@ class GuzzleFeatureRequester implements FeatureRequester
         $this->_baseUri = $baseUri;
         error_log("uri: $baseUri");
         $stack = HandlerStack::create();
-        $stack->push(new CacheMiddleware(isset($options['cache_strategy']) ? $options['cache_strategy'] : null, 'cache'));
+        $stack->push(new CacheMiddleware(new PublicCacheStrategy(isset($options['cache']) ? $options['cache'] : null), 'cache'));
 
         $this->_defaults = array(
             'headers' => array(
@@ -28,8 +29,7 @@ class GuzzleFeatureRequester implements FeatureRequester
             'timeout' => $options['timeout'],
             'connect_timeout' => $options['connect_timeout']
         );
-
-        $this->_client = new Client(['handler' => $stack, 'debug' => true]);
+        $this->_client = new Client(['handler' => $stack, 'debug' => false]);
     }
 
 
@@ -45,7 +45,6 @@ class GuzzleFeatureRequester implements FeatureRequester
             $uri = $this->_baseUri . "/api/eval/features/$key";
             $response = $this->_client->get($uri, $this->_defaults);
             $body = $response->getBody();
-            error_log($body);
             return json_decode($body, true);
         } catch (BadResponseException $e) {
             $code = $e->getResponse()->getStatusCode();
