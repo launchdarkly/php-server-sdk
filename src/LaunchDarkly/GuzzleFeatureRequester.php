@@ -8,7 +8,6 @@ use Kevinrob\GuzzleCache\CacheMiddleware;
 
 class GuzzleFeatureRequester implements FeatureRequester
 {
-
     private $_client;
     private $_baseUri;
     private $_defaults;
@@ -17,8 +16,8 @@ class GuzzleFeatureRequester implements FeatureRequester
     {
         $this->_baseUri = $baseUri;
         error_log("uri: $baseUri");
-//        $stack = HandlerStack::create();
-//        $stack->push(new CacheMiddleware(), 'cache');
+        $stack = HandlerStack::create();
+        $stack->push(new CacheMiddleware(isset($options['cache_strategy']) ? $options['cache_strategy'] : null, 'cache'));
 
         $this->_defaults = array(
             'headers' => array(
@@ -30,7 +29,7 @@ class GuzzleFeatureRequester implements FeatureRequester
             'connect_timeout' => $options['connect_timeout']
         );
 
-        $this->_client = new Client();
+        $this->_client = new Client(['handler' => $stack, 'debug' => true]);
     }
 
 
@@ -44,7 +43,6 @@ class GuzzleFeatureRequester implements FeatureRequester
     {
         try {
             $uri = $this->_baseUri . "/api/eval/features/$key";
-            error_log($uri);
             $response = $this->_client->get($uri, $this->_defaults);
             $body = $response->getBody();
             error_log($body);

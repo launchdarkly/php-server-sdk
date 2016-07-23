@@ -29,6 +29,7 @@ class LDClient {
      *     - base_uri: Base URI of the LaunchDarkly API. Defaults to `DEFAULT_BASE_URI`
      *     - timeout: Float describing the maximum length of a request in seconds. Defaults to 3
      *     - connect_timeout: Float describing the number of seconds to wait while trying to connect to a server. Defaults to 3
+     *     - cache_strategy: An optional Kevinrob\GuzzleCache\Strategy\CacheStrategyInterface. Defaults to an in-memory cache.
      */
     public function __construct($apiKey, $options = array()) {
         $this->_apiKey = $apiKey;
