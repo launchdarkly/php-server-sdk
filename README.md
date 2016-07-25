@@ -11,8 +11,8 @@ Quick setup
 0. Install the PHP SDK with [Composer](https://getcomposer.org/)
 
         php composer.phar require launchdarkly/launchdarkly-php
-        php composer.phar require "guzzlehttp/guzzle:5.*"
-        php composer.phar require "guzzlehttp/cache-subscriber:0.1.*"
+        php composer.phar require "guzzlehttp/guzzle:6.2.1"
+        php composer.phar require "kevinrob/guzzle-cache-middleware": "1.4.1"
 
 1. After installing, require Composer's autoloader:
 
@@ -49,8 +49,8 @@ Using Guzzle
 
 To use Guzzle it must be required as a dependency:
 
-  php composer.phar require "guzzlehttp/guzzle:5.*"
-  php composer.phar require "guzzlehttp/cache-subscriber:0.1.*"
+    php composer.phar require "guzzlehttp/guzzle:6.2.1"
+    php composer.phar require "kevinrob/guzzle-cache-middleware": "1.4.1"
 
 It will then be used as the default way of fetching flags.
 
