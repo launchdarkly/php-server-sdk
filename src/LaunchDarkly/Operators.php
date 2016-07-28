@@ -1,7 +1,12 @@
 <?php
 namespace LaunchDarkly;
 
-class Operator {
+use DateTime;
+use Exception;
+
+class Operators {
+    const RFC3339 = 'Y-m-d\TH:i:s.uP';
+
     /**
      * @param $op string
      * @param $u
@@ -60,12 +65,62 @@ class Operator {
                     }
                     break;
                 case "before":
+                    $uTime = self::parseTime($u);
+                    if ($uTime != null) {
+                        $cTime = self::parseTime($c);
+                        if ($cTime != null) {
+                            return $uTime < $cTime;
+                        }
+                    }
                     break;
                 case "after":
+                    $uTime = self::parseTime($u);
+                    if ($uTime != null) {
+                        $cTime = self::parseTime($c);
+                        if ($cTime != null) {
+                            return $uTime > $cTime;
+                        }
+                    }
                     break;
             }
         } finally {
             return false;
         }
     }
+
+    /**
+     * @param $in
+     * @return null|int|float
+     */
+    public static function parseTime($in) {
+        if (is_numeric($in)) {
+            return $in;
+        }
+
+        if ($in instanceof DateTime) {
+            return self::dateTimeToUnixMillis($in);
+        }
+
+        if (is_string($in)) {
+            try {
+                $dateTime = new DateTime($in);
+                return self::dateTimeToUnixMillis($dateTime);
+            } catch (Exception $e) {
+                error_log("LaunchDarkly: Could not parse timestamp: " . $in);
+                return null;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param $dateTime DateTime
+     * @return int
+     */
+    private static function dateTimeToUnixMillis($dateTime) {
+        $timeStampSeconds = (int)$dateTime->getTimeStamp();
+        $timestampMicros = $dateTime->format('u');
+        return $timeStampSeconds * 1000 + (int)($timestampMicros / 1000);
+    }
+
 }

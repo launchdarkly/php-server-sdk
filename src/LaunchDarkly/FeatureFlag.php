@@ -326,7 +326,7 @@ class Clause {
      */
     private function matchAny($userValue) {
         foreach ($this->_values as $v) {
-            if (Operator::apply($this->_op, $userValue, $v)) {
+            if (Operators::apply($this->_op, $userValue, $v)) {
                 return true;
             }
         }

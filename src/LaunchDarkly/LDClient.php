@@ -90,7 +90,7 @@ class LDClient {
 
         try {
             $default = $this->_get_default($key, $default);
-            if (is_null($user) || strlen($user['key']) == 0) {
+            if (is_null($user) || strlen($user->getKey()) == 0) {
                 $this->_sendFlagRequestEvent($key, $user, $default, $default);
                 return $default;
             }
