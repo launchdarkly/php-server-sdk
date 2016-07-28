@@ -24,8 +24,8 @@ class LDClient {
     /**
      * Creates a new client instance that connects to LaunchDarkly.
      *
-     * @param string $apiKey  The API key for your account
-     * @param array  $options Client configuration settings
+     * @param string $apiKey The API key for your account
+     * @param array $options Client configuration settings
      *     - base_uri: Base URI of the LaunchDarkly API. Defaults to `DEFAULT_BASE_URI`
      *     - timeout: Float describing the maximum length of a request in seconds. Defaults to 3
      *     - connect_timeout: Float describing the number of seconds to wait while trying to connect to a server. Defaults to 3
@@ -35,8 +35,7 @@ class LDClient {
         $this->_apiKey = $apiKey;
         if (!isset($options['base_uri'])) {
             $this->_baseUri = self::DEFAULT_BASE_URI;
-        } 
-        else {
+        } else {
             $this->_baseUri = rtrim($options['base_uri'], '/');
         }
         if (isset($options['events'])) {
@@ -75,15 +74,15 @@ class LDClient {
         return $this->toggle($key, $user, $default);
     }
 
-   /** 
-    * Calculates the value of a feature flag for a given user.
-    *
-    * @param string  $key     The unique key for the feature flag
-    * @param LDUser  $user    The end user requesting the flag
-    * @param boolean $default The default value of the flag
-    *
-    * @return boolean Whether or not the flag should be enabled, or `default` if the flag is disabled in the LaunchDarkly control panel
-    */
+    /**
+     * Calculates the value of a feature flag for a given user.
+     *
+     * @param string $key The unique key for the feature flag
+     * @param LDUser $user The end user requesting the flag
+     * @param boolean $default The default value of the flag
+     *
+     * @return boolean Whether or not the flag should be enabled, or `default` if the flag is disabled in the LaunchDarkly control panel
+     */
     public function toggle($key, $user, $default = false) {
         if ($this->_offline) {
             return $default;
@@ -91,22 +90,36 @@ class LDClient {
 
         try {
             $default = $this->_get_default($key, $default);
-            $flag = $this->_toggle($key, $user);
+            if (is_null($user) || strlen($user['key']) == 0) {
+                $this->_sendFlagRequestEvent($key, $user, $default, $default);
+                return $default;
+            }
+            $flag = $this->_featureRequester->get($key);
+//            $flag = $this->_get_flag($key, $user);
 
             if (is_null($flag)) {
                 $this->_sendFlagRequestEvent($key, $user, $default, $default);
                 return $default;
+            } else if ($flag->isOn()) {
+                $result = $flag->evaluate($user, $this->_featureRequester);
+                if (!$this->_offline) {
+                    //TODO: send prereq events
+                }
+                if ($result != null) {
+                    $this->_sendFlagRequestEvent($key, $user, $result, $default);
+                    return $result;
+                }
             }
-            else {
-                $this->_sendFlagRequestEvent($key, $user, $flag, $default);                
-                return $flag;
+            $offVariation = $flag->getOffVariationValue();
+            if ($offVariation != null) {
+                $this->_sendFlagRequestEvent($key, $user, $offVariation, $default);
+                return $offVariation;
             }
         } catch (\Exception $e) {
             error_log("LaunchDarkly caught $e");
             try {
-                $this->_sendFlagRequestEvent($key, $user, $default, $default);            
-            }
-            catch (\Exception $e) {
+                $this->_sendFlagRequestEvent($key, $user, $default, $default);
+            } catch (\Exception $e) {
                 error_log("LaunchDarkly caught $e");
             }
             return $default;
@@ -174,7 +187,7 @@ class LDClient {
         $event['kind'] = "identify";
         $event['creationDate'] = round(microtime(1) * 1000);
         $event['key'] = $user->getKey();
-        $this->_eventProcessor->enqueue($event);        
+        $this->_eventProcessor->enqueue($event);
     }
 
     /**
@@ -194,10 +207,10 @@ class LDClient {
         $event['creationDate'] = round(microtime(1) * 1000);
         $event['key'] = $key;
         $event['default'] = $default;
-        $this->_eventProcessor->enqueue($event); 
+        $this->_eventProcessor->enqueue($event);
     }
 
-    protected function _toggle($key, $user) {
+    protected function _get_flag($key, $user) {
         try {
             $data = $this->_featureRequester->get($key);
             if ($data == null) {
@@ -229,8 +242,7 @@ class LDClient {
             $targets = array_map($makeTarget, $ts);
             if (isset($v['userTarget'])) {
                 return new Variation($v['value'], $v['weight'], $targets, $makeTarget($v['userTarget']));
-            }
-            else {
+            } else {
                 return new Variation($v['value'], $v['weight'], $targets, null);
             }
         };

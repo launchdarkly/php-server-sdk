@@ -16,7 +16,6 @@ class GuzzleFeatureRequester implements FeatureRequester
     function __construct($baseUri, $apiKey, $options)
     {
         $this->_baseUri = $baseUri;
-        error_log("uri: $baseUri");
         $stack = HandlerStack::create();
         $stack->push(new CacheMiddleware(new PublicCacheStrategy(isset($options['cache']) ? $options['cache'] : null), 'cache'));
 
@@ -37,15 +36,15 @@ class GuzzleFeatureRequester implements FeatureRequester
      * Gets feature data from a likely cached store
      *
      * @param $key string feature key
-     * @return array|null The decoded JSON feature data, or null if missing
+     * @return FeatureFlag|null The decoded FeatureFlag, or null if missing
      */
     public function get($key)
     {
         try {
-            $uri = $this->_baseUri . "/api/eval/features/$key";
+            $uri = $this->_baseUri . "/sdk/latest-flags/" . $key;
             $response = $this->_client->get($uri, $this->_defaults);
             $body = $response->getBody();
-            return json_decode($body, true);
+            return FeatureFlag::decode(json_decode($body, true));
         } catch (BadResponseException $e) {
             $code = $e->getResponse()->getStatusCode();
             error_log("GuzzleFeatureRetriever::get received an unexpected HTTP status code $code");
