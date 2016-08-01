@@ -6,12 +6,18 @@ use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\HandlerStack;
 use Kevinrob\GuzzleCache\CacheMiddleware;
 use Kevinrob\GuzzleCache\Strategy\PublicCacheStrategy;
+use Psr\Log\LoggerInterface;
 
 class GuzzleFeatureRequester implements FeatureRequester
 {
+    /** @var Client  */
     private $_client;
+    /** @var string */
     private $_baseUri;
+    /** @var array  */
     private $_defaults;
+    /** @var  LoggerInterface */
+    private $_logger;
 
     function __construct($baseUri, $apiKey, $options)
     {
@@ -28,6 +34,7 @@ class GuzzleFeatureRequester implements FeatureRequester
             'timeout' => $options['timeout'],
             'connect_timeout' => $options['connect_timeout']
         );
+        $this->_logger = $options['logger'];
         $this->_client = new Client(['handler' => $stack, 'debug' => false]);
     }
 
@@ -47,7 +54,7 @@ class GuzzleFeatureRequester implements FeatureRequester
             return FeatureFlag::decode(json_decode($body, true));
         } catch (BadResponseException $e) {
             $code = $e->getResponse()->getStatusCode();
-            error_log("GuzzleFeatureRetriever::get received an unexpected HTTP status code $code");
+            $this->_logger->error("GuzzleFeatureRetriever::get received an unexpected HTTP status code $code");
             return null;
         }
     }

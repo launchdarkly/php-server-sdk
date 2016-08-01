@@ -180,6 +180,13 @@ class FeatureFlag {
     public function getKey() {
         return $this->_key;
     }
+
+    /**
+     * @return boolean
+     */
+    public function isDeleted() {
+        return $this->_deleted;
+    }
 }
 
 class EvalResult {

@@ -46,7 +46,6 @@ class VariationOrRollout {
      */
     public function variationIndexForUser($user, $_key, $_salt) {
         if ($this->_variation !== null) {
-            error_log("Returning: $this->_variation");
             return $this->_variation;
         } else if ($this->_rollout !== null) {
             $bucketBy = $this->_rollout->getBucketBy() === null ? "key" : $this->_rollout->getBucketBy();
@@ -59,7 +58,7 @@ class VariationOrRollout {
                 }
             }
         }
-        error_log("both fallthrough and variation are null!!");
+        //TODO: throw exception?
         return null;
     }
 

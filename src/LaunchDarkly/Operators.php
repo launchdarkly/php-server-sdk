@@ -14,17 +14,13 @@ class Operators {
      * @return bool
      */
     public static function apply($op, $u, $c) {
-        error_log("apply with op: $op u: $u c: $c");
         try {
             if ($u === null || $c === null) {
-                error_log("one or both are null");
                 return false;
             }
             switch ($op) {
                 case "in":
-                    error_log("in with u: $u and c: $c");
                     if ($u === $c) {
-                        error_log("returning true from in op");
                         return true;
                     }
                     if (is_numeric($u) && is_numeric($c)) {
@@ -43,7 +39,6 @@ class Operators {
                     break;
                 case "matches":
                     if (is_string($u) && is_string($c)) {
-                    error_log("u: $u c: $c");
                         //PHP can do subpatterns, but everything needs to be wrapped in an outer ():
                         return preg_match("($c)", $u) === 1;
                     }
@@ -116,7 +111,6 @@ class Operators {
                 $dateTime = new DateTime($in);
                 return Util::dateTimeToUnixMillis($dateTime);
             } catch (Exception $e) {
-                error_log("LaunchDarkly: Could not parse timestamp: " . $in);
                 return null;
             }
         }

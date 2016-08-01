@@ -1,24 +1,32 @@
 <?php
 namespace LaunchDarkly;
 
-use DateTime;
-use DateTimeZone;
 use Exception;
+use Monolog\Handler\ErrorLogHandler;
+use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 
 /**
  * A client for the LaunchDarkly API.
  */
 class LDClient {
     const DEFAULT_BASE_URI = 'https://app.launchdarkly.com';
-    const VERSION = '1.0.0';
+    const VERSION = '2.0.0';
 
+    /** @var string */
     protected $_apiKey;
+    /** @var string */
     protected $_baseUri;
-    protected $_client;
+    /** @var EventProcessor */
     protected $_eventProcessor;
-    protected $_offline;
-    protected $_events = true;
+    /** @var  bool */
+    protected $_offline = false;
+    /** @var bool */
+    protected $_send_events = true;
+    /** @var array|mixed */
     protected $_defaults = array();
+    /** @var mixed|LoggerInterface */
+    protected $_logger;
 
     /** @var  FeatureRequester */
     protected $_featureRequester;
@@ -40,9 +48,14 @@ class LDClient {
         } else {
             $this->_baseUri = rtrim($options['base_uri'], '/');
         }
-        if (isset($options['events'])) {
-            $this->_events = $options['events'];
+        if (isset($options['send_events'])) {
+            $this->_send_events = $options['send_events'];
         }
+        if (isset($options['offline']) && $options['offline'] === true) {
+            $this->_offline = true;
+            $this->_send_events = false;
+        }
+
         if (isset($options['defaults'])) {
             $this->_defaults = $options['defaults'];
         }
@@ -57,6 +70,12 @@ class LDClient {
         if (!isset($options['capacity'])) {
             $options['capacity'] = 1000;
         }
+
+        if (!isset($options['logger'])) {
+            $logger = new Logger("LaunchDarkly", [new ErrorLogHandler()]);
+            $options['logger'] = $logger;
+        }
+        $this->_logger = $options['logger'];
 
         $this->_eventProcessor = new EventProcessor($apiKey, $options);
 
@@ -86,28 +105,27 @@ class LDClient {
      * @return mixed Whether or not the flag should be enabled, or `default`
      */
     public function toggle($key, $user, $default = false) {
+        $default = $this->_get_default($key, $default);
+
         if ($this->_offline) {
             return $default;
         }
 
         try {
-            $default = $this->_get_default($key, $default);
-            if (is_null($user) || strlen($user->getKey()) == 0) {
+            if (is_null($user) || strlen($user->getKey()) === 0) {
                 $this->_sendFlagRequestEvent($key, $user, $default, $default);
+                $this->_logger->warn("Toggle called with null user or null/empty user key! Returning default value");
                 return $default;
             }
             $flag = $this->_featureRequester->get($key);
-//            $flag = $this->_get_flag($key, $user);
 
             if (is_null($flag)) {
                 $this->_sendFlagRequestEvent($key, $user, $default, $default);
                 return $default;
             } else if ($flag->isOn()) {
-                error_log("got a flag and it's on");
                 $result = $flag->evaluate($user, $this->_featureRequester);
-                if (!$this->isOffline() && $this->_events) {
+                if (!$this->isOffline() && $this->_send_events) {
                     foreach ($result->getPrerequisiteEvents() as $e) {
-                        error_log("enqueueing prereq event...");
                         $this->_eventProcessor->enqueue($e);
                     }
                 }
@@ -122,35 +140,18 @@ class LDClient {
                 return $offVariation;
             }
         } catch (\Exception $e) {
-            error_log("LaunchDarkly caught $e");
+            $this->_logger->error("Caught $e");
         }
         try {
             $this->_sendFlagRequestEvent($key, $user, $default, $default);
         } catch (\Exception $e) {
-            error_log("LaunchDarkly caught $e");
+            $this->_logger->error("Caught $e");
         }
         return $default;
     }
 
     /**
-     * Puts the LaunchDarkly client in offline mode.
-     * In offline mode, all calls to `toggle` will return the default value, and `track` will be a no-op.
-     *
-     */
-    public function setOffline() {
-        $this->_offline = true;
-    }
-
-    /**
-     * Puts the LaunchDarkly client in online mode.
-     *
-     */
-    public function setOnline() {
-        $this->_offline = false;
-    }
-
-    /**
-     * Returns whether the LaunchDarlkly client is in offline mode.
+     * Returns whether the LaunchDarkly client is in offline mode.
      *
      */
     public function isOffline() {
@@ -168,11 +169,14 @@ class LDClient {
         if ($this->isOffline()) {
             return;
         }
+        if (is_null($user) || strlen($user->getKey()) === 0) {
+            $this->_logger->warn("Track called with null user or null/empty user key!");
+        }
 
         $event = array();
         $event['user'] = $user->toJSON();
         $event['kind'] = "custom";
-        $event['creationDate'] = round(microtime(1) * 1000);
+        $event['creationDate'] = Util::currentTimeUnixMillis();
         $event['key'] = $eventName;
         if (isset($data)) {
             $event['data'] = $data;
@@ -187,11 +191,14 @@ class LDClient {
         if ($this->isOffline()) {
             return;
         }
+        if (is_null($user) || strlen($user->getKey()) === 0) {
+            $this->_logger->warn("Track called with null user or null/empty user key!");
+        }
 
         $event = array();
         $event['user'] = $user->toJSON();
         $event['kind'] = "identify";
-        $event['creationDate'] = round(microtime(1) * 1000);
+        $event['creationDate'] = Util::currentTimeUnixMillis();
         $event['key'] = $user->getKey();
         $this->_eventProcessor->enqueue($event);
     }
@@ -205,24 +212,10 @@ class LDClient {
      * @param string | null $prereqOf
      */
     protected function _sendFlagRequestEvent($key, $user, $value, $default, $version = null, $prereqOf = null) {
-        if ($this->isOffline() || !$this->_events) {
+        if ($this->isOffline() || !$this->_send_events) {
             return;
         }
         $this->_eventProcessor->enqueue(Util::newFeatureRequestEvent($key, $user, $value, $default, $version, $prereqOf));
-    }
-
-    protected function _get_flag($key, $user) {
-        try {
-            $data = $this->_featureRequester->get($key);
-            if ($data == null) {
-                return null;
-            }
-            return self::_decode($data, $user);
-        } catch (Exception $e) {
-            $msg = $e->getMessage();
-            error_log("LDClient::_toggle received error $msg, using default");
-            return null;
-        }
     }
 
     protected function _get_default($key, $default) {

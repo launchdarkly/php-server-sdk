@@ -33,11 +33,9 @@ class Rule extends VariationOrRollout {
     public function matchesUser($user) {
         foreach ($this->_clauses as $clause) {
             if (!$clause->matchesUser($user)) {
-                error_log("false from rule.matchesuser with attr: " . $clause->getAttribute());
                 return false;
             }
         }
-        error_log("true from rule.matchesuser");
         return true;
     }
 

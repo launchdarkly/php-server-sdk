@@ -28,11 +28,9 @@ class Clause {
     public function matchesUser($user) {
         $userValue = $user->getValueForEvaluation($this->_attribute);
         if ($userValue === null) {
-            error_log("null user value");
             return false;
         }
         if (is_array($userValue)) {
-            error_log("uservalue is array");
             foreach ($userValue as $element) {
                 if ($this->matchAny($element)) {
                     return $this->_maybeNegate(true);
@@ -40,7 +38,6 @@ class Clause {
             }
             return $this->_maybeNegate(false);
         } else {
-            error_log("else...");
             return $this->_maybeNegate($this->matchAny($userValue));
         }
     }
@@ -80,9 +77,7 @@ class Clause {
     private function matchAny($userValue) {
         foreach ($this->_values as $v) {
             $result = Operators::apply($this->_op, $userValue, $v);
-            error_log("clause.matchany operator result for v: $v $result");
-            if ($result) {
-                error_log("true for $userValue");
+            if ($result === true) {
                 return true;
             }
         }
