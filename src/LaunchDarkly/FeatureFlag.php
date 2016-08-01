@@ -165,6 +165,13 @@ class FeatureFlag {
         }
         return $this->_variations[$this->_offVariation];
     }
+
+    /**
+     * @return int
+     */
+    public function getVersion() {
+        return $this->_version;
+    }
 }
 
 class WeightedVariation {

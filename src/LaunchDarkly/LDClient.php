@@ -1,6 +1,8 @@
 <?php
 namespace LaunchDarkly;
 
+use DateTime;
+use DateTimeZone;
 use Exception;
 
 /**
@@ -108,13 +110,13 @@ class LDClient {
                 }
                 if ($result != null) {
 //                    error_log("result: $result");
-                    $this->_sendFlagRequestEvent($key, $user, $result, $default);
+                    $this->_sendFlagRequestEvent($key, $user, $result, $default, $flag->getVersion());
                     return $result;
                 }
             }
             $offVariation = $flag->getOffVariationValue();
             if ($offVariation != null) {
-                $this->_sendFlagRequestEvent($key, $user, $offVariation, $default);
+                $this->_sendFlagRequestEvent($key, $user, $offVariation, $default, $flag->getVersion());
                 return $offVariation;
             }
         } catch (\Exception $e) {
@@ -196,8 +198,11 @@ class LDClient {
      * @param $key string
      * @param $user LDUser
      * @param $value mixed
+     * @param $default
+     * @param $version int | null
+     * @param string | null $prereqOf
      */
-    protected function _sendFlagRequestEvent($key, $user, $value, $default) {
+    protected function _sendFlagRequestEvent($key, $user, $value, $default, $version = null, $prereqOf = null) {
         if ($this->isOffline() || !$this->_events) {
             return;
         }
@@ -206,9 +211,11 @@ class LDClient {
         $event['user'] = $user->toJSON();
         $event['value'] = $value;
         $event['kind'] = "feature";
-        $event['creationDate'] = round(microtime(1) * 1000);
+        $event['creationDate'] = Util::dateTimeToUnixMillis(new DateTime('now', new DateTimeZone("UTC")));
         $event['key'] = $key;
         $event['default'] = $default;
+        $event['version'] = $version;
+        $event['prereqOf'] = $prereqOf;
         $this->_eventProcessor->enqueue($event);
     }
 

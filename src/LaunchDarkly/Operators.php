@@ -108,13 +108,13 @@ class Operators {
         }
 
         if ($in instanceof DateTime) {
-            return self::dateTimeToUnixMillis($in);
+            return Util::dateTimeToUnixMillis($in);
         }
 
         if (is_string($in)) {
             try {
                 $dateTime = new DateTime($in);
-                return self::dateTimeToUnixMillis($dateTime);
+                return Util::dateTimeToUnixMillis($dateTime);
             } catch (Exception $e) {
                 error_log("LaunchDarkly: Could not parse timestamp: " . $in);
                 return null;
@@ -122,15 +122,4 @@ class Operators {
         }
         return null;
     }
-
-    /**
-     * @param $dateTime DateTime
-     * @return int
-     */
-    private static function dateTimeToUnixMillis($dateTime) {
-        $timeStampSeconds = (int)$dateTime->getTimeStamp();
-        $timestampMicros = $dateTime->format('u');
-        return $timeStampSeconds * 1000 + (int)($timestampMicros / 1000);
-    }
-
 }
