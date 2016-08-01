@@ -96,7 +96,7 @@ class FeatureFlag {
                     } else if ($prereqFeatureFlag->isOn()) {
                         $prereqEvalResult = $prereqFeatureFlag->evaluate($user, $featureRequester);
                         $variation = $prereqFeatureFlag->getVariation($prereq->getVariation());
-                        if ($prereqEvalResult == null || $variation == null || $prereqEvalResult != $variation) {
+                        if ($prereqEvalResult === null || $variation === null || $prereqEvalResult !== $variation) {
                             $prereqOk = false;
                         }
                     } else {
@@ -111,6 +111,7 @@ class FeatureFlag {
         if ($prereqOk) {
             return $this->getVariation($this->evaluateIndex($user));
         }
+        return null;
     }
 
     /**
@@ -122,7 +123,7 @@ class FeatureFlag {
         if ($this->_targets != null) {
             foreach ($this->_targets as $target) {
                 foreach ($target->getValues() as $value) {
-                    if ($value == $user->getKey()) {
+                    if ($value === $user->getKey()) {
                         return $target->getVariation();
                     }
                 }
@@ -138,7 +139,6 @@ class FeatureFlag {
         }
         // Walk through the fallthrough and see if it matches
         return $this->_fallthrough->variationIndexForUser($user, $this->_key, $this->_salt);
-
     }
 
     private function getVariation($index) {
@@ -157,7 +157,7 @@ class FeatureFlag {
     }
 
     public function getOffVariationValue() {
-        if ($this->_offVariation == null) {
+        if ($this->_offVariation === null) {
             return null;
         }
         if ($this->_offVariation >= count($this->_variations)) {
@@ -184,7 +184,7 @@ class VariationOrRollout {
         return function ($v) {
             return new VariationOrRollout(
                 isset($v['variation']) ? $v['variation'] : null,
-                isset($v['rollout']) ? $v['rollout'] : null);
+                isset($v['rollout']) ? call_user_func(Rollout::getDecoder(), $v['rollout']) : null);
         };
     }
 
@@ -209,10 +209,11 @@ class VariationOrRollout {
      * @return int|null
      */
     public function variationIndexForUser($user, $_key, $_salt) {
-        if ($this->_variation != null) {
+        if ($this->_variation !== null) {
+            error_log("Returning: $this->_variation");
             return $this->_variation;
-        } else if ($this->_rollout != null) {
-            $bucketBy = $this->_rollout->getBucketBy() == null ? "key" : $this->_rollout->getBucketBy();
+        } else if ($this->_rollout !== null) {
+            $bucketBy = $this->_rollout->getBucketBy() === null ? "key" : $this->_rollout->getBucketBy();
             $bucket = $this->bucketUser($user, $_key, $bucketBy, $_salt);
             $sum = 0.0;
             foreach ($this->_rollout->getVariations() as $wv) {
@@ -222,6 +223,7 @@ class VariationOrRollout {
                 }
             }
         }
+        error_log("both fallthrough and variation are null!!");
         return null;
     }
 
@@ -238,7 +240,7 @@ class VariationOrRollout {
         if ($userValue != null) {
             if (is_string($userValue)) {
                 $idHash = $userValue;
-                if ($user->getSecondary() != null) {
+                if ($user->getSecondary() !== null) {
                     $idHash = $idHash . "." . $user->getSecondary();
                 }
                 $hash = substr(sha1($_key . "." . $_salt . "." . $idHash), 0, 15);
@@ -277,18 +279,22 @@ class Clause {
      */
     public function matchesUser($user) {
         $userValue = $user->getValueForEvaluation($this->_attribute);
-        if ($userValue == null) {
+//        error_log("user value: $userValue");
+        if ($userValue === null) {
+            error_log("null user value");
             return false;
         }
         if (is_array($userValue)) {
+            error_log("uservalue is array");
             foreach ($userValue as $element) {
-                if ($this->matchAny($userValue)) {
+                if ($this->matchAny($element)) {
                     return $this->_maybeNegate(true);
                 }
             }
-            return $this->maybeNegate(false);
+            return $this->_maybeNegate(false);
         } else {
-            return $this->maybeNegate($this->matchAny($userValue));
+            error_log("else...");
+            return $this->_maybeNegate($this->matchAny($userValue));
         }
     }
 
@@ -326,7 +332,10 @@ class Clause {
      */
     private function matchAny($userValue) {
         foreach ($this->_values as $v) {
-            if (Operators::apply($this->_op, $userValue, $v)) {
+            $result = Operators::apply($this->_op, $userValue, $v);
+            error_log("clause.matchany operator result for v: $v $result");
+            if ($result) {
+                error_log("true for $userValue");
                 return true;
             }
         }
@@ -355,7 +364,7 @@ class Rule extends VariationOrRollout {
         return function ($v) {
             return new Rule(
                 isset($v['variation']) ? $v['variation'] : null,
-                isset($v['rollout']) ? $v['rollout'] : null,
+                isset($v['rollout']) ? call_user_func(Rollout::getDecoder(), $v['rollout']) : null,
                 array_map(Clause::getDecoder(), $v['clauses']));
         };
     }
@@ -367,9 +376,11 @@ class Rule extends VariationOrRollout {
     public function matchesUser($user) {
         foreach ($this->_clauses as $clause) {
             if (!$clause->matchesUser($user)) {
+                error_log("false from rule.matchesuser with attr: " . $clause->getAttribute());
                 return false;
             }
         }
+        error_log("true from rule.matchesuser");
         return true;
     }
 
@@ -490,7 +501,9 @@ class Rollout {
 
     public static function getDecoder() {
         return function ($v) {
-            return new Rollout($v['variations'], $v['bucketBy']);
+            return new Rollout(
+                array_map(WeightedVariation::getDecoder(), $v['variations']),
+                isset($v['bucketBy']) ? $v['bucketBy'] : null);
         };
     }
 

@@ -14,29 +14,38 @@ class Operators {
      * @return bool
      */
     public static function apply($op, $u, $c) {
+        error_log("apply with op: $op u: $u c: $c");
         try {
-            if ($u == null || $c == null) {
+            if ($u === null || $c === null) {
+                error_log("one or both are null");
                 return false;
             }
             switch ($op) {
                 case "in":
-                    if ($u == $c) {
+                    error_log("in with u: $u and c: $c");
+                    if ($u === $c) {
+                        error_log("returning true from in op");
                         return true;
+                    }
+                    if (is_numeric($u) && is_numeric($c)) {
+                        return $u == $c;
                     }
                     break;
                 case "endsWith":
                     if (is_string($u) && is_string($c)) {
-                        return substr_compare($u, $c, strlen($c)) === 0;
+                        return $c === "" || (($temp = strlen($u) - strlen($c)) >= 0 && strpos($u, $c, $temp) !== false);
                     }
                     break;
                 case "startsWith":
                     if (is_string($u) && is_string($c)) {
-                        return substr_compare($u, $c, -strlen($c)) === 0;
+                        return strpos($u, $c) === 0;
                     }
                     break;
                 case "matches":
                     if (is_string($u) && is_string($c)) {
-                        return preg_match($c, $u) == 1;
+                    error_log("u: $u c: $c");
+                        //PHP can do subpatterns, but everything needs to be wrapped in an outer ():
+                        return preg_match("($c)", $u) === 1;
                     }
                     break;
                 case "contains":
@@ -83,9 +92,10 @@ class Operators {
                     }
                     break;
             }
-        } finally {
-            return false;
+        } catch (Exception $e) {
+            //TODO: log warning
         }
+        return false;
     }
 
     /**

@@ -81,7 +81,7 @@ class LDClient {
      * @param LDUser $user The end user requesting the flag
      * @param boolean $default The default value of the flag
      *
-     * @return boolean Whether or not the flag should be enabled, or `default` if the flag is disabled in the LaunchDarkly control panel
+     * @return mixed Whether or not the flag should be enabled, or `default`
      */
     public function toggle($key, $user, $default = false) {
         if ($this->_offline) {
@@ -101,11 +101,13 @@ class LDClient {
                 $this->_sendFlagRequestEvent($key, $user, $default, $default);
                 return $default;
             } else if ($flag->isOn()) {
+                error_log("got a flag and it's on");
                 $result = $flag->evaluate($user, $this->_featureRequester);
                 if (!$this->_offline) {
                     //TODO: send prereq events
                 }
                 if ($result != null) {
+//                    error_log("result: $result");
                     $this->_sendFlagRequestEvent($key, $user, $result, $default);
                     return $result;
                 }
@@ -117,13 +119,13 @@ class LDClient {
             }
         } catch (\Exception $e) {
             error_log("LaunchDarkly caught $e");
-            try {
-                $this->_sendFlagRequestEvent($key, $user, $default, $default);
-            } catch (\Exception $e) {
-                error_log("LaunchDarkly caught $e");
-            }
-            return $default;
         }
+        try {
+            $this->_sendFlagRequestEvent($key, $user, $default, $default);
+        } catch (\Exception $e) {
+            error_log("LaunchDarkly caught $e");
+        }
+        return $default;
     }
 
     /**
