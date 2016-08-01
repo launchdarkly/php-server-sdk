@@ -17,7 +17,6 @@ class OperatorsTest extends \PHPUnit_Framework_TestCase {
         $this->assertTrue(Operators::apply("in", true, true));
         $this->assertFalse(Operators::apply("in", true, false));
         $this->assertFalse(Operators::apply("in", false, true));
-
     }
 
     public function testStartsWith() {
@@ -38,8 +37,6 @@ class OperatorsTest extends \PHPUnit_Framework_TestCase {
         $this->assertTrue(Operators::apply("matches", "anything", ".*"));
         $this->assertTrue(Operators::apply("matches", "darn", "(\\W|^)(baloney|darn|drat|fooey|gosh\\sdarnit|heck)(\\W|$)"));
     }
-
-
 
     public function testParseTime() {
         $this->assertEquals(0, Operators::parseTime(0));
