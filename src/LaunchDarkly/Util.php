@@ -2,7 +2,6 @@
 
 namespace LaunchDarkly;
 
-
 use DateTime;
 use DateTimeZone;
 
@@ -26,6 +25,15 @@ class Util {
     }
 
 
+    /**
+     * @param $key string
+     * @param $user LDUser
+     * @param $value
+     * @param $default
+     * @param null $version int | null
+     * @param null $prereqOf string | null
+     * @return array
+     */
     public static function newFeatureRequestEvent($key, $user, $value, $default, $version = null, $prereqOf = null) {
         $event = array();
         $event['user'] = $user->toJSON();

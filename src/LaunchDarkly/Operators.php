@@ -87,8 +87,7 @@ class Operators {
                     }
                     break;
             }
-        } catch (Exception $e) {
-            //TODO: log warning
+        } catch (Exception $ignored) {
         }
         return false;
     }

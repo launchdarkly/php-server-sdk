@@ -1,7 +1,6 @@
 <?php
 namespace LaunchDarkly;
 
-use Exception;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
@@ -224,27 +223,5 @@ class LDClient {
         } else {
             return $default;
         }
-    }
-
-    protected static function _decode($json, $user) {
-        $makeVariation = function ($v) {
-            $makeTarget = function ($t) {
-                return new TargetRule($t['attribute'], $t['op'], $t['values']);
-            };
-
-            $ts = empty($v['targets']) ? array() : $v['targets'];
-            $targets = array_map($makeTarget, $ts);
-            if (isset($v['userTarget'])) {
-                return new Variation($v['value'], $v['weight'], $targets, $makeTarget($v['userTarget']));
-            } else {
-                return new Variation($v['value'], $v['weight'], $targets, null);
-            }
-        };
-
-        $vs = empty($json['variations']) ? array() : $json['variations'];
-        $variations = array_map($makeVariation, $vs);
-        $feature = new FeatureRep($json['name'], $json['key'], $json['salt'], $json['on'], $variations);
-
-        return $feature->evaluate($user);
     }
 }

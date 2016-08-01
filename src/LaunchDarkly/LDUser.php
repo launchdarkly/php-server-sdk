@@ -33,7 +33,7 @@ class LDUser {
      * @param array|null $custom Other custom attributes that can be used to create custom rules
      */
     public function __construct($key, $secondary = null, $ip = null, $country = null, $email = null, $name = null, $avatar = null, $firstName = null, $lastName = null, $anonymous = null, $custom = array()) {
-        $this->_key = $key;
+        $this->_key = strval($key);
         $this->_secondary = $secondary;
         $this->_ip = $ip;
         $this->_country = $country;

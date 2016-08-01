@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: dan
- * Date: 8/1/16
- * Time: 1:29 PM
- */
 
 namespace LaunchDarkly;
 

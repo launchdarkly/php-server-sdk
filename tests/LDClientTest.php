@@ -53,21 +53,6 @@ class LDClientTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(1, sizeof($queue));
     }
 
-    public function testToggleEventsOff() {
-        MockFeatureRequester::$val = null;
-        $client = new LDClient("someKey", array(
-            'feature_requester_class' => '\\LaunchDarkly\Tests\\MockFeatureRequester',
-            'events' => false
-        ));
-
-        $builder = new LDUserBuilder(3);
-        $user = $builder->build();
-        $client->toggle('foo', $user, 'argdef');
-        $proc = getPrivateField($client, '_eventProcessor');
-        $queue = getPrivateField($proc, '_queue');
-        $this->assertEquals(0, sizeof($queue));
-    }
-
     public function testOnlyValidFeatureRequester() {
         $this->setExpectedException(InvalidArgumentException::class);
         new LDClient("BOGUS_API_KEY", ['feature_requester_class' => 'stdClass']);
