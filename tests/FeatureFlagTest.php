@@ -2,7 +2,6 @@
 namespace LaunchDarkly\Tests;
 
 use LaunchDarkly\FeatureFlag;
-use LaunchDarkly\LDUser;
 
 class FeatureFlagTest extends \PHPUnit_Framework_TestCase {
 
@@ -137,20 +136,9 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase {
     \"deleted\": false
   }";
 
-    protected function setUp() {
-        parent::setUp();
-    }
-
-    protected function tearDown() {
-        parent::tearDown();
-    }
-
     public function testDecode() {
         FeatureFlag::decode(\GuzzleHttp\json_decode(FeatureFlagTest::$json1, true));
         FeatureFlag::decode(\GuzzleHttp\json_decode(FeatureFlagTest::$json2, true));
-
-
     }
-
 }
 
