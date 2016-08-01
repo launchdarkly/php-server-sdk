@@ -71,12 +71,12 @@ class FeatureFlag {
     /**
      * @param $user LDUser
      * @param $featureRequester FeatureRequester
-     * @return mixed|null
+     * @return EvalResult|null
      */
     public function evaluate($user, $featureRequester) {
         $prereqEvents = array();
         $value = $this->_evaluate($user, $featureRequester, $prereqEvents);
-        return $value;
+        return new EvalResult($value, $prereqEvents);
     }
 
     /**
@@ -85,16 +85,17 @@ class FeatureFlag {
      * @param $events
      * @return mixed|null
      */
-    private function _evaluate($user, $featureRequester, $events) {
+    private function _evaluate($user, $featureRequester, &$events) {
         $prereqOk = true;
         if ($this->_prerequisites != null) {
             foreach ($this->_prerequisites as $prereq) {
                 try {
+                    $prereqEvalResult = null;
                     $prereqFeatureFlag = $featureRequester->get($prereq->getKey());
                     if ($prereqFeatureFlag == null) {
                         return null;
                     } else if ($prereqFeatureFlag->isOn()) {
-                        $prereqEvalResult = $prereqFeatureFlag->evaluate($user, $featureRequester);
+                        $prereqEvalResult = $prereqFeatureFlag->_evaluate($user, $featureRequester, $events);
                         $variation = $prereqFeatureFlag->getVariation($prereq->getVariation());
                         if ($prereqEvalResult === null || $variation === null || $prereqEvalResult !== $variation) {
                             $prereqOk = false;
@@ -102,10 +103,10 @@ class FeatureFlag {
                     } else {
                         $prereqOk = false;
                     }
+                    array_push($events, Util::newFeatureRequestEvent($prereqFeatureFlag->getKey(), $user, $prereqEvalResult, null, $prereqFeatureFlag->getVersion(), $this->_key));
                 } catch (EvaluationException $e) {
                     $prereqOk = false;
                 }
-                //TODO: Add event.
             }
         }
         if ($prereqOk) {
@@ -171,6 +172,43 @@ class FeatureFlag {
      */
     public function getVersion() {
         return $this->_version;
+    }
+
+    /**
+     * @return string
+     */
+    public function getKey() {
+        return $this->_key;
+    }
+}
+
+class EvalResult {
+    private $_value = null;
+    /** @var array */
+    private $_prerequisiteEvents = [];
+
+    /**
+     * EvalResult constructor.
+     * @param null $value
+     * @param array $prerequisiteEvents
+     */
+    public function __construct($value, array $prerequisiteEvents) {
+        $this->_value = $value;
+        $this->_prerequisiteEvents = $prerequisiteEvents;
+    }
+
+    /**
+     * @return null
+     */
+    public function getValue() {
+        return $this->_value;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPrerequisiteEvents() {
+        return $this->_prerequisiteEvents;
     }
 }
 

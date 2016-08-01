@@ -105,13 +105,15 @@ class LDClient {
             } else if ($flag->isOn()) {
                 error_log("got a flag and it's on");
                 $result = $flag->evaluate($user, $this->_featureRequester);
-                if (!$this->_offline) {
-                    //TODO: send prereq events
+                if (!$this->isOffline() && $this->_events) {
+                    foreach ($result->getPrerequisiteEvents() as $e) {
+                        error_log("enqueueing prereq event...");
+                        $this->_eventProcessor->enqueue($e);
+                    }
                 }
-                if ($result != null) {
-//                    error_log("result: $result");
-                    $this->_sendFlagRequestEvent($key, $user, $result, $default, $flag->getVersion());
-                    return $result;
+                if ($result->getValue() != null) {
+                    $this->_sendFlagRequestEvent($key, $user, $result->getValue(), $default, $flag->getVersion());
+                    return $result->getValue();
                 }
             }
             $offVariation = $flag->getOffVariationValue();
@@ -206,17 +208,7 @@ class LDClient {
         if ($this->isOffline() || !$this->_events) {
             return;
         }
-
-        $event = array();
-        $event['user'] = $user->toJSON();
-        $event['value'] = $value;
-        $event['kind'] = "feature";
-        $event['creationDate'] = Util::dateTimeToUnixMillis(new DateTime('now', new DateTimeZone("UTC")));
-        $event['key'] = $key;
-        $event['default'] = $default;
-        $event['version'] = $version;
-        $event['prereqOf'] = $prereqOf;
-        $this->_eventProcessor->enqueue($event);
+        $this->_eventProcessor->enqueue(Util::newFeatureRequestEvent($key, $user, $value, $default, $version, $prereqOf));
     }
 
     protected function _get_flag($key, $user) {
