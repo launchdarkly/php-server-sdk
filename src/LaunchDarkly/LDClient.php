@@ -36,9 +36,13 @@ class LDClient {
      * @param string $apiKey The API key for your account
      * @param array $options Client configuration settings
      *     - base_uri: Base URI of the LaunchDarkly API. Defaults to `DEFAULT_BASE_URI`
+     *     - events_uri: Base URI of the LaunchDarkly API. Defaults to `DEFAULT_BASE_URI`
      *     - timeout: Float describing the maximum length of a request in seconds. Defaults to 3
      *     - connect_timeout: Float describing the number of seconds to wait while trying to connect to a server. Defaults to 3
      *     - cache: An optional Kevinrob\GuzzleCache\Strategy\CacheStorageInterface. Defaults to an in-memory cache.
+     *     - send_events: An optional bool that can disable the sending of events to LaunchDarkly. Defaults to false.
+     *     - logger: An optional Psr\Log\LoggerInterface. Defaults to a Monolog\Logger sending all messages to the php error_log.
+     *     - offline: An optional boolean which will disable all network calls and always return the default value. Defaults to false.
      */
     public function __construct($apiKey, $options = array()) {
         $this->_apiKey = $apiKey;
@@ -90,10 +94,6 @@ class LDClient {
         $this->_featureRequester = new $featureRequesterClass($this->_baseUri, $apiKey, $options);
     }
 
-    public function getFlag($key, $user, $default = false) {
-        return $this->toggle($key, $user, $default);
-    }
-
     /**
      * Calculates the value of a feature flag for a given user.
      *
@@ -101,9 +101,9 @@ class LDClient {
      * @param LDUser $user The end user requesting the flag
      * @param boolean $default The default value of the flag
      *
-     * @return mixed Whether or not the flag should be enabled, or `default`
+     * @return mixed The result of the Feature Flag evaluation, or $default if any errors occurred.
      */
-    public function toggle($key, $user, $default = false) {
+    public function variation($key, $user, $default = false) {
         $default = $this->_get_default($key, $default);
 
         if ($this->_offline) {
@@ -147,6 +147,18 @@ class LDClient {
             $this->_logger->error("Caught $e");
         }
         return $default;
+    }
+
+
+    /** @deprecated Use variation() instead.
+     * @param $key
+     * @param $user
+     * @param bool $default
+     * @return mixed
+     */
+    public function toggle($key, $user, $default = false) {
+        $this->_logger->warning("Deprecated function: toggle() called. Use variation() instead.");
+        return $this->variation($key, $user, $default);
     }
 
     /**

@@ -20,7 +20,9 @@ class FeatureFlag {
     protected $_rules = array();
     /** @var VariationOrRollout */
     protected $_fallthrough = null;
+    /** @var int | null  */
     protected $_offVariation = null;
+    /** @var array  */
     protected $_variations = array();
     /** @var bool */
     protected $_deleted = false;

@@ -6,9 +6,9 @@ namespace LaunchDarkly;
 class VariationOrRollout {
     private static $LONG_SCALE = 0xFFFFFFFFFFFFFFF;
 
-    /** @var int */
+    /** @var int | null */
     private $_variation = null;
-    /** @var Rollout */
+    /** @var Rollout | null */
     private $_rollout = null;
 
     protected function __construct($variation, $rollout) {
@@ -25,14 +25,14 @@ class VariationOrRollout {
     }
 
     /**
-     * @return int
+     * @return int | null
      */
     public function getVariation() {
         return $this->_variation;
     }
 
     /**
-     * @return Rollout
+     * @return Rollout | null
      */
     public function getRollout() {
         return $this->_rollout;
@@ -58,7 +58,6 @@ class VariationOrRollout {
                 }
             }
         }
-        //TODO: throw exception?
         return null;
     }
 

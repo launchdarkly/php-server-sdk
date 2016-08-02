@@ -3,9 +3,13 @@
 namespace LaunchDarkly;
 
 class Clause {
+    /** @var string */
     private $_attribute = null;
+    /** @var string */
     private $_op = null;
+    /** @var array  */
     private $_values = array();
+    /** @var bool  */
     private $_negate = false;
 
     private function __construct($attribute, $op, array $values, $negate) {
@@ -42,15 +46,16 @@ class Clause {
         }
     }
 
+
     /**
-     * @return null
+     * @return string
      */
     public function getAttribute() {
         return $this->_attribute;
     }
 
     /**
-     * @return null
+     * @return string
      */
     public function getOp() {
         return $this->_op;
