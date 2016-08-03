@@ -22,7 +22,7 @@ class LDClientTest extends \PHPUnit_Framework_TestCase {
 
         $builder = new LDUserBuilder(3);
         $user = $builder->build();
-        $this->assertEquals('argdef', $client->toggle('foo', $user, 'argdef'));
+        $this->assertEquals('argdef', $client->variation('foo', $user, 'argdef'));
     }
 
     public function testToggleFromArray() {
@@ -35,7 +35,7 @@ class LDClientTest extends \PHPUnit_Framework_TestCase {
 
         $builder = new LDUserBuilder(3);
         $user = $builder->build();
-        $this->assertEquals('fromarray', $client->toggle('foo', $user, 'argdef'));
+        $this->assertEquals('fromarray', $client->variation('foo', $user, 'argdef'));
     }
 
     public function testToggleEvent() {
@@ -47,25 +47,10 @@ class LDClientTest extends \PHPUnit_Framework_TestCase {
 
         $builder = new LDUserBuilder(3);
         $user = $builder->build();
-        $client->toggle('foo', $user, 'argdef');
+        $client->variation('foo', $user, 'argdef');
         $proc = getPrivateField($client, '_eventProcessor');
         $queue = getPrivateField($proc, '_queue');
         $this->assertEquals(1, sizeof($queue));
-    }
-
-    public function testToggleEventsOff() {
-        MockFeatureRequester::$val = null;
-        $client = new LDClient("someKey", array(
-            'feature_requester_class' => '\\LaunchDarkly\Tests\\MockFeatureRequester',
-            'events' => false
-        ));
-
-        $builder = new LDUserBuilder(3);
-        $user = $builder->build();
-        $client->toggle('foo', $user, 'argdef');
-        $proc = getPrivateField($client, '_eventProcessor');
-        $queue = getPrivateField($proc, '_queue');
-        $this->assertEquals(0, sizeof($queue));
     }
 
     public function testOnlyValidFeatureRequester() {

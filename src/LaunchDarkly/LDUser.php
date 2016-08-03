@@ -20,19 +20,19 @@ class LDUser {
     protected $_custom = array();
 
     /**
-     * @param string       $key       Unique key for the user. For authenticated users, this may be a username or e-mail address. For anonymous users, this could be an IP address or session ID.
-     * @param string|null  $secondary An optional secondary identifier
-     * @param string|null  $ip        The user's IP address (optional)
-     * @param string|null  $country   The user's country, as an ISO 3166-1 alpha-2 code (e.g. 'US') (optional)
-     * @param string|null  $email     The user's e-mail address (optional)
-     * @param string|null  $name      The user's full name (optional)
-     * @param string|null  $avatar    A URL pointing to the user's avatar image (optional)
-     * @param string|null  $firstName The user's first name (optional)
-     * @param string|null  $lastName  The user's last name (optional)
+     * @param string $key Unique key for the user. For authenticated users, this may be a username or e-mail address. For anonymous users, this could be an IP address or session ID.
+     * @param string|null $secondary An optional secondary identifier
+     * @param string|null $ip The user's IP address (optional)
+     * @param string|null $country The user's country, as an ISO 3166-1 alpha-2 code (e.g. 'US') (optional)
+     * @param string|null $email The user's e-mail address (optional)
+     * @param string|null $name The user's full name (optional)
+     * @param string|null $avatar A URL pointing to the user's avatar image (optional)
+     * @param string|null $firstName The user's first name (optional)
+     * @param string|null $lastName The user's last name (optional)
      * @param boolean|null $anonymous Whether this is an anonymous user
-     * @param array|null   $custom    Other custom attributes that can be used to create custom rules
+     * @param array|null $custom Other custom attributes that can be used to create custom rules
      */
-    public function __construct($key, $secondary = null, $ip = null, $country = null, $email = null, $name = null, $avatar = null, $firstName = null, $lastName= null, $anonymous = null, $custom = array()) {
+    public function __construct($key, $secondary = null, $ip = null, $country = null, $email = null, $name = null, $avatar = null, $firstName = null, $lastName = null, $anonymous = null, $custom = array()) {
         $this->_key = strval($key);
         $this->_secondary = $secondary;
         $this->_ip = $ip;
@@ -44,6 +44,40 @@ class LDUser {
         $this->_lastName = $lastName;
         $this->_anonymous = $anonymous;
         $this->_custom = $custom;
+    }
+
+    public function getValueForEvaluation($attr) {
+        switch ($attr) {
+            case "key":
+                return $this->getKey();
+            case "secondary": //not available for evaluation.
+                return null;
+            case "ip":
+                return $this->getIP();
+            case "country":
+                return $this->getCountry();
+            case "email":
+                return $this->getEmail();
+            case "name":
+                return $this->getName();
+            case "avatar":
+                return $this->getAvatar();
+            case "firstName":
+                return $this->getFirstName();
+            case "lastName":
+                return $this->getLastName();
+            case "anonymous":
+                return $this->getAnonymous();
+            default:
+                $custom = $this->getCustom();
+                if (is_null($custom)) {
+                    return null;
+                }
+                if (!array_key_exists($attr, $custom)) {
+                    return null;
+                }
+                return $custom[$attr];
+        }
     }
 
     public function getCountry() {
@@ -122,7 +156,7 @@ class LDUser {
         }
         if (isset($this->_anonymous)) {
             $json['anonymous'] = $this->_anonymous;
-        }        
+        }
         return $json;
     }
 }

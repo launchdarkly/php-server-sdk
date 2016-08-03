@@ -1,22 +1,31 @@
 <?php
 namespace LaunchDarkly;
 
-use Exception;
+use Monolog\Handler\ErrorLogHandler;
+use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 
 /**
  * A client for the LaunchDarkly API.
  */
 class LDClient {
     const DEFAULT_BASE_URI = 'https://app.launchdarkly.com';
-    const VERSION = '1.0.0';
+    const VERSION = '2.0.0';
 
+    /** @var string */
     protected $_apiKey;
+    /** @var string */
     protected $_baseUri;
-    protected $_client;
+    /** @var EventProcessor */
     protected $_eventProcessor;
-    protected $_offline;
-    protected $_events = true;
+    /** @var  bool */
+    protected $_offline = false;
+    /** @var bool */
+    protected $_send_events = true;
+    /** @var array|mixed */
     protected $_defaults = array();
+    /** @var mixed|LoggerInterface */
+    protected $_logger;
 
     /** @var  FeatureRequester */
     protected $_featureRequester;
@@ -24,24 +33,32 @@ class LDClient {
     /**
      * Creates a new client instance that connects to LaunchDarkly.
      *
-     * @param string $apiKey  The API key for your account
-     * @param array  $options Client configuration settings
+     * @param string $apiKey The API key for your account
+     * @param array $options Client configuration settings
      *     - base_uri: Base URI of the LaunchDarkly API. Defaults to `DEFAULT_BASE_URI`
+     *     - events_uri: Base URI of the LaunchDarkly API. Defaults to `DEFAULT_BASE_URI`
      *     - timeout: Float describing the maximum length of a request in seconds. Defaults to 3
      *     - connect_timeout: Float describing the number of seconds to wait while trying to connect to a server. Defaults to 3
      *     - cache: An optional Kevinrob\GuzzleCache\Strategy\CacheStorageInterface. Defaults to an in-memory cache.
+     *     - send_events: An optional bool that can disable the sending of events to LaunchDarkly. Defaults to false.
+     *     - logger: An optional Psr\Log\LoggerInterface. Defaults to a Monolog\Logger sending all messages to the php error_log.
+     *     - offline: An optional boolean which will disable all network calls and always return the default value. Defaults to false.
      */
     public function __construct($apiKey, $options = array()) {
         $this->_apiKey = $apiKey;
         if (!isset($options['base_uri'])) {
             $this->_baseUri = self::DEFAULT_BASE_URI;
-        } 
-        else {
+        } else {
             $this->_baseUri = rtrim($options['base_uri'], '/');
         }
-        if (isset($options['events'])) {
-            $this->_events = $options['events'];
+        if (isset($options['send_events'])) {
+            $this->_send_events = $options['send_events'];
         }
+        if (isset($options['offline']) && $options['offline'] === true) {
+            $this->_offline = true;
+            $this->_send_events = false;
+        }
+
         if (isset($options['defaults'])) {
             $this->_defaults = $options['defaults'];
         }
@@ -57,6 +74,12 @@ class LDClient {
             $options['capacity'] = 1000;
         }
 
+        if (!isset($options['logger'])) {
+            $logger = new Logger("LaunchDarkly", [new ErrorLogHandler()]);
+            $options['logger'] = $logger;
+        }
+        $this->_logger = $options['logger'];
+
         $this->_eventProcessor = new EventProcessor($apiKey, $options);
 
         if (isset($options['feature_requester_class'])) {
@@ -71,67 +94,75 @@ class LDClient {
         $this->_featureRequester = new $featureRequesterClass($this->_baseUri, $apiKey, $options);
     }
 
-    public function getFlag($key, $user, $default = false) {
-        return $this->toggle($key, $user, $default);
-    }
+    /**
+     * Calculates the value of a feature flag for a given user.
+     *
+     * @param string $key The unique key for the feature flag
+     * @param LDUser $user The end user requesting the flag
+     * @param boolean $default The default value of the flag
+     *
+     * @return mixed The result of the Feature Flag evaluation, or $default if any errors occurred.
+     */
+    public function variation($key, $user, $default = false) {
+        $default = $this->_get_default($key, $default);
 
-   /** 
-    * Calculates the value of a feature flag for a given user.
-    *
-    * @param string  $key     The unique key for the feature flag
-    * @param LDUser  $user    The end user requesting the flag
-    * @param boolean $default The default value of the flag
-    *
-    * @return boolean Whether or not the flag should be enabled, or `default` if the flag is disabled in the LaunchDarkly control panel
-    */
-    public function toggle($key, $user, $default = false) {
         if ($this->_offline) {
             return $default;
         }
 
         try {
-            $default = $this->_get_default($key, $default);
-            $flag = $this->_toggle($key, $user);
+            if (is_null($user) || strlen($user->getKey()) === 0) {
+                $this->_sendFlagRequestEvent($key, $user, $default, $default);
+                $this->_logger->warn("Toggle called with null user or null/empty user key! Returning default value");
+                return $default;
+            }
+            $flag = $this->_featureRequester->get($key);
 
             if (is_null($flag)) {
                 $this->_sendFlagRequestEvent($key, $user, $default, $default);
                 return $default;
+            } else if ($flag->isOn()) {
+                $result = $flag->evaluate($user, $this->_featureRequester);
+                if (!$this->isOffline() && $this->_send_events) {
+                    foreach ($result->getPrerequisiteEvents() as $e) {
+                        $this->_eventProcessor->enqueue($e);
+                    }
+                }
+                if ($result->getValue() != null) {
+                    $this->_sendFlagRequestEvent($key, $user, $result->getValue(), $default, $flag->getVersion());
+                    return $result->getValue();
+                }
             }
-            else {
-                $this->_sendFlagRequestEvent($key, $user, $flag, $default);                
-                return $flag;
+            $offVariation = $flag->getOffVariationValue();
+            if ($offVariation != null) {
+                $this->_sendFlagRequestEvent($key, $user, $offVariation, $default, $flag->getVersion());
+                return $offVariation;
             }
         } catch (\Exception $e) {
-            error_log("LaunchDarkly caught $e");
-            try {
-                $this->_sendFlagRequestEvent($key, $user, $default, $default);            
-            }
-            catch (\Exception $e) {
-                error_log("LaunchDarkly caught $e");
-            }
-            return $default;
+            $this->_logger->error("Caught $e");
         }
+        try {
+            $this->_sendFlagRequestEvent($key, $user, $default, $default);
+        } catch (\Exception $e) {
+            $this->_logger->error("Caught $e");
+        }
+        return $default;
     }
 
-    /**
-     * Puts the LaunchDarkly client in offline mode.
-     * In offline mode, all calls to `toggle` will return the default value, and `track` will be a no-op.
-     *
+
+    /** @deprecated Use variation() instead.
+     * @param $key
+     * @param $user
+     * @param bool $default
+     * @return mixed
      */
-    public function setOffline() {
-        $this->_offline = true;
+    public function toggle($key, $user, $default = false) {
+        $this->_logger->warning("Deprecated function: toggle() called. Use variation() instead.");
+        return $this->variation($key, $user, $default);
     }
 
     /**
-     * Puts the LaunchDarkly client in online mode.
-     *
-     */
-    public function setOnline() {
-        $this->_offline = false;
-    }
-
-    /**
-     * Returns whether the LaunchDarlkly client is in offline mode.
+     * Returns whether the LaunchDarkly client is in offline mode.
      *
      */
     public function isOffline() {
@@ -149,11 +180,14 @@ class LDClient {
         if ($this->isOffline()) {
             return;
         }
+        if (is_null($user) || strlen($user->getKey()) === 0) {
+            $this->_logger->warn("Track called with null user or null/empty user key!");
+        }
 
         $event = array();
         $event['user'] = $user->toJSON();
         $event['kind'] = "custom";
-        $event['creationDate'] = round(microtime(1) * 1000);
+        $event['creationDate'] = Util::currentTimeUnixMillis();
         $event['key'] = $eventName;
         if (isset($data)) {
             $event['data'] = $data;
@@ -168,47 +202,31 @@ class LDClient {
         if ($this->isOffline()) {
             return;
         }
+        if (is_null($user) || strlen($user->getKey()) === 0) {
+            $this->_logger->warn("Track called with null user or null/empty user key!");
+        }
 
         $event = array();
         $event['user'] = $user->toJSON();
         $event['kind'] = "identify";
-        $event['creationDate'] = round(microtime(1) * 1000);
+        $event['creationDate'] = Util::currentTimeUnixMillis();
         $event['key'] = $user->getKey();
-        $this->_eventProcessor->enqueue($event);        
+        $this->_eventProcessor->enqueue($event);
     }
 
     /**
      * @param $key string
      * @param $user LDUser
      * @param $value mixed
+     * @param $default
+     * @param $version int | null
+     * @param string | null $prereqOf
      */
-    protected function _sendFlagRequestEvent($key, $user, $value, $default) {
-        if ($this->isOffline() || !$this->_events) {
+    protected function _sendFlagRequestEvent($key, $user, $value, $default, $version = null, $prereqOf = null) {
+        if ($this->isOffline() || !$this->_send_events) {
             return;
         }
-
-        $event = array();
-        $event['user'] = $user->toJSON();
-        $event['value'] = $value;
-        $event['kind'] = "feature";
-        $event['creationDate'] = round(microtime(1) * 1000);
-        $event['key'] = $key;
-        $event['default'] = $default;
-        $this->_eventProcessor->enqueue($event); 
-    }
-
-    protected function _toggle($key, $user) {
-        try {
-            $data = $this->_featureRequester->get($key);
-            if ($data == null) {
-                return null;
-            }
-            return self::_decode($data, $user);
-        } catch (Exception $e) {
-            $msg = $e->getMessage();
-            error_log("LDClient::_toggle received error $msg, using default");
-            return null;
-        }
+        $this->_eventProcessor->enqueue(Util::newFeatureRequestEvent($key, $user, $value, $default, $version, $prereqOf));
     }
 
     protected function _get_default($key, $default) {
@@ -217,28 +235,5 @@ class LDClient {
         } else {
             return $default;
         }
-    }
-
-    protected static function _decode($json, $user) {
-        $makeVariation = function ($v) {
-            $makeTarget = function ($t) {
-                return new TargetRule($t['attribute'], $t['op'], $t['values']);
-            };
-
-            $ts = empty($v['targets']) ? array() : $v['targets'];
-            $targets = array_map($makeTarget, $ts);
-            if (isset($v['userTarget'])) {
-                return new Variation($v['value'], $v['weight'], $targets, $makeTarget($v['userTarget']));
-            }
-            else {
-                return new Variation($v['value'], $v['weight'], $targets, null);
-            }
-        };
-
-        $vs = empty($json['variations']) ? array() : $json['variations'];
-        $variations = array_map($makeVariation, $vs);
-        $feature = new FeatureRep($json['name'], $json['key'], $json['salt'], $json['on'], $variations);
-
-        return $feature->evaluate($user);
     }
 }

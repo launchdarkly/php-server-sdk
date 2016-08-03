@@ -30,7 +30,7 @@ Your first feature flag
 2. In your application code, use the feature's key to check whether the flag is on for each user:
 
         $user = new LaunchDarkly\LDUser("user@test.com");
-        if ($client->toggle("your.flag.key", $user)) {
+        if ($client->variation("your.flag.key", $user)) {
             # application code to show the feature
         } else {
             # the code to run if the feature is off
