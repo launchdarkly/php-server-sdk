@@ -10,6 +10,7 @@ use Psr\Log\LoggerInterface;
 
 class GuzzleFeatureRequester implements FeatureRequester
 {
+    const SDK_LATEST_FLAGS = "/sdk/latest-flags";
     /** @var Client  */
     private $_client;
     /** @var string */
@@ -19,7 +20,7 @@ class GuzzleFeatureRequester implements FeatureRequester
     /** @var  LoggerInterface */
     private $_logger;
 
-    function __construct($baseUri, $apiKey, $options)
+    function __construct($baseUri, $sdkKey, $options)
     {
         $this->_baseUri = $baseUri;
         $stack = HandlerStack::create();
@@ -27,7 +28,7 @@ class GuzzleFeatureRequester implements FeatureRequester
 
         $this->_defaults = array(
             'headers' => array(
-                'Authorization' => "api_key {$apiKey}",
+                'Authorization' => $sdkKey,
                 'Content-Type' => 'application/json',
                 'User-Agent' => 'PHPClient/' . LDClient::VERSION
             ),
@@ -48,13 +49,31 @@ class GuzzleFeatureRequester implements FeatureRequester
     public function get($key)
     {
         try {
-            $uri = $this->_baseUri . "/sdk/latest-flags/" . $key;
+            $uri = $this->_baseUri . self::SDK_LATEST_FLAGS . "/" . $key;
             $response = $this->_client->get($uri, $this->_defaults);
             $body = $response->getBody();
             return FeatureFlag::decode(json_decode($body, true));
         } catch (BadResponseException $e) {
             $code = $e->getResponse()->getStatusCode();
             $this->_logger->error("GuzzleFeatureRetriever::get received an unexpected HTTP status code $code");
+            return null;
+        }
+    }
+
+    /**
+     * Gets all features from a likely cached store
+     *
+     * @return array()|null The decoded FeatureFlags, or null if missing
+     */
+    public function getAll() {
+        try {
+            $uri = $this->_baseUri . self::SDK_LATEST_FLAGS;
+            $response = $this->_client->get($uri, $this->_defaults);
+            $body = $response->getBody();
+            return array_map(FeatureFlag::getDecoder(), json_decode($body, true));
+        } catch (BadResponseException $e) {
+            $code = $e->getResponse()->getStatusCode();
+            $this->_logger->error("GuzzleFeatureRetriever::getAll received an unexpected HTTP status code $code");
             return null;
         }
     }

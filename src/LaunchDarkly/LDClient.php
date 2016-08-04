@@ -13,7 +13,7 @@ class LDClient {
     const VERSION = '2.0.0';
 
     /** @var string */
-    protected $_apiKey;
+    protected $_sdkKey;
     /** @var string */
     protected $_baseUri;
     /** @var EventProcessor */
@@ -33,10 +33,10 @@ class LDClient {
     /**
      * Creates a new client instance that connects to LaunchDarkly.
      *
-     * @param string $apiKey The API key for your account
+     * @param string $sdkKey The SDK key for your account
      * @param array $options Client configuration settings
-     *     - base_uri: Base URI of the LaunchDarkly API. Defaults to `DEFAULT_BASE_URI`
-     *     - events_uri: Base URI of the LaunchDarkly API. Defaults to `DEFAULT_BASE_URI`
+     *     - base_uri: Base URI of the LaunchDarkly API. Defaults to `https://app.launchdarkly.com`.
+     *     - events_uri: Base URI for sending events to LaunchDarkly. Defaults to 'https://events.launchdarkly.com'
      *     - timeout: Float describing the maximum length of a request in seconds. Defaults to 3
      *     - connect_timeout: Float describing the number of seconds to wait while trying to connect to a server. Defaults to 3
      *     - cache: An optional Kevinrob\GuzzleCache\Strategy\CacheStorageInterface. Defaults to an in-memory cache.
@@ -44,8 +44,8 @@ class LDClient {
      *     - logger: An optional Psr\Log\LoggerInterface. Defaults to a Monolog\Logger sending all messages to the php error_log.
      *     - offline: An optional boolean which will disable all network calls and always return the default value. Defaults to false.
      */
-    public function __construct($apiKey, $options = array()) {
-        $this->_apiKey = $apiKey;
+    public function __construct($sdkKey, $options = array()) {
+        $this->_sdkKey = $sdkKey;
         if (!isset($options['base_uri'])) {
             $this->_baseUri = self::DEFAULT_BASE_URI;
         } else {
@@ -80,7 +80,7 @@ class LDClient {
         }
         $this->_logger = $options['logger'];
 
-        $this->_eventProcessor = new EventProcessor($apiKey, $options);
+        $this->_eventProcessor = new EventProcessor($sdkKey, $options);
 
         if (isset($options['feature_requester_class'])) {
             $featureRequesterClass = $options['feature_requester_class'];
@@ -91,7 +91,7 @@ class LDClient {
         if (!is_a($featureRequesterClass, FeatureRequester::class, true)) {
             throw new \InvalidArgumentException;
         }
-        $this->_featureRequester = new $featureRequesterClass($this->_baseUri, $apiKey, $options);
+        $this->_featureRequester = new $featureRequesterClass($this->_baseUri, $sdkKey, $options);
     }
 
     /**
@@ -113,7 +113,7 @@ class LDClient {
         try {
             if (is_null($user) || strlen($user->getKey()) === 0) {
                 $this->_sendFlagRequestEvent($key, $user, $default, $default);
-                $this->_logger->warn("Toggle called with null user or null/empty user key! Returning default value");
+                $this->_logger->warn("Variation called with null user or null/empty user key! Returning default value");
                 return $default;
             }
             $flag = $this->_featureRequester->get($key);
@@ -121,22 +121,16 @@ class LDClient {
             if (is_null($flag)) {
                 $this->_sendFlagRequestEvent($key, $user, $default, $default);
                 return $default;
-            } else if ($flag->isOn()) {
-                $result = $flag->evaluate($user, $this->_featureRequester);
-                if (!$this->isOffline() && $this->_send_events) {
-                    foreach ($result->getPrerequisiteEvents() as $e) {
-                        $this->_eventProcessor->enqueue($e);
-                    }
-                }
-                if ($result->getValue() != null) {
-                    $this->_sendFlagRequestEvent($key, $user, $result->getValue(), $default, $flag->getVersion());
-                    return $result->getValue();
+            }
+            $evalResult = $flag->evaluate($user, $this->_featureRequester);
+            if (!$this->isOffline() && $this->_send_events) {
+                foreach ($evalResult->getPrerequisiteEvents() as $e) {
+                    $this->_eventProcessor->enqueue($e);
                 }
             }
-            $offVariation = $flag->getOffVariationValue();
-            if ($offVariation != null) {
-                $this->_sendFlagRequestEvent($key, $user, $offVariation, $default, $flag->getVersion());
-                return $offVariation;
+            if ($evalResult->getValue() != null) {
+                $this->_sendFlagRequestEvent($key, $user, $evalResult->getValue(), $default, $flag->getVersion());
+                return $evalResult->getValue();
             }
         } catch (\Exception $e) {
             $this->_logger->error("Caught $e");
@@ -212,6 +206,49 @@ class LDClient {
         $event['creationDate'] = Util::currentTimeUnixMillis();
         $event['key'] = $user->getKey();
         $this->_eventProcessor->enqueue($event);
+    }
+
+    /** Returns an array mapping Feature Flag keys to their evaluated results for a given user.
+     *
+     * If the result of a flag's evaluation would have returned the default variation, it will have a null entry.
+     * If the client is offline, has not been initialized, or a null user or user with null/empty user key, null will be returned.
+     * This method will not send analytics events back to LaunchDarkly.
+     * <p>
+     * The most common use case for this method is to bootstrap a set of client-side feature flags from a back-end service.
+     *
+     * @param $user LDUser the end user requesting the feature flags
+     * @return array()|null Mapping of feature flag keys to their evaluated results for $user
+     */
+    public function allFlags($user) {
+        if (is_null($user) || strlen($user->getKey()) === 0) {
+            $this->_logger->warn("allFlags called with null user or null/empty user key! Returning null");
+            return null;
+        }
+        $flags = $this->_featureRequester->getAll();
+        if ($flags === null) {
+            return null;
+        }
+
+        /**
+         * @param $flag FeatureFlag
+         * @return mixed|null
+         */
+        $eval = function($flag) use($user) {
+            return $flag->evaluate($user, $this->_featureRequester)->getValue();
+        };
+
+        return array_map($eval, $flags);
+    }
+
+    /** Generates an HMAC sha256 hash for use in Secure mode: https://github.com/launchdarkly/js-client#secure-mode
+     * @param $user LDUser
+     * @return string
+     */
+    public function secureModeHash($user) {
+        if (is_null($user) || strlen($user->getKey()) === 0) {
+            return "";
+        }
+        return hash_hmac("sha256", $user->getKey(), $this->_sdkKey, false);
     }
 
     /**
