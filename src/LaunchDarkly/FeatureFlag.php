@@ -77,8 +77,17 @@ class FeatureFlag {
      */
     public function evaluate($user, $featureRequester) {
         $prereqEvents = array();
-        $value = $this->_evaluate($user, $featureRequester, $prereqEvents);
-        return new EvalResult($value, $prereqEvents);
+        if (is_null($user) || strlen($user->getKey()) === 0) {
+            return new EvalResult(null, $prereqEvents);
+        }
+        if ($this->isOn()) {
+            $result = $this->_evaluate($user, $featureRequester, $prereqEvents);
+            if ($result != null) {
+                return new EvalResult($result, $prereqEvents);
+            }
+        }
+        $offVariation = $this->getOffVariationValue();
+        return new EvalResult($offVariation, $prereqEvents);
     }
 
     /**

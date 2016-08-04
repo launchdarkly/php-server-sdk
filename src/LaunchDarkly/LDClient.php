@@ -113,7 +113,7 @@ class LDClient {
         try {
             if (is_null($user) || strlen($user->getKey()) === 0) {
                 $this->_sendFlagRequestEvent($key, $user, $default, $default);
-                $this->_logger->warn("Toggle called with null user or null/empty user key! Returning default value");
+                $this->_logger->warn("Variation called with null user or null/empty user key! Returning default value");
                 return $default;
             }
             $flag = $this->_featureRequester->get($key);
@@ -121,22 +121,16 @@ class LDClient {
             if (is_null($flag)) {
                 $this->_sendFlagRequestEvent($key, $user, $default, $default);
                 return $default;
-            } else if ($flag->isOn()) {
-                $result = $flag->evaluate($user, $this->_featureRequester);
-                if (!$this->isOffline() && $this->_send_events) {
-                    foreach ($result->getPrerequisiteEvents() as $e) {
-                        $this->_eventProcessor->enqueue($e);
-                    }
-                }
-                if ($result->getValue() != null) {
-                    $this->_sendFlagRequestEvent($key, $user, $result->getValue(), $default, $flag->getVersion());
-                    return $result->getValue();
+            }
+            $evalResult = $flag->evaluate($user, $this->_featureRequester);
+            if (!$this->isOffline() && $this->_send_events) {
+                foreach ($evalResult->getPrerequisiteEvents() as $e) {
+                    $this->_eventProcessor->enqueue($e);
                 }
             }
-            $offVariation = $flag->getOffVariationValue();
-            if ($offVariation != null) {
-                $this->_sendFlagRequestEvent($key, $user, $offVariation, $default, $flag->getVersion());
-                return $offVariation;
+            if ($evalResult->getValue() != null) {
+                $this->_sendFlagRequestEvent($key, $user, $evalResult->getValue(), $default, $flag->getVersion());
+                return $evalResult->getValue();
             }
         } catch (\Exception $e) {
             $this->_logger->error("Caught $e");
@@ -212,6 +206,10 @@ class LDClient {
         $event['creationDate'] = Util::currentTimeUnixMillis();
         $event['key'] = $user->getKey();
         $this->_eventProcessor->enqueue($event);
+    }
+
+    public function allFlags($user) {
+
     }
 
     /** Generates an HMAC sha256 hash for use in Secure mode: https://github.com/launchdarkly/js-client#secure-mode
