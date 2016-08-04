@@ -20,9 +20,9 @@ class FeatureFlag {
     protected $_rules = array();
     /** @var VariationOrRollout */
     protected $_fallthrough = null;
-    /** @var int | null  */
+    /** @var int | null */
     protected $_offVariation = null;
-    /** @var array  */
+    /** @var array */
     protected $_variations = array();
     /** @var bool */
     protected $_deleted = false;
@@ -51,19 +51,25 @@ class FeatureFlag {
         $this->_deleted = $deleted;
     }
 
+    public static function getDecoder() {
+        return function ($v) {
+            return new FeatureFlag(
+                $v['key'],
+                $v['version'],
+                $v['on'],
+                array_map(Prerequisite::getDecoder(), $v['prerequisites']),
+                $v['salt'],
+                array_map(Target::getDecoder(), $v['targets']),
+                array_map(Rule::getDecoder(), $v['rules']),
+                call_user_func(VariationOrRollout::getDecoder(), $v['fallthrough']),
+                $v['offVariation'],
+                $v['variations'],
+                $v['deleted']);
+        };
+    }
+
     public static function decode($v) {
-        return new FeatureFlag(
-            $v['key'],
-            $v['version'],
-            $v['on'],
-            array_map(Prerequisite::getDecoder(), $v['prerequisites']),
-            $v['salt'],
-            array_map(Target::getDecoder(), $v['targets']),
-            array_map(Rule::getDecoder(), $v['rules']),
-            call_user_func(VariationOrRollout::getDecoder(), $v['fallthrough']),
-            $v['offVariation'],
-            $v['variations'],
-            $v['deleted']);
+        return call_user_func(FeatureFlag::getDecoder(), $v);
     }
 
     public function isOn() {

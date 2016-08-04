@@ -208,8 +208,50 @@ class LDClient {
         $this->_eventProcessor->enqueue($event);
     }
 
-    public function allFlags($user) {
+    /**
+     * Returns a map from feature flag keys to {@code JsonElement} feature flag values for a given user.
+     * If the result of a flag's evaluation would have returned the default variation, it will have a null entry
+     * in the map. If the client is offline, has not been initialized, or a null user or user with null/empty user key a {@code null} map will be returned.
+     * This method will not send analytics events back to LaunchDarkly.
+     * <p>
+     * The most common use case for this method is to bootstrap a set of client-side feature flags from a back-end service.
+     *
+     * @param user the end user requesting the feature flags
+     * @return a map from feature flag keys to {@code JsonElement} for the specified user
+     */
 
+
+
+    /** Returns an array mapping Feature Flag keys to their evaluated results for a given user.
+     *
+     * If the result of a flag's evaluation would have returned the default variation, it will have a null entry.
+     * If the client is offline, has not been initialized, or a null user or user with null/empty user key, null will be returned.
+     * This method will not send analytics events back to LaunchDarkly.
+     * <p>
+     * The most common use case for this method is to bootstrap a set of client-side feature flags from a back-end service.
+     *
+     * @param $user LDUser the end user requesting the feature flags
+     * @return array()|null Mapping of feature flag keys to their evaluated results for $user
+     */
+    public function allFlags($user) {
+        if (is_null($user) || strlen($user->getKey()) === 0) {
+            $this->_logger->warn("allFlags called with null user or null/empty user key! Returning null");
+            return null;
+        }
+        $flags = $this->_featureRequester->getAll();
+        if ($flags === null) {
+            return null;
+        }
+
+        /**
+         * @param $flag FeatureFlag
+         * @return array()
+         */
+        $eval = function($flag) use($user) {
+            return array($flag->getKey() => $flag->evaluate($user, $this->_featureRequester));
+        };
+
+        return array_map($eval, $flags);
     }
 
     /** Generates an HMAC sha256 hash for use in Secure mode: https://github.com/launchdarkly/js-client#secure-mode
