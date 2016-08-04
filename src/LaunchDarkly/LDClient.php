@@ -208,20 +208,6 @@ class LDClient {
         $this->_eventProcessor->enqueue($event);
     }
 
-    /**
-     * Returns a map from feature flag keys to {@code JsonElement} feature flag values for a given user.
-     * If the result of a flag's evaluation would have returned the default variation, it will have a null entry
-     * in the map. If the client is offline, has not been initialized, or a null user or user with null/empty user key a {@code null} map will be returned.
-     * This method will not send analytics events back to LaunchDarkly.
-     * <p>
-     * The most common use case for this method is to bootstrap a set of client-side feature flags from a back-end service.
-     *
-     * @param user the end user requesting the feature flags
-     * @return a map from feature flag keys to {@code JsonElement} for the specified user
-     */
-
-
-
     /** Returns an array mapping Feature Flag keys to their evaluated results for a given user.
      *
      * If the result of a flag's evaluation would have returned the default variation, it will have a null entry.
