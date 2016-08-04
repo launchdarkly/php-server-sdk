@@ -86,4 +86,28 @@ class LDDFeatureRequester implements FeatureRequester {
      * @param $val array The feature data
      */
     protected function store_in_cache($key, $val) {}
+
+    /**
+     * Gets all features
+     *
+     * @return array()|null The decoded FeatureFlags, or null if missing
+     */
+    public function getAll() {
+        $redis = $this->get_connection();
+        $raw = $redis->hgetall($this->_features_key);
+        if ($raw) {
+            $allFlags = array_map(FeatureFlag::getDecoder(), json_decode($raw, true));
+            /**
+             * @param $flag FeatureFlag
+             * @return bool
+             */
+            $isNotDeleted = function ($flag) {
+                return !$flag->isDeleted();
+            };
+            return array_filter($allFlags, $isNotDeleted);
+        } else {
+            $this->_logger->warning("LDDFeatureRequester: Attempted to get all features, instead got nothing.");
+            return null;
+        }
+    }
 }

@@ -12,7 +12,7 @@ interface FeatureRequester {
     public function get($key);
 
     /**
-     * Gets all features from a likely cached store
+     * Gets all features.
      *
      * @return array()|null The decoded FeatureFlags, or null if missing
      */
