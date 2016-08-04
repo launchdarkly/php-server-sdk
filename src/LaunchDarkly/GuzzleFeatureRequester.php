@@ -19,7 +19,7 @@ class GuzzleFeatureRequester implements FeatureRequester
     /** @var  LoggerInterface */
     private $_logger;
 
-    function __construct($baseUri, $apiKey, $options)
+    function __construct($baseUri, $sdkKey, $options)
     {
         $this->_baseUri = $baseUri;
         $stack = HandlerStack::create();
@@ -27,7 +27,7 @@ class GuzzleFeatureRequester implements FeatureRequester
 
         $this->_defaults = array(
             'headers' => array(
-                'Authorization' => "api_key {$apiKey}",
+                'Authorization' => $sdkKey,
                 'Content-Type' => 'application/json',
                 'User-Agent' => 'PHPClient/' . LDClient::VERSION
             ),

@@ -6,7 +6,7 @@ namespace LaunchDarkly;
  */
 class EventProcessor {
 
-  private $_apiKey;
+  private $_sdkKey;
   private $_queue;
   private $_capacity;
   private $_timeout;
@@ -15,7 +15,7 @@ class EventProcessor {
   private $_ssl;
 
   public function __construct($apiKey, $options = array()) {
-    $this->_apiKey = $apiKey;
+    $this->_sdkKey = $apiKey;
     if (!isset($options['events_uri'])) {
         $this->_host = 'events.launchdarkly.com';
         $this->_port = 443;
@@ -80,7 +80,7 @@ class EventProcessor {
     $scheme = $this->_ssl ? "https://" : "http://";
     $args = " -X POST";
     $args.= " -H 'Content-Type: application/json'";
-    $args.= " -H " . escapeshellarg("Authorization: api_key " . $this->_apiKey);
+    $args.= " -H " . escapeshellarg("Authorization: " . $this->_sdkKey);
     $args.= " -H 'User-Agent: PHPClient/" . LDClient::VERSION . "'";
     $args.= " -H 'Accept: application/json'";
     $args.= " -d " . escapeshellarg($payload);

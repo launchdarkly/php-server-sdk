@@ -10,7 +10,7 @@ use LaunchDarkly\LDUserBuilder;
 class LDClientTest extends \PHPUnit_Framework_TestCase {
 
     public function testDefaultCtor() {
-        new LDClient("BOGUS_API_KEY");
+        new LDClient("BOGUS_SDK_KEY");
     }
 
     public function testToggleDefault() {
@@ -55,7 +55,7 @@ class LDClientTest extends \PHPUnit_Framework_TestCase {
 
     public function testOnlyValidFeatureRequester() {
         $this->setExpectedException(InvalidArgumentException::class);
-        new LDClient("BOGUS_API_KEY", ['feature_requester_class' => 'stdClass']);
+        new LDClient("BOGUS_SDK_KEY", ['feature_requester_class' => 'stdClass']);
     }
 }
 

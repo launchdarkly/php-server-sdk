@@ -18,9 +18,9 @@ Quick setup
 
 		require 'vendor/autoload.php';
 
-2. Create a new LDClient with your API key:
+2. Create a new LDClient with your SDK key:
 
-        $client = new LaunchDarkly\LDClient("your_api_key");
+        $client = new LaunchDarkly\LDClient("your_sdk_key");
 
 Your first feature flag
 -----------------------
@@ -63,7 +63,7 @@ Using Redis
 
 2. Create the LDClient with the Redis feature requester as an option:
 
-    $client = new LaunchDarkly\LDClient("your_api_key", ['feature_requester_class' => 'LaunchDarkly\LDDFeatureRequester']);
+    $client = new LaunchDarkly\LDClient("your_sdk_key", ['feature_requester_class' => 'LaunchDarkly\LDDFeatureRequester']);
 
 Learn more
 -----------
