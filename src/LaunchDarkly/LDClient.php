@@ -111,10 +111,13 @@ class LDClient {
         }
 
         try {
-            if (is_null($user) || strlen($user->getKey()) === 0) {
+            if (is_null($user) || is_null($user->getKey()) ) {
                 $this->_sendFlagRequestEvent($key, $user, $default, $default);
-                $this->_logger->warn("Variation called with null user or null/empty user key! Returning default value");
+                $this->_logger->warn("Variation called with null user or null user key! Returning default value");
                 return $default;
+            }
+            if (strlen($user->getKey()) === 0) {
+                $this->_logger->warn("User key is blank. Flag evaluation will proceed, but the user will not be stored in LaunchDarkly.");
             }
             $flag = $this->_featureRequester->get($key);
 
