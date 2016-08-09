@@ -223,7 +223,7 @@ class LDClient {
      * @return array()|null Mapping of feature flag keys to their evaluated results for $user
      */
     public function allFlags($user) {
-        if (is_null($user) || strlen($user->getKey()) === 0) {
+        if (is_null($user) || is_null($user->getKey())) {
             $this->_logger->warn("allFlags called with null user or null/empty user key! Returning null");
             return null;
         }
