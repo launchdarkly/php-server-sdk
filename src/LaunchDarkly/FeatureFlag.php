@@ -83,7 +83,7 @@ class FeatureFlag {
      */
     public function evaluate($user, $featureRequester) {
         $prereqEvents = array();
-        if (is_null($user) || strlen($user->getKey()) === 0) {
+        if (is_null($user) || is_null($user->getKey())) {
             return new EvalResult(null, $prereqEvents);
         }
         if ($this->isOn()) {
