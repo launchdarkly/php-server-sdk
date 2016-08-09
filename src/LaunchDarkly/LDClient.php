@@ -111,7 +111,7 @@ class LDClient {
         }
 
         try {
-            if (is_null($user) || $user->getKey() === null ) {
+            if (is_null($user) || is_null($user->getKey())) {
                 $this->_sendFlagRequestEvent($key, $user, $default, $default);
                 $this->_logger->warn("Variation called with null user or null user key! Returning default value");
                 return $default;

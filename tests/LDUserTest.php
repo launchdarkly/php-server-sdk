@@ -105,6 +105,7 @@ class LDUserTest extends \PHPUnit_Framework_TestCase {
         $builder = new LDUserBuilder("");
         $user = $builder->build();
         $this->assertTrue($user->isKeyBlank());
+        $this->assertFalse(is_null($user->getKey()));
 
         $builder = new LDUserBuilder("key");
         $user = $builder->build();
@@ -113,7 +114,6 @@ class LDUserTest extends \PHPUnit_Framework_TestCase {
         $builder = new LDUserBuilder(null);
         $user = $builder->build();
         $this->assertFalse($user->isKeyBlank());
-
     }
 }
 
