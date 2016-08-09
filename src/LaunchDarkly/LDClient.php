@@ -116,7 +116,7 @@ class LDClient {
                 $this->_logger->warn("Variation called with null user or null user key! Returning default value");
                 return $default;
             }
-            if (strlen($user->getKey()) === 0) {
+            if ($user->isKeyBlank()) {
                 $this->_logger->warn("User key is blank. Flag evaluation will proceed, but the user will not be stored in LaunchDarkly.");
             }
             $flag = $this->_featureRequester->get($key);
@@ -177,7 +177,7 @@ class LDClient {
         if ($this->isOffline()) {
             return;
         }
-        if (is_null($user) || strlen($user->getKey()) === 0) {
+        if (is_null($user) || $user->isKeyBlank()) {
             $this->_logger->warn("Track called with null user or null/empty user key!");
         }
 
@@ -199,7 +199,7 @@ class LDClient {
         if ($this->isOffline()) {
             return;
         }
-        if (is_null($user) || strlen($user->getKey()) === 0) {
+        if (is_null($user) || $user->isKeyBlank()) {
             $this->_logger->warn("Track called with null user or null/empty user key!");
         }
 

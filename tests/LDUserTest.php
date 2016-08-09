@@ -100,5 +100,20 @@ class LDUserTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(true, $json['anonymous']);
 
     }
+
+    public function testLDUserBlankKey() {
+        $builder = new LDUserBuilder("");
+        $user = $builder->build();
+        $this->assertTrue($user->isKeyBlank());
+
+        $builder = new LDUserBuilder("key");
+        $user = $builder->build();
+        $this->assertFalse($user->isKeyBlank());
+
+        $builder = new LDUserBuilder(null);
+        $user = $builder->build();
+        $this->assertFalse($user->isKeyBlank());
+
+    }
 }
 

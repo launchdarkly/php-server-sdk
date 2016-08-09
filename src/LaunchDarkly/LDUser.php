@@ -33,7 +33,9 @@ class LDUser {
      * @param array|null $custom Other custom attributes that can be used to create custom rules
      */
     public function __construct($key, $secondary = null, $ip = null, $country = null, $email = null, $name = null, $avatar = null, $firstName = null, $lastName = null, $anonymous = null, $custom = array()) {
-        $this->_key = strval($key);
+        if ($key !== null) {
+            $this->_key = strval($key);
+        }
         $this->_secondary = $secondary;
         $this->_ip = $ip;
         $this->_country = $country;
@@ -92,6 +94,9 @@ class LDUser {
         return $this->_ip;
     }
 
+    /**
+     * @return null|string
+     */
     public function getKey() {
         return $this->_key;
     }
@@ -122,6 +127,10 @@ class LDUser {
 
     public function getAnonymous() {
         return $this->_anonymous;
+    }
+
+    public function isKeyBlank() {
+        return isset($this->_key) && empty($this->_key);
     }
 
     public function toJSON() {
