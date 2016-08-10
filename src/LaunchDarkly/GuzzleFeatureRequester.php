@@ -10,7 +10,7 @@ use Psr\Log\LoggerInterface;
 
 class GuzzleFeatureRequester implements FeatureRequester
 {
-    const SDK_LATEST_FLAGS = "/sdk/latest-flags";
+    const SDK_FLAGS = "/sdk/flags";
     /** @var Client  */
     private $_client;
     /** @var string */
@@ -49,7 +49,7 @@ class GuzzleFeatureRequester implements FeatureRequester
     public function get($key)
     {
         try {
-            $uri = $this->_baseUri . self::SDK_LATEST_FLAGS . "/" . $key;
+            $uri = $this->_baseUri . self::SDK_FLAGS . "/" . $key;
             $response = $this->_client->get($uri, $this->_defaults);
             $body = $response->getBody();
             return FeatureFlag::decode(json_decode($body, true));
@@ -67,7 +67,7 @@ class GuzzleFeatureRequester implements FeatureRequester
      */
     public function getAll() {
         try {
-            $uri = $this->_baseUri . self::SDK_LATEST_FLAGS;
+            $uri = $this->_baseUri . self::SDK_FLAGS;
             $response = $this->_client->get($uri, $this->_defaults);
             $body = $response->getBody();
             return array_map(FeatureFlag::getDecoder(), json_decode($body, true));
