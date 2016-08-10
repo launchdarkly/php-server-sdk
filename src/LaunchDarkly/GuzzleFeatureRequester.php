@@ -52,6 +52,7 @@ class GuzzleFeatureRequester implements FeatureRequester
             $uri = $this->_baseUri . self::SDK_FLAGS . "/" . $key;
             $response = $this->_client->get($uri, $this->_defaults);
             $body = $response->getBody();
+            $this->_logger->info("Got status code: " . $response->getStatusCode() . " with body: " . $response->getBody());
             return FeatureFlag::decode(json_decode($body, true));
         } catch (BadResponseException $e) {
             $code = $e->getResponse()->getStatusCode();
