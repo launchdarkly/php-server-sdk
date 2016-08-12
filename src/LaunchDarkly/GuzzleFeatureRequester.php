@@ -55,7 +55,11 @@ class GuzzleFeatureRequester implements FeatureRequester
             return FeatureFlag::decode(json_decode($body, true));
         } catch (BadResponseException $e) {
             $code = $e->getResponse()->getStatusCode();
-            $this->_logger->error("GuzzleFeatureRetriever::get received an unexpected HTTP status code $code");
+            if ($code == 404) {
+                $this->_logger->warning("GuzzleFeatureRetriever::get returned 404. Feature flag does not exist for key: " . $key);
+            } else {
+                $this->_logger->error("GuzzleFeatureRetriever::get received an unexpected HTTP status code $code");
+            }
             return null;
         }
     }
