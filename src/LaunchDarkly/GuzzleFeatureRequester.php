@@ -1,33 +1,42 @@
 <?php
 namespace LaunchDarkly;
 
-use Doctrine\Common\Cache\ArrayCache;
-use Guzzle\Http\Client;
-use Guzzle\Cache\DoctrineCacheAdapter;
-use Guzzle\Plugin\Cache\CachePlugin;
+use GuzzleHttp\Client;
+use \GuzzleHttp\Exception\BadResponseException;
+use \GuzzleHttp\Subscriber\Cache\CacheSubscriber;
+use Psr\Log\LoggerInterface;
 
 class GuzzleFeatureRequester implements FeatureRequester {
-    function __construct($baseUri, $apiKey, $options) {
-        $this->_client = new Client($baseUri,
-                                        array(
-                                        'debug' => false,
-                                        'curl.options' => array('CURLOPT_TCP_NODELAY' => 1),
-                                        'request.options' => array(
+    const SDK_FLAGS = "/sdk/flags";
+    /** @var Client  */
+    private $_client;
+    /** @var  LoggerInterface */
+    private $_logger;
+
+    function __construct($baseUri, $sdkKey, $options) {
+        $this->_client = new Client(array(
+                                        'base_url' => $baseUri,
+                                        'defaults' => array(
                                             'headers' => array(
-                                                'Authorization' => "api_key {$apiKey}",
-                                                'Content-Type' => 'application/json'
+                                                'Authorization' => "{$sdkKey}",
+                                                'Content-Type' => 'application/json',
+                                                'User-Agent' => 'PHPClient/' . LDClient::VERSION
                                             ),
+                                            'debug' => false,
                                             'timeout' => $options['timeout'],
                                             'connect_timeout' => $options['connect_timeout']
                                         )
                                     ));
-        $this->_client->setUserAgent('PHPClient/' . LDClient::VERSION);
 
-        if (isset($options['cache_storage'])) {
-            $cachePlugin = new CachePlugin(array('storage' => $options['cache_storage'], 'validate' => false));
-            $this->_client->addSubscriber($cachePlugin);
+        if (!isset($options['cache_storage'])) {
+            $csOptions = array('validate' => false);
+        }
+        else {
+            $csOptions = array('storage' => $options['cache_storage'], 'validate' => false);
         }
 
+        CacheSubscriber::attach($this->_client, $csOptions);
+        $this->_logger = $options['logger'];
     }
 
 
@@ -37,15 +46,35 @@ class GuzzleFeatureRequester implements FeatureRequester {
      * @param $key string feature key
      * @return array|null The decoded JSON feature data, or null if missing
      */
-    public function get($key) {
+    public function get($key)
+    {
         try {
-            $request = $this->_client->get("/api/eval/features/$key");
-            $response = $request->send();
-            return $response->json();
+            $uri = self::SDK_FLAGS . "/" . $key;
+            $response = $this->_client->get($uri, $this->_defaults);
+            $body = $response->getBody();
+            return FeatureFlag::decode(json_decode($body, true));
         } catch (BadResponseException $e) {
             $code = $e->getResponse()->getStatusCode();
-            error_log("GuzzleFeatureRetriever::get received an unexpected HTTP status code $code");
+            $this->_logger->error("GuzzleFeatureRetriever::get received an unexpected HTTP status code $code");
             return null;
         }
     }
+
+    /**
+     * Gets all features from a likely cached store
+     *
+     * @return array()|null The decoded FeatureFlags, or null if missing
+     */
+    public function getAll() {
+        try {
+            $uri = $this->_baseUri . self::SDK_FLAGS;
+            $response = $this->_client->get($uri, $this->_defaults);
+            $body = $response->getBody();
+            return array_map(FeatureFlag::getDecoder(), json_decode($body, true));
+        } catch (BadResponseException $e) {
+            $code = $e->getResponse()->getStatusCode();
+            $this->_logger->error("GuzzleFeatureRetriever::getAll received an unexpected HTTP status code $code");
+            return null;
+        }
+    }    
 }

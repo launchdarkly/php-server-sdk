@@ -1,15 +1,17 @@
 <?php
 namespace LaunchDarkly\Tests;
 
+use InvalidArgumentException;
 use LaunchDarkly\FeatureRequester;
 use LaunchDarkly\LDClient;
+use LaunchDarkly\LDUser;
 use LaunchDarkly\LDUserBuilder;
 
 
 class LDClientTest extends \PHPUnit_Framework_TestCase {
 
     public function testDefaultCtor() {
-        new LDClient("BOGUS_API_KEY");
+        new LDClient("BOGUS_SDK_KEY");
     }
 
     public function testToggleDefault() {
@@ -21,7 +23,7 @@ class LDClientTest extends \PHPUnit_Framework_TestCase {
 
         $builder = new LDUserBuilder(3);
         $user = $builder->build();
-        $this->assertEquals('argdef', $client->toggle('foo', $user, 'argdef'));
+        $this->assertEquals('argdef', $client->variation('foo', $user, 'argdef'));
     }
 
     public function testToggleFromArray() {
@@ -34,7 +36,7 @@ class LDClientTest extends \PHPUnit_Framework_TestCase {
 
         $builder = new LDUserBuilder(3);
         $user = $builder->build();
-        $this->assertEquals('fromarray', $client->toggle('foo', $user, 'argdef'));
+        $this->assertEquals('fromarray', $client->variation('foo', $user, 'argdef'));
     }
 
     public function testToggleEvent() {
@@ -46,25 +48,21 @@ class LDClientTest extends \PHPUnit_Framework_TestCase {
 
         $builder = new LDUserBuilder(3);
         $user = $builder->build();
-        $client->toggle('foo', $user, 'argdef');
+        $client->variation('foo', $user, 'argdef');
         $proc = getPrivateField($client, '_eventProcessor');
         $queue = getPrivateField($proc, '_queue');
         $this->assertEquals(1, sizeof($queue));
     }
 
-    public function testToggleEventsOff() {
-        MockFeatureRequester::$val = null;
-        $client = new LDClient("someKey", array(
-            'feature_requester_class' => '\\LaunchDarkly\Tests\\MockFeatureRequester',
-            'events' => false
-        ));
+    public function testOnlyValidFeatureRequester() {
+        $this->setExpectedException(InvalidArgumentException::class);
+        new LDClient("BOGUS_SDK_KEY", ['feature_requester_class' => 'stdClass']);
+    }
 
-        $builder = new LDUserBuilder(3);
-        $user = $builder->build();
-        $client->toggle('foo', $user, 'argdef');
-        $proc = getPrivateField($client, '_eventProcessor');
-        $queue = getPrivateField($proc, '_queue');
-        $this->assertEquals(0, sizeof($queue));
+    public function testSecureModeHash() {
+        $client = new LDClient("secret", ['offline' => true]);
+        $user = new LDUser("Message");
+        $this->assertEquals("aa747c502a898200f9e4fa21bac68136f886a0e27aec70ba06daf2e2a5cb5597",  $client->secureModeHash($user));
     }
 }
 
@@ -85,5 +83,9 @@ class MockFeatureRequester implements FeatureRequester {
     }
     public function get($key) {
         return self::$val;
+    }
+
+    public function getAll() {
+        return null;
     }
 }

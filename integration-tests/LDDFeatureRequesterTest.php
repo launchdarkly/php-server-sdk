@@ -18,9 +18,9 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
         $user = $builder->build();
 
         $redis->del("launchdarkly:features");
-        $this->assertEquals("jim", $client->toggle('foo', $user, 'jim'));
+        $this->assertEquals("jim", $client->variation('foo', $user, 'jim'));
         $redis->hset("launchdarkly:features", 'foo', $this->gen_feature("foo", "bar"));
-        $this->assertEquals("bar", $client->toggle('foo', $user, 'jim'));
+        $this->assertEquals("bar", $client->variation('foo', $user, 'jim'));
     }
 
     public function testGetApc() {
@@ -34,16 +34,16 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
         $user = $builder->build();
 
         $redis->del("launchdarkly:features");
-        $this->assertEquals("jim", $client->toggle('foo', $user, 'jim'));
+        $this->assertEquals("jim", $client->variation('foo', $user, 'jim'));
         $redis->hset("launchdarkly:features", 'foo', $this->gen_feature("foo", "bar"));
-        $this->assertEquals("bar", $client->toggle('foo', $user, 'jim'));
+        $this->assertEquals("bar", $client->variation('foo', $user, 'jim'));
 
         # cached value so not updated
         $redis->hset("launchdarkly:features", 'foo', $this->gen_feature("foo", "baz"));
-        $this->assertEquals("bar", $client->toggle('foo', $user, 'jim'));
+        $this->assertEquals("bar", $client->variation('foo', $user, 'jim'));
 
         apc_delete("launchdarkly:features.foo");
-        $this->assertEquals("baz", $client->toggle('foo', $user, 'jim'));
+        $this->assertEquals("baz", $client->variation('foo', $user, 'jim'));
     }
 
     private function gen_feature($key, $val) {
