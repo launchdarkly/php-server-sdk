@@ -45,7 +45,7 @@ class GuzzleFeatureRequester implements FeatureRequester {
     {
         try {
             $uri = self::SDK_FLAGS . "/" . $key;
-            $response = $this->_client->get($uri);
+            $response = $this->_client->get($uri)->send();
             $body = $response->getBody();
             return FeatureFlag::decode(json_decode($body, true));
         } catch (BadResponseException $e) {
@@ -63,7 +63,7 @@ class GuzzleFeatureRequester implements FeatureRequester {
     public function getAll() {
         try {
             $uri = self::SDK_FLAGS;
-            $response = $this->_client->get($uri);
+            $response = $this->_client->get($uri)->send();
             $body = $response->getBody();
             return array_map(FeatureFlag::getDecoder(), json_decode($body, true));
         } catch (BadResponseException $e) {
