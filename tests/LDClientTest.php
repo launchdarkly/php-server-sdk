@@ -54,11 +54,6 @@ class LDClientTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(1, sizeof($queue));
     }
 
-    public function testOnlyValidFeatureRequester() {
-        $this->setExpectedException(InvalidArgumentException::class);
-        new LDClient("BOGUS_SDK_KEY", ['feature_requester_class' => 'stdClass']);
-    }
-
     public function testSecureModeHash() {
         $client = new LDClient("secret", ['offline' => true]);
         $user = new LDUser("Message");
