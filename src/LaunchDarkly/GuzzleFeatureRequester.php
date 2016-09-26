@@ -1,9 +1,9 @@
 <?php
 namespace LaunchDarkly;
 
-use GuzzleHttp\Client;
-use \GuzzleHttp\Exception\BadResponseException;
-use \GuzzleHttp\Subscriber\Cache\CacheSubscriber;
+use Guzzle\Http\Client;
+use Guzzle\Http\Exception\BadResponseException;
+use Guzzle\Http\Subscriber\Cache\CacheSubscriber;
 use Psr\Log\LoggerInterface;
 
 class GuzzleFeatureRequester implements FeatureRequester {
