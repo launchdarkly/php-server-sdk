@@ -137,8 +137,8 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase {
   }";
 
     public function testDecode() {
-        FeatureFlag::decode(\GuzzleHttp\json_decode(FeatureFlagTest::$json1, true));
-        FeatureFlag::decode(\GuzzleHttp\json_decode(FeatureFlagTest::$json2, true));
+        FeatureFlag::decode(json_decode(FeatureFlagTest::$json1, true));
+        FeatureFlag::decode(json_decode(FeatureFlagTest::$json2, true));
     }
 }
 
