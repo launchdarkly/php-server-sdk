@@ -8,7 +8,7 @@
     "repositories": [
       {
         "type": "git",
-        "url": "git://github.com/launchdarkly/guzzle3.git"
+        "url": "https://github.com/launchdarkly/guzzle3.git"
       }
     ],    
     "homepage": "https://github.com/launchdarkly/php-client",

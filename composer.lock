@@ -4,15 +4,15 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "68cb258a6ff921174b988769600d2cb2",
-    "content-hash": "03dd4eab149acdc05b15bc1bf2ea235b",
+    "hash": "74e1b7bb93bb1571d1ab0153920fa0a9",
+    "content-hash": "8a18d98bba3bb72ac1d72ac4264d976b",
     "packages": [
         {
             "name": "guzzle/guzzle",
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git://github.com/launchdarkly/guzzle3.git",
+                "url": "https://github.com/launchdarkly/guzzle3.git",
                 "reference": "ecb935d2d0ecd8cddae4dcfb90515cac5e2cb023"
             },
             "require": {
