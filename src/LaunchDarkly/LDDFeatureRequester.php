@@ -2,11 +2,15 @@
 namespace LaunchDarkly;
 
 
+use Psr\Log\LoggerInterface;
+
 class LDDFeatureRequester implements FeatureRequester {
     protected $_baseUri;
     protected $_apiKey;
     protected $_options;
     protected $_features_key;
+    /** @var  LoggerInterface */
+    private $_logger;
 
     function __construct($baseUri, $apiKey, $options) {
         $this->_baseUri = $baseUri;
@@ -25,6 +29,8 @@ class LDDFeatureRequester implements FeatureRequester {
             $prefix = $options['redis_prefix'];
         }
         $this->_features_key = "$prefix:features";
+        $this->_logger = $options['logger'];
+
     }
 
     protected function get_connection() {
@@ -40,7 +46,7 @@ class LDDFeatureRequester implements FeatureRequester {
      * Gets feature data from a likely cached store
      *
      * @param $key string feature key
-     * @return array|null The decoded JSON feature data, or null if missing
+     * @return FeatureFlag|null The decoded JSON feature data, or null if missing
      */
     public function get($key) {
         $raw = $this->get_from_cache($key);
@@ -52,8 +58,15 @@ class LDDFeatureRequester implements FeatureRequester {
             }
         }
         if ($raw) {
-            return json_decode($raw, True);
+            $flag = FeatureFlag::decode(json_decode($raw, True));
+            if ($flag->isDeleted()) {
+                $this->_logger->warning("LDDFeatureRequester: Attempted to get deleted feature with key: " . $key);
+                return null;
+            }
+            return $flag;
+
         } else {
+            $this->_logger->warning("LDDFeatureRequester: Attempted to get missing feature with key: " . $key);
             return null;
         }
     }
@@ -73,4 +86,28 @@ class LDDFeatureRequester implements FeatureRequester {
      * @param $val array The feature data
      */
     protected function store_in_cache($key, $val) {}
+
+    /**
+     * Gets all features
+     *
+     * @return array()|null The decoded FeatureFlags, or null if missing
+     */
+    public function getAll() {
+        $redis = $this->get_connection();
+        $raw = $redis->hgetall($this->_features_key);
+        if ($raw) {
+            $allFlags = array_map(FeatureFlag::getDecoder(), json_decode($raw, true));
+            /**
+             * @param $flag FeatureFlag
+             * @return bool
+             */
+            $isNotDeleted = function ($flag) {
+                return !$flag->isDeleted();
+            };
+            return array_filter($allFlags, $isNotDeleted);
+        } else {
+            $this->_logger->warning("LDDFeatureRequester: Attempted to get all features, instead got nothing.");
+            return null;
+        }
+    }
 }

@@ -11,14 +11,16 @@ Quick setup
 0. Install the PHP SDK with [Composer](https://getcomposer.org/)
 
         php composer.phar require launchdarkly/launchdarkly-php
+        php composer.phar require "guzzlehttp/guzzle:6.2.1"
+        php composer.phar require "kevinrob/guzzle-cache-middleware": "1.4.1"
 
 1. After installing, require Composer's autoloader:
 
 		require 'vendor/autoload.php';
 
-2. Create a new LDClient with your API key:
+2. Create a new LDClient with your SDK key:
 
-        $client = new LaunchDarkly\LDClient("your_api_key");
+        $client = new LaunchDarkly\LDClient("your_sdk_key");
 
 Your first feature flag
 -----------------------
@@ -28,21 +30,55 @@ Your first feature flag
 2. In your application code, use the feature's key to check whether the flag is on for each user:
 
         $user = new LaunchDarkly\LDUser("user@test.com");
-        if ($client->toggle("your.flag.key", $user)) {
+        if ($client->variation("your.flag.key", $user)) {
             # application code to show the feature
         } else {
             # the code to run if the feature is off
         }
 
+Fetching flags
+--------------
+
+There are two approaches to fetching the flag rules from LaunchDarkly:
+
+* Making HTTP requests (using Guzzle)
+* Setting up the [ld-daemon](https://github.com/launchdarkly/ld-daemon) to store the flags in Redis
+
+Using Guzzle
+============
+
+To use Guzzle it must be required as a dependency:
+
+    php composer.phar require "guzzlehttp/guzzle:6.2.1"
+    php composer.phar require "kevinrob/guzzle-cache-middleware": "1.4.1"
+
+It will then be used as the default way of fetching flags.
+
+Using Redis
+===========
+
+1. Require Predis as a dependency:
+
+    php composer.phar require "predis/predis:1.0.*"
+
+2. Create the LDClient with the Redis feature requester as an option:
+
+    $client = new LaunchDarkly\LDClient("your_sdk_key", ['feature_requester_class' => 'LaunchDarkly\LDDFeatureRequester']);
+
 Learn more
 -----------
 
-Check out our [documentation](http://docs.launchdarkly.com) for in-depth instructions on configuring and using LaunchDarkly. You can also head straight to the [complete reference guide for this SDK](http://docs.launchdarkly.com/v1.0/docs/php-sdk-reference).
+Check out our [documentation](http://docs.launchdarkly.com) for in-depth instructions on configuring and using LaunchDarkly. You can also head straight to the [complete reference guide for this SDK](http://docs.launchdarkly.com/docs/php-sdk-reference).
+
+Testing
+-------
+
+We run integration tests for all our SDKs using a centralized test harness. This approach gives us the ability to test for consistency across SDKs, as well as test networking behavior in a long-running application. These tests cover each method in the SDK, and verify that event sending, flag evaluation, stream reconnection, and other aspects of the SDK all behave correctly.
 
 Contributing
 ------------
 
-We encourage pull-requests and other contributions from the community. We've also published an [SDK contributor's guide](http://docs.launchdarkly.com/v1.0/docs/sdk-contributors-guide) that provides a detailed explanation of how our SDKs work.
+We encourage pull-requests and other contributions from the community. We've also published an [SDK contributor's guide](http://docs.launchdarkly.com/docs/sdk-contributors-guide) that provides a detailed explanation of how our SDKs work.
 
 About LaunchDarkly
 -----------
