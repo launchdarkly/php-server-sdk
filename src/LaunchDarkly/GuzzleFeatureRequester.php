@@ -28,6 +28,7 @@ class GuzzleFeatureRequester implements FeatureRequester {
                                         )
                                     ));
         $this->_client->setUserAgent('PHPClient53/' . LDClient::VERSION);
+        $this->_logger = $options['logger'];
         if (isset($options['cache_storage'])) {
             $cachePlugin = new CachePlugin(array('storage' => $options['cache_storage'], 'validate' => false));
             $this->_client->addSubscriber($cachePlugin);
