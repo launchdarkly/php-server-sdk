@@ -8,22 +8,21 @@ LaunchDarkly SDK for PHP
 Requirements
 ------------
 1. PHP 5.5 or higher. 
-1. We strongly suggest you include [monolog](https://packagist.org/packages/monolog/monolog) version 1.21.0 or higher for logging.
+1. A [PSR-3](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md)-compatible logger. We suggest [monolog](https://packagist.org/packages/monolog/monolog) version 1.21.0 or higher.
 
 Quick setup
 -----------
 
-0. Install the PHP SDK with [Composer](https://getcomposer.org/)
+1. Install the PHP SDK and monolog for logging with [Composer](https://getcomposer.org/)
 
         php composer.phar require launchdarkly/launchdarkly-php
-        php composer.phar require "guzzlehttp/guzzle:6.2.1"
-        php composer.phar require "kevinrob/guzzle-cache-middleware": "1.4.1"
+        php composer.phar require monolog/monolog:1.21.0
 
 1. After installing, require Composer's autoloader:
 
 		require 'vendor/autoload.php';
 
-2. Create a new LDClient with your SDK key:
+1. Create a new LDClient with your SDK key:
 
         $client = new LaunchDarkly\LDClient("your_sdk_key");
 
