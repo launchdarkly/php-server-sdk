@@ -5,6 +5,11 @@ LaunchDarkly SDK for PHP
 
 [![Circle CI](https://circleci.com/gh/launchdarkly/php-client.svg?style=svg)](https://circleci.com/gh/launchdarkly/php-client)
 
+Requirements
+------------
+1. PHP 5.5 or higher. 
+1. We strongly suggest you include [monolog](https://packagist.org/packages/monolog/monolog) version 1.21.0 or higher for logging.
+
 Quick setup
 -----------
 
