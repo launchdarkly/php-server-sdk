@@ -8,7 +8,6 @@ LaunchDarkly SDK for PHP
 Requirements
 ------------
 1. PHP 5.5 or higher. 
-1. A [PSR-3](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md)-compatible logger. We suggest [monolog](https://packagist.org/packages/monolog/monolog) version 1.21.0 or higher.
 
 Quick setup
 -----------
@@ -16,7 +15,6 @@ Quick setup
 1. Install the PHP SDK and monolog for logging with [Composer](https://getcomposer.org/)
 
         php composer.phar require launchdarkly/launchdarkly-php
-        php composer.phar require monolog/monolog:1.21.0
 
 1. After installing, require Composer's autoloader:
 
