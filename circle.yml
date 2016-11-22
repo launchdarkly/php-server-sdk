@@ -1,6 +1,7 @@
 machine:
   php:
-    version: 5.3.25
+    #TODO: This breaks circle since this version isn't included. Figure out how to install php 5.3.29
+    version: 5.3.29
 
 test:
   override:
