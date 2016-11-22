@@ -20,7 +20,7 @@
         }
     ],
     "require": {
-        "php": "==5.3",
+        "php": "5.3.*",
         "guzzle/guzzle": "dev-master#ecb935d2d0ecd8cddae4dcfb90515cac5e2cb023",
         "psr/log": "1.0.0"
     },
