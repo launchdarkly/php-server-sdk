@@ -5,3 +5,6 @@ We encourage pull-requests and other contributions from the community. We've als
 
 
 This can help with getting php 5.3 on your mac: https://github.com/Homebrew/homebrew-php
+
+To see composer dependency graph: 
+`php composer.phar show -i -t`
