@@ -1,7 +1,6 @@
 <?php
 namespace LaunchDarkly\Tests;
 
-use InvalidArgumentException;
 use LaunchDarkly\FeatureRequester;
 use LaunchDarkly\LDClient;
 use LaunchDarkly\LDUser;

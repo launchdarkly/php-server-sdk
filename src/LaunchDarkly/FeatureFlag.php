@@ -27,7 +27,7 @@ class FeatureFlag {
     /** @var bool */
     protected $_deleted = false;
 
-    protected function __construct($key,
+    public function __construct($key,
                                    $version,
                                    $on,
                                    array $prerequisites,
@@ -242,7 +242,7 @@ class WeightedVariation {
     /** @var int */
     private $_weight = null;
 
-    private function __construct($variation, $weight) {
+    public function __construct($variation, $weight) {
         $this->_variation = $variation;
         $this->_weight = $weight;
     }
@@ -274,7 +274,7 @@ class Target {
     /** @var int */
     private $_variation = null;
 
-    protected function __construct(array $values, $variation) {
+    public function __construct(array $values, $variation) {
         $this->_values = $values;
         $this->_variation = $variation;
     }
@@ -338,7 +338,7 @@ class Rollout {
     /** @var string */
     private $_bucketBy = null;
 
-    protected function __construct(array $variations, $bucketBy) {
+    public function __construct(array $variations, $bucketBy) {
         $this->_variations = $variations;
         $this->_bucketBy = $bucketBy;
     }
