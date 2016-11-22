@@ -5,5 +5,6 @@ machine:
 test:
   override:
     # syntax check php files
-    - find . -name "*.php" -type f -print0 | xargs -0 -I {} php -l {}
+    - find ./src -name "*.php" -type f -print0 | xargs -0 -I {} php -l {}
+    - find ./tests -name "*.php" -type f -print0 | xargs -0 -I {} php -l {}
     - vendor/bin/phpunit tests
