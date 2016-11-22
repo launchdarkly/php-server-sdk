@@ -75,7 +75,7 @@ class LDClient {
         }
 
         if (!isset($options['logger'])) {
-            $logger = new Logger("LaunchDarkly", [new ErrorLogHandler()]);
+            $logger = new Logger("LaunchDarkly", array(new ErrorLogHandler()));
             $options['logger'] = $logger;
         }
         $this->_logger = $options['logger'];
@@ -229,15 +229,12 @@ class LDClient {
             return null;
         }
 
-        /**
-         * @param $flag FeatureFlag
-         * @return mixed|null
-         */
-        $eval = function($flag) use($user) {
-            return $flag->evaluate($user, $this->_featureRequester)->getValue();
-        };
+        $results = array();
 
-        return array_map($eval, $flags);
+        foreach ($flags as $flag)
+            array_push($results, $flag->evaluate($user, $this->_featureRequester)->getValue());
+
+        return $results;
     }
 
     /** Generates an HMAC sha256 hash for use in Secure mode: https://github.com/launchdarkly/js-client#secure-mode
