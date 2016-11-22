@@ -209,7 +209,7 @@ class FeatureFlag {
 class EvalResult {
     private $_value = null;
     /** @var array */
-    private $_prerequisiteEvents = [];
+    private $_prerequisiteEvents = array();
 
     /**
      * EvalResult constructor.
