@@ -64,10 +64,10 @@ class LDClient {
         }
 
         if (!isset($options['timeout'])) {
-            $options['timeout'] = 3;
+            $options['timeout'] = 10;
         }
         if (!isset($options['connect_timeout'])) {
-            $options['connect_timeout'] = 3;
+            $options['connect_timeout'] = 10;
         }
 
         if (!isset($options['capacity'])) {
@@ -232,7 +232,7 @@ class LDClient {
         $results = array();
 
         foreach ($flags as $flag)
-            array_push($results, $flag->evaluate($user, $this->_featureRequester)->getValue());
+            $results[$flag->getKey()] = $flag->evaluate($user, $this->_featureRequester)->getValue();
 
         return $results;
     }

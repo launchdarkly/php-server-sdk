@@ -306,7 +306,7 @@ class Prerequisite {
     /** @var int */
     private $_variation = null;
 
-    protected function __construct($key, $variation) {
+    public function __construct($key, $variation) {
         $this->_key = $key;
         $this->_variation = $variation;
     }
