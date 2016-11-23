@@ -6,7 +6,7 @@ class Rule extends VariationOrRollout {
     /** @var Clause[] */
     private $_clauses = array();
 
-    protected function __construct($variation, $rollout, array $clauses) {
+    public function __construct($variation, $rollout, array $clauses) {
         parent::__construct($variation, $rollout);
         $this->_clauses = $clauses;
     }

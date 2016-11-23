@@ -11,7 +11,7 @@ class VariationOrRollout {
     /** @var Rollout | null */
     private $_rollout = null;
 
-    protected function __construct($variation, $rollout) {
+    public function __construct($variation, $rollout) {
         $this->_variation = $variation;
         $this->_rollout = $rollout;
     }

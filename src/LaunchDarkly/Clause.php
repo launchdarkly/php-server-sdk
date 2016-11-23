@@ -12,7 +12,7 @@ class Clause {
     /** @var bool  */
     private $_negate = false;
 
-    private function __construct($attribute, $op, array $values, $negate) {
+    public function __construct($attribute, $op, array $values, $negate) {
         $this->_attribute = $attribute;
         $this->_op = $op;
         $this->_values = $values;

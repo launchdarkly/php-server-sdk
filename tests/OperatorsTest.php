@@ -47,6 +47,6 @@ class OperatorsTest extends \PHPUnit_Framework_TestCase {
 
 
         $this->assertEquals(null, Operators::parseTime("NOT A REAL TIMESTAMP"));
-        $this->assertEquals(null, Operators::parseTime([]));
+        $this->assertEquals(null, Operators::parseTime(array()));
     }
 }

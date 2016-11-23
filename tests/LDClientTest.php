@@ -1,7 +1,6 @@
 <?php
 namespace LaunchDarkly\Tests;
 
-use InvalidArgumentException;
 use LaunchDarkly\FeatureRequester;
 use LaunchDarkly\LDClient;
 use LaunchDarkly\LDUser;
@@ -55,7 +54,7 @@ class LDClientTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testSecureModeHash() {
-        $client = new LDClient("secret", ['offline' => true]);
+        $client = new LDClient("secret", array('offline' => true));
         $user = new LDUser("Message");
         $this->assertEquals("aa747c502a898200f9e4fa21bac68136f886a0e27aec70ba06daf2e2a5cb5597",  $client->secureModeHash($user));
     }
