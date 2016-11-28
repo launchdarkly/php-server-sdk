@@ -52,7 +52,7 @@ Using Guzzle
 To use Guzzle it must be required as a dependency:
 
     php composer.phar require "guzzlehttp/guzzle:6.2.1"
-    php composer.phar require "kevinrob/guzzle-cache-middleware": "1.4.1"
+    php composer.phar require "kevinrob/guzzle-cache-middleware:1.4.1"
 
 It will then be used as the default way of fetching flags.
 
