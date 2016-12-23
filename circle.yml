@@ -4,4 +4,4 @@ machine:
 
 test:
   override:
-    - vendor/bin/phpunit tests
+    - vendor/bin/phpunit tests --coverage-text
