@@ -131,7 +131,7 @@ class LDClient {
                     $this->_eventProcessor->enqueue($e);
                 }
             }
-            if ($evalResult->getValue() != null) {
+            if ($evalResult->getValue() !== null) {
                 $this->_sendFlagRequestEvent($key, $user, $evalResult->getValue(), $default, $flag->getVersion());
                 return $evalResult->getValue();
             }
