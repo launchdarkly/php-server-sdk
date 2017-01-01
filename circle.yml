@@ -1,7 +1,29 @@
 machine:
   php:
     version: 5.6.17
+dependencies:
+  pre:
+    - curl -s -L -O https://github.com/phpbrew/phpbrew/raw/master/phpbrew
+    - chmod +x phpbrew
+    - sudo mv phpbrew /usr/bin/phpbrew
+    - phpbrew init
+    - phpbrew known --update
+    - phpbrew update
+    - phpbrew install 5.5.38
+    - phpbrew install 7.0.14
+    - phpbrew install 7.1.0
 
 test:
   override:
     - vendor/bin/phpunit tests --coverage-text
+    - composer update && vendor/bin/phpunit tests
+    - composer update --prefer-lowest && vendor/bin/phpunit tests
+
+    - source ~/.phpbrew/bashrc && phpbrew switch 5.5.38 && php -v && composer update && vendor/bin/phpunit tests
+    - source ~/.phpbrew/bashrc && phpbrew switch 5.5.38 && php -v && composer update --prefer-lowest && vendor/bin/phpunit tests
+
+    - source ~/.phpbrew/bashrc && phpbrew switch 7.0.14 && php -v && composer update && vendor/bin/phpunit tests
+    - source ~/.phpbrew/bashrc && phpbrew switch 7.0.14 && php -v && composer update --prefer-lowest && vendor/bin/phpunit tests
+
+    - source ~/.phpbrew/bashrc && phpbrew switch 7.1.0 && php -v && composer update && vendor/bin/phpunit tests
+    - source ~/.phpbrew/bashrc && phpbrew switch 7.1.0 && php -v && composer update --prefer-lowest && vendor/bin/phpunit tests
