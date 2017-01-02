@@ -88,7 +88,7 @@ class FeatureFlag {
         }
         if ($this->isOn()) {
             $result = $this->_evaluate($user, $featureRequester, $prereqEvents);
-            if ($result != null) {
+            if ($result !== null) {
                 return new EvalResult($result, $prereqEvents);
             }
         }
