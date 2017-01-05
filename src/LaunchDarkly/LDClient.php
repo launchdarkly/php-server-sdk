@@ -10,7 +10,7 @@ use Psr\Log\LoggerInterface;
  */
 class LDClient {
     const DEFAULT_BASE_URI = 'https://app.launchdarkly.com';
-    const VERSION = '2.0.2';
+    const VERSION = '2.0.3';
 
     /** @var string */
     protected $_sdkKey;
@@ -131,7 +131,7 @@ class LDClient {
                     $this->_eventProcessor->enqueue($e);
                 }
             }
-            if ($evalResult->getValue() != null) {
+            if ($evalResult->getValue() !== null) {
                 $this->_sendFlagRequestEvent($key, $user, $evalResult->getValue(), $default, $flag->getVersion());
                 return $evalResult->getValue();
             }
