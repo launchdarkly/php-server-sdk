@@ -10,6 +10,7 @@
         }
     ],
     "require": {
+        "monolog/monolog": "1.21.0",
         "php": ">=5.3",
         "predis/predis": "1.0.*"
     },
