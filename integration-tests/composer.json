@@ -11,6 +11,7 @@
     ],
     "require": {
         "php": ">=5.3",
+        "monolog/monolog": "^1.22",
         "predis/predis": "1.0.*"
     },
     "require-dev": {
