@@ -3,6 +3,8 @@ namespace LaunchDarkly\Tests;
 
 require_once 'vendor/autoload.php';
 
+use LaunchDarkly\ApcLDDFeatureRequester;
+use LaunchDarkly\ApcuLDDFeatureRequester;
 use LaunchDarkly\LDClient;
 use LaunchDarkly\LDUserBuilder;
 
@@ -28,7 +30,8 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
                                         "scheme" => "tcp",
                                         "host" => 'localhost',
                                         "port" => 6379));
-        $client = new LDClient("BOGUS_API_KEY", array('feature_requester_class' => '\\LaunchDarkly\\ApcLDDFeatureRequester',
+        $client = new LDClient("BOGUS_API_KEY", array(
+            'feature_requester_class' => extension_loaded('apcu') ? ApcuLDDFeatureRequester::class : ApcLDDFeatureRequester::class,
             'apc_expiration' => 1));
         $builder = new LDUserBuilder(3);
         $user = $builder->build();
@@ -42,7 +45,11 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
         $redis->hset("launchdarkly:features", 'foo', $this->gen_feature("foo", "baz"));
         $this->assertEquals("bar", $client->variation('foo', $user, 'jim'));
 
-        apc_delete("launchdarkly:features.foo");
+        if (extension_loaded('apcu')) {
+            \apcu_delete("launchdarkly:features.foo");
+        } else {
+            \apc_delete("launchdarkly:features.foo");
+        }
         $this->assertEquals("baz", $client->variation('foo', $user, 'jim'));
     }
 
