@@ -5,6 +5,7 @@ require_once 'vendor/autoload.php';
 
 use LaunchDarkly\LDClient;
 use LaunchDarkly\LDUserBuilder;
+use Predis\Client;
 
 class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
 
@@ -24,6 +25,9 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testGetApc() {
+        if (!extension_loaded('apc')) {
+            self::markTestSkipped('Install `apc` extension to run this test.');
+        }
         $redis = new \Predis\Client(array(
                                         "scheme" => "tcp",
                                         "host" => 'localhost',
@@ -44,6 +48,38 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
 
         apc_delete("launchdarkly:features.foo");
         $this->assertEquals("baz", $client->variation('foo', $user, 'jim'));
+    }
+
+    public function testGetApcu() {
+        if (!extension_loaded('apcu')) {
+            self::markTestSkipped('Install `apcu` extension to run this test.');
+        }
+        
+        $redis = new Client([
+            'scheme' => 'tcp',
+            'host' => 'localhost',
+            'port' => 6379
+        ]);
+        
+        $client = new LDClient('BOGUS_API_KEY', [
+            'feature_requester_class' => '\LaunchDarkly\ApcuLDDFeatureRequester',
+            'apc_expiration' => 1
+        ]);
+        
+        $builder = new LDUserBuilder(3);
+        $user = $builder->build();
+
+        $redis->del('launchdarkly:features');
+        $this->assertEquals('alice', $client->variation('fiz', $user, 'alice'));
+        $redis->hset('launchdarkly:features', 'fiz', $this->gen_feature('fiz', 'buz'));
+        $this->assertEquals('buz', $client->variation('fiz', $user, 'alice'));
+
+        # cached value so not updated
+        $redis->hset('launchdarkly:features', 'fiz', $this->gen_feature('fiz', 'bob'));
+        $this->assertEquals('buz', $client->variation('fiz', $user, 'alice'));
+
+        \apcu_delete('launchdarkly:features.fiz');
+        $this->assertEquals('bob', $client->variation('fiz', $user, 'alice'));
     }
 
     private function gen_feature($key, $val) {

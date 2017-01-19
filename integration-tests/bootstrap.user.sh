@@ -21,6 +21,7 @@ echo
 echo "install php54-apc"
 phpbrew ext install apc
 echo "apc.enable_cli = 1" >> ~/.phpbrew/php/php-5.4.34/etc/php.ini
+php -i | grep apc
 echo "date.timezone =UTC" >> ~/.phpbrew/php/php-5.4.34/etc/php.ini
 
 echo

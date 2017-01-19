@@ -35,3 +35,7 @@ cat <<EOF > /home/vagrant/.vimrc
 set tabstop=4
 EOF
 chown vagrant.vagrant /home/vagrant/.vimrc
+
+# enable APC for php5 CLI
+echo "apc.enable_cli = 1" >> /etc/php5/cli/conf.d/20-apcu.ini
+php -i | grep apc
