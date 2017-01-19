@@ -35,25 +35,3 @@ cat <<EOF > /home/vagrant/.vimrc
 set tabstop=4
 EOF
 chown vagrant.vagrant /home/vagrant/.vimrc
-
-su - vagrant
-cd ~vagrant
-pwd
-curl -s -L -O https://github.com/phpbrew/phpbrew/raw/master/phpbrew
-chmod +x phpbrew
-sudo mv phpbrew /usr/bin/phpbrew
-phpbrew init
-phpbrew known --update
-phpbrew update
-phpbrew install 5.4.34 +default
-
-echo "source $HOME/.phpbrew/bashrc" >> /home/vagrant/.bashrc
-source $HOME/.bashrc
-phpbrew switch php-5.4.34
-phpbrew ext install apc
-echo "apc.enable_cli = 1" >> ~/.phpbrew/php/php-5.4.34/etc/php.ini
-
-
-cd /home/vagrant/project/integration-tests
-curl -sS https://getcomposer.org/installer | php
-php composer.phar install
