@@ -14,22 +14,21 @@
         }
     ],
     "require": {
-        "monolog/monolog": "1.21.0",
+        "monolog/monolog": "1.21.*",
         "php": ">=5.5",
-        "psr/log": "1.0.0"
+        "psr/log": "1.0.*"
     },
     "require-dev": {
-        "guzzlehttp/guzzle": "6.2.1",
-        "kevinrob/guzzle-cache-middleware": "1.4.1",
+        "guzzlehttp/guzzle": "^6.2.1",
+        "kevinrob/guzzle-cache-middleware": "^1.4.1",
         "phpunit/phpunit": ">=4.8.26 <5.4",
         "phpdocumentor/phpdocumentor": "2.*",
         "predis/predis": "1.0.*",
         "zendframework/zend-serializer": "2.7.*"
     },
     "suggested": {
-        "guzzlehttp/guzzle": "6.2.1",
-        "kevinrob/guzzle-cache-middleware": "1.4.1",
-        "monolog/monolog": "1.21.0",
+        "guzzlehttp/guzzle": "^6.2.1",
+        "kevinrob/guzzle-cache-middleware": "^1.4.1",
         "predis/predis": "1.0.*"
     },
     "autoload": {
