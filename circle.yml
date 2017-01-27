@@ -14,11 +14,11 @@ test:
     - composer update && vendor/bin/phpunit tests
     - composer update --prefer-lowest && vendor/bin/phpunit tests
 
-    - docker run -it -v `pwd`:/php-client php:7.0-alpine sh -c "php -v && php -r \"copy('https://getcomposer.org/installer', 'composer-setup.php');\" && php composer-setup.php --install-dir=/usr/local/bin && cd /php-client && composer.phar update && vendor/bin/phpunit"
-    - docker run -it -v `pwd`:/php-client php:7.0-alpine sh -c "php -v && php -r \"copy('https://getcomposer.org/installer', 'composer-setup.php');\" && php composer-setup.php --install-dir=/usr/local/bin && cd /php-client && composer.phar update --prefer-lowest && vendor/bin/phpunit"
+    - docker run -it -v `pwd`:/php-client php:7.0-alpine sh -c "curl -s https://getcomposer.org/installer | php && cd /php-client && /composer.phar update && vendor/bin/phpunit"
+    - docker run -it -v `pwd`:/php-client php:7.0-alpine sh -c "curl -s https://getcomposer.org/installer | php && cd /php-client && /composer.phar update --prefer-lowest && vendor/bin/phpunit"
 
-    - docker run -it -v `pwd`:/php-client php:7.1-alpine sh -c "php -v && php -r \"copy('https://getcomposer.org/installer', 'composer-setup.php');\" && php composer-setup.php --install-dir=/usr/local/bin && cd /php-client && composer.phar update && vendor/bin/phpunit"
-    - docker run -it -v `pwd`:/php-client php:7.1-alpine sh -c "php -v && php -r \"copy('https://getcomposer.org/installer', 'composer-setup.php');\" && php composer-setup.php --install-dir=/usr/local/bin && cd /php-client && composer.phar update --prefer-lowest && vendor/bin/phpunit"
+    - docker run -it -v `pwd`:/php-client php:7.1-alpine sh -c "curl -s https://getcomposer.org/installer | php && cd /php-client && /composer.phar update && vendor/bin/phpunit"
+    - docker run -it -v `pwd`:/php-client php:7.1-alpine sh -c "curl -s https://getcomposer.org/installer | php && cd /php-client && /composer.phar update --prefer-lowest && vendor/bin/phpunit"
 
-    - docker run -it -v `pwd`:/php-client nyanpass/php5.5:5.5-alpine sh -c "php -v && php -r \"copy('https://getcomposer.org/installer', 'composer-setup.php');\" && php composer-setup.php --install-dir=/usr/local/bin && cd /php-client && composer.phar update && vendor/bin/phpunit"
-    - docker run -it -v `pwd`:/php-client nyanpass/php5.5:5.5-alpine sh -c "php -v && php -r \"copy('https://getcomposer.org/installer', 'composer-setup.php');\" && php composer-setup.php --install-dir=/usr/local/bin && cd /php-client && composer.phar update --prefer-lowest && vendor/bin/phpunit"
+    - docker run -it -v `pwd`:/php-client nyanpass/php5.5:5.5-alpine sh -c "curl -s https://getcomposer.org/installer | php && cd /php-client && /composer.phar update && vendor/bin/phpunit"
+    - docker run -it -v `pwd`:/php-client nyanpass/php5.5:5.5-alpine sh -c "curl -s https://getcomposer.org/installer | php && cd /php-client && /composer.phar update --prefer-lowest && vendor/bin/phpunit"
