@@ -2,6 +2,10 @@
 
 All notable changes to the LaunchDarkly Java SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [2.0.4] - 2017-01-26
+### Changed
+- Made Composer requirements less strict
+
 ## [2.0.3] - 2017-01-05
 ### Changed
 - Fixed botched 2.0.2 release: Better handling of null vs false when evaluating.
