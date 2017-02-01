@@ -16,7 +16,7 @@
     "require": {
         "monolog/monolog": "1.21.*",
         "php": ">=5.5",
-        "psr/log": "1.0.*"
+        "psr/log": "~1.0.0"
     },
     "require-dev": {
         "guzzlehttp/guzzle": "^6.2.1",
