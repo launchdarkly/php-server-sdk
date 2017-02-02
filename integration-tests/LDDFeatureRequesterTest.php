@@ -5,6 +5,7 @@ require_once 'vendor/autoload.php';
 
 use LaunchDarkly\LDClient;
 use LaunchDarkly\LDUserBuilder;
+use Predis\Client;
 
 class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
 
@@ -24,6 +25,9 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testGetApc() {
+        if (!extension_loaded('apc')) {
+            self::markTestSkipped('Install `apc` extension to run this test.');
+        }
         $redis = new \Predis\Client(array(
                                         "scheme" => "tcp",
                                         "host" => 'localhost',
@@ -46,20 +50,87 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals("baz", $client->variation('foo', $user, 'jim'));
     }
 
+    public function testGetApcu() {
+        if (!extension_loaded('apcu')) {
+            self::markTestSkipped('Install `apcu` extension to run this test.');
+        }
+        
+        $redis = new Client([
+            'scheme' => 'tcp',
+            'host' => 'localhost',
+            'port' => 6379
+        ]);
+        
+        $client = new LDClient('BOGUS_API_KEY', [
+            'feature_requester_class' => '\LaunchDarkly\ApcuLDDFeatureRequester',
+            'apc_expiration' => 1
+        ]);
+        
+        $builder = new LDUserBuilder(3);
+        $user = $builder->build();
+
+        $redis->del('launchdarkly:features');
+        $this->assertEquals('alice', $client->variation('fiz', $user, 'alice'));
+        $redis->hset('launchdarkly:features', 'fiz', $this->gen_feature('fiz', 'buz'));
+        $this->assertEquals('buz', $client->variation('fiz', $user, 'alice'));
+
+        # cached value so not updated
+        $redis->hset('launchdarkly:features', 'fiz', $this->gen_feature('fiz', 'bob'));
+        $this->assertEquals('buz', $client->variation('fiz', $user, 'alice'));
+
+        \apcu_delete('launchdarkly:features.fiz');
+        $this->assertEquals('bob', $client->variation('fiz', $user, 'alice'));
+    }
+
     private function gen_feature($key, $val) {
-        $data = <<<EOF
-           {"name": "Feature $key", "key": "$key", "kind": "flag", "salt": "Zm9v", "on": true,
-            "variations": [{"value": "$val", "weight": 100,
-                            "targets": [{"attribute": "key", "op": "in", "values": []}],
-                            "userTarget": {"attribute": "key", "op": "in", "values": []}},
-                           {"value": false, "weight": 0,
-                            "targets": [{"attribute": "key", "op": "in", "values": []}],
-                            "userTarget": {"attribute": "key", "op": "in", "values": []}}],
-            "commitDate": "2015-09-08T21:24:16.712Z",
-            "creationDate": "2015-09-08T21:06:16.527Z",
-            "version": 4}
-EOF;
-         return $data;
+        $data = [
+            'name' => 'Feature ' . $key,
+            'key' => $key,
+            'kind' => 'flag',
+            'salt' => 'Zm9v',
+            'on' => true,
+            'variations' => [
+                $val,
+                false,
+            ],
+            'commitDate' => '2015-09-08T21:24:16.712Z',
+            'creationDate' => '2015-09-08T21:06:16.527Z',
+            'version' => 4,
+            'prerequisites' => [],
+            'targets' => [
+                [
+                    'values' => [
+                        $val,
+                    ],
+                    'variation' => 0,
+                ],
+                [
+                    'values' => [
+                        false,
+                    ],
+                    'variation' => 1,
+                ],
+            ],
+            'rules' => [],
+            'fallthrough' => [
+                'rollout' => [
+                    'variations' => [
+                        [
+                            'variation' => 0,
+                            'weight' => 95000,
+                        ],
+                        [
+                            'variation' => 1,
+                            'weight' => 5000,
+                        ],
+                    ],
+                ],
+            ],
+            'offVariation' => null,
+            'deleted' => false,
+        ];
+        
+        return \json_encode($data);
     }
 
 }

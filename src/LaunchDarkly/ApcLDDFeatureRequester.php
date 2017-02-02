@@ -4,6 +4,9 @@ namespace LaunchDarkly;
 
 /**
  * Feature requester from an LDD-populated redis, with APC caching
+ * @deprecated Per the docs (http://php.net/manual/en/intro.apc.php):
+ * "This extension (APC) is considered unmaintained and dead".
+ * Install APCu and use \LaunchDarkly\ApcuLDDFeatureRequester instead!
  *
  * @package LaunchDarkly
  */
@@ -18,10 +21,19 @@ class ApcLDDFeatureRequester extends LDDFeatureRequester {
         }
     }
 
+    /**
+     * @param $key
+     * @param $success
+     * @return mixed
+     */
+    protected function fetch($key, &$success = null)
+    {
+        return \apc_fetch($key, $success);
+    }
 
     protected function get_from_cache($key) {
         $key = self::make_cache_key($key);
-        $enabled = apc_fetch($key);
+        $enabled = $this->fetch($key);
         if ($enabled === false) {
             return null;
         }
@@ -30,8 +42,19 @@ class ApcLDDFeatureRequester extends LDDFeatureRequester {
         }
     }
 
+    /**
+     * @param $key
+     * @param $var
+     * @param int $ttl
+     * @return mixed
+     */
+    protected function add($key, $var, $ttl = 0)
+    {
+        return \apc_add($key, $var, $ttl);
+    }
+
     protected function store_in_cache($key, $val) {
-        apc_add($this->make_cache_key($key), $val, $this->_expiration);
+        $this->add($this->make_cache_key($key), $val, $this->_expiration);
     }
 
     private function make_cache_key($name) {
