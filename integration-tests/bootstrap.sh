@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -uxe
 # init
 apt-get update 2> /dev/null
 
