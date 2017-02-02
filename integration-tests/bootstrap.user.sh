@@ -1,4 +1,5 @@
 #!/bin/bash
+set -uxe
 
 echo
 echo "install phpbrew and php54"
