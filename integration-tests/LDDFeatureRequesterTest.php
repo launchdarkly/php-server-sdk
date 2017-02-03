@@ -1,20 +1,21 @@
 <?php
 namespace LaunchDarkly\Tests;
 
-require_once 'vendor/autoload.php';
-
 use LaunchDarkly\LDClient;
 use LaunchDarkly\LDUserBuilder;
+use LaunchDarkly\LDDFeatureRequester;
+use LaunchDarkly\ApcLDDFeatureRequester;
 use Predis\Client;
+use LaunchDarkly\ApcuLDDFeatureRequester;
 
 class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
 
     public function testGet() {
-        $redis = new \Predis\Client(array(
+        $redis = new Client(array(
                                       "scheme" => "tcp",
                                       "host" => 'localhost',
                                       "port" => 6379));
-        $client = new LDClient("BOGUS_API_KEY", array('feature_requester_class' => '\\LaunchDarkly\\LDDFeatureRequester'));
+        $client = new LDClient("BOGUS_API_KEY", array('feature_requester_class' => LDDFeatureRequester::class));
         $builder = new LDUserBuilder(3);
         $user = $builder->build();
 
@@ -28,11 +29,11 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
         if (!extension_loaded('apc')) {
             self::markTestSkipped('Install `apc` extension to run this test.');
         }
-        $redis = new \Predis\Client(array(
+        $redis = new Client(array(
                                         "scheme" => "tcp",
                                         "host" => 'localhost',
                                         "port" => 6379));
-        $client = new LDClient("BOGUS_API_KEY", array('feature_requester_class' => '\\LaunchDarkly\\ApcLDDFeatureRequester',
+        $client = new LDClient("BOGUS_API_KEY", array('feature_requester_class' => ApcLDDFeatureRequester::class,
             'apc_expiration' => 1));
         $builder = new LDUserBuilder(3);
         $user = $builder->build();
@@ -62,7 +63,7 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
         ]);
         
         $client = new LDClient('BOGUS_API_KEY', [
-            'feature_requester_class' => '\LaunchDarkly\ApcuLDDFeatureRequester',
+            'feature_requester_class' => ApcuLDDFeatureRequester::class,
             'apc_expiration' => 1
         ]);
         
