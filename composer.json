@@ -14,7 +14,7 @@
         }
     ],
     "require": {
-        "monolog/monolog": "1.21.*",
+        "monolog/monolog": "1.*",
         "php": ">=5.5",
         "psr/log": "1.0.*"
     },
