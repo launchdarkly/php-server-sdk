@@ -2,6 +2,10 @@
 
 All notable changes to the LaunchDarkly Java SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [2.0.6] - 2017-02-07
+### Changed
+- Use minimum versions in composer.json
+
 ## [2.0.5] - 2017-02-03
 ### Changed
 - Made Monolog dependency version less strict
