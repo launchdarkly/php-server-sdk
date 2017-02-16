@@ -21,7 +21,7 @@ apt-get install -y php-apc 2> /dev/null
 apt-get install -y phpunit 2> /dev/null
 
 # phpbrew stuff for 5.4
-apt-get build-dep php5 2> /dev/null
+apt-get build-dep -y php5 2> /dev/null
 apt-get install -y php5 php5-dev php-pear autoconf automake curl build-essential libxslt1-dev re2c libxml2 libxml2-dev php5-cli bison libbz2-dev libreadline-dev 2> /dev/null
 apt-get install -y libfreetype6 libfreetype6-dev libpng12-0 libpng12-dev libjpeg-dev libjpeg8-dev libjpeg8  libgd-dev libgd3 libxpm4 libltdl7 libltdl-dev 2> /dev/null
 apt-get install -y libssl-dev openssl 2> /dev/null

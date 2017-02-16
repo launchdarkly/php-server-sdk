@@ -15,7 +15,6 @@ dependencies:
 test:
   override:
     - vendor/bin/phpunit tests --coverage-text
-    - ln -s vendor integration-tests/vendor
     - vendor/bin/phpunit integration-tests/LDDFeatureRequesterTest.php
 
     - composer update && vendor/bin/phpunit tests

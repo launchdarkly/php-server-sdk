@@ -17,7 +17,7 @@ class LDClientTest extends \PHPUnit_Framework_TestCase {
     public function testToggleDefault() {
         MockFeatureRequester::$val = null;
         $client = new LDClient("someKey", array(
-            'feature_requester_class' => '\\LaunchDarkly\Tests\\MockFeatureRequester',
+            'feature_requester_class' => MockFeatureRequester::class,
             'events' => false
             ));
 
@@ -29,7 +29,7 @@ class LDClientTest extends \PHPUnit_Framework_TestCase {
     public function testToggleFromArray() {
         MockFeatureRequester::$val = null;
         $client = new LDClient("someKey", array(
-            'feature_requester_class' => '\\LaunchDarkly\Tests\\MockFeatureRequester',
+            'feature_requester_class' => MockFeatureRequester::class,
             'events' => false,
             'defaults' => array('foo' => 'fromarray')
         ));
@@ -42,7 +42,7 @@ class LDClientTest extends \PHPUnit_Framework_TestCase {
     public function testToggleEvent() {
         MockFeatureRequester::$val = null;
         $client = new LDClient("someKey", array(
-            'feature_requester_class' => '\\LaunchDarkly\Tests\\MockFeatureRequester',
+            'feature_requester_class' => MockFeatureRequester::class,
             'events' => true
         ));
 
@@ -56,7 +56,7 @@ class LDClientTest extends \PHPUnit_Framework_TestCase {
 
     public function testOnlyValidFeatureRequester() {
         $this->setExpectedException(InvalidArgumentException::class);
-        new LDClient("BOGUS_SDK_KEY", ['feature_requester_class' => 'stdClass']);
+        new LDClient("BOGUS_SDK_KEY", ['feature_requester_class' => \stdClass::class]);
     }
 
     public function testSecureModeHash() {
