@@ -140,5 +140,52 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase {
         FeatureFlag::decode(\GuzzleHttp\json_decode(FeatureFlagTest::$json1, true));
         FeatureFlag::decode(\GuzzleHttp\json_decode(FeatureFlagTest::$json2, true));
     }
+    
+    public function dataDecodeMulti()
+    {
+        return [
+            'null-prerequisites' => [
+                [
+                    'key' => 'sysops-test',
+                    'version' => 14,
+                    'on' => true,
+                    'prerequisites' => NULL,
+                    'salt' => 'c3lzb3BzLXRlc3Q=',
+                    'sel' => '8ed13de1bfb14507ba7e6dde01f3e035',
+                    'targets' => [
+                        [
+                            'values' => [],
+                            'variation' => 0,
+                        ],
+                        [
+                            'values' => [],
+                            'variation' => 1,
+                        ],
+                    ],
+                    'rules' => [],
+                    'fallthrough' => [
+                        'variation' => 0,
+                    ],
+                    'offVariation' => NULL,
+                    'variations' => [
+                        true,
+                        false,
+                    ],
+                    'deleted' => false,
+                ]
+            ],
+        ];
+    }
+    
+    /**
+     * @dataProvider dataDecodeMulti
+     * @param array $feature
+     */
+    public function testDecodeMulti(array $feature)
+    {
+        $featureFlag = FeatureFlag::decode($feature);
+        
+        self::assertInstanceOf(FeatureFlag::class, $featureFlag);
+    }
 }
 
