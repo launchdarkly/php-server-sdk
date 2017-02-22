@@ -96,7 +96,7 @@ class LDDFeatureRequester implements FeatureRequester {
         $redis = $this->get_connection();
         $raw = $redis->hgetall($this->_features_key);
         if ($raw) {
-            $allFlags = array_map(FeatureFlag::getDecoder(), json_decode($raw, true));
+            $allFlags = array_map(FeatureFlag::getDecoder(), $this->decodeFeatures($raw));
             /**
              * @param $flag FeatureFlag
              * @return bool
@@ -109,5 +109,19 @@ class LDDFeatureRequester implements FeatureRequester {
             $this->_logger->warning("LDDFeatureRequester: Attempted to get all features, instead got nothing.");
             return null;
         }
+    }
+
+    /**
+     * @param array $features
+     *
+     * @return array
+     */
+    private function decodeFeatures(array $features)
+    {
+        foreach ($features as $featureKey => $feature) {
+            $features[$featureKey] = json_decode($feature, true);
+        }
+
+        return $features;
     }
 }
