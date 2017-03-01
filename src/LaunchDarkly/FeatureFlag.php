@@ -57,7 +57,7 @@ class FeatureFlag {
                 $v['key'],
                 $v['version'],
                 $v['on'],
-                array_map(Prerequisite::getDecoder(), $v['prerequisites']),
+                array_map(Prerequisite::getDecoder(), $v['prerequisites'] ?: []),
                 $v['salt'],
                 array_map(Target::getDecoder(), $v['targets']),
                 array_map(Rule::getDecoder(), $v['rules']),
