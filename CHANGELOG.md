@@ -2,6 +2,11 @@
 
 All notable changes to the LaunchDarkly Java SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [2.0.7] - 2017-03-03
+### Changed
+- Removed warning when calling `allFlags` via `LDDFeatureRequester`
+- Removed warning when a feature flag's prerequisites happen to be null
+
 ## [2.0.6] - 2017-02-07
 ### Changed
 - Use minimum versions in composer.json
