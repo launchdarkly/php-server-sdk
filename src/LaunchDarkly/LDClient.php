@@ -24,7 +24,7 @@ class LDClient {
     protected $_send_events = true;
     /** @var array|mixed */
     protected $_defaults = array();
-    /** @var mixed|LoggerInterface */
+    /** @var LoggerInterface */
     protected $_logger;
 
     /** @var  FeatureRequester */
@@ -113,11 +113,11 @@ class LDClient {
         try {
             if (is_null($user) || is_null($user->getKey())) {
                 $this->_sendFlagRequestEvent($key, $user, $default, $default);
-                $this->_logger->warn("Variation called with null user or null user key! Returning default value");
+                $this->_logger->warning("Variation called with null user or null user key! Returning default value");
                 return $default;
             }
             if ($user->isKeyBlank()) {
-                $this->_logger->warn("User key is blank. Flag evaluation will proceed, but the user will not be stored in LaunchDarkly.");
+                $this->_logger->warning("User key is blank. Flag evaluation will proceed, but the user will not be stored in LaunchDarkly.");
             }
             $flag = $this->_featureRequester->get($key);
 
@@ -178,7 +178,7 @@ class LDClient {
             return;
         }
         if (is_null($user) || $user->isKeyBlank()) {
-            $this->_logger->warn("Track called with null user or null/empty user key!");
+            $this->_logger->warning("Track called with null user or null/empty user key!");
         }
 
         $event = array();
@@ -200,7 +200,7 @@ class LDClient {
             return;
         }
         if (is_null($user) || $user->isKeyBlank()) {
-            $this->_logger->warn("Track called with null user or null/empty user key!");
+            $this->_logger->warning("Track called with null user or null/empty user key!");
         }
 
         $event = array();
