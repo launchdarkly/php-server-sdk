@@ -99,7 +99,7 @@ class LDClient {
      *
      * @param string $key The unique key for the feature flag
      * @param LDUser $user The end user requesting the flag
-     * @param boolean $default The default value of the flag
+     * @param mixed $default The default value of the flag
      *
      * @return mixed The result of the Feature Flag evaluation, or $default if any errors occurred.
      */
