@@ -82,6 +82,20 @@ class LDClient {
 
         $this->_eventProcessor = new EventProcessor($sdkKey, $options);
 
+        $this->_featureRequester = $this->getFeatureRequester($options, $sdkKey);
+    }
+    
+    /**
+     * @param mixed[] $options
+     * @param string $sdkKey
+     * @return FeatureRequester
+     */
+    private function getFeatureRequester(array $options, $sdkKey)
+    {
+        if (isset($options['feature_requester']) && $options['feature_requester'] instanceof FeatureRequester) {
+            return $options['feature_requester'];
+        }
+        
         if (isset($options['feature_requester_class'])) {
             $featureRequesterClass = $options['feature_requester_class'];
         } else {
@@ -91,7 +105,7 @@ class LDClient {
         if (!is_a($featureRequesterClass, FeatureRequester::class, true)) {
             throw new \InvalidArgumentException;
         }
-        $this->_featureRequester = new $featureRequesterClass($this->_baseUri, $sdkKey, $options);
+        return new $featureRequesterClass($this->_baseUri, $sdkKey, $options);
     }
 
     /**
