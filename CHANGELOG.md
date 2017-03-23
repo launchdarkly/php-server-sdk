@@ -1,6 +1,13 @@
 # Change log
 
-All notable changes to the LaunchDarkly Java SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
+All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
+
+## [2.1.0] - 2017-03-23
+### Changed
+- Allow FeatureRequester to be injected into the client. Thanks @abacaphiliac!
+- Allow Predis\Client to be overriden in LDDFeatureRequester. Thanks @abacaphiliac!
+- Use logger interface method instead of Monolog method. Thanks @abacaphiliac!
+- Improve type hinting for default. Thanks @jdrieghe!
 
 ## [2.0.7] - 2017-03-03
 ### Changed
