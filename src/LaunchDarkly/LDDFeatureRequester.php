@@ -2,6 +2,7 @@
 namespace LaunchDarkly;
 
 
+use Predis\ClientInterface;
 use Psr\Log\LoggerInterface;
 
 class LDDFeatureRequester implements FeatureRequester {
@@ -11,6 +12,8 @@ class LDDFeatureRequester implements FeatureRequester {
     protected $_features_key;
     /** @var  LoggerInterface */
     private $_logger;
+    /** @var  ClientInterface */
+    private $_connection;
 
     function __construct($baseUri, $apiKey, $options) {
         $this->_baseUri = $baseUri;
@@ -31,11 +34,21 @@ class LDDFeatureRequester implements FeatureRequester {
         $this->_features_key = "$prefix:features";
         $this->_logger = $options['logger'];
 
+        if (isset($this->_options['predis_client']) && $this->_options['predis_client'] instanceof ClientInterface) {
+            $this->_connection = $this->_options['predis_client'];
+        }
     }
 
+    /**
+     * @return ClientInterface
+     */
     protected function get_connection() {
+        if ($this->_connection instanceof ClientInterface) {
+            return $this->_connection;
+        }
+        
         /** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
-        return new \Predis\Client(array(
+        return $this->_connection = new \Predis\Client(array(
                                       "scheme" => "tcp",
                                       "host" => $this->_options['redis_host'],
                                       "port" => $this->_options['redis_port']));
