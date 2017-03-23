@@ -6,6 +6,7 @@ use LaunchDarkly\FeatureRequester;
 use LaunchDarkly\LDClient;
 use LaunchDarkly\LDUser;
 use LaunchDarkly\LDUserBuilder;
+use Psr\Log\LoggerInterface;
 
 
 class LDClientTest extends \PHPUnit_Framework_TestCase {
@@ -63,6 +64,22 @@ class LDClientTest extends \PHPUnit_Framework_TestCase {
         $client = new LDClient("secret", ['offline' => true]);
         $user = new LDUser("Message");
         $this->assertEquals("aa747c502a898200f9e4fa21bac68136f886a0e27aec70ba06daf2e2a5cb5597",  $client->secureModeHash($user));
+    }
+    
+    public function testLoggerInterfaceWarn()
+    {
+        // Use LoggerInterface impl, instead of concreate Logger from Monolog, to demonstrate the problem with `warn`.
+        $logger = $this->getMockBuilder(LoggerInterface::class)->getMock();
+        
+        $logger->expects(self::atLeastOnce())->method('warning');
+        
+        $client = new LDClient('secret', [
+            'logger' => $logger,
+        ]);
+    
+        $user = new LDUser('');
+        
+        $client->variation('MyFeature', $user);
     }
 }
 
