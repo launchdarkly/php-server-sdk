@@ -44,7 +44,7 @@ Fetching flags
 There are two approaches to fetching the flag rules from LaunchDarkly:
 
 * Making HTTP requests (using Guzzle)
-* Setting up the [ld-daemon](https://github.com/launchdarkly/ld-daemon) to store the flags in Redis
+* Setting up the [ld-relay](https://github.com/launchdarkly/ld-relay) to store the flags in Redis
 
 Using Guzzle
 ============
