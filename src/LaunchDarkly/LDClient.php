@@ -10,7 +10,7 @@ use Psr\Log\LoggerInterface;
  */
 class LDClient {
     const DEFAULT_BASE_URI = 'https://app.launchdarkly.com';
-    const VERSION = '2.1.0';
+    const VERSION = '2.1.1';
 
     /** @var string */
     protected $_sdkKey;

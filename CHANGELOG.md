@@ -2,6 +2,11 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [2.1.1] - 2017-04-11
+### Changed
+- Better handling of possibly null targets. Thanks @idirouhab!
+- Better handling of possibly null rules.
+
 ## [2.1.0] - 2017-03-23
 ### Changed
 - Allow FeatureRequester to be injected into the client. Thanks @abacaphiliac!
