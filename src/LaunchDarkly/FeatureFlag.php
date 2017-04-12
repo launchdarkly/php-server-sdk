@@ -63,7 +63,7 @@ class FeatureFlag {
                 array_map(Rule::getDecoder(), $v['rules'] ?: []),
                 call_user_func(VariationOrRollout::getDecoder(), $v['fallthrough']),
                 $v['offVariation'],
-                $v['variations'],
+                $v['variations'] ?: [],
                 $v['deleted']);
         };
     }
