@@ -17,14 +17,22 @@ class GuzzleFeatureRequester implements FeatureRequester
     private $_baseUri;
     /** @var array  */
     private $_defaults;
-    /** @var  LoggerInterface */
+    /** @var LoggerInterface */
     private $_logger;
+    /** @var boolean */
+    private $_loggedCacheNotice = FALSE;
 
     function __construct($baseUri, $sdkKey, $options)
     {
         $this->_baseUri = $baseUri;
+        $this->_logger = $options['logger'];
         $stack = HandlerStack::create();
-        $stack->push(new CacheMiddleware(new PublicCacheStrategy(isset($options['cache']) ? $options['cache'] : null), 'cache'));
+        if (class_exists('Kevinrob\GuzzleCache\CacheMiddleware')) {
+            $stack->push(new CacheMiddleware(new PublicCacheStrategy(isset($options['cache']) ? $options['cache'] : null), 'cache'));
+        } else if (!$this->_loggedCacheNotice) {
+            $this->_logger->info("GuzzleFeatureRequester is not using an HTTP cache because Kevinrob\GuzzleCache\CacheMiddleware was not installed");
+            $this->_loggedCacheNotice = TRUE;
+        }
 
         $this->_defaults = array(
             'headers' => array(
@@ -35,7 +43,6 @@ class GuzzleFeatureRequester implements FeatureRequester
             'timeout' => $options['timeout'],
             'connect_timeout' => $options['connect_timeout']
         );
-        $this->_logger = $options['logger'];
         $this->_client = new Client(['handler' => $stack, 'debug' => false]);
     }
 
@@ -56,9 +63,9 @@ class GuzzleFeatureRequester implements FeatureRequester
         } catch (BadResponseException $e) {
             $code = $e->getResponse()->getStatusCode();
             if ($code == 404) {
-                $this->_logger->warning("GuzzleFeatureRetriever::get returned 404. Feature flag does not exist for key: " . $key);
+                $this->_logger->warning("GuzzleFeatureRequester::get returned 404. Feature flag does not exist for key: " . $key);
             } else {
-                $this->_logger->error("GuzzleFeatureRetriever::get received an unexpected HTTP status code $code");
+                $this->_logger->error("GuzzleFeatureRequester::get received an unexpected HTTP status code $code");
             }
             return null;
         }
@@ -77,7 +84,7 @@ class GuzzleFeatureRequester implements FeatureRequester
             return array_map(FeatureFlag::getDecoder(), json_decode($body, true));
         } catch (BadResponseException $e) {
             $code = $e->getResponse()->getStatusCode();
-            $this->_logger->error("GuzzleFeatureRetriever::getAll received an unexpected HTTP status code $code");
+            $this->_logger->error("GuzzleFeatureRequester::getAll received an unexpected HTTP status code $code");
             return null;
         }
     }
