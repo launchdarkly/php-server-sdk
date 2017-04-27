@@ -2,6 +2,14 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [2.1.2] - 2017-04-27
+### Changed
+- Relaxed the requirement on `kevinrob/guzzle-cache-middleware` for the default `GuzzleFeatureRequester`.
+- Added package suggestions in `composer.json`.
+
+### Fixed
+- Better handling of possibly null variations. Thanks @idirouhab!
+
 ## [2.1.1] - 2017-04-11
 ### Changed
 - Better handling of possibly null targets. Thanks @idirouhab!
