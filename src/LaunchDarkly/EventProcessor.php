@@ -13,6 +13,7 @@ class EventProcessor {
   private $_host;
   private $_port;
   private $_ssl;
+  private $_curl = '/usr/bin/env curl';
 
   public function __construct($apiKey, $options = array()) {
     $this->_sdkKey = $apiKey;
@@ -38,6 +39,10 @@ class EventProcessor {
         else {
           $this->_path = '';
         }
+    }
+    
+    if (array_key_exists('curl', $options)) {
+        $this->_curl = $options['curl'];
     }
 
     $this->_capacity = $options['capacity'];
@@ -89,7 +94,7 @@ class EventProcessor {
   }
 
   private function makeRequest($args) {
-    $cmd = "/usr/bin/env curl " . $args . ">> /dev/null 2>&1 &";
+    $cmd = $this->_curl . " " . $args . ">> /dev/null 2>&1 &";
     shell_exec($cmd);
     return true;
   }
