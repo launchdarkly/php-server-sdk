@@ -43,7 +43,7 @@ Fetching flags
 
 There are two approaches to fetching and caching flag rules from LaunchDarkly with the PHP SDK:
 
-* [Guzzle Cache Middleware](https://github.com/Kevinrob/guzzle-cache-middleware) to cache HTTP responses in an in-memory array (default)
+* [Guzzle Cache Middleware](https://github.com/Kevinrob/guzzle-cache-middleware) to request and cache HTTP responses in an in-memory array (default)
 * [ld-relay](https://github.com/launchdarkly/ld-relay) to retrieve and store flags in Redis
 
 Using Guzzle
