@@ -41,10 +41,12 @@ Your first feature flag
 Fetching flags
 --------------
 
-There are two approaches to fetching and caching flag rules from LaunchDarkly with the PHP SDK:
+There are two distinct methods of integrating LaunchDarkly in a PHP environment.  
 
 * [Guzzle Cache Middleware](https://github.com/Kevinrob/guzzle-cache-middleware) to request and cache HTTP responses in an in-memory array (default)
-* [ld-relay](https://github.com/launchdarkly/ld-relay) to retrieve and store flags in Redis
+* [ld-relay](https://github.com/launchdarkly/ld-relay) to retrieve and store flags in Redis (recommended)
+
+We strongly recommend using the ld-relay.  Per-flag caching (Guzzle method) is only intended for low-throughput environments.
 
 Using Guzzle
 ============
