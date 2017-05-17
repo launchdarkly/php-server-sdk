@@ -58,6 +58,11 @@ Require Guzzle as a dependency:
 
 It will then be used as the default way of fetching flags.
 
+With Guzzle, you could persist your cache somewhere other than the default in-memory store, like Memcached or Redis.  You could then specify your cache when initializing the client with the [cache option](https://github.com/launchdarkly/php-client/blob/master/src/LaunchDarkly/LDClient.php#L42).
+
+    $client = new LaunchDarkly\LDClient("YOUR_SDK_KEY", array("cache" => $cacheStorage));
+
+
 Using LD-Relay
 ==============
 
