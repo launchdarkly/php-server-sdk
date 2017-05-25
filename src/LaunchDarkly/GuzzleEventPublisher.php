@@ -4,7 +4,17 @@ namespace LaunchDarkly;
 use GuzzleHttp\Client;
 use Psr\Log\LoggerInterface;
 
-class RelayEventPublisher implements EventPublisher
+/**
+ * Sends events to the LaunchDarkly service using the GuzzleHttp client.
+ * This `EventPublisher` implement provides an in-process alternative to
+ * the default `CurlEventPublisher` implementation which forks processes.
+ *
+ * Note that this implementation executes synchronously in the request
+ * handler. In order to minimize request overhead, we recommend that you
+ * set up `ld-relay` in your production environment and configure the
+ * `events_uri` option for `LDClient` to publish to `ld-relay`.
+ */
+class GuzzleEventPublisher implements EventPublisher
 {
     /** @var string */
     private $_sdkKey;
@@ -45,7 +55,7 @@ class RelayEventPublisher implements EventPublisher
 
             return $response->getStatusCode() < 300;
         } catch (\Exception $e) {
-            $this->_logger->warning("RelayEventPublisher::publish caught $e");
+            $this->_logger->warning("GuzzleEventPublisher::publish caught $e");
             return false;
         }
     }

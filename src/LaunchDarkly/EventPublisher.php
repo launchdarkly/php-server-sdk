@@ -1,6 +1,9 @@
 <?php
 namespace LaunchDarkly;
 
+/**
+ * Provides a transport mechanism for sending events to the LaunchDarkly service.
+ */
 interface EventPublisher {
     /**
      * @param string $sdkKey The SDK key for your account

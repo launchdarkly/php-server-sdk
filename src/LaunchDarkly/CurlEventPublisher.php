@@ -1,6 +1,16 @@
 <?php
 namespace LaunchDarkly;
 
+/**
+ * Sends events to the LaunchDarkly service using the `curl` command line tool.
+ * The `curl` requests are executed as background processes in order to
+ * minimize overhead to the PHP request. This `EventPublisher` implementation
+ * is the default for `LDClient`.
+ *
+ * `curl` must be installed in the environment's search path, or otherwise the
+ * absolute path to the executable must be specified using the `'curl'` option
+ * for `LDClient`.
+ */
 class CurlEventPublisher implements EventPublisher
 {
     private $_sdkKey;
