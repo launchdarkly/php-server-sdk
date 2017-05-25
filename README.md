@@ -58,7 +58,7 @@ Require Guzzle as a dependency:
 
 It will then be used as the default way of fetching flags.
 
-With Guzzle, you could persist your cache somewhere other than the default in-memory store, like Memcached or Redis.  You could then specify your cache when initializing the client with the [cache option](https://github.com/launchdarkly/php-client/blob/master/src/LaunchDarkly/LDClient.php#L42).
+With Guzzle, you could persist your cache somewhere other than the default in-memory store, like Memcached or Redis.  You could then specify your cache when initializing the client with the [cache option](https://github.com/launchdarkly/php-client/blob/master/src/LaunchDarkly/LDClient.php#L44).
 
     $client = new LaunchDarkly\LDClient("YOUR_SDK_KEY", array("cache" => $cacheStorage));
 
@@ -66,15 +66,32 @@ With Guzzle, you could persist your cache somewhere other than the default in-me
 Using LD-Relay
 ==============
 
-* Setup [ld-relay](https://github.com/launchdarkly/ld-relay) in [daemon-mode](https://github.com/launchdarkly/ld-relay#redis-storage-and-daemon-mode) with Redis
+The LaunchDarkly Relay Proxy ([ld-relay](https://github.com/launchdarkly/ld-relay)) consumes the LaunchDarkly streaming API and can update
+a Redis cache operating in your production environment. The ld-relay offers many benefits such as performance and feature flag consistency. With PHP applications, we strongly recommend setting up ld-relay with a Redis store.
 
-* Require Predis as a dependency:
+1. Set up ld-relay in [daemon-mode](https://github.com/launchdarkly/ld-relay#redis-storage-and-daemon-mode) with Redis
 
-    php composer.phar require "predis/predis:1.0.*"
+2. Require Predis as a dependency:
 
-* Create the LDClient with the Redis feature requester as an option:
+        php composer.phar require "predis/predis:1.0.*"
 
-    $client = new LaunchDarkly\LDClient("your_sdk_key", ['feature_requester_class' => 'LaunchDarkly\LDDFeatureRequester', 'redis_host' => 'your.redis.host', 'redis_port' => 6379]);
+3. Create the LDClient with the Redis feature requester as an option:
+
+        $client = new LaunchDarkly\LDClient("your_sdk_key", [
+            'feature_requester_class' => 'LaunchDarkly\LDDFeatureRequester',
+            'redis_host' => 'your.redis.host',
+            'redis_port' => 6379
+        ]);
+
+4. If ld-relay is configured for [event forwarding](https://github.com/launchdarkly/ld-relay#event-forwarding), you can configure the LDClient to publish events to ld-relay instead of directly to `events.launchdarkly.com`. Using `GuzzleEventPublisher` with ld-relay event forwarding can be an efficient alternative to the default `curl`-based event publishing.
+
+        $client = new LaunchDarkly\LDClient("your_sdk_key", [
+            'event_publisher_class' => 'LaunchDarkly\GuzzleEventPublisher',
+            'events_uri' => 'http://your-ldrelay-host:8030',
+            'feature_requester_class' => 'LaunchDarkly\LDDFeatureRequester',
+            'redis_host' => 'your.redis.host',
+            'redis_port' => 6379
+        ]);
 
 Testing
 -------

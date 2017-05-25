@@ -7,7 +7,7 @@ use Psr\Log\LoggerInterface;
 
 class LDDFeatureRequester implements FeatureRequester {
     protected $_baseUri;
-    protected $_apiKey;
+    protected $_sdkKey;
     protected $_options;
     protected $_features_key;
     /** @var  LoggerInterface */
@@ -15,9 +15,9 @@ class LDDFeatureRequester implements FeatureRequester {
     /** @var  ClientInterface */
     private $_connection;
 
-    function __construct($baseUri, $apiKey, $options) {
+    function __construct($baseUri, $sdkKey, $options) {
         $this->_baseUri = $baseUri;
-        $this->_apiKey = $apiKey;
+        $this->_sdkKey = $sdkKey;
         if (!isset($options['redis_host'])) {
             $options['redis_host'] = 'localhost';
         }
