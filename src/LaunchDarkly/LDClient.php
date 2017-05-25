@@ -11,7 +11,7 @@ use Psr\Log\LoggerInterface;
 class LDClient {
     const DEFAULT_BASE_URI = 'https://app.launchdarkly.com';
     const DEFAULT_EVENTS_URI = 'https://events.launchdarkly.com';
-    const VERSION = '2.1.2';
+    const VERSION = '2.2.0-beta1';
 
     /** @var string */
     protected $_sdkKey;
