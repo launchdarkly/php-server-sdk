@@ -41,29 +41,38 @@ Your first feature flag
 Fetching flags
 --------------
 
-There are two approaches to fetching the flag rules from LaunchDarkly:
+There are two distinct methods of integrating LaunchDarkly in a PHP environment.  
 
-* Making HTTP requests (using Guzzle)
-* Setting up the [ld-relay](https://github.com/launchdarkly/ld-relay) to store the flags in Redis
+* [Guzzle Cache Middleware](https://github.com/Kevinrob/guzzle-cache-middleware) to request and cache HTTP responses in an in-memory array (default)
+* [ld-relay](https://github.com/launchdarkly/ld-relay) to retrieve and store flags in Redis (recommended)
+
+We strongly recommend using the ld-relay.  Per-flag caching (Guzzle method) is only intended for low-throughput environments.
 
 Using Guzzle
 ============
 
-To use Guzzle it must be required as a dependency:
+Require Guzzle as a dependency:
 
     php composer.phar require "guzzlehttp/guzzle:6.2.1"
     php composer.phar require "kevinrob/guzzle-cache-middleware:1.4.1"
 
 It will then be used as the default way of fetching flags.
 
-Using Redis
-===========
+With Guzzle, you could persist your cache somewhere other than the default in-memory store, like Memcached or Redis.  You could then specify your cache when initializing the client with the [cache option](https://github.com/launchdarkly/php-client/blob/master/src/LaunchDarkly/LDClient.php#L42).
 
-1. Require Predis as a dependency:
+    $client = new LaunchDarkly\LDClient("YOUR_SDK_KEY", array("cache" => $cacheStorage));
+
+
+Using LD-Relay
+==============
+
+* Setup [ld-relay](https://github.com/launchdarkly/ld-relay) in [daemon-mode](https://github.com/launchdarkly/ld-relay#redis-storage-and-daemon-mode) with Redis
+
+* Require Predis as a dependency:
 
     php composer.phar require "predis/predis:1.0.*"
 
-2. Create the LDClient with the Redis feature requester as an option:
+* Create the LDClient with the Redis feature requester as an option:
 
     $client = new LaunchDarkly\LDClient("your_sdk_key", ['feature_requester_class' => 'LaunchDarkly\LDDFeatureRequester', 'redis_host' => 'your.redis.host', 'redis_port' => 6379]);
 
