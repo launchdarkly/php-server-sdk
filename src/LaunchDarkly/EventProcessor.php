@@ -6,44 +6,13 @@ namespace LaunchDarkly;
  */
 class EventProcessor {
 
-  private $_sdkKey;
+  private $_eventPublisher;
   private $_queue;
   private $_capacity;
   private $_timeout;
-  private $_host;
-  private $_port;
-  private $_ssl;
-  private $_curl = '/usr/bin/env curl';
 
   public function __construct($apiKey, $options = array()) {
-    $this->_sdkKey = $apiKey;
-    if (!isset($options['events_uri'])) {
-        $this->_host = 'events.launchdarkly.com';
-        $this->_port = 443;
-        $this->_ssl = true;
-        $this->_path = '';
-    } 
-    else {
-        $url = parse_url(rtrim($options['events_uri'],'/'));
-        $this->_host = $url['host'];
-        $this->_ssl = $url['scheme'] === 'https';
-        if (isset($url['port'])) {
-          $this->_port = $url['port'];
-        } 
-        else {
-          $this->_port = $this->_ssl ? 443 : 80;
-        }
-        if (isset($url['path'])) {
-          $this->_path = $url['path'];
-        }
-        else {
-          $this->_path = '';
-        }
-    }
-    
-    if (array_key_exists('curl', $options)) {
-        $this->_curl = $options['curl'];
-    }
+    $this->_eventPublisher = $this->getEventPublisher($apiKey, $options);
 
     $this->_capacity = $options['capacity'];
     $this->_timeout = $options['timeout'];
@@ -76,28 +45,29 @@ class EventProcessor {
 
     $payload = json_encode($this->_queue);
 
-    $args = $this->createArgs($payload);
-
-    return $this->makeRequest($args);
+    return $this->_eventPublisher->publish($payload);
   }
 
-  private function createArgs($payload) {
-    $scheme = $this->_ssl ? "https://" : "http://";
-    $args = " -X POST";
-    $args.= " -H 'Content-Type: application/json'";
-    $args.= " -H " . escapeshellarg("Authorization: " . $this->_sdkKey);
-    $args.= " -H 'User-Agent: PHPClient/" . LDClient::VERSION . "'";
-    $args.= " -H 'Accept: application/json'";
-    $args.= " -d " . escapeshellarg($payload);
-    $args.= " " . escapeshellarg($scheme . $this->_host . ":" . $this->_port . $this->_path . "/bulk");
-    return $args;
+  /**
+   * @param string $sdkKey
+   * @param mixed[] $options
+   * @return EventPublisher
+   */
+  private function getEventPublisher($sdkKey, array $options)
+  {
+    if (isset($options['event_publisher']) && $options['event_publisher'] instanceof EventPublisher) {
+      return $options['event_publisher'];
+    }
+
+    if (isset($options['event_publisher_class'])) {
+      $eventPublisherClass = $options['event_publisher_class'];
+    } else {
+      $eventPublisherClass = CurlEventPublisher::class;
+    }
+
+    if (!is_a($eventPublisherClass, EventPublisher::class, true)) {
+      throw new \InvalidArgumentException;
+    }
+    return new $eventPublisherClass($sdkKey, $options);
   }
-
-  private function makeRequest($args) {
-    $cmd = $this->_curl . " " . $args . ">> /dev/null 2>&1 &";
-    shell_exec($cmd);
-    return true;
-  }
-
-
 }

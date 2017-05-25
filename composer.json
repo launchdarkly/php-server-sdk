@@ -27,7 +27,7 @@
         "zendframework/zend-serializer": "^2.7"
     },
     "suggest": {
-        "guzzlehttp/guzzle": "(^6.2.1) Required when using the default FeatureRequester",
+        "guzzlehttp/guzzle": "(^6.2.1) Required when using RelayEventPublisher or the default FeatureRequester",
         "kevinrob/guzzle-cache-middleware": "(^1.4.1) Recommended for performance when using the default FeatureRequester",
         "predis/predis": "(^1.0) Required when using LDDFeatureRequester"
     },
