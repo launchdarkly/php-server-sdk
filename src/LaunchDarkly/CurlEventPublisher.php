@@ -9,8 +9,8 @@ class CurlEventPublisher implements EventPublisher
     private $_ssl;
     private $_curl = '/usr/bin/env curl';
 
-    function __construct($apiKey, array $options = array()) {
-        $this->_sdkKey = $apiKey;
+    function __construct($sdkKey, array $options = array()) {
+        $this->_sdkKey = $sdkKey;
 
         $eventsUri = LDClient::DEFAULT_EVENTS_URI;
         if (isset($options['events_uri'])) {

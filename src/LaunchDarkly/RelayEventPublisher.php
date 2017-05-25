@@ -15,8 +15,8 @@ class RelayEventPublisher implements EventPublisher
     /** @var mixed[] */
     private $_requestOptions;
 
-    function __construct($apiKey, array $options = array()) {
-        $this->_sdkKey = $apiKey;
+    function __construct($sdkKey, array $options = array()) {
+        $this->_sdkKey = $sdkKey;
         $this->_logger = $options['logger'];
         if (isset($options['events_uri'])) {
             $this->_eventsUri = $options['events_uri'];

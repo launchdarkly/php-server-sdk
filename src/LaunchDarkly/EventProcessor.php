@@ -11,8 +11,8 @@ class EventProcessor {
   private $_capacity;
   private $_timeout;
 
-  public function __construct($apiKey, $options = array()) {
-    $this->_eventPublisher = $this->getEventPublisher($apiKey, $options);
+  public function __construct($sdkKey, $options = array()) {
+    $this->_eventPublisher = $this->getEventPublisher($sdkKey, $options);
 
     $this->_capacity = $options['capacity'];
     $this->_timeout = $options['timeout'];
