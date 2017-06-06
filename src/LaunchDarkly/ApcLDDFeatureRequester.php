@@ -13,8 +13,8 @@ namespace LaunchDarkly;
 class ApcLDDFeatureRequester extends LDDFeatureRequester {
     protected $_expiration = 30;
 
-    function __construct($baseUri, $apiKey, $options) {
-        parent::__construct($baseUri, $apiKey, $options);
+    function __construct($baseUri, $sdkKey, $options) {
+        parent::__construct($baseUri, $sdkKey, $options);
 
         if (isset($options['apc_expiration'])) {
             $this->_expiration = (int)$options['apc_expiration'];

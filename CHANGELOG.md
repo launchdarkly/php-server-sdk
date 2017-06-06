@@ -2,6 +2,13 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [2.2.0] - 2017-06-06
+### Added
+- Support for [publishing events via ld-relay](README.md#using-ld-relay)
+- Allow `EventPublisher` to be injected into the client.
+- `GuzzleEventPublisher` as a synchronous, in-process alternative to publishing events via background processes.
+- Allow the `curl` path used by `CurlEventPublisher` to be customized via the `curl` option to `LDClient`. Thanks @abacaphiliac!
+
 ## [2.1.2] - 2017-04-27
 ### Changed
 - Relaxed the requirement on `kevinrob/guzzle-cache-middleware` for the default `GuzzleFeatureRequester`.

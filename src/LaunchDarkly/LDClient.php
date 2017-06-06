@@ -10,12 +10,15 @@ use Psr\Log\LoggerInterface;
  */
 class LDClient {
     const DEFAULT_BASE_URI = 'https://app.launchdarkly.com';
-    const VERSION = '2.1.2';
+    const DEFAULT_EVENTS_URI = 'https://events.launchdarkly.com';
+    const VERSION = '2.2.0';
 
     /** @var string */
     protected $_sdkKey;
     /** @var string */
     protected $_baseUri;
+    /** @var string */
+    protected $_eventsUri;
     /** @var EventProcessor */
     protected $_eventProcessor;
     /** @var  bool */
@@ -26,8 +29,7 @@ class LDClient {
     protected $_defaults = array();
     /** @var LoggerInterface */
     protected $_logger;
-
-    /** @var  FeatureRequester */
+    /** @var FeatureRequester */
     protected $_featureRequester;
 
     /**
@@ -43,6 +45,10 @@ class LDClient {
      *     - send_events: An optional bool that can disable the sending of events to LaunchDarkly. Defaults to false.
      *     - logger: An optional Psr\Log\LoggerInterface. Defaults to a Monolog\Logger sending all messages to the php error_log.
      *     - offline: An optional boolean which will disable all network calls and always return the default value. Defaults to false.
+     *     - feature_requester: An optional LaunchDarkly\FeatureRequester instance.
+     *     - feature_requester_class: An optional class implementing LaunchDarkly\FeatureRequester, if `feature_requester` is not specified. Defaults to GuzzleFeatureRequester.
+     *     - event_publisher: An optional LaunchDarkly\EventPublisher instance.
+     *     - event_publisher_class: An optional class implementing LaunchDarkly\EventPublisher, if `event_publisher` is not specified. Defaults to CurlEventPublisher.
      */
     public function __construct($sdkKey, $options = array()) {
         $this->_sdkKey = $sdkKey;
@@ -50,6 +56,11 @@ class LDClient {
             $this->_baseUri = self::DEFAULT_BASE_URI;
         } else {
             $this->_baseUri = rtrim($options['base_uri'], '/');
+        }
+        if (!isset($options['events_uri'])) {
+            $this->_eventsUri = self::DEFAULT_EVENTS_URI;
+        } else {
+            $this->_eventsUri = rtrim($options['events_uri'], '/');
         }
         if (isset($options['send_events'])) {
             $this->_send_events = $options['send_events'];
@@ -82,15 +93,15 @@ class LDClient {
 
         $this->_eventProcessor = new EventProcessor($sdkKey, $options);
 
-        $this->_featureRequester = $this->getFeatureRequester($options, $sdkKey);
+        $this->_featureRequester = $this->getFeatureRequester($sdkKey, $options);
     }
     
     /**
-     * @param mixed[] $options
      * @param string $sdkKey
+     * @param mixed[] $options
      * @return FeatureRequester
      */
-    private function getFeatureRequester(array $options, $sdkKey)
+    private function getFeatureRequester($sdkKey, array $options)
     {
         if (isset($options['feature_requester']) && $options['feature_requester'] instanceof FeatureRequester) {
             return $options['feature_requester'];

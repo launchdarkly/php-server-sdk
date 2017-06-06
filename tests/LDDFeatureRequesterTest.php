@@ -29,7 +29,7 @@ class LDDFeatureRequesterTest extends \PHPUnit_Framework_TestCase
     
     public function testGet()
     {
-        $sut = new LDDFeatureRequester('example.com', 'MyApiKey', [
+        $sut = new LDDFeatureRequester('example.com', 'MySdkKey', [
             'logger' => $this->logger,
             'predis_client' => $this->predisClient,
         ]);
