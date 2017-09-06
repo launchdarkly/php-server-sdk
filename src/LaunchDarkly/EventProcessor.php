@@ -17,7 +17,7 @@ class EventProcessor {
     $this->_capacity = $options['capacity'];
     $this->_timeout = $options['timeout'];
 
-    $this->_queue = array(); 
+    $this->_queue = array();
   }
 
   public function __destruct() {
@@ -38,7 +38,11 @@ class EventProcessor {
     return true;
   }
 
-  protected function flush() {
+  /**
+   * Publish events to LaunchDarkly
+   * @return bool Whether the events were successfully published
+   */
+  public function flush() {
     if (empty($this->_queue)) {
       return null;
     }

@@ -95,7 +95,7 @@ class LDClient {
 
         $this->_featureRequester = $this->getFeatureRequester($sdkKey, $options);
     }
-    
+
     /**
      * @param string $sdkKey
      * @param mixed[] $options
@@ -106,7 +106,7 @@ class LDClient {
         if (isset($options['feature_requester']) && $options['feature_requester'] instanceof FeatureRequester) {
             return $options['feature_requester'];
         }
-        
+
         if (isset($options['feature_requester_class'])) {
             $featureRequesterClass = $options['feature_requester_class'];
         } else {
@@ -277,6 +277,16 @@ class LDClient {
             return "";
         }
         return hash_hmac("sha256", $user->getKey(), $this->_sdkKey, false);
+    }
+
+    /**
+     * Publish events to LaunchDarkly
+     * @param $payload string Event payload
+     * @return bool Whether the events were successfully published
+     */
+    public function flush()
+    {
+        return $this->_eventProcessor->flush();
     }
 
     /**
