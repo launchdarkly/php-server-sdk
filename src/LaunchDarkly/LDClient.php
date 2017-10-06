@@ -281,7 +281,6 @@ class LDClient {
 
     /**
      * Publish events to LaunchDarkly
-     * @param $payload string Event payload
      * @return bool Whether the events were successfully published
      */
     public function flush()
