@@ -2,6 +2,13 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [2.3.0] - 2017-10-06
+### Added
+- New `flush` method forces events to be published to the LaunchDarkly service. This can be useful if `LDClient` is not automatically destroyed at the end of a request. Thanks @foxted!
+
+### Fixed
+- Documentation comment references the correct namespace for `CacheStorageInterface`. Thanks @pmeth!
+
 ## [2.2.0] - 2017-06-06
 ### Added
 - Support for [publishing events via ld-relay](README.md#using-ld-relay)
