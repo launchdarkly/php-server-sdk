@@ -11,7 +11,7 @@ use Psr\Log\LoggerInterface;
 class LDClient {
     const DEFAULT_BASE_URI = 'https://app.launchdarkly.com';
     const DEFAULT_EVENTS_URI = 'https://events.launchdarkly.com';
-    const VERSION = '2.1.2';
+    const VERSION = '2.3.0';
 
     /** @var string */
     protected $_sdkKey;
@@ -41,7 +41,7 @@ class LDClient {
      *     - events_uri: Base URI for sending events to LaunchDarkly. Defaults to 'https://events.launchdarkly.com'
      *     - timeout: Float describing the maximum length of a request in seconds. Defaults to 3
      *     - connect_timeout: Float describing the number of seconds to wait while trying to connect to a server. Defaults to 3
-     *     - cache: An optional Kevinrob\GuzzleCache\Strategy\CacheStorageInterface. Defaults to an in-memory cache.
+     *     - cache: An optional Kevinrob\GuzzleCache\Storage\CacheStorageInterface. Defaults to an in-memory cache.
      *     - send_events: An optional bool that can disable the sending of events to LaunchDarkly. Defaults to false.
      *     - logger: An optional Psr\Log\LoggerInterface. Defaults to a Monolog\Logger sending all messages to the php error_log.
      *     - offline: An optional boolean which will disable all network calls and always return the default value. Defaults to false.
@@ -95,7 +95,7 @@ class LDClient {
 
         $this->_featureRequester = $this->getFeatureRequester($sdkKey, $options);
     }
-    
+
     /**
      * @param string $sdkKey
      * @param mixed[] $options
@@ -106,7 +106,7 @@ class LDClient {
         if (isset($options['feature_requester']) && $options['feature_requester'] instanceof FeatureRequester) {
             return $options['feature_requester'];
         }
-        
+
         if (isset($options['feature_requester_class'])) {
             $featureRequesterClass = $options['feature_requester_class'];
         } else {
@@ -277,6 +277,15 @@ class LDClient {
             return "";
         }
         return hash_hmac("sha256", $user->getKey(), $this->_sdkKey, false);
+    }
+
+    /**
+     * Publish events to LaunchDarkly
+     * @return bool Whether the events were successfully published
+     */
+    public function flush()
+    {
+        return $this->_eventProcessor->flush();
     }
 
     /**
