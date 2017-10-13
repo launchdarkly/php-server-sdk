@@ -128,56 +128,56 @@ class EventSerializerTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals("secondary", $json['secondary']);
     }
     
-    public function testLDUserIP() {
+    public function testUserIP() {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->ip("127.0.0.1")->build();
         $json = $this->getJsonForUserBySerializingEvent($user);
         $this->assertEquals("127.0.0.1", $json['ip']);
     }
     
-    public function testLDUserCountry() {
+    public function testUserCountry() {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->country("US")->build();
         $json = $this->getJsonForUserBySerializingEvent($user);
         $this->assertEquals("US", $json['country']);
     }
     
-    public function testLDUserEmail() {
+    public function testUserEmail() {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->email("foo+test@bar.com")->build();
         $json = $this->getJsonForUserBySerializingEvent($user);
         $this->assertEquals("foo+test@bar.com", $json['email']);
     }
     
-    public function testLDUserName() {
+    public function testUserName() {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->name("Foo Bar")->build();
         $json = $this->getJsonForUserBySerializingEvent($user);
         $this->assertEquals("Foo Bar", $json['name']);
     }
     
-    public function testLDUserAvatar() {
+    public function testUserAvatar() {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->avatar("http://www.gravatar.com/avatar/1")->build();
         $json = $this->getJsonForUserBySerializingEvent($user);
         $this->assertEquals("http://www.gravatar.com/avatar/1", $json['avatar']);
     }
     
-    public function testLDUserFirstName() {
+    public function testUserFirstName() {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->firstName("Foo")->build();
         $json = $this->getJsonForUserBySerializingEvent($user);
         $this->assertEquals("Foo", $json['firstName']);
     }
     
-    public function testLDUserLastName() {
+    public function testUserLastName() {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->lastName("Bar")->build();
         $json = $this->getJsonForUserBySerializingEvent($user);
         $this->assertEquals("Bar", $json['lastName']);
     }
     
-    public function testLDUserAnonymous() {
+    public function testUserAnonymous() {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->anonymous(true)->build();
         $json = $this->getJsonForUserBySerializingEvent($user);
