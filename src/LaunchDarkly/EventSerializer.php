@@ -35,16 +35,10 @@ class EventSerializer {
         return $ret;
     }
 
-    private function isPrivateAttr($name, $userPrivateAttrs, &$allPrivateAttrs) {
-        if ($this->_allAttrsPrivate ||
+    private function isPrivateAttr($name, $userPrivateAttrs) {
+        return ($this->_allAttrsPrivate ||
                 array_search($name, $userPrivateAttrs) !== FALSE ||
-                array_search($name, $this->_privateAttrNames) !== FALSE) {
-            $allPrivateAttrs[$name] = $name;
-            return true;
-        }
-        else {
-            return false;
-        }
+                array_search($name, $this->_privateAttrNames) !== FALSE);
     }
 
     private function serializeUser($user) {
@@ -64,15 +58,25 @@ class EventSerializer {
             'anonymous' => $user->getAnonymous()
         );
         foreach ($attrs as $key => $value) {
-            if ($value != null && !$this->isPrivateAttr($key, $userPrivateAttrs, $allPrivateAttrs)) {
-                $json[$key] = $value;
+            if ($value != null) {
+                if ($this->isPrivateAttr($key, $userPrivateAttrs)) {
+                    $allPrivateAttrs[$key] = $key;
+                }
+                else {
+                    $json[$key] = $value;
+                }
             }
         }
         if (!empty($user->getCustom())) {
             $customs = array();
             foreach ($user->getCustom() as $key => $value) {
-                if ($value != null && !$this->isPrivateAttr($key, $userPrivateAttrs, $allPrivateAttrs)) {
-                    $customs[$key] = $value;
+                if ($value != null) {
+                    if ($this->isPrivateAttr($key, $userPrivateAttrs)) {
+                        $allPrivateAttrs[$key] = $key;
+                    }
+                    else {
+                        $customs[$key] = $value;
+                    }
                 }
             }
             $json['custom'] = $customs;
