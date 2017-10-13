@@ -207,7 +207,7 @@ class LDClient {
         }
 
         $event = array();
-        $event['user'] = $user->toJSON();
+        $event['user'] = $user;
         $event['kind'] = "custom";
         $event['creationDate'] = Util::currentTimeUnixMillis();
         $event['key'] = $eventName;
@@ -229,7 +229,7 @@ class LDClient {
         }
 
         $event = array();
-        $event['user'] = $user->toJSON();
+        $event['user'] = $user;
         $event['kind'] = "identify";
         $event['creationDate'] = Util::currentTimeUnixMillis();
         $event['key'] = $user->getKey();
