@@ -24,7 +24,7 @@ class LDUserBuilder {
         return $this;
     }
 
-    public function privateSecondary($seondary) {
+    public function privateSecondary($secondary) {
         array_push($this->_privateAttributeNames, 'secondary');
         return $this->secondary($secondary);
     }
