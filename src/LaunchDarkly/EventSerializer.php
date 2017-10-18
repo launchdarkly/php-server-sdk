@@ -35,10 +35,19 @@ class EventSerializer {
         return $ret;
     }
 
-    private function isPrivateAttr($name, $userPrivateAttrs) {
-        return ($this->_allAttrsPrivate ||
-                array_search($name, $userPrivateAttrs) !== FALSE ||
-                array_search($name, $this->_privateAttrNames) !== FALSE);
+    private function filterAttrs($attrs, &$json, $userPrivateAttrs, &$allPrivateAttrs) {
+        foreach ($attrs as $key => $value) {
+            if ($value != null) {
+                if ($this->_allAttrsPrivate ||
+                    array_search($key, $userPrivateAttrs) !== FALSE ||
+                    array_search($key, $this->_privateAttrNames) !== FALSE) {
+                    $allPrivateAttrs[$key] = true;
+                }
+                else {
+                    $json[$key] = $value;
+                }
+            }
+        }
     }
 
     private function serializeUser($user) {
@@ -57,28 +66,10 @@ class EventSerializer {
             'lastName' => $user->getLastName(),
             'anonymous' => $user->getAnonymous()
         );
-        foreach ($attrs as $key => $value) {
-            if ($value != null) {
-                if ($this->isPrivateAttr($key, $userPrivateAttrs)) {
-                    $allPrivateAttrs[$key] = $key;
-                }
-                else {
-                    $json[$key] = $value;
-                }
-            }
-        }
+        $this->filterAttrs($attrs, $json, $userPrivateAttrs, $allPrivateAttrs);
         if (!empty($user->getCustom())) {
             $customs = array();
-            foreach ($user->getCustom() as $key => $value) {
-                if ($value != null) {
-                    if ($this->isPrivateAttr($key, $userPrivateAttrs)) {
-                        $allPrivateAttrs[$key] = $key;
-                    }
-                    else {
-                        $customs[$key] = $value;
-                    }
-                }
-            }
+            $this->filterAttrs($user->getCustom(), $customs, $userPrivateAttrs, $allPrivateAttrs);
             $json['custom'] = $customs;
         }
         if (count($allPrivateAttrs)) {
