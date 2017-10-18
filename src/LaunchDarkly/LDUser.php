@@ -18,7 +18,7 @@ class LDUser {
     protected $_lastName = null;
     protected $_anonyomus = false;
     protected $_custom = array();
-    protected $_privateAttrs = array();
+    protected $_privateAttributeNames = array();
 
     /**
      * @param string $key Unique key for the user. For authenticated users, this may be a username or e-mail address. For anonymous users, this could be an IP address or session ID.
@@ -34,7 +34,7 @@ class LDUser {
      * @param array|null $custom Other custom attributes that can be used to create custom rules
      */
     public function __construct($key, $secondary = null, $ip = null, $country = null, $email = null, $name = null, $avatar = null, $firstName = null, $lastName = null, $anonymous = null, $custom = array(),
-            $privateAttrs = array()) {
+            $privateAttributeNames = array()) {
         if ($key !== null) {
             $this->_key = strval($key);
         }
@@ -48,7 +48,7 @@ class LDUser {
         $this->_lastName = $lastName;
         $this->_anonymous = $anonymous;
         $this->_custom = $custom;
-        $this->_privateAttrs = $privateAttrs;
+        $this->_privateAttributeNames = $privateAttributeNames;
     }
 
     public function getValueForEvaluation($attr) {
@@ -132,8 +132,8 @@ class LDUser {
         return $this->_anonymous;
     }
 
-    public function getPrivateAttrs() {
-        return $this->_privateAttrs;
+    public function getPrivateAttributeNames() {
+        return $this->_privateAttributeNames;
     }
     
     public function isKeyBlank() {
