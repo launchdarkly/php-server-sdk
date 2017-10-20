@@ -21,8 +21,6 @@ class GuzzleFeatureRequester implements FeatureRequester
     private $_logger;
     /** @var boolean */
     private $_loggedCacheNotice = FALSE;
-    /** @var boolean */
-    private $_stopped = FALSE;
 
     function __construct($baseUri, $sdkKey, $options)
     {
@@ -57,9 +55,6 @@ class GuzzleFeatureRequester implements FeatureRequester
      */
     public function get($key)
     {
-        if ($this->_stopped) {
-            return null;
-        }
         try {
             $uri = $this->_baseUri . self::SDK_FLAGS . "/" . $key;
             $response = $this->_client->get($uri, $this->_defaults);
@@ -82,9 +77,6 @@ class GuzzleFeatureRequester implements FeatureRequester
      * @return array()|null The decoded FeatureFlags, or null if missing
      */
     public function getAll() {
-        if ($this->_stopped) {
-            return null;
-        }
         try {
             $uri = $this->_baseUri . self::SDK_FLAGS;
             $response = $this->_client->get($uri, $this->_defaults);
@@ -99,8 +91,7 @@ class GuzzleFeatureRequester implements FeatureRequester
     private function handleUnexpectedStatus($code, $method) {
         $this->_logger->error("$method received an unexpected HTTP status code $code");
         if ($code == 401) {
-            $this->_logger->error("Received 401 error, no further feature requests will be made during lifetime of LD client since SDK key is invalid");
-            $this->stopped = TRUE;
+            throw new InvalidSDKKeyException();
         }
     }
 }

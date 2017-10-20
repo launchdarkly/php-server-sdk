@@ -55,7 +55,7 @@ class CurlEventPublisher implements EventPublisher
 
     private function createArgs($payload) {
         $scheme = $this->_ssl ? "https://" : "http://";
-        $args = " -X POST";
+        $args = " -s -i -X POST";
         $args.= " -H 'Content-Type: application/json'";
         $args.= " -H " . escapeshellarg("Authorization: " . $this->_sdkKey);
         $args.= " -H 'User-Agent: PHPClient/" . LDClient::VERSION . "'";
@@ -66,8 +66,13 @@ class CurlEventPublisher implements EventPublisher
     }
 
     private function makeRequest($args) {
-        $cmd = $this->_curl . " " . $args . ">> /dev/null 2>&1 &";
-        shell_exec($cmd);
-        return true;
+        $cmd = $this->_curl . " " . $args . " 2>&1";
+        $output = shell_exec($cmd);
+        preg_match('#^HTTP/[^ ]* *([0-9]*)#', $output, $matches);
+        $status = intval($matches[1]);
+        if ($status == 401) {
+            throw new InvalidSDKKeyException();
+        }
+        return ($status < 300);
     }
 }
