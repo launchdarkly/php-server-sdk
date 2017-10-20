@@ -10,14 +10,12 @@ class EventProcessor {
   private $_queue;
   private $_capacity;
   private $_timeout;
-  private $_logger;
 
   public function __construct($sdkKey, $options = array()) {
     $this->_eventPublisher = $this->getEventPublisher($sdkKey, $options);
 
     $this->_capacity = $options['capacity'];
     $this->_timeout = $options['timeout'];
-    $this->_logger = $options['logger'];
 
     $this->_queue = array();
   }
@@ -51,9 +49,7 @@ class EventProcessor {
 
     $payload = json_encode($this->_queue);
 
-    $this->queue = array();
-
-    $this->_eventPublisher->publish($payload);
+    return $this->_eventPublisher->publish($payload);
   }
 
   /**
