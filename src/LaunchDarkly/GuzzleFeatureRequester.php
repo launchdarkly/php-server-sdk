@@ -21,6 +21,8 @@ class GuzzleFeatureRequester implements FeatureRequester
     private $_logger;
     /** @var boolean */
     private $_loggedCacheNotice = FALSE;
+    /** @var boolean */
+    private $_stopped = FALSE;
 
     function __construct($baseUri, $sdkKey, $options)
     {
@@ -55,6 +57,9 @@ class GuzzleFeatureRequester implements FeatureRequester
      */
     public function get($key)
     {
+        if ($this->_stopped) {
+            return null;
+        }
         try {
             $uri = $this->_baseUri . self::SDK_FLAGS . "/" . $key;
             $response = $this->_client->get($uri, $this->_defaults);
@@ -65,7 +70,7 @@ class GuzzleFeatureRequester implements FeatureRequester
             if ($code == 404) {
                 $this->_logger->warning("GuzzleFeatureRequester::get returned 404. Feature flag does not exist for key: " . $key);
             } else {
-                $this->_logger->error("GuzzleFeatureRequester::get received an unexpected HTTP status code $code");
+                $this->handleUnexpectedStatus($code, "GuzzleFeatureRequester::get");
             }
             return null;
         }
@@ -77,15 +82,25 @@ class GuzzleFeatureRequester implements FeatureRequester
      * @return array()|null The decoded FeatureFlags, or null if missing
      */
     public function getAll() {
+        if ($this->_stopped) {
+            return null;
+        }
         try {
             $uri = $this->_baseUri . self::SDK_FLAGS;
             $response = $this->_client->get($uri, $this->_defaults);
             $body = $response->getBody();
             return array_map(FeatureFlag::getDecoder(), json_decode($body, true));
         } catch (BadResponseException $e) {
-            $code = $e->getResponse()->getStatusCode();
-            $this->_logger->error("GuzzleFeatureRequester::getAll received an unexpected HTTP status code $code");
+            $this->handleUnexpectedStatus($e->getResponse()->getStatusCode(), "GuzzleFeatureRequester::getAll");
             return null;
+        }
+    }
+
+    private function handleUnexpectedStatus($code, $method) {
+        $this->_logger->error("$method received an unexpected HTTP status code $code");
+        if ($code == 401) {
+            $this->_logger->error("Received 401 error, no further feature requests will be made during lifetime of LD client since SDK key is invalid");
+            $this->stopped = TRUE;
         }
     }
 }

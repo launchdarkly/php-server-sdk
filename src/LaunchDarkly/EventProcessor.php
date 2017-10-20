@@ -10,12 +10,15 @@ class EventProcessor {
   private $_queue;
   private $_capacity;
   private $_timeout;
+  private $_logger;
+  private $_stopped = FALSE;
 
   public function __construct($sdkKey, $options = array()) {
     $this->_eventPublisher = $this->getEventPublisher($sdkKey, $options);
 
     $this->_capacity = $options['capacity'];
     $this->_timeout = $options['timeout'];
+    $this->_logger = $options['logger'];
 
     $this->_queue = array();
   }
@@ -43,13 +46,20 @@ class EventProcessor {
    * @return bool Whether the events were successfully published
    */
   public function flush() {
-    if (empty($this->_queue)) {
+    if ($this->_stopped || empty($this->_queue)) {
       return null;
     }
 
     $payload = json_encode($this->_queue);
 
-    return $this->_eventPublisher->publish($payload);
+    $this->queue = array();
+
+    try {
+      $this->_eventPublisher->publish($payload);
+    } catch (InvalidSDKException $e) {
+      $this->_logger->error("Received 401 error, no further events will be posted during lifetime of LD client since SDK key is invalid");
+      $this->_stopped = TRUE;
+    }
   }
 
   /**

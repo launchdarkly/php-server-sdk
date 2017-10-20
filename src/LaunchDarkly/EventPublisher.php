@@ -19,3 +19,7 @@ interface EventPublisher {
      */
     public function publish($payload);
 }
+
+class InvalidSDKKeyException extends \Exception
+{
+}
