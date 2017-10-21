@@ -308,7 +308,7 @@ class LDClient {
         try {
             return $this->_eventProcessor->flush();
         } catch (InvalidSDKKeyException $e) {
-            $this->handleInvalidSDKKey());
+            $this->handleInvalidSDKKey();
         }
     }
 
