@@ -73,7 +73,7 @@ class VariationOrRollout {
         $idHash = null;
         if ($userValue != null) {
             if (is_int($userValue)) {
-                $userValue = (string)$userValue;
+                $userValue = (string) $userValue;
             }
             if (is_string($userValue)) {
                 $idHash = $userValue;
