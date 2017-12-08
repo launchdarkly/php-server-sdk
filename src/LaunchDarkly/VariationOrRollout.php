@@ -72,6 +72,9 @@ class VariationOrRollout {
         $userValue = $user->getValueForEvaluation($attr);
         $idHash = null;
         if ($userValue != null) {
+            if (is_int($userValue)) {
+                $userValue = (string)$userValue;
+            }
             if (is_string($userValue)) {
                 $idHash = $userValue;
                 if ($user->getSecondary() !== null) {
