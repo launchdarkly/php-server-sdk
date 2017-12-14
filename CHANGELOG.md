@@ -6,9 +6,6 @@ All notable changes to the LaunchDarkly PHP SDK will be documented in this file.
 ### Added
 - New `flush` method forces events to be published to the LaunchDarkly service. This can be useful if `LDClient` is not automatically destroyed at the end of a request. Thanks @foxted!
 
-### Fixed
-- Documentation comment references the correct namespace for `CacheStorageInterface`. Thanks @pmeth!
-
 ## [2.2.0] - 2017-06-06
 ### Added
 - Support for [publishing events via ld-relay](README.md#using-ld-relay)
@@ -18,7 +15,6 @@ All notable changes to the LaunchDarkly PHP SDK will be documented in this file.
 
 ## [2.1.2] - 2017-04-27
 ### Changed
-- Relaxed the requirement on `kevinrob/guzzle-cache-middleware` for the default `GuzzleFeatureRequester`.
 - Added package suggestions in `composer.json`.
 
 ### Fixed
