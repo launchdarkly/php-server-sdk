@@ -1,7 +1,7 @@
 <?php
 namespace LaunchDarkly;
 
-use GuzzleHttp\Client;
+use Guzzle\Http\Client;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -33,20 +33,20 @@ class GuzzleEventPublisher implements EventPublisher
         } else {
             $this->_eventsUri = LDClient::DEFAULT_EVENTS_URI;
         }
-        $this->_requestOptions = [
-            'headers' => [
+        $this->_requestOptions = array(
+            'headers' => array(
                 'Content-Type'  => 'application/json',
                 'Authorization' => $this->_sdkKey,
                 'User-Agent'    => 'PHPClient/' . LDClient::VERSION,
                 'Accept'        => 'application/json'
-            ],
+            ),
             'timeout' => $options['timeout'],
             'connect_timeout' => $options['connect_timeout']
         ];
     }
 
     public function publish($payload) {
-        $client = new Client(['base_uri' => $this->_eventsUri]);
+        $client = new Client($this->_eventsUri);
 
         try {
             $options = $this->_requestOptions;
