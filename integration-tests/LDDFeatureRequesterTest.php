@@ -58,16 +58,16 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
             self::markTestSkipped('Install `apcu` extension to run this test.');
         }
 
-        $redis = new Client([
+        $redis = new Client(array(
             'scheme' => 'tcp',
             'host' => 'localhost',
             'port' => 6379
-        ]);
+        ));
 
-        $client = new LDClient(static::API_KEY, [
+        $client = new LDClient(static::API_KEY, array(
             'feature_requester_class' => 'LaunchDarkly\ApcuLDDFeatureRequester',
             'apc_expiration' => 1
-        ]);
+        ));
 
         $builder = new LDUserBuilder(3);
         $user = $builder->build();
@@ -87,11 +87,11 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
 
     public function testGetAllWithoutFeatures()
     {
-        $redis = new \Predis\Client([
+        $redis = new \Predis\Client(array(
             'scheme' => 'tcp',
             'host' => 'localhost',
             'port' => 6379,
-        ]);
+        ));
         $redis->flushall();
 
         $client = new LDClient(static::API_KEY, array('feature_requester_class' => 'LaunchDarkly\LDDFeatureRequester'));
@@ -106,11 +106,11 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
         $featureKey = 'foo';
         $featureValue = 'bar';
 
-        $redis = new \Predis\Client([
+        $redis = new \Predis\Client(array(
             'scheme' => 'tcp',
             'host' => 'localhost',
             'port' => 6379,
-        ]);
+        ));
         $client = new LDClient(static::API_KEY, array('feature_requester_class' => 'LaunchDarkly\LDDFeatureRequester'));
         $redis->hset('launchdarkly:features', $featureKey, $this->gen_feature($featureKey, $featureValue));
         $user = new LDUser(static::API_KEY);
