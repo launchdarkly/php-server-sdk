@@ -16,7 +16,6 @@ Quick setup
 
         php composer.phar require launchdarkly/launchdarkly-php
         php composer.phar require "guzzlehttp/guzzle:6.2.1"
-        php composer.phar require "kevinrob/guzzle-cache-middleware": "1.4.1"
 
 1. After installing, require Composer's autoloader:
 
