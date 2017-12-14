@@ -49,6 +49,8 @@ class EventProcessor {
 
     $payload = json_encode($this->_queue);
 
+    $this->_queue = array();
+
     return $this->_eventPublisher->publish($payload);
   }
 
