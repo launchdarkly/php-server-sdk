@@ -57,13 +57,13 @@ class FeatureFlag {
                 $v['key'],
                 $v['version'],
                 $v['on'],
-                array_map(Prerequisite::getDecoder(), $v['prerequisites']),
+                array_map(Prerequisite::getDecoder(), $v['prerequisites'] ?: array()),
                 $v['salt'],
-                array_map(Target::getDecoder(), $v['targets']),
-                array_map(Rule::getDecoder(), $v['rules']),
+                array_map(Target::getDecoder(), $v['targets'] ?: array()),
+                array_map(Rule::getDecoder(), $v['rules'] ?: array()),
                 call_user_func(VariationOrRollout::getDecoder(), $v['fallthrough']),
                 $v['offVariation'],
-                $v['variations'],
+                $v['variations'] ?: array(),
                 $v['deleted']);
         };
     }
@@ -88,7 +88,7 @@ class FeatureFlag {
         }
         if ($this->isOn()) {
             $result = $this->_evaluate($user, $featureRequester, $prereqEvents);
-            if ($result != null) {
+            if ($result !== null) {
                 return new EvalResult($result, $prereqEvents);
             }
         }
@@ -306,7 +306,7 @@ class Prerequisite {
     /** @var int */
     private $_variation = null;
 
-    public function __construct($key, $variation) {
+    protected function __construct($key, $variation) {
         $this->_key = $key;
         $this->_variation = $variation;
     }

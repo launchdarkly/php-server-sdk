@@ -20,20 +20,20 @@
         }
     ],
     "require": {
+        "monolog/monolog": "^1.6",
         "php": "~5.3",
-        "guzzle/guzzle": "dev-master#ecb935d2d0ecd8cddae4dcfb90515cac5e2cb023",
-        "psr/log": "1.0.0",
+        "psr/log": "^1.0",
         "justinrainbow/json-schema": "v1.6.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "4.8.26",
-        "phpdocumentor/phpdocumentor": "2.*",
-        "predis/predis": "1.0.*",
-        "zendframework/zend-serializer": "2.4.*"
+        "guzzle/guzzle": "dev-master#ecb935d2d0ecd8cddae4dcfb90515cac5e2cb023",
+        "phpunit/phpunit": ">=4.8.26 <5.0",
+        "phpdocumentor/phpdocumentor": "^2.0",
+        "predis/predis": "^1.0"
     },
     "suggested": {
-        "monolog/monolog": "1.21.0",
-        "predis/predis": "1.0.*"
+        "guzzle/guzzle": "(^6.2.1) Required when using GuzzleEventPublisher or the default FeatureRequester",
+        "predis/predis": "(^1.0) Required when using LDDFeatureRequester"
     },
     "autoload": {
         "psr-4": {
