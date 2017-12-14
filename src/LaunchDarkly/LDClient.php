@@ -261,8 +261,9 @@ class LDClient {
          * @param $flag FeatureFlag
          * @return mixed|null
          */
-        $eval = function($flag) use($user) {
-            return $flag->evaluate($user, $this->_featureRequester)->getValue();
+        $fr = $this->_featureRequester;
+        $eval = function($flag) use($user, $fr) {
+            return $flag->evaluate($user, $fr)->getValue();
         };
 
         return array_map($eval, $flags);
