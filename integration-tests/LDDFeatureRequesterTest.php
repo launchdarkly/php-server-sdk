@@ -17,7 +17,7 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
                                       "scheme" => "tcp",
                                       "host" => 'localhost',
                                       "port" => 6379));
-        $client = new LDClient(static::API_KEY, array('feature_requester_class' => LDDFeatureRequester::class));
+        $client = new LDClient(static::API_KEY, array('feature_requester_class' => 'LaunchDarkly\LDDFeatureRequester'));
         $builder = new LDUserBuilder(3);
         $user = $builder->build();
 
@@ -35,7 +35,7 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
                                         "scheme" => "tcp",
                                         "host" => 'localhost',
                                         "port" => 6379));
-        $client = new LDClient(static::API_KEY, array('feature_requester_class' => ApcLDDFeatureRequester::class,
+        $client = new LDClient(static::API_KEY, array('feature_requester_class' => 'LaunchDarkly\ApcLDDFeatureRequester',
             'apc_expiration' => 1));
         $builder = new LDUserBuilder(3);
         $user = $builder->build();
@@ -65,7 +65,7 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
         ]);
 
         $client = new LDClient(static::API_KEY, [
-            'feature_requester_class' => ApcuLDDFeatureRequester::class,
+            'feature_requester_class' => 'LaunchDarkly\ApcuLDDFeatureRequester',
             'apc_expiration' => 1
         ]);
 
@@ -94,7 +94,7 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
         ]);
         $redis->flushall();
 
-        $client = new LDClient(static::API_KEY, ['feature_requester_class' => LDDFeatureRequester::class]);
+        $client = new LDClient(static::API_KEY, array('feature_requester_class' => 'LaunchDarkly\LDDFeatureRequester'));
         $user = new LDUser(static::API_KEY);
         $allFlags = $client->allFlags($user);
 
@@ -111,7 +111,7 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
             'host' => 'localhost',
             'port' => 6379,
         ]);
-        $client = new LDClient(static::API_KEY, ['feature_requester_class' => LDDFeatureRequester::class]);
+        $client = new LDClient(static::API_KEY, array('feature_requester_class' => 'LaunchDarkly\LDDFeatureRequester'));
         $redis->hset('launchdarkly:features', $featureKey, $this->gen_feature($featureKey, $featureValue));
         $user = new LDUser(static::API_KEY);
         $allFlags = $client->allFlags($user);
@@ -122,52 +122,52 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
     }
 
     private function gen_feature($key, $val) {
-        $data = [
+        $data = array(
             'name' => 'Feature ' . $key,
             'key' => $key,
             'kind' => 'flag',
             'salt' => 'Zm9v',
             'on' => true,
-            'variations' => [
+            'variations' => array(
                 $val,
                 false,
-            ],
+            ),
             'commitDate' => '2015-09-08T21:24:16.712Z',
             'creationDate' => '2015-09-08T21:06:16.527Z',
             'version' => 4,
-            'prerequisites' => [],
-            'targets' => [
-                [
-                    'values' => [
+            'prerequisites' => array(),
+            'targets' => array(
+                array(
+                    'values' => array(
                         $val,
-                    ],
+                    ),
                     'variation' => 0,
-                ],
-                [
-                    'values' => [
+                ),
+                array(
+                    'values' => array(
                         false,
-                    ],
+                    ),
                     'variation' => 1,
-                ],
-            ],
-            'rules' => [],
-            'fallthrough' => [
-                'rollout' => [
-                    'variations' => [
-                        [
+                ),
+            ),
+            'rules' => array(),
+            'fallthrough' => array(
+                'rollout' => array(
+                    'variations' => array(
+                        array(
                             'variation' => 0,
                             'weight' => 95000,
-                        ],
-                        [
+                        ),
+                        array(
                             'variation' => 1,
                             'weight' => 5000,
-                        ],
-                    ],
-                ],
-            ],
+                        ),
+                    ),
+                ),
+            ),
             'offVariation' => null,
             'deleted' => false,
-        ];
+        );
 
         return \json_encode($data);
     }
