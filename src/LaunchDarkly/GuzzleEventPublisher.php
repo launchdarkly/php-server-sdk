@@ -42,7 +42,7 @@ class GuzzleEventPublisher implements EventPublisher
             ),
             'timeout' => $options['timeout'],
             'connect_timeout' => $options['connect_timeout']
-        ];
+        );
     }
 
     public function publish($payload) {
