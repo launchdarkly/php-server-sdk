@@ -15,7 +15,7 @@ Quick setup
 1. Install the PHP SDK and monolog for logging with [Composer](https://getcomposer.org/)
 
         php composer.phar require launchdarkly/launchdarkly-php
-        php composer.phar require "guzzlehttp/guzzle:6.2.1"
+        php composer.phar require "guzzle/guzzle:dev-master#ecb935d2d0ecd8cddae4dcfb90515cac5e2cb023"
 
 1. After installing, require Composer's autoloader:
 
@@ -44,7 +44,7 @@ Fetching flags
 
 There are two distinct methods of integrating LaunchDarkly in a PHP environment.  
 
-* [Guzzle Cache Middleware](https://github.com/Kevinrob/guzzle-cache-middleware) to request and cache HTTP responses in an in-memory array (default)
+* [Guzzle](https://github.com/launchdarkly/guzzle3) with its [cache plugin](https://github.com/launchdarkly/guzzle3/blob/master/docs/plugins/cache-plugin.rst) to request and cache HTTP responses in an in-memory array (default) -- note, this is a forked older version of Guzzle for PHP 5.3 compatibility
 * [ld-relay](https://github.com/launchdarkly/ld-relay) to retrieve and store flags in Redis (recommended)
 
 We strongly recommend using the ld-relay.  Per-flag caching (Guzzle method) is only intended for low-throughput environments.
@@ -54,15 +54,13 @@ Using Guzzle
 
 Require Guzzle as a dependency:
 
-    php composer.phar require "guzzlehttp/guzzle:6.2.1"
-    php composer.phar require "kevinrob/guzzle-cache-middleware:1.4.1"
+    php composer.phar require "guzzle/guzzle:dev-master#ecb935d2d0ecd8cddae4dcfb90515cac5e2cb023"
 
 It will then be used as the default way of fetching flags.
 
 With Guzzle, you could persist your cache somewhere other than the default in-memory store, like Memcached or Redis.  You could then specify your cache when initializing the client with the [cache option](https://github.com/launchdarkly/php-client/blob/master/src/LaunchDarkly/LDClient.php#L44).
 
-    $client = new LaunchDarkly\LDClient("YOUR_SDK_KEY", array("cache" => $cacheStorage));
-
+    $client = new LaunchDarkly\LDClient("YOUR_SDK_KEY", array("cache_storage" => $cacheStorage));
 
 Using LD-Relay
 ==============

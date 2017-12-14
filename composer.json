@@ -32,7 +32,7 @@
         "predis/predis": "^1.0"
     },
     "suggested": {
-        "guzzle/guzzle": "(^6.2.1) Required when using GuzzleEventPublisher or the default FeatureRequester",
+        "guzzle/guzzle": "(^dev-master#ecb935d2d0ecd8cddae4dcfb90515cac5e2cb023) Required when using GuzzleEventPublisher or the default FeatureRequester",
         "predis/predis": "(^1.0) Required when using LDDFeatureRequester"
     },
     "autoload": {
