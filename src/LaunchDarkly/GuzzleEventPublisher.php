@@ -23,6 +23,8 @@ class GuzzleEventPublisher implements EventPublisher
     /** @var LoggerInterface */
     private $_logger;
     /** @var mixed[] */
+    private $_requestHeaders;
+    /** @var mixed[] */
     private $_requestOptions;
 
     function __construct($sdkKey, array $options = array()) {
@@ -33,13 +35,13 @@ class GuzzleEventPublisher implements EventPublisher
         } else {
             $this->_eventsUri = LDClient::DEFAULT_EVENTS_URI;
         }
+        $this->_requestHeaders = array(
+            'Content-Type'  => 'application/json',
+            'Authorization' => $this->_sdkKey,
+            'User-Agent'    => 'PHPClient/' . LDClient::VERSION,
+            'Accept'        => 'application/json'
+        );
         $this->_requestOptions = array(
-            'headers' => array(
-                'Content-Type'  => 'application/json',
-                'Authorization' => $this->_sdkKey,
-                'User-Agent'    => 'PHPClient/' . LDClient::VERSION,
-                'Accept'        => 'application/json'
-            ),
             'timeout' => $options['timeout'],
             'connect_timeout' => $options['connect_timeout']
         );
@@ -49,9 +51,8 @@ class GuzzleEventPublisher implements EventPublisher
         $client = new Client($this->_eventsUri);
 
         try {
-            $options = $this->_requestOptions;
-            $options['body'] = $payload;
-            $response = $client->request('POST', '/bulk', $options);
+            $req = $client->post('/bulk', $this->_requestHeaders, $payload, $this->_requestOptions);
+            $response = $req->send();
 
             return $response->getStatusCode() < 300;
         } catch (\Exception $e) {
