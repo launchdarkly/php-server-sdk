@@ -1,7 +1,8 @@
 <?php
 namespace LaunchDarkly;
 
-class LDUserBuilder {
+class LDUserBuilder
+{
     protected $_key = null;
     protected $_secondary = null;
     protected $_ip = null;
@@ -14,62 +15,73 @@ class LDUserBuilder {
     protected $_anonymous = null;
     protected $_custom = array();
 
-    public function __construct($key) {
+    public function __construct($key)
+    {
         $this->_key = $key;
     }
 
-    public function secondary($secondary) {
+    public function secondary($secondary)
+    {
         $this->_secondary = $secondary;
         return $this;
     }
 
-    public function ip($ip) {
+    public function ip($ip)
+    {
         $this->_ip = $ip;
         return $this;
     }
 
-    public function country($country) {
+    public function country($country)
+    {
         $this->_country = $country;
         return $this;
     }
 
-    public function email($email) {
+    public function email($email)
+    {
         $this->_email = $email;
         return $this;
     }
 
-    public function name($name) {
+    public function name($name)
+    {
         $this->_name = $name;
         return $this;
     }
 
-    public function avatar($avatar) {
+    public function avatar($avatar)
+    {
         $this->_avatar = $avatar;
         return $this;
     }
 
-    public function firstName($firstName) {
+    public function firstName($firstName)
+    {
         $this->_firstName = $firstName;
         return $this;
     }
 
-    public function lastName($lastName) {
+    public function lastName($lastName)
+    {
         $this->_lastName = $lastName;
         return $this;
     }
 
-    public function anonymous($anonymous) {
+    public function anonymous($anonymous)
+    {
         $this->_anonymous = $anonymous;
         return $this;
     }
 
-    public function custom($custom) {
+    public function custom($custom)
+    {
         $this->_custom = $custom;
         return $this;
     }
 
-    public function build() {
+    public function build()
+    {
         return new LDUser($this->_key, $this->_secondary, $this->_ip, $this->_country, $this->_email, $this->_name, $this->_avatar, $this->_firstName, $this->_lastName, $this->_anonymous, $this->_custom);
     }
-
 }
