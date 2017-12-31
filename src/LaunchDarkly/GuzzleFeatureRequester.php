@@ -20,18 +20,18 @@ class GuzzleFeatureRequester implements FeatureRequester
     /** @var LoggerInterface */
     private $_logger;
     /** @var boolean */
-    private $_loggedCacheNotice = FALSE;
+    private $_loggedCacheNotice = false;
 
-    function __construct($baseUri, $sdkKey, $options)
+    public function __construct($baseUri, $sdkKey, $options)
     {
         $this->_baseUri = $baseUri;
         $this->_logger = $options['logger'];
         $stack = HandlerStack::create();
         if (class_exists('Kevinrob\GuzzleCache\CacheMiddleware')) {
             $stack->push(new CacheMiddleware(new PublicCacheStrategy(isset($options['cache']) ? $options['cache'] : null), 'cache'));
-        } else if (!$this->_loggedCacheNotice) {
+        } elseif (!$this->_loggedCacheNotice) {
             $this->_logger->info("GuzzleFeatureRequester is not using an HTTP cache because Kevinrob\GuzzleCache\CacheMiddleware was not installed");
-            $this->_loggedCacheNotice = TRUE;
+            $this->_loggedCacheNotice = true;
         }
 
         $this->_defaults = array(
@@ -76,7 +76,8 @@ class GuzzleFeatureRequester implements FeatureRequester
      *
      * @return array()|null The decoded FeatureFlags, or null if missing
      */
-    public function getAll() {
+    public function getAll()
+    {
         try {
             $uri = $this->_baseUri . self::SDK_FLAGS;
             $response = $this->_client->get($uri, $this->_defaults);

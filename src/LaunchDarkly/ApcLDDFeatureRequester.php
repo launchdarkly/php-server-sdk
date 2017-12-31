@@ -1,7 +1,6 @@
 <?php
 namespace LaunchDarkly;
 
-
 /**
  * Feature requester from an LDD-populated redis, with APC caching
  * @deprecated Per the docs (http://php.net/manual/en/intro.apc.php):
@@ -10,10 +9,12 @@ namespace LaunchDarkly;
  *
  * @package LaunchDarkly
  */
-class ApcLDDFeatureRequester extends LDDFeatureRequester {
+class ApcLDDFeatureRequester extends LDDFeatureRequester
+{
     protected $_expiration = 30;
 
-    function __construct($baseUri, $sdkKey, $options) {
+    public function __construct($baseUri, $sdkKey, $options)
+    {
         parent::__construct($baseUri, $sdkKey, $options);
 
         if (isset($options['apc_expiration'])) {
@@ -31,13 +32,13 @@ class ApcLDDFeatureRequester extends LDDFeatureRequester {
         return \apc_fetch($key, $success);
     }
 
-    protected function get_from_cache($key) {
+    protected function get_from_cache($key)
+    {
         $key = self::make_cache_key($key);
         $enabled = $this->fetch($key);
         if ($enabled === false) {
             return null;
-        }
-        else {
+        } else {
             return $enabled;
         }
     }
@@ -53,11 +54,13 @@ class ApcLDDFeatureRequester extends LDDFeatureRequester {
         return \apc_add($key, $var, $ttl);
     }
 
-    protected function store_in_cache($key, $val) {
+    protected function store_in_cache($key, $val)
+    {
         $this->add($this->make_cache_key($key), $val, $this->_expiration);
     }
 
-    private function make_cache_key($name) {
+    private function make_cache_key($name)
+    {
         return $this->_features_key.'.'.$name;
     }
 }
