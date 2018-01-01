@@ -78,7 +78,7 @@ class EventSerializerTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testAllUserAttrsPrivate() {
-        $es = new EventSerializer(array('allAttributesPrivate' => true));
+        $es = new EventSerializer(array('all_attributes_private' => true));
         $event = $this->makeEvent($this->getUser());
         $json = $es->serializeEvents(array($event));
         $expected = $this->makeEvent($this->getUserResultWithAllAttrsHidden());
@@ -86,7 +86,7 @@ class EventSerializerTest extends \PHPUnit_Framework_TestCase {
     }
     
     public function testSomeUserAttrsPrivate() {
-        $es = new EventSerializer(array('privateAttributeNames' => array('firstName', 'bizzle')));
+        $es = new EventSerializer(array('private_attribute_names' => array('firstName', 'bizzle')));
         $event = $this->makeEvent($this->getUser());
         $json = $es->serializeEvents(array($event));
         $expected = $this->makeEvent($this->getUserResultWithSomeAttrsHidden());
@@ -102,7 +102,7 @@ class EventSerializerTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testPerUserPrivateAttrPlusGlobalPrivateAttrs() {
-        $es = new EventSerializer(array('privateAttributeNames' => array('firstName', 'bizzle')));
+        $es = new EventSerializer(array('private_attribute_names' => array('firstName', 'bizzle')));
         $event = $this->makeEvent($this->getUserSpecifyingOwnPrivateAttr());
         $json = $es->serializeEvents(array($event));
         $expected = $this->makeEvent($this->getUserResultWithAllAttrsHidden());

@@ -10,8 +10,8 @@ class EventSerializer {
     private $_privateAttrNames;
 
     public function __construct($options) {
-        $this->_allAttrsPrivate = isset($options['allAttributesPrivate']) && $options['allAttributesPrivate'];
-        $this->_privateAttrNames = isset($options['privateAttributeNames']) ? $options['privateAttributeNames'] : array();
+        $this->_allAttrsPrivate = isset($options['all_attributes_private']) && $options['all_attributes_private'];
+        $this->_privateAttrNames = isset($options['private_attribute_names']) ? $options['private_attribute_names'] : array();
     }
 
     public function serializeEvents($events) {
