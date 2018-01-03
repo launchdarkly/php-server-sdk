@@ -140,5 +140,52 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase {
         FeatureFlag::decode(json_decode(FeatureFlagTest::$json1, true));
         FeatureFlag::decode(json_decode(FeatureFlagTest::$json2, true));
     }
+    
+    public function dataDecodeMulti()
+    {
+        return array(
+            'null-prerequisites' => array(
+                array(
+                    'key' => 'sysops-test',
+                    'version' => 14,
+                    'on' => true,
+                    'prerequisites' => NULL,
+                    'salt' => 'c3lzb3BzLXRlc3Q=',
+                    'sel' => '8ed13de1bfb14507ba7e6dde01f3e035',
+                    'targets' => array(
+                        array(
+                            'values' => array(),
+                            'variation' => 0,
+                        ),
+                        array(
+                            'values' => array(),
+                            'variation' => 1,
+                        ),
+                    ),
+                    'rules' => array(),
+                    'fallthrough' => array(
+                        'variation' => 0,
+                    ),
+                    'offVariation' => NULL,
+                    'variations' => array(
+                        true,
+                        false,
+                    ),
+                    'deleted' => false,
+                )
+            ),
+        );
+    }
+    
+    /**
+     * @dataProvider dataDecodeMulti
+     * @param array $feature
+     */
+    public function testDecodeMulti(array $feature)
+    {
+        $featureFlag = FeatureFlag::decode($feature);
+        
+        self::assertInstanceOf('LaunchDarkly\FeatureFlag', $featureFlag);
+    }
 }
 
