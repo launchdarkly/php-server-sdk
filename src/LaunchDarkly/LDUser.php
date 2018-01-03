@@ -18,6 +18,7 @@ class LDUser {
     protected $_lastName = null;
     protected $_anonyomus = false;
     protected $_custom = array();
+    protected $_privateAttributeNames = array();
 
     /**
      * @param string $key Unique key for the user. For authenticated users, this may be a username or e-mail address. For anonymous users, this could be an IP address or session ID.
@@ -32,7 +33,8 @@ class LDUser {
      * @param boolean|null $anonymous Whether this is an anonymous user
      * @param array|null $custom Other custom attributes that can be used to create custom rules
      */
-    public function __construct($key, $secondary = null, $ip = null, $country = null, $email = null, $name = null, $avatar = null, $firstName = null, $lastName = null, $anonymous = null, $custom = array()) {
+    public function __construct($key, $secondary = null, $ip = null, $country = null, $email = null, $name = null, $avatar = null, $firstName = null, $lastName = null, $anonymous = null, $custom = array(),
+            $privateAttributeNames = array()) {
         if ($key !== null) {
             $this->_key = strval($key);
         }
@@ -46,6 +48,7 @@ class LDUser {
         $this->_lastName = $lastName;
         $this->_anonymous = $anonymous;
         $this->_custom = $custom;
+        $this->_privateAttributeNames = $privateAttributeNames;
     }
 
     public function getValueForEvaluation($attr) {
@@ -129,43 +132,11 @@ class LDUser {
         return $this->_anonymous;
     }
 
+    public function getPrivateAttributeNames() {
+        return $this->_privateAttributeNames;
+    }
+    
     public function isKeyBlank() {
         return isset($this->_key) && empty($this->_key);
-    }
-
-    public function toJSON() {
-        $json = array("key" => $this->_key);
-
-        if (isset($this->_secondary)) {
-            $json['secondary'] = $this->_secondary;
-        }
-        if (isset($this->_ip)) {
-            $json['ip'] = $this->_ip;
-        }
-        if (isset($this->_country)) {
-            $json['country'] = $this->_country;
-        }
-        if (isset($this->_email)) {
-            $json['email'] = $this->_email;
-        }
-        if (isset($this->_name)) {
-            $json['name'] = $this->_name;
-        }
-        if (isset($this->_avatar)) {
-            $json['avatar'] = $this->_avatar;
-        }
-        if (isset($this->_firstName)) {
-            $json['firstName'] = $this->_firstName;
-        }
-        if (isset($this->_lastName)) {
-            $json['lastName'] = $this->_lastName;
-        }
-        if (isset($this->_custom) && !empty($this->_custom)) {
-            $json['custom'] = $this->_custom;
-        }
-        if (isset($this->_anonymous)) {
-            $json['anonymous'] = $this->_anonymous;
-        }
-        return $json;
     }
 }
