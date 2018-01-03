@@ -7,8 +7,8 @@ machine:
 dependencies:
   pre:
     - yes '' | pecl install -f apcu-4.0.10
-    - echo "extension=apcu.so" | sudo tee -a /opt/circleci/php/$(phpenv global)/etc/php.ini
-    - echo "apc.enable_cli = 1" | sudo tee -a /opt/circleci/php/$(phpenv global)/etc/php.ini
+    - echo "extension=apcu.so" >> $(php-config --prefix)/etc/conf.d/apcu.ini
+    - echo "apc.enable_cli = 1" >> $(php-config --prefix)/etc/conf.d/apcu.ini
     - docker pull php
     - docker pull nyanpass/php5.5
 
