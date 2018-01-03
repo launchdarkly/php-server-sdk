@@ -6,6 +6,13 @@ use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 
 /**
+ * Used internally.
+ */
+class InvalidSDKKeyException extends \Exception
+{
+}
+
+/**
  * A client for the LaunchDarkly API.
  */
 class LDClient {
@@ -144,7 +151,12 @@ class LDClient {
             if ($user->isKeyBlank()) {
                 $this->_logger->warning("User key is blank. Flag evaluation will proceed, but the user will not be stored in LaunchDarkly.");
             }
-            $flag = $this->_featureRequester->get($key);
+            try {
+                $flag = $this->_featureRequester->get($key);
+            } catch (InvalidSDKKeyException $e) {
+                $this->handleInvalidSDKKey();
+                return $default;
+            }
 
             if (is_null($flag)) {
                 $this->_sendFlagRequestEvent($key, $user, $default, $default);
@@ -252,7 +264,15 @@ class LDClient {
             $this->_logger->warn("allFlags called with null user or null/empty user key! Returning null");
             return null;
         }
-        $flags = $this->_featureRequester->getAll();
+        if ($this->isOffline()) {
+            return null;
+        }
+        try {
+            $flags = $this->_featureRequester->getAll();
+        } catch (InvalidSDKKeyException $e) {
+            $this->handleInvalidSDKKey();
+            return null;
+        }
         if ($flags === null) {
             return null;
         }
@@ -285,7 +305,11 @@ class LDClient {
      */
     public function flush()
     {
-        return $this->_eventProcessor->flush();
+        try {
+            return $this->_eventProcessor->flush();
+        } catch (InvalidSDKKeyException $e) {
+            $this->handleInvalidSDKKey();
+        }
     }
 
     /**
@@ -309,5 +333,10 @@ class LDClient {
         } else {
             return $default;
         }
+    }
+
+    protected function handleInvalidSDKKey() {
+        $this->_logger->error("Received 401 error, no further HTTP requests will be made during lifetime of LDClient since SDK key is invalid");
+        $this->_offline = true;
     }
 }
