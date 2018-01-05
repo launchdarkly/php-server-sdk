@@ -22,10 +22,6 @@ class EventProcessor
       $this->_queue = array();
     }
 
-    public function __destruct() {
-      $this->flush();
-    }
-
     public function __destruct()
     {
         $this->flush();
