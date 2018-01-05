@@ -8,7 +8,7 @@ All notable changes to the LaunchDarkly PHP SDK will be documented in this file.
 
 ### Changed
 - Stop retrying HTTP requests if the API key has been invalidated.
-- User bucketing supports integer attributes. Thanks @mlund00!
+- User bucketing supports integer attributes. Thanks @mlund01!
 - Source code complies with the PSR-2 standard. Thanks @valerianpereira!
 
 ## [2.3.0] - 2017-10-06
