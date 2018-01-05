@@ -18,7 +18,7 @@ class InvalidSDKKeyException extends \Exception
 class LDClient {
     const DEFAULT_BASE_URI = 'https://app.launchdarkly.com';
     const DEFAULT_EVENTS_URI = 'https://events.launchdarkly.com';
-    const VERSION = '2.3.0';
+    const VERSION = '2.4.0';
 
     /** @var string */
     protected $_sdkKey;

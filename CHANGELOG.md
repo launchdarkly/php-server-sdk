@@ -2,6 +2,15 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [2.4.0] - 2018-01-04
+### Added
+- Support for [private user attributes](https://docs.launchdarkly.com/docs/private-user-attributes).
+
+### Changed
+- Stop retrying HTTP requests if the API key has been invalidated.
+- User bucketing supports integer attributes. Thanks @mlund01!
+- Source code complies with the PSR-2 standard. Thanks @valerianpereira!
+
 ## [2.3.0] - 2017-10-06
 ### Added
 - New `flush` method forces events to be published to the LaunchDarkly service. This can be useful if `LDClient` is not automatically destroyed at the end of a request. Thanks @foxted!
