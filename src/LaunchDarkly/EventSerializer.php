@@ -4,17 +4,20 @@ namespace LaunchDarkly;
 /**
  * @internal
  */
-class EventSerializer {
+class EventSerializer
+{
 
     private $_allAttrsPrivate;
     private $_privateAttrNames;
 
-    public function __construct($options) {
+    public function __construct($options)
+    {
         $this->_allAttrsPrivate = isset($options['all_attributes_private']) && $options['all_attributes_private'];
         $this->_privateAttrNames = isset($options['private_attribute_names']) ? $options['private_attribute_names'] : array();
     }
 
-    public function serializeEvents($events) {
+    public function serializeEvents($events)
+    {
         $filtered = array();
         foreach ($events as $e) {
             array_push($filtered, $this->filterEvent($e));
@@ -22,7 +25,8 @@ class EventSerializer {
         return json_encode($filtered);
     }
 
-    private function filterEvent($e) {
+    private function filterEvent($e)
+    {
         $ret = array();
         foreach ($e as $key => $value) {
             if ($key == 'user') {
@@ -35,7 +39,8 @@ class EventSerializer {
         return $ret;
     }
 
-    private function filterAttrs($attrs, &$json, $userPrivateAttrs, &$allPrivateAttrs) {
+    private function filterAttrs($attrs, &$json, $userPrivateAttrs, &$allPrivateAttrs)
+    {
         foreach ($attrs as $key => $value) {
             if ($value != null) {
                 if ($this->_allAttrsPrivate ||
@@ -50,7 +55,8 @@ class EventSerializer {
         }
     }
 
-    private function serializeUser($user) {
+    private function serializeUser($user)
+    {
         $json = array("key" => $user->getKey());
         $userPrivateAttrs = $user->getPrivateAttributeNames();
         $allPrivateAttrs = array();

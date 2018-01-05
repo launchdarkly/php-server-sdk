@@ -5,9 +5,11 @@ namespace LaunchDarkly\Tests;
 
 use LaunchDarkly\Operators;
 
-class OperatorsTest extends \PHPUnit_Framework_TestCase {
+class OperatorsTest extends \PHPUnit_Framework_TestCase
+{
 
-    public function testIn() {
+    public function testIn()
+    {
         $this->assertTrue(Operators::apply("in", "A string to match", "A string to match"));
         $this->assertFalse(Operators::apply("in", "A string to match", true));
         $this->assertTrue(Operators::apply("in", 34, 34));
@@ -19,26 +21,30 @@ class OperatorsTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse(Operators::apply("in", false, true));
     }
 
-    public function testStartsWith() {
+    public function testStartsWith()
+    {
         $this->assertTrue(Operators::apply("startsWith", "start", "start"));
         $this->assertTrue(Operators::apply("startsWith", "start plus more", "start"));
         $this->assertFalse(Operators::apply("startsWith", "does not contain", "start"));
         $this->assertFalse(Operators::apply("startsWith", "does not start with", "start"));
     }
 
-    public function testEndsWith() {
+    public function testEndsWith()
+    {
         $this->assertTrue(Operators::apply("endsWith", "end", "end"));
         $this->assertTrue(Operators::apply("endsWith", "something somethingend", "end"));
         $this->assertFalse(Operators::apply("endsWith", "does not contain", "end"));
         $this->assertFalse(Operators::apply("endsWith", "does not end with", "end"));
     }
 
-    public function testMatches() {
+    public function testMatches()
+    {
         $this->assertTrue(Operators::apply("matches", "anything", ".*"));
         $this->assertTrue(Operators::apply("matches", "darn", "(\\W|^)(baloney|darn|drat|fooey|gosh\\sdarnit|heck)(\\W|$)"));
     }
 
-    public function testParseTime() {
+    public function testParseTime()
+    {
         $this->assertEquals(0, Operators::parseTime(0));
         $this->assertEquals(100, Operators::parseTime(100));
         $this->assertEquals(100, Operators::parseTime(100));

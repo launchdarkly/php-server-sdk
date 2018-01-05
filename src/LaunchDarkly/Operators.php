@@ -4,7 +4,8 @@ namespace LaunchDarkly;
 use DateTime;
 use Exception;
 
-class Operators {
+class Operators
+{
     const RFC3339 = 'Y-m-d\TH:i:s.uP';
 
     /**
@@ -13,7 +14,8 @@ class Operators {
      * @param $c
      * @return bool
      */
-    public static function apply($op, $u, $c) {
+    public static function apply($op, $u, $c)
+    {
         try {
             if ($u === null || $c === null) {
                 return false;
@@ -45,7 +47,7 @@ class Operators {
                     break;
                 case "contains":
                     if (is_string($u) && is_string($c)) {
-                        return strpos($u, $c) !== FALSE;
+                        return strpos($u, $c) !== false;
                     }
                     break;
                 case "lessThan":
@@ -96,7 +98,8 @@ class Operators {
      * @param $in
      * @return null|int|float
      */
-    public static function parseTime($in) {
+    public static function parseTime($in)
+    {
         if (is_numeric($in)) {
             return $in;
         }

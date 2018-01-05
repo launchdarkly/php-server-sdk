@@ -4,7 +4,8 @@ namespace LaunchDarkly;
 /**
  * Provides a transport mechanism for sending events to the LaunchDarkly service.
  */
-interface EventPublisher {
+interface EventPublisher
+{
     /**
      * @param string $sdkKey The SDK key for your account
      * @param mixed[] $options Client configuration settings

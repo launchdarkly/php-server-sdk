@@ -9,13 +9,16 @@ use LaunchDarkly\LDUserBuilder;
 use Psr\Log\LoggerInterface;
 
 
-class LDClientTest extends \PHPUnit_Framework_TestCase {
+class LDClientTest extends \PHPUnit_Framework_TestCase
+{
 
-    public function testDefaultCtor() {
+    public function testDefaultCtor()
+    {
         new LDClient("BOGUS_SDK_KEY");
     }
 
-    public function testToggleDefault() {
+    public function testToggleDefault()
+    {
         MockFeatureRequester::$val = null;
         $client = new LDClient("someKey", array(
             'feature_requester_class' => MockFeatureRequester::class,
@@ -27,7 +30,8 @@ class LDClientTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('argdef', $client->variation('foo', $user, 'argdef'));
     }
 
-    public function testToggleFromArray() {
+    public function testToggleFromArray()
+    {
         MockFeatureRequester::$val = null;
         $client = new LDClient("someKey", array(
             'feature_requester_class' => MockFeatureRequester::class,
@@ -40,7 +44,8 @@ class LDClientTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('fromarray', $client->variation('foo', $user, 'argdef'));
     }
 
-    public function testToggleEvent() {
+    public function testToggleEvent()
+    {
         MockFeatureRequester::$val = null;
         $client = new LDClient("someKey", array(
             'feature_requester_class' => MockFeatureRequester::class,
@@ -55,12 +60,14 @@ class LDClientTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(1, sizeof($queue));
     }
 
-    public function testOnlyValidFeatureRequester() {
+    public function testOnlyValidFeatureRequester()
+    {
         $this->setExpectedException(InvalidArgumentException::class);
         new LDClient("BOGUS_SDK_KEY", ['feature_requester_class' => \stdClass::class]);
     }
 
-    public function testSecureModeHash() {
+    public function testSecureModeHash()
+    {
         $client = new LDClient("secret", ['offline' => true]);
         $user = new LDUser("Message");
         $this->assertEquals("aa747c502a898200f9e4fa21bac68136f886a0e27aec70ba06daf2e2a5cb5597",  $client->secureModeHash($user));
@@ -83,7 +90,6 @@ class LDClientTest extends \PHPUnit_Framework_TestCase {
     }
 }
 
-
 function getPrivateField(&$object, $fieldName)
 {
     $reflection = new \ReflectionClass(get_class($object));
@@ -93,16 +99,21 @@ function getPrivateField(&$object, $fieldName)
     return $field->getValue($object);
 }
 
-
-class MockFeatureRequester implements FeatureRequester {
+class MockFeatureRequester implements FeatureRequester
+{
     public static $val = null;
-    function __construct($baseurl, $key, $options) {
+
+    function __construct($baseurl, $key, $options)
+    {
     }
-    public function get($key) {
+
+    public function get($key)
+    {
         return self::$val;
     }
 
-    public function getAll() {
+    public function getAll()
+    {
         return null;
     }
 }

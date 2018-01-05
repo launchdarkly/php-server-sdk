@@ -5,13 +5,15 @@ namespace LaunchDarkly;
 use DateTime;
 use DateTimeZone;
 
-class Util {
+class Util
+{
 
     /**
      * @param $dateTime DateTime
      * @return int
      */
-    public static function dateTimeToUnixMillis($dateTime) {
+    public static function dateTimeToUnixMillis($dateTime)
+    {
         $timeStampSeconds = (int)$dateTime->getTimeStamp();
         $timestampMicros = $dateTime->format('u');
         return $timeStampSeconds * 1000 + (int)($timestampMicros / 1000);
@@ -20,7 +22,8 @@ class Util {
     /**
      * @return int
      */
-    public static function currentTimeUnixMillis() {
+    public static function currentTimeUnixMillis()
+    {
         return Util::dateTimeToUnixMillis(new DateTime('now', new DateTimeZone("UTC")));
     }
 
@@ -34,7 +37,8 @@ class Util {
      * @param null $prereqOf string | null
      * @return array
      */
-    public static function newFeatureRequestEvent($key, $user, $value, $default, $version = null, $prereqOf = null) {
+    public static function newFeatureRequestEvent($key, $user, $value, $default, $version = null, $prereqOf = null)
+    {
         $event = array();
         $event['user'] = $user;
         $event['value'] = $value;
@@ -46,5 +50,4 @@ class Util {
         $event['prereqOf'] = $prereqOf;
         return $event;
     }
-
 }

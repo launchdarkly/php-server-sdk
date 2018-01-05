@@ -2,8 +2,8 @@
 
 namespace LaunchDarkly;
 
-
-class VariationOrRollout {
+class VariationOrRollout
+{
     private static $LONG_SCALE = 0xFFFFFFFFFFFFFFF;
 
     /** @var int | null */
@@ -11,12 +11,14 @@ class VariationOrRollout {
     /** @var Rollout | null */
     private $_rollout = null;
 
-    protected function __construct($variation, $rollout) {
+    protected function __construct($variation, $rollout)
+    {
         $this->_variation = $variation;
         $this->_rollout = $rollout;
     }
 
-    public static function getDecoder() {
+    public static function getDecoder()
+    {
         return function ($v) {
             return new VariationOrRollout(
                 isset($v['variation']) ? $v['variation'] : null,
@@ -27,14 +29,16 @@ class VariationOrRollout {
     /**
      * @return int | null
      */
-    public function getVariation() {
+    public function getVariation()
+    {
         return $this->_variation;
     }
 
     /**
      * @return Rollout | null
      */
-    public function getRollout() {
+    public function getRollout()
+    {
         return $this->_rollout;
     }
 
@@ -44,10 +48,11 @@ class VariationOrRollout {
      * @param $_salt string
      * @return int|null
      */
-    public function variationIndexForUser($user, $_key, $_salt) {
+    public function variationIndexForUser($user, $_key, $_salt)
+    {
         if ($this->_variation !== null) {
             return $this->_variation;
-        } else if ($this->_rollout !== null) {
+        } elseif ($this->_rollout !== null) {
             $bucketBy = $this->_rollout->getBucketBy() === null ? "key" : $this->_rollout->getBucketBy();
             $bucket = $this->bucketUser($user, $_key, $bucketBy, $_salt);
             $sum = 0.0;
@@ -68,10 +73,14 @@ class VariationOrRollout {
      * @param $_salt string
      * @return float
      */
-    private function bucketUser($user, $_key, $attr, $_salt) {
+    private function bucketUser($user, $_key, $attr, $_salt)
+    {
         $userValue = $user->getValueForEvaluation($attr);
         $idHash = null;
         if ($userValue != null) {
+            if (is_int($userValue)) {
+                $userValue = (string) $userValue;
+            }
             if (is_string($userValue)) {
                 $idHash = $userValue;
                 if ($user->getSecondary() !== null) {
