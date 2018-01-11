@@ -37,7 +37,6 @@ class EventSerializerTest extends \PHPUnit_Framework_TestCase
     {
         return array(
             'key' => 'abc',
-            'custom' => array(),
             'privateAttrs' => array('bizzle', 'dizzle', 'firstName')
         );
     }
@@ -137,9 +136,15 @@ class EventSerializerTest extends \PHPUnit_Framework_TestCase
         $json = $this->getJsonForUserBySerializingEvent($user);
         $this->assertFalse(isset($json['custom']));
     }
-    
-    public function testUserSecondary()
-    {
+
+    public function testEmptyPrivateCustom() {
+        $builder = new LDUserBuilder("foo@bar.com");
+        $user = $builder->privateCustomAttribute("my-key", "my-value")->build();
+        $json = $this->getJsonForUserBySerializingEvent($user);
+        $this->assertFalse(isset($json['custom']));
+    }
+
+    public function testUserSecondary() {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->secondary("secondary")->build();
         $json = $this->getJsonForUserBySerializingEvent($user);

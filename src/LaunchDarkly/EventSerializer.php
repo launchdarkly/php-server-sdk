@@ -76,7 +76,9 @@ class EventSerializer
         if (!empty($user->getCustom())) {
             $customs = array();
             $this->filterAttrs($user->getCustom(), $customs, $userPrivateAttrs, $allPrivateAttrs);
-            $json['custom'] = $customs;
+            if ($customs) { // if this is empty, we will return a json array for 'custom' instead of an object
+                $json['custom'] = $customs;
+            }
         }
         if (count($allPrivateAttrs)) {
             $pa = array_keys($allPrivateAttrs);
