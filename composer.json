@@ -33,7 +33,7 @@
     },
     "autoload": {
         "psr-4": {
-            "": "src/"
+            "LaunchDarkly\\": "src/LaunchDarkly/"
         }
     },
     "autoload-dev": {

@@ -1,7 +1,8 @@
 <?php
 namespace LaunchDarkly;
 
-class FeatureFlag {
+class FeatureFlag
+{
     protected static $LONG_SCALE = 0xFFFFFFFFFFFFFFF;
 
     /** @var string */
@@ -37,7 +38,8 @@ class FeatureFlag {
                                    $fallthrough,
                                    $offVariation,
                                    array $variations,
-                                   $deleted) {
+                                   $deleted)
+    {
         $this->_key = $key;
         $this->_version = $version;
         $this->_on = $on;
@@ -51,7 +53,8 @@ class FeatureFlag {
         $this->_deleted = $deleted;
     }
 
-    public static function getDecoder() {
+    public static function getDecoder()
+    {
         return function ($v) {
             return new FeatureFlag(
                 $v['key'],
@@ -68,11 +71,13 @@ class FeatureFlag {
         };
     }
 
-    public static function decode($v) {
+    public static function decode($v)
+    {
         return call_user_func(FeatureFlag::getDecoder(), $v);
     }
 
-    public function isOn() {
+    public function isOn()
+    {
         return $this->_on;
     }
 
@@ -81,7 +86,8 @@ class FeatureFlag {
      * @param $featureRequester FeatureRequester
      * @return EvalResult|null
      */
-    public function evaluate($user, $featureRequester) {
+    public function evaluate($user, $featureRequester)
+    {
         $prereqEvents = array();
         if (is_null($user) || is_null($user->getKey())) {
             return new EvalResult(null, $prereqEvents);
@@ -102,7 +108,8 @@ class FeatureFlag {
      * @param $events
      * @return mixed|null
      */
-    private function _evaluate($user, $featureRequester, &$events) {
+    private function _evaluate($user, $featureRequester, &$events)
+    {
         $prereqOk = true;
         if ($this->_prerequisites != null) {
             foreach ($this->_prerequisites as $prereq) {
@@ -111,7 +118,7 @@ class FeatureFlag {
                     $prereqFeatureFlag = $featureRequester->get($prereq->getKey());
                     if ($prereqFeatureFlag == null) {
                         return null;
-                    } else if ($prereqFeatureFlag->isOn()) {
+                    } elseif ($prereqFeatureFlag->isOn()) {
                         $prereqEvalResult = $prereqFeatureFlag->_evaluate($user, $featureRequester, $events);
                         $variation = $prereqFeatureFlag->getVariation($prereq->getVariation());
                         if ($prereqEvalResult === null || $variation === null || $prereqEvalResult !== $variation) {
@@ -136,7 +143,8 @@ class FeatureFlag {
      * @param $user LDUser
      * @return int|null
      */
-    private function evaluateIndex($user) {
+    private function evaluateIndex($user)
+    {
         // Check to see if targets match
         if ($this->_targets != null) {
             foreach ($this->_targets as $target) {
@@ -159,7 +167,8 @@ class FeatureFlag {
         return $this->_fallthrough->variationIndexForUser($user, $this->_key, $this->_salt);
     }
 
-    private function getVariation($index) {
+    private function getVariation($index)
+    {
         // If the supplied index is null, then rules didn't match, and we want to return
         // the off variation
         if (!isset($index)) {
@@ -174,7 +183,8 @@ class FeatureFlag {
         }
     }
 
-    public function getOffVariationValue() {
+    public function getOffVariationValue()
+    {
         if ($this->_offVariation === null) {
             return null;
         }
@@ -187,26 +197,30 @@ class FeatureFlag {
     /**
      * @return int
      */
-    public function getVersion() {
+    public function getVersion()
+    {
         return $this->_version;
     }
 
     /**
      * @return string
      */
-    public function getKey() {
+    public function getKey()
+    {
         return $this->_key;
     }
 
     /**
      * @return boolean
      */
-    public function isDeleted() {
+    public function isDeleted()
+    {
         return $this->_deleted;
     }
 }
 
-class EvalResult {
+class EvalResult
+{
     private $_value = null;
     /** @var array */
     private $_prerequisiteEvents = [];
@@ -216,7 +230,8 @@ class EvalResult {
      * @param null $value
      * @param array $prerequisiteEvents
      */
-    public function __construct($value, array $prerequisiteEvents) {
+    public function __construct($value, array $prerequisiteEvents)
+    {
         $this->_value = $value;
         $this->_prerequisiteEvents = $prerequisiteEvents;
     }
@@ -224,30 +239,35 @@ class EvalResult {
     /**
      * @return null
      */
-    public function getValue() {
+    public function getValue()
+    {
         return $this->_value;
     }
 
     /**
      * @return array
      */
-    public function getPrerequisiteEvents() {
+    public function getPrerequisiteEvents()
+    {
         return $this->_prerequisiteEvents;
     }
 }
 
-class WeightedVariation {
+class WeightedVariation
+{
     /** @var int */
     private $_variation = null;
     /** @var int */
     private $_weight = null;
 
-    private function __construct($variation, $weight) {
+    private function __construct($variation, $weight)
+    {
         $this->_variation = $variation;
         $this->_weight = $weight;
     }
 
-    public static function getDecoder() {
+    public static function getDecoder()
+    {
         return function ($v) {
             return new WeightedVariation($v['variation'], $v['weight']);
         };
@@ -256,30 +276,35 @@ class WeightedVariation {
     /**
      * @return int
      */
-    public function getVariation() {
+    public function getVariation()
+    {
         return $this->_variation;
     }
 
     /**
      * @return int
      */
-    public function getWeight() {
+    public function getWeight()
+    {
         return $this->_weight;
     }
 }
 
-class Target {
+class Target
+{
     /** @var string[] */
     private $_values = array();
     /** @var int */
     private $_variation = null;
 
-    protected function __construct(array $values, $variation) {
+    protected function __construct(array $values, $variation)
+    {
         $this->_values = $values;
         $this->_variation = $variation;
     }
 
-    public static function getDecoder() {
+    public static function getDecoder()
+    {
         return function ($v) {
             return new Target($v['values'], $v['variation']);
         };
@@ -288,30 +313,35 @@ class Target {
     /**
      * @return \string[]
      */
-    public function getValues() {
+    public function getValues()
+    {
         return $this->_values;
     }
 
     /**
      * @return int
      */
-    public function getVariation() {
+    public function getVariation()
+    {
         return $this->_variation;
     }
 }
 
-class Prerequisite {
+class Prerequisite
+{
     /** @var string */
     private $_key = null;
     /** @var int */
     private $_variation = null;
 
-    protected function __construct($key, $variation) {
+    protected function __construct($key, $variation)
+    {
         $this->_key = $key;
         $this->_variation = $variation;
     }
 
-    public static function getDecoder() {
+    public static function getDecoder()
+    {
         return function ($v) {
             return new Prerequisite($v['key'], $v['variation']);
         };
@@ -320,30 +350,35 @@ class Prerequisite {
     /**
      * @return string
      */
-    public function getKey() {
+    public function getKey()
+    {
         return $this->_key;
     }
 
     /**
      * @return int
      */
-    public function getVariation() {
+    public function getVariation()
+    {
         return $this->_variation;
     }
 }
 
-class Rollout {
+class Rollout
+{
     /** @var WeightedVariation[] */
     private $_variations = array();
     /** @var string */
     private $_bucketBy = null;
 
-    protected function __construct(array $variations, $bucketBy) {
+    protected function __construct(array $variations, $bucketBy)
+    {
         $this->_variations = $variations;
         $this->_bucketBy = $bucketBy;
     }
 
-    public static function getDecoder() {
+    public static function getDecoder()
+    {
         return function ($v) {
             return new Rollout(
                 array_map(WeightedVariation::getDecoder(), $v['variations']),
@@ -354,14 +389,16 @@ class Rollout {
     /**
      * @return WeightedVariation[]
      */
-    public function getVariations() {
+    public function getVariations()
+    {
         return $this->_variations;
     }
 
     /**
      * @return string
      */
-    public function getBucketBy() {
+    public function getBucketBy()
+    {
         return $this->_bucketBy;
     }
 }

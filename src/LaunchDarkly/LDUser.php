@@ -6,7 +6,8 @@ namespace LaunchDarkly;
  * which must uniquely identify each user. For authenticated users, this may be a username or e-mail address. For anonymous users,
  * this could be an IP address or session ID.
  */
-class LDUser {
+class LDUser
+{
     protected $_key = null;
     protected $_secondary = null;
     protected $_ip = null;
@@ -33,8 +34,8 @@ class LDUser {
      * @param boolean|null $anonymous Whether this is an anonymous user
      * @param array|null $custom Other custom attributes that can be used to create custom rules
      */
-    public function __construct($key, $secondary = null, $ip = null, $country = null, $email = null, $name = null, $avatar = null, $firstName = null, $lastName = null, $anonymous = null, $custom = array(),
-            $privateAttributeNames = array()) {
+    public function __construct($key, $secondary = null, $ip = null, $country = null, $email = null, $name = null, $avatar = null, $firstName = null, $lastName = null, $anonymous = null, $custom = array(), $privateAttributeNames = array())
+    {
         if ($key !== null) {
             $this->_key = strval($key);
         }
@@ -51,7 +52,8 @@ class LDUser {
         $this->_privateAttributeNames = $privateAttributeNames;
     }
 
-    public function getValueForEvaluation($attr) {
+    public function getValueForEvaluation($attr)
+    {
         switch ($attr) {
             case "key":
                 return $this->getKey();
@@ -85,58 +87,71 @@ class LDUser {
         }
     }
 
-    public function getCountry() {
+    public function getCountry()
+    {
         return $this->_country;
     }
 
-    public function getCustom() {
+    public function getCustom()
+    {
         return $this->_custom;
     }
 
-    public function getIP() {
+    public function getIP()
+    {
         return $this->_ip;
     }
 
     /**
      * @return null|string
      */
-    public function getKey() {
+    public function getKey()
+    {
         return $this->_key;
     }
 
-    public function getSecondary() {
+    public function getSecondary()
+    {
         return $this->_secondary;
     }
 
-    public function getEmail() {
+    public function getEmail()
+    {
         return $this->_email;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->_name;
     }
 
-    public function getAvatar() {
+    public function getAvatar()
+    {
         return $this->_avatar;
     }
 
-    public function getFirstName() {
+    public function getFirstName()
+    {
         return $this->_firstName;
     }
 
-    public function getLastName() {
+    public function getLastName()
+    {
         return $this->_lastName;
     }
 
-    public function getAnonymous() {
+    public function getAnonymous()
+    {
         return $this->_anonymous;
     }
 
-    public function getPrivateAttributeNames() {
+    public function getPrivateAttributeNames()
+    {
         return $this->_privateAttributeNames;
     }
     
-    public function isKeyBlank() {
+    public function isKeyBlank()
+    {
         return isset($this->_key) && empty($this->_key);
     }
 }

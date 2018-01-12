@@ -15,10 +15,11 @@ class InvalidSDKKeyException extends \Exception
 /**
  * A client for the LaunchDarkly API.
  */
-class LDClient {
+class LDClient
+{
     const DEFAULT_BASE_URI = 'https://app.launchdarkly.com';
     const DEFAULT_EVENTS_URI = 'https://events.launchdarkly.com';
-    const VERSION = '2.3.0';
+    const VERSION = '2.4.0';
 
     /** @var string */
     protected $_sdkKey;
@@ -59,7 +60,8 @@ class LDClient {
      *     - all_attributes_private: True if no user attributes (other than the key) should be sent back to LaunchDarkly. By default, this is false.
      *     - private_attribute_names: An optional array of user attribute names to be marked private. Any users sent to LaunchDarkly with this configuration active will have attributes with these names removed. You can also set private attributes on a per-user basis in LDUserBuilder.
      */
-    public function __construct($sdkKey, $options = array()) {
+    public function __construct($sdkKey, $options = array())
+    {
         $this->_sdkKey = $sdkKey;
         if (!isset($options['base_uri'])) {
             $this->_baseUri = self::DEFAULT_BASE_URI;
@@ -137,7 +139,8 @@ class LDClient {
      *
      * @return mixed The result of the Feature Flag evaluation, or $default if any errors occurred.
      */
-    public function variation($key, $user, $default = false) {
+    public function variation($key, $user, $default = false)
+    {
         $default = $this->_get_default($key, $default);
 
         if ($this->_offline) {
@@ -192,7 +195,8 @@ class LDClient {
      * @param bool $default
      * @return mixed
      */
-    public function toggle($key, $user, $default = false) {
+    public function toggle($key, $user, $default = false)
+    {
         $this->_logger->warning("Deprecated function: toggle() called. Use variation() instead.");
         return $this->variation($key, $user, $default);
     }
@@ -201,7 +205,8 @@ class LDClient {
      * Returns whether the LaunchDarkly client is in offline mode.
      *
      */
-    public function isOffline() {
+    public function isOffline()
+    {
         return $this->_offline;
     }
 
@@ -212,7 +217,8 @@ class LDClient {
      * @param $user LDUser The user that performed the event
      * @param $data mixed
      */
-    public function track($eventName, $user, $data) {
+    public function track($eventName, $user, $data)
+    {
         if ($this->isOffline()) {
             return;
         }
@@ -234,7 +240,8 @@ class LDClient {
     /**
      * @param $user LDUser
      */
-    public function identify($user) {
+    public function identify($user)
+    {
         if ($this->isOffline()) {
             return;
         }
@@ -261,7 +268,8 @@ class LDClient {
      * @param $user LDUser the end user requesting the feature flags
      * @return array()|null Mapping of feature flag keys to their evaluated results for $user
      */
-    public function allFlags($user) {
+    public function allFlags($user)
+    {
         if (is_null($user) || is_null($user->getKey())) {
             $this->_logger->warn("allFlags called with null user or null/empty user key! Returning null");
             return null;
@@ -283,7 +291,7 @@ class LDClient {
          * @param $flag FeatureFlag
          * @return mixed|null
          */
-        $eval = function($flag) use($user) {
+        $eval = function ($flag) use ($user) {
             return $flag->evaluate($user, $this->_featureRequester)->getValue();
         };
 
@@ -294,7 +302,8 @@ class LDClient {
      * @param $user LDUser
      * @return string
      */
-    public function secureModeHash($user) {
+    public function secureModeHash($user)
+    {
         if (is_null($user) || strlen($user->getKey()) === 0) {
             return "";
         }
@@ -322,14 +331,16 @@ class LDClient {
      * @param $version int | null
      * @param string | null $prereqOf
      */
-    protected function _sendFlagRequestEvent($key, $user, $value, $default, $version = null, $prereqOf = null) {
+    protected function _sendFlagRequestEvent($key, $user, $value, $default, $version = null, $prereqOf = null)
+    {
         if ($this->isOffline() || !$this->_send_events) {
             return;
         }
         $this->_eventProcessor->enqueue(Util::newFeatureRequestEvent($key, $user, $value, $default, $version, $prereqOf));
     }
 
-    protected function _get_default($key, $default) {
+    protected function _get_default($key, $default)
+    {
         if (array_key_exists($key, $this->_defaults)) {
             return $this->_defaults[$key];
         } else {

@@ -1,11 +1,11 @@
 <?php
 namespace LaunchDarkly;
 
-
 use Predis\ClientInterface;
 use Psr\Log\LoggerInterface;
 
-class LDDFeatureRequester implements FeatureRequester {
+class LDDFeatureRequester implements FeatureRequester
+{
     protected $_baseUri;
     protected $_sdkKey;
     protected $_options;
@@ -15,7 +15,8 @@ class LDDFeatureRequester implements FeatureRequester {
     /** @var  ClientInterface */
     private $_connection;
 
-    function __construct($baseUri, $sdkKey, $options) {
+    public function __construct($baseUri, $sdkKey, $options)
+    {
         $this->_baseUri = $baseUri;
         $this->_sdkKey = $sdkKey;
         if (!isset($options['redis_host'])) {
@@ -42,7 +43,8 @@ class LDDFeatureRequester implements FeatureRequester {
     /**
      * @return ClientInterface
      */
-    protected function get_connection() {
+    protected function get_connection()
+    {
         if ($this->_connection instanceof ClientInterface) {
             return $this->_connection;
         }
@@ -61,7 +63,8 @@ class LDDFeatureRequester implements FeatureRequester {
      * @param $key string feature key
      * @return FeatureFlag|null The decoded JSON feature data, or null if missing
      */
-    public function get($key) {
+    public function get($key)
+    {
         $raw = $this->get_from_cache($key);
         if ($raw === null) {
             $redis = $this->get_connection();
@@ -71,13 +74,12 @@ class LDDFeatureRequester implements FeatureRequester {
             }
         }
         if ($raw) {
-            $flag = FeatureFlag::decode(json_decode($raw, True));
+            $flag = FeatureFlag::decode(json_decode($raw, true));
             if ($flag->isDeleted()) {
                 $this->_logger->warning("LDDFeatureRequester: Attempted to get deleted feature with key: " . $key);
                 return null;
             }
             return $flag;
-
         } else {
             $this->_logger->warning("LDDFeatureRequester: Attempted to get missing feature with key: " . $key);
             return null;
@@ -89,7 +91,8 @@ class LDDFeatureRequester implements FeatureRequester {
      * @param $key string The feature key
      * @return null|array The feature data or null if missing
      */
-    protected function get_from_cache($key) {
+    protected function get_from_cache($key)
+    {
         return null;
     }
 
@@ -98,14 +101,17 @@ class LDDFeatureRequester implements FeatureRequester {
      * @param $key string The feature key
      * @param $val array The feature data
      */
-    protected function store_in_cache($key, $val) {}
+    protected function store_in_cache($key, $val)
+    {
+    }
 
     /**
      * Gets all features
      *
      * @return array()|null The decoded FeatureFlags, or null if missing
      */
-    public function getAll() {
+    public function getAll()
+    {
         $redis = $this->get_connection();
         $raw = $redis->hgetall($this->_features_key);
         if ($raw) {

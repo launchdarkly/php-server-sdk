@@ -3,149 +3,173 @@ namespace LaunchDarkly\Tests;
 
 use LaunchDarkly\LDUserBuilder;
 
-class LDUserTest extends \PHPUnit_Framework_TestCase {
+class LDUserTest extends \PHPUnit_Framework_TestCase
+{
 
-    public function testLDUserKey() {
+    public function testLDUserKey()
+    {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->build();
         $this->assertEquals("foo@bar.com", $user->getKey());
     }
 
-    public function testCoerceLDUserKey() {
+    public function testCoerceLDUserKey()
+    {
         $builder = new LDUserBuilder(3);
         $user = $builder->build();
         $this->assertEquals("string", gettype($user->getKey()));
     }
 
-    public function testEmptyCustom() {        
+    public function testEmptyCustom()
+    {        
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->build();
     }
 
-    public function testLDUserSecondary() {
+    public function testLDUserSecondary()
+    {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->secondary("secondary")->build();
         $this->assertEquals("secondary", $user->getSecondary());
     }
 
-    public function testLDUserPrivateSecondary() {
+    public function testLDUserPrivateSecondary()
+    {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->privateSecondary("secondary")->build();
         $this->assertEquals("secondary", $user->getSecondary());
         $this->assertEquals(array("secondary"), $user->getPrivateAttributeNames());
     }
 
-    public function testLDUserIP() {
+    public function testLDUserIP()
+    {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->ip("127.0.0.1")->build();
         $this->assertEquals("127.0.0.1", $user->getIP());
     }
 
-    public function testLDUserPrivateIP() {
+    public function testLDUserPrivateIP()
+    {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->privateIp("127.0.0.1")->build();
         $this->assertEquals("127.0.0.1", $user->getIP());
         $this->assertEquals(array("ip"), $user->getPrivateAttributeNames());
     }
 
-    public function testLDUserCountry() {
+    public function testLDUserCountry()
+    {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->country("US")->build();
         $this->assertEquals("US", $user->getCountry());
     }
 
-    public function testLDUserPrivateCountry() {
+    public function testLDUserPrivateCountry()
+    {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->privateCountry("US")->build();
         $this->assertEquals("US", $user->getCountry());
         $this->assertEquals(array("country"), $user->getPrivateAttributeNames());
     }
 
-    public function testLDUserEmail() {
+    public function testLDUserEmail()
+    {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->email("foo+test@bar.com")->build();
         $this->assertEquals("foo+test@bar.com", $user->getEmail());
     }
 
-    public function testLDUserPrivateEmail() {
+    public function testLDUserPrivateEmail()
+    {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->privateEmail("foo+test@bar.com")->build();
         $this->assertEquals("foo+test@bar.com", $user->getEmail());
         $this->assertEquals(array("email"), $user->getPrivateAttributeNames());
     }
 
-    public function testLDUserName() {
+    public function testLDUserName()
+    {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->name("Foo Bar")->build();
         $this->assertEquals("Foo Bar", $user->getName());
     }
 
-    public function testLDUserPrivateName() {
+    public function testLDUserPrivateName()
+    {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->privateName("Foo Bar")->build();
         $this->assertEquals("Foo Bar", $user->getName());
         $this->assertEquals(array("name"), $user->getPrivateAttributeNames());
     }
 
-    public function testLDUserAvatar() {
+    public function testLDUserAvatar()
+    {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->avatar("http://www.gravatar.com/avatar/1")->build();
         $this->assertEquals("http://www.gravatar.com/avatar/1", $user->getAvatar());
     }
 
-    public function testLDUserPrivateAvatar() {
+    public function testLDUserPrivateAvatar()
+    {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->privateAvatar("http://www.gravatar.com/avatar/1")->build();
         $this->assertEquals("http://www.gravatar.com/avatar/1", $user->getAvatar());
         $this->assertEquals(array("avatar"), $user->getPrivateAttributeNames());
     }
 
-    public function testLDUserFirstName() {
+    public function testLDUserFirstName()
+    {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->firstName("Foo")->build();
         $this->assertEquals("Foo", $user->getFirstName());
     }
 
-    public function testLDUserPrivateFirstName() {
+    public function testLDUserPrivateFirstName()
+    {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->privateFirstName("Foo")->build();
         $this->assertEquals("Foo", $user->getFirstName());
         $this->assertEquals(array("firstName"), $user->getPrivateAttributeNames());
     }
 
-    public function testLDUserLastName() {
+    public function testLDUserLastName()
+    {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->lastName("Bar")->build();
         $this->assertEquals("Bar", $user->getLastName());
     }
 
-    public function testLDUserPrivateLastName() {
+    public function testLDUserPrivateLastName()
+    {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->privateLastName("Bar")->build();
         $this->assertEquals("Bar", $user->getLastName());
         $this->assertEquals(array("lastName"), $user->getPrivateAttributeNames());
     }
 
-    public function testLDUserCustom() {
+    public function testLDUserCustom()
+    {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->customAttribute("foo", "bar")->customAttribute("baz", "boo")->build();
         $this->assertEquals(array("foo" => "bar", "baz" => "boo"), $user->getCustom());
     }
 
-    public function testLDUserPrivateCustom() {
+    public function testLDUserPrivateCustom()
+    {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->privateCustomAttribute("foo", "bar")->privateCustomAttribute("baz", "boo")->build();
         $this->assertEquals(array("foo" => "bar", "baz" => "boo"), $user->getCustom());
         $this->assertEquals(array("foo", "baz"), $user->getPrivateAttributeNames());
     }
 
-    public function testLDUserAnonymous() {
+    public function testLDUserAnonymous()
+    {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->anonymous(true)->build();
         $this->assertEquals(true, $user->getAnonymous());
     }
 
-    public function testLDUserBlankKey() {
+    public function testLDUserBlankKey()
+    {
         $builder = new LDUserBuilder("");
         $user = $builder->build();
         $this->assertTrue($user->isKeyBlank());

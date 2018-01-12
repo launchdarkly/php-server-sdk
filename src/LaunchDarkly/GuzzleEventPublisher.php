@@ -25,7 +25,8 @@ class GuzzleEventPublisher implements EventPublisher
     /** @var mixed[] */
     private $_requestOptions;
 
-    function __construct($sdkKey, array $options = array()) {
+    public function __construct($sdkKey, array $options = array())
+    {
         $this->_sdkKey = $sdkKey;
         $this->_logger = $options['logger'];
         if (isset($options['events_uri'])) {
@@ -45,7 +46,8 @@ class GuzzleEventPublisher implements EventPublisher
         ];
     }
 
-    public function publish($payload) {
+    public function publish($payload)
+    {
         $client = new Client(['base_uri' => $this->_eventsUri]);
         $response = null;
 

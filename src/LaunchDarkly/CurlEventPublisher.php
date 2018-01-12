@@ -19,26 +19,25 @@ class CurlEventPublisher implements EventPublisher
     private $_ssl;
     private $_curl = '/usr/bin/env curl';
 
-    function __construct($sdkKey, array $options = array()) {
+    public function __construct($sdkKey, array $options = array())
+    {
         $this->_sdkKey = $sdkKey;
 
         $eventsUri = LDClient::DEFAULT_EVENTS_URI;
         if (isset($options['events_uri'])) {
             $eventsUri = $options['events_uri'];
         }
-        $url = parse_url(rtrim($eventsUri,'/'));
+        $url = parse_url(rtrim($eventsUri, '/'));
         $this->_host = $url['host'];
         $this->_ssl = $url['scheme'] === 'https';
         if (isset($url['port'])) {
             $this->_port = $url['port'];
-        } 
-        else {
+        } else {
             $this->_port = $this->_ssl ? 443 : 80;
         }
         if (isset($url['path'])) {
             $this->_path = $url['path'];
-        }
-        else {
+        } else {
             $this->_path = '';
         }
 
@@ -47,13 +46,15 @@ class CurlEventPublisher implements EventPublisher
         }
     }
 
-    public function publish($payload) {
+    public function publish($payload)
+    {
         $args = $this->createArgs($payload);
 
         return $this->makeRequest($args);
     }
 
-    private function createArgs($payload) {
+    private function createArgs($payload)
+    {
         $scheme = $this->_ssl ? "https://" : "http://";
         $args = " -X POST";
         $args.= " -H 'Content-Type: application/json'";
@@ -65,7 +66,8 @@ class CurlEventPublisher implements EventPublisher
         return $args;
     }
 
-    private function makeRequest($args) {
+    private function makeRequest($args)
+    {
         $cmd = $this->_curl . " " . $args . ">> /dev/null 2>&1 &";
         shell_exec($cmd);
         return true;

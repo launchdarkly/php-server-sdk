@@ -1,7 +1,8 @@
 <?php
 namespace LaunchDarkly;
 
-interface FeatureRequester {
+interface FeatureRequester
+{
 
     /**
      * Gets feature data from a likely cached store
