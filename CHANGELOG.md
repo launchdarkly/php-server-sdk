@@ -11,6 +11,9 @@ All notable changes to the LaunchDarkly PHP SDK will be documented in this file.
 - User bucketing supports integer attributes. Thanks @mlund01!
 - Source code complies with the PSR-2 standard. Thanks @valerianpereira!
 
+### Fixed
+- The PSR-4 autoloading specification is now correct. Thanks @jenssegers!
+
 ## [2.3.0] - 2017-10-06
 ### Added
 - New `flush` method forces events to be published to the LaunchDarkly service. This can be useful if `LDClient` is not automatically destroyed at the end of a request. Thanks @foxted!
