@@ -49,16 +49,19 @@ class GuzzleEventPublisher implements EventPublisher
     public function publish($payload)
     {
         $client = new Client(['base_uri' => $this->_eventsUri]);
+        $response = null;
 
         try {
             $options = $this->_requestOptions;
             $options['body'] = $payload;
             $response = $client->request('POST', '/bulk', $options);
-
-            return $response->getStatusCode() < 300;
         } catch (\Exception $e) {
             $this->_logger->warning("GuzzleEventPublisher::publish caught $e");
             return false;
         }
+        if ($response && ($response->getStatusCode() == 401)) {
+            throw new InvalidSDKKeyException();
+        }
+        return $response && ($response->getStatusCode() < 300);
     }
 }

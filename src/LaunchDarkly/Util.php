@@ -40,7 +40,7 @@ class Util
     public static function newFeatureRequestEvent($key, $user, $value, $default, $version = null, $prereqOf = null)
     {
         $event = array();
-        $event['user'] = $user->toJSON();
+        $event['user'] = $user;
         $event['value'] = $value;
         $event['kind'] = "feature";
         $event['creationDate'] = Util::currentTimeUnixMillis();

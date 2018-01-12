@@ -6,13 +6,20 @@ use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 
 /**
+ * Used internally.
+ */
+class InvalidSDKKeyException extends \Exception
+{
+}
+
+/**
  * A client for the LaunchDarkly API.
  */
 class LDClient
 {
     const DEFAULT_BASE_URI = 'https://app.launchdarkly.com';
     const DEFAULT_EVENTS_URI = 'https://events.launchdarkly.com';
-    const VERSION = '2.3.0';
+    const VERSION = '2.4.0';
 
     /** @var string */
     protected $_sdkKey;
@@ -50,6 +57,8 @@ class LDClient
      *     - feature_requester_class: An optional class implementing LaunchDarkly\FeatureRequester, if `feature_requester` is not specified. Defaults to GuzzleFeatureRequester.
      *     - event_publisher: An optional LaunchDarkly\EventPublisher instance.
      *     - event_publisher_class: An optional class implementing LaunchDarkly\EventPublisher, if `event_publisher` is not specified. Defaults to CurlEventPublisher.
+     *     - all_attributes_private: True if no user attributes (other than the key) should be sent back to LaunchDarkly. By default, this is false.
+     *     - private_attribute_names: An optional array of user attribute names to be marked private. Any users sent to LaunchDarkly with this configuration active will have attributes with these names removed. You can also set private attributes on a per-user basis in LDUserBuilder.
      */
     public function __construct($sdkKey, $options = array())
     {
@@ -147,7 +156,12 @@ class LDClient
             if ($user->isKeyBlank()) {
                 $this->_logger->warning("User key is blank. Flag evaluation will proceed, but the user will not be stored in LaunchDarkly.");
             }
-            $flag = $this->_featureRequester->get($key);
+            try {
+                $flag = $this->_featureRequester->get($key);
+            } catch (InvalidSDKKeyException $e) {
+                $this->handleInvalidSDKKey();
+                return $default;
+            }
 
             if (is_null($flag)) {
                 $this->_sendFlagRequestEvent($key, $user, $default, $default);
@@ -213,7 +227,7 @@ class LDClient
         }
 
         $event = array();
-        $event['user'] = $user->toJSON();
+        $event['user'] = $user;
         $event['kind'] = "custom";
         $event['creationDate'] = Util::currentTimeUnixMillis();
         $event['key'] = $eventName;
@@ -236,7 +250,7 @@ class LDClient
         }
 
         $event = array();
-        $event['user'] = $user->toJSON();
+        $event['user'] = $user;
         $event['kind'] = "identify";
         $event['creationDate'] = Util::currentTimeUnixMillis();
         $event['key'] = $user->getKey();
@@ -260,7 +274,15 @@ class LDClient
             $this->_logger->warn("allFlags called with null user or null/empty user key! Returning null");
             return null;
         }
-        $flags = $this->_featureRequester->getAll();
+        if ($this->isOffline()) {
+            return null;
+        }
+        try {
+            $flags = $this->_featureRequester->getAll();
+        } catch (InvalidSDKKeyException $e) {
+            $this->handleInvalidSDKKey();
+            return null;
+        }
         if ($flags === null) {
             return null;
         }
@@ -294,7 +316,11 @@ class LDClient
      */
     public function flush()
     {
-        return $this->_eventProcessor->flush();
+        try {
+            return $this->_eventProcessor->flush();
+        } catch (InvalidSDKKeyException $e) {
+            $this->handleInvalidSDKKey();
+        }
     }
 
     /**
@@ -320,5 +346,10 @@ class LDClient
         } else {
             return $default;
         }
+    }
+
+    protected function handleInvalidSDKKey() {
+        $this->_logger->error("Received 401 error, no further HTTP requests will be made during lifetime of LDClient since SDK key is invalid");
+        $this->_offline = true;
     }
 }

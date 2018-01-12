@@ -3,7 +3,8 @@ namespace LaunchDarkly\Tests;
 
 use LaunchDarkly\FeatureFlag;
 
-class FeatureFlagTest extends \PHPUnit_Framework_TestCase {
+class FeatureFlagTest extends \PHPUnit_Framework_TestCase
+{
 
     private static $json1 = "{
   \"key\": \"integration.feature.0\",
@@ -136,7 +137,8 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase {
     \"deleted\": false
   }";
 
-    public function testDecode() {
+    public function testDecode()
+    {
         FeatureFlag::decode(\GuzzleHttp\json_decode(FeatureFlagTest::$json1, true));
         FeatureFlag::decode(\GuzzleHttp\json_decode(FeatureFlagTest::$json2, true));
     }
