@@ -1,11 +1,16 @@
 <?php
 namespace LaunchDarkly;
 
+use Composer\Semver\Comparator;
+use Composer\Semver\VersionParser;
 use DateTime;
+use DateTimeZone;
 use Exception;
 
 class Operators
 {
+    protected static $versionParser;
+
     const RFC3339 = 'Y-m-d\TH:i:s.uP';
 
     /**
@@ -88,6 +93,18 @@ class Operators
                         }
                     }
                     break;
+                case "semVerEqual":
+                    $uVer = self::parseSemVer($u);
+                    $cVer = self::parseSemVer($c);
+                    return ($uVer != null) && ($cVer != null) && Comparator::equalTo($uVer, $cVer);
+                case "semVerLessThan":
+                    $uVer = self::parseSemVer($u);
+                    $cVer = self::parseSemVer($c);
+                    return ($uVer != null) && ($cVer != null) && Comparator::lessThan($uVer, $cVer);
+                case "semVerGreaterThan":
+                    $uVer = self::parseSemVer($u);
+                    $cVer = self::parseSemVer($c);
+                    return ($uVer != null) && ($cVer != null) && Comparator::greaterThan($uVer, $cVer);
             }
         } catch (Exception $ignored) {
         }
@@ -110,12 +127,27 @@ class Operators
 
         if (is_string($in)) {
             try {
-                $dateTime = new DateTime($in);
+                $dateTime = new DateTime($in, new DateTimeZone('UTC'));
                 return Util::dateTimeToUnixMillis($dateTime);
             } catch (Exception $e) {
                 return null;
             }
         }
         return null;
+    }
+
+    /**
+     * @param $in
+     * @return null|string
+     */
+    public static function parseSemVer($in) {
+        if (static::$versionParser == null) {
+            static::$versionParser = new VersionParser();
+        }
+        try {
+            return static::$versionParser->normalize($in);
+        } catch (Exception $e) {
+            return null;
+        }
     }
 }

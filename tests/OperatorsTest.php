@@ -55,4 +55,17 @@ class OperatorsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(null, Operators::parseTime("NOT A REAL TIMESTAMP"));
         $this->assertEquals(null, Operators::parseTime([]));
     }
+
+    public function testSemVer() {
+        $this->assertTrue(Operators::apply("semVerEqual", "2.0.0", "2.0.0"));
+        $this->assertTrue(Operators::apply("semVerEqual", "2.0", "2.0.0"));
+        $this->assertFalse(Operators::apply("semVerEqual", "2.0.0", "2.0.1"));
+        $this->assertTrue(Operators::apply("semVerLessThan", "2.0.0", "2.0.1"));
+        $this->assertTrue(Operators::apply("semVerLessThan", "2.0", "2.0.1"));
+        $this->assertFalse(Operators::apply("semVerLessThan", "2.0.1", "2.0.0"));
+        $this->assertTrue(Operators::apply("semVerGreaterThan", "2.0.1", "2.0.0"));
+        $this->assertFalse(Operators::apply("semVerGreaterThan", "2.0.0", "2.0.1"));
+        $this->assertFalse(Operators::apply("semVerLessThan", "2.0.0", "xbad%ver"));
+        $this->assertFalse(Operators::apply("semVerGreaterThan", "2.0.0", "xbad%ver"));
+    }
 }
