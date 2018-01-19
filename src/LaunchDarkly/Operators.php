@@ -1,16 +1,15 @@
 <?php
 namespace LaunchDarkly;
 
-use Composer\Semver\Comparator;
-use Composer\Semver\VersionParser;
+use Herrera\Version\Comparator;
+use Herrera\Version\Exception\InvalidStringRepresentationException;
+use Herrera\Version\Parser;
 use DateTime;
 use DateTimeZone;
 use Exception;
 
 class Operators
 {
-    protected static $versionParser;
-
     const RFC3339 = 'Y-m-d\TH:i:s.uP';
 
     /**
@@ -96,15 +95,15 @@ class Operators
                 case "semVerEqual":
                     $uVer = self::parseSemVer($u);
                     $cVer = self::parseSemVer($c);
-                    return ($uVer != null) && ($cVer != null) && Comparator::equalTo($uVer, $cVer);
+                    return ($uVer != null) && ($cVer != null) && Comparator::compareTo($uVer, $cVer) == 0;
                 case "semVerLessThan":
                     $uVer = self::parseSemVer($u);
                     $cVer = self::parseSemVer($c);
-                    return ($uVer != null) && ($cVer != null) && Comparator::lessThan($uVer, $cVer);
+                    return ($uVer != null) && ($cVer != null) && Comparator::compareTo($uVer, $cVer) < 0;
                 case "semVerGreaterThan":
                     $uVer = self::parseSemVer($u);
                     $cVer = self::parseSemVer($c);
-                    return ($uVer != null) && ($cVer != null) && Comparator::greaterThan($uVer, $cVer);
+                    return ($uVer != null) && ($cVer != null) && Comparator::compareTo($uVer, $cVer) > 0;
             }
         } catch (Exception $ignored) {
         }
@@ -141,12 +140,9 @@ class Operators
      * @return null|string
      */
     public static function parseSemVer($in) {
-        if (static::$versionParser == null) {
-            static::$versionParser = new VersionParser();
-        }
         try {
-            return static::$versionParser->normalize($in);
-        } catch (Exception $e) {
+            return Parser::toVersion($in);
+        } catch (InvalidStringRepresentationException $e) {
             return null;
         }
     }
