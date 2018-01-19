@@ -59,12 +59,17 @@ class OperatorsTest extends \PHPUnit_Framework_TestCase
     public function testSemVer() {
         $this->assertTrue(Operators::apply("semVerEqual", "2.0.0", "2.0.0"));
         $this->assertTrue(Operators::apply("semVerEqual", "2.0", "2.0.0"));
+        $this->assertTrue(Operators::apply("semVerEqual", "2", "2.0.0"));
+        $this->assertTrue(Operators::apply("semVerEqual", "2-rc1", "2.0.0-rc1"));
+        $this->assertTrue(Operators::apply("semVerEqual", "2+build2", "2.0.0+build2"));
         $this->assertFalse(Operators::apply("semVerEqual", "2.0.0", "2.0.1"));
         $this->assertTrue(Operators::apply("semVerLessThan", "2.0.0", "2.0.1"));
         $this->assertTrue(Operators::apply("semVerLessThan", "2.0", "2.0.1"));
         $this->assertFalse(Operators::apply("semVerLessThan", "2.0.1", "2.0.0"));
+        $this->assertTrue(Operators::apply("semVerLessThan", "2.0.0-rc", "2.0.0-rc.beta"));
         $this->assertTrue(Operators::apply("semVerGreaterThan", "2.0.1", "2.0.0"));
         $this->assertFalse(Operators::apply("semVerGreaterThan", "2.0.0", "2.0.1"));
+        $this->assertTrue(Operators::apply("semVerGreaterThan", "2.0.0-rc.1", "2.0.0-rc.0"));
         $this->assertFalse(Operators::apply("semVerLessThan", "2.0.0", "xbad%ver"));
         $this->assertFalse(Operators::apply("semVerGreaterThan", "2.0.0", "xbad%ver"));
     }

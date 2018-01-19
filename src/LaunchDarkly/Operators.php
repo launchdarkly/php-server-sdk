@@ -11,6 +11,7 @@ use Exception;
 class Operators
 {
     const RFC3339 = 'Y-m-d\TH:i:s.uP';
+    const VERSION_NUMBERS_REGEX = '/^\\d+(\\.\\d+)?(\\.\\d+)?/';
 
     /**
      * @param $op string
@@ -143,6 +144,21 @@ class Operators
         try {
             return Parser::toVersion($in);
         } catch (InvalidStringRepresentationException $e) {
+            // If minor or patch version was omitted, or both, normalize the version
+            // by adding zeroes in their place.
+            if (preg_match(Operators::VERSION_NUMBERS_REGEX, $in, $matches)) {
+                $transformed = $matches[0];
+                for ($i = 1; $i <= 3; $i++) {
+                    if ($i > count($matches)) {
+                        $transformed .= '.0';
+                    }
+                }
+                $transformed .= substr($in, strlen($matches[0]));
+                try {
+                    return Parser::toVersion($transformed);
+                } catch (InvalidStringRepresentationException $e) {
+                }
+            }
             return null;
         }
     }
