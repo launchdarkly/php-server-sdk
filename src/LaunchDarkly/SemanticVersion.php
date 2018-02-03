@@ -10,8 +10,7 @@ namespace LaunchDarkly;
  */
 class SemanticVersion
 {
-	private static $REGEX = '/^(?<major>0|[1-9]\d*)(\.(?<minor>0|[1-9]\d*))?(\.(?<patch>0|[1-9]\d*))?' .
-		'(\-(?<prerel>[0-9A-Za-z\-\.]+))?(\+(?<build>[0-9A-Za-z\-\.]+))?$/';
+	private static $REGEX = '/^(?<major>0|[1-9]\d*)(\.(?<minor>0|[1-9]\d*))?(\.(?<patch>0|[1-9]\d*))?(\-(?<prerel>[0-9A-Za-z\-\.]+))?(\+(?<build>[0-9A-Za-z\-\.]+))?$/';
 
 	/** @var int */
     public $major;
