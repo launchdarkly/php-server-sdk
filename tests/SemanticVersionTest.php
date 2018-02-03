@@ -49,20 +49,30 @@ class SemanticVersionTest extends \PHPUnit_Framework_TestCase
 
     public function testLeadingZeroNotAllowedInMajor()
     {
-        $this->expectException(\InvalidArgumentException::class);
-        SemanticVersion::parse('02.3.4');
+        try {
+            SemanticVersion::parse('02.3.4');
+            $this->assertTrue(false, 'expected exception');
+            // can't use expectException method because we must support older PHPUnit
+        } catch (\InvalidArgumentException $e) {
+        }
     }
 
     public function testLeadingZeroNotAllowedInMinor()
     {
-        $this->expectException(\InvalidArgumentException::class);
-        SemanticVersion::parse('2.03.4');
+        try {
+            SemanticVersion::parse('2.03.4');
+            $this->assertTrue(false, 'expected exception');
+        } catch (\InvalidArgumentException $e) {
+        }
     }
 
     public function testLeadingZeroNotAllowedInPatch()
     {
-        $this->expectException(\InvalidArgumentException::class);
-        SemanticVersion::parse('2.3.04');
+        try {
+            SemanticVersion::parse('2.3.04');
+            $this->assertTrue(false, 'expected exception');
+        } catch (\InvalidArgumentException $e) {
+        }
     }
 
     public function testZeroByItselfIsAllowed()
@@ -139,14 +149,20 @@ class SemanticVersionTest extends \PHPUnit_Framework_TestCase
 
     public function testCannotParseVersionWithMajorOnlyByDefault()
     {
-        $this->expectException(\InvalidArgumentException::class);
-        SemanticVersion::parse('2');
+        try {
+            SemanticVersion::parse('2');
+            $this->assertTrue(false, 'expected exception');
+        } catch (\InvalidArgumentException $e) {
+        }
     }
 
     public function testCannotParseVersionWithMajorAndMinorOnlyByDefault()
     {
-        $this->expectException(\InvalidArgumentException::class);
-        SemanticVersion::parse('2.3');
+        try {
+            SemanticVersion::parse('2.3');
+            $this->assertTrue(false, 'expected exception');
+        } catch (\InvalidArgumentException $e) {
+        }
     }
 
     public function testEqualVersionsHaveEqualPrecedence()
