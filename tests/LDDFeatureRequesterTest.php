@@ -27,7 +27,7 @@ class LDDFeatureRequesterTest extends \PHPUnit_Framework_TestCase
             ->getMockForAbstractClass();
     }
     
-    public function testGet()
+    public function testGetFeature()
     {
         $sut = new LDDFeatureRequester('example.com', 'MySdkKey', [
             'logger' => $this->logger,
@@ -64,7 +64,7 @@ class LDDFeatureRequesterTest extends \PHPUnit_Framework_TestCase
                 'deleted' => false,
             ]));
         
-        $featureFlag = $sut->get('foo');
+        $featureFlag = $sut->getFeature('foo');
         
         self::assertInstanceOf(FeatureFlag::class, $featureFlag);
         self::assertTrue($featureFlag->isOn());

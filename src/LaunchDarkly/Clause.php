@@ -32,7 +32,28 @@ class Clause
      * @param $user LDUser
      * @return bool
      */
-    public function matchesUser($user)
+    public function matchesUser($user, $featureRequester)
+    {
+        if ($this->_op === 'segmentMatch') {
+            foreach ($this->_values as $value) {
+                $segment = $featureRequester->getSegment($value);
+                if ($segment) {
+                    if ($segment->matchesUser($user)) {
+                        return $this->_maybeNegate(true);
+                    }
+                }
+            }
+            return $this->_maybeNegate(false);
+        } else {
+            return $this->matchesUserNoSegments($user);
+        }
+    }
+
+    /**
+     * @param $user LDUser
+     * @return bool
+     */
+    public function matchesUserNoSegments($user)
     {
         $userValue = $user->getValueForEvaluation($this->_attribute);
         if ($userValue === null) {

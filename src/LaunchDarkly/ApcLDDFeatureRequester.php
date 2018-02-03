@@ -32,9 +32,9 @@ class ApcLDDFeatureRequester extends LDDFeatureRequester
         return \apc_fetch($key, $success);
     }
 
-    protected function get_from_cache($key)
+    protected function get_from_cache($namespace, $key)
     {
-        $key = self::make_cache_key($key);
+        $key = self::make_cache_key($namespace, $key);
         $enabled = $this->fetch($key);
         if ($enabled === false) {
             return null;
@@ -54,13 +54,13 @@ class ApcLDDFeatureRequester extends LDDFeatureRequester
         return \apc_add($key, $var, $ttl);
     }
 
-    protected function store_in_cache($key, $val)
+    protected function store_in_cache($namespace, $key, $val)
     {
-        $this->add($this->make_cache_key($key), $val, $this->_expiration);
+        $this->add($this->make_cache_key($namespace, $key), $val, $this->_expiration);
     }
 
-    private function make_cache_key($name)
+    private function make_cache_key($namespace, $name)
     {
-        return $this->_features_key.'.'.$name;
+        return $namespace.'.'.$name;
     }
 }

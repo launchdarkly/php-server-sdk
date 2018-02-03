@@ -11,6 +11,7 @@ use Psr\Log\LoggerInterface;
 class GuzzleFeatureRequester implements FeatureRequester
 {
     const SDK_FLAGS = "/sdk/flags";
+    const SDK_SEGMENTS = "/sdk/segments";
     /** @var Client  */
     private $_client;
     /** @var string */
@@ -46,14 +47,13 @@ class GuzzleFeatureRequester implements FeatureRequester
         $this->_client = new Client(['handler' => $stack, 'debug' => false]);
     }
 
-
     /**
      * Gets feature data from a likely cached store
      *
      * @param $key string feature key
      * @return FeatureFlag|null The decoded FeatureFlag, or null if missing
      */
-    public function get($key)
+    public function getFeature($key)
     {
         try {
             $uri = $this->_baseUri . self::SDK_FLAGS . "/" . $key;
@@ -72,11 +72,35 @@ class GuzzleFeatureRequester implements FeatureRequester
     }
 
     /**
+     * Gets segment data from a likely cached store
+     *
+     * @param $key string segment key
+     * @return Segment|null The decoded Segment, or null if missing
+     */
+    public function getSegment($key)
+    {
+        try {
+            $uri = $this->_baseUri . self::SDK_SEGMENTS . "/" . $key;
+            $response = $this->_client->get($uri, $this->_defaults);
+            $body = $response->getBody();
+            return Segment::decode(json_decode($body, true));
+        } catch (BadResponseException $e) {
+            $code = $e->getResponse()->getStatusCode();
+            if ($code == 404) {
+                $this->_logger->warning("GuzzleFeatureRequester::get returned 404. Segment does not exist for key: " . $key);
+            } else {
+                $this->handleUnexpectedStatus($code, "GuzzleFeatureRequester::get");
+            }
+            return null;
+        }
+    }
+
+    /**
      * Gets all features from a likely cached store
      *
      * @return array()|null The decoded FeatureFlags, or null if missing
      */
-    public function getAll()
+    public function getAllFeatures()
     {
         try {
             $uri = $this->_baseUri . self::SDK_FLAGS;

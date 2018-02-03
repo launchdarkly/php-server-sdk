@@ -115,7 +115,7 @@ class FeatureFlag
             foreach ($this->_prerequisites as $prereq) {
                 try {
                     $prereqEvalResult = null;
-                    $prereqFeatureFlag = $featureRequester->get($prereq->getKey());
+                    $prereqFeatureFlag = $featureRequester->getFeature($prereq->getKey());
                     if ($prereqFeatureFlag == null) {
                         return null;
                     } elseif ($prereqFeatureFlag->isOn()) {

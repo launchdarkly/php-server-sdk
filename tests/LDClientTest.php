@@ -107,12 +107,12 @@ class MockFeatureRequester implements FeatureRequester
     {
     }
 
-    public function get($key)
+    public function getFeature($key)
     {
         return self::$val;
     }
 
-    public function getAll()
+    public function getAllFeatures()
     {
         return null;
     }
