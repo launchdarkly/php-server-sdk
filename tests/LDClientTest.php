@@ -112,6 +112,11 @@ class MockFeatureRequester implements FeatureRequester
         return self::$val;
     }
 
+    public function getSegment($key)
+    {
+        return null;
+    }
+
     public function getAllFeatures()
     {
         return null;
