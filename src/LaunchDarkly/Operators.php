@@ -1,9 +1,6 @@
 <?php
 namespace LaunchDarkly;
 
-use Herrera\Version\Comparator;
-use Herrera\Version\Exception\InvalidStringRepresentationException;
-use Herrera\Version\Parser;
 use DateTime;
 use DateTimeZone;
 use Exception;
@@ -96,15 +93,15 @@ class Operators
                 case "semVerEqual":
                     $uVer = self::parseSemVer($u);
                     $cVer = self::parseSemVer($c);
-                    return ($uVer != null) && ($cVer != null) && Comparator::compareTo($uVer, $cVer) == 0;
+                    return ($uVer != null) && ($cVer != null) && $uVer->comparePrecedence($cVer) == 0;
                 case "semVerLessThan":
                     $uVer = self::parseSemVer($u);
                     $cVer = self::parseSemVer($c);
-                    return ($uVer != null) && ($cVer != null) && Comparator::compareTo($uVer, $cVer) < 0;
+                    return ($uVer != null) && ($cVer != null) && $uVer->comparePrecedence($cVer) < 0;
                 case "semVerGreaterThan":
                     $uVer = self::parseSemVer($u);
                     $cVer = self::parseSemVer($c);
-                    return ($uVer != null) && ($cVer != null) && Comparator::compareTo($uVer, $cVer) > 0;
+                    return ($uVer != null) && ($cVer != null) && $uVer->comparePrecedence($cVer) > 0;
             }
         } catch (Exception $ignored) {
         }
@@ -142,23 +139,8 @@ class Operators
      */
     public static function parseSemVer($in) {
         try {
-            return Parser::toVersion($in);
-        } catch (InvalidStringRepresentationException $e) {
-            // If minor or patch version was omitted, or both, normalize the version
-            // by adding zeroes in their place.
-            if (preg_match(Operators::VERSION_NUMBERS_REGEX, $in, $matches)) {
-                $transformed = $matches[0];
-                for ($i = 1; $i <= 3; $i++) {
-                    if ($i > count($matches)) {
-                        $transformed .= '.0';
-                    }
-                }
-                $transformed .= substr($in, strlen($matches[0]));
-                try {
-                    return Parser::toVersion($transformed);
-                } catch (InvalidStringRepresentationException $e) {
-                }
-            }
+            return SemanticVersion::parse($in, true);
+        } catch (\InvalidArgumentException $e) {
             return null;
         }
     }
