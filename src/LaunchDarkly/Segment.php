@@ -71,7 +71,7 @@ class Segment
             return false;
         }
         foreach ($this->_rules as $rule) {
-            if ($rule->matchesUser($user, $this->key, $this->salt)) {
+            if ($rule->matchesUser($user, $this->_key, $this->_salt)) {
                 return true;
             }
         }
@@ -131,7 +131,7 @@ class SegmentRule
 
     public function matchesUser($user, $segmentKey, $segmentSalt)
     {
-        for ($this->_clauses as $clause) {
+        foreach ($this->_clauses as $clause) {
             if (!$clause->matchesUserNoSegments($user)) {
                 return false;
             }

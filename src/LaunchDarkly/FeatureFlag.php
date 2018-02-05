@@ -134,7 +134,7 @@ class FeatureFlag
             }
         }
         if ($prereqOk) {
-            return $this->getVariation($this->evaluateIndex($user));
+            return $this->getVariation($this->evaluateIndex($user, $featureRequester));
         }
         return null;
     }
@@ -143,7 +143,7 @@ class FeatureFlag
      * @param $user LDUser
      * @return int|null
      */
-    private function evaluateIndex($user)
+    private function evaluateIndex($user, $featureRequester)
     {
         // Check to see if targets match
         if ($this->_targets != null) {
@@ -158,7 +158,7 @@ class FeatureFlag
         // Now walk through the rules and see if any match
         if ($this->_rules != null) {
             foreach ($this->_rules as $rule) {
-                if ($rule->matchesUser($user)) {
+                if ($rule->matchesUser($user, $featureRequester)) {
                     return $rule->variationIndexForUser($user, $this->_key, $this->_salt);
                 }
             }
