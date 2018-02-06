@@ -157,7 +157,7 @@ class LDClient
                 $this->_logger->warning("User key is blank. Flag evaluation will proceed, but the user will not be stored in LaunchDarkly.");
             }
             try {
-                $flag = $this->_featureRequester->get($key);
+                $flag = $this->_featureRequester->getFeature($key);
             } catch (InvalidSDKKeyException $e) {
                 $this->handleInvalidSDKKey();
                 return $default;
@@ -278,7 +278,7 @@ class LDClient
             return null;
         }
         try {
-            $flags = $this->_featureRequester->getAll();
+            $flags = $this->_featureRequester->getAllFeatures();
         } catch (InvalidSDKKeyException $e) {
             $this->handleInvalidSDKKey();
             return null;

@@ -27,10 +27,10 @@ class Rule extends VariationOrRollout
      * @param $user LDUser
      * @return bool
      */
-    public function matchesUser($user)
+    public function matchesUser($user, $featureRequester)
     {
         foreach ($this->_clauses as $clause) {
-            if (!$clause->matchesUser($user)) {
+            if (!$clause->matchesUser($user, $featureRequester)) {
                 return false;
             }
         }
