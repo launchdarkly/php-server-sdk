@@ -2,6 +2,10 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [2.5.0] - 2018-02-13
+### Added
+- Adds support for a future LaunchDarkly feature, coming soon: semantic version user attributes.
+
 ## [2.4.0] - 2018-01-04
 ### Added
 - Support for [private user attributes](https://docs.launchdarkly.com/docs/private-user-attributes).
