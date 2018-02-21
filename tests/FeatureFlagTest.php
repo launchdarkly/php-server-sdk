@@ -2,10 +2,13 @@
 namespace LaunchDarkly\Tests;
 
 use LaunchDarkly\FeatureFlag;
+use LaunchDarkly\FeatureRequester;
+use LaunchDarkly\LDUserBuilder;
+use LaunchDarkly\Segment;
+
 
 class FeatureFlagTest extends \PHPUnit_Framework_TestCase
 {
-
     private static $json1 = "{
   \"key\": \"integration.feature.0\",
   \"version\": 2210,
@@ -188,6 +191,103 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         $featureFlag = FeatureFlag::decode($feature);
         
         self::assertInstanceOf(FeatureFlag::class, $featureFlag);
+    }
+
+    public function testSegmentMatchClauseRetrievesSegmentFromStore()
+    {
+        $segmentJson = array(
+            'key' => 'segkey',
+            'version' => 1,
+            'deleted' => false,
+            'included' => array('foo'),
+            'excluded' => array(),
+            'rules' => array(),
+            'salt' => ''
+        );
+        $segment = Segment::decode($segmentJson);
+
+        $requester = new MockFeatureRequesterForSegment();
+        $requester->key = 'segkey';
+        $requester->val = $segment;
+
+        $feature = $this->makeBooleanFeatureWithSegmentMatch('segkey');
+
+        $ub = new LDUserBuilder('foo');
+        $user = $ub->build();
+
+        $result = $feature->evaluate($user, $requester);
+
+        self::assertTrue($result->getValue());
+    }
+
+    public function testSegmentMatchClauseFallsThroughWithNoErrorsIfSegmentNotFound()
+    {
+        $requester = new MockFeatureRequesterForSegment();
+        
+        $feature = $this->makeBooleanFeatureWithSegmentMatch('segkey');
+
+        $ub = new LDUserBuilder('foo');
+        $user = $ub->build();
+
+        $result = $feature->evaluate($user, $requester);
+
+        self::assertFalse($result->getValue());
+    }
+
+    private function makeBooleanFeatureWithSegmentMatch($segmentKey)
+    {
+        $featureJson = array(
+            'key' => 'test',
+            'version' => 1,
+            'deleted' => false,
+            'on' => true,
+            'variations' => array(false, true),
+            'fallthrough' => array('variation' => 0),
+            'rules' => array(
+                array(
+                    'clauses' => array(
+                        array(
+                            'attribute' => '',
+                            'op' => 'segmentMatch',
+                            'values' => array($segmentKey),
+                            'negate' => false
+                        )
+                    ),
+                    'variation' => 1
+                )
+            ),
+            'offVariation' => 0,
+            'prerequisites' => array(),
+            'targets' => array(),
+            'salt' => ''
+        );
+        return FeatureFlag::decode($featureJson);
+    }
+}
+
+
+class MockFeatureRequesterForSegment implements FeatureRequester
+{
+    public $key = null;
+    public $val = null;
+
+    function __construct($baseurl = null, $key = null, $options = null)
+    {
+    }
+
+    public function getFeature($key)
+    {
+        return null;
+    }
+
+    public function getSegment($key)
+    {
+        return ($key == $this->key) ? $this->val : null;
+    }
+
+    public function getAllFeatures()
+    {
+        return null;
     }
 }
 
