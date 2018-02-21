@@ -2,6 +2,10 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [3.0.0] - 2018-02-21
+### Added
+- Support for a new LaunchDarkly feature: reusable user segments.
+
 ## [2.5.0] - 2018-02-13
 ### Added
 - Adds support for a future LaunchDarkly feature, coming soon: semantic version user attributes.
