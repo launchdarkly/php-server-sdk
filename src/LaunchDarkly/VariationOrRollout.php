@@ -54,7 +54,7 @@ class VariationOrRollout
             return $this->_variation;
         } elseif ($this->_rollout !== null) {
             $bucketBy = $this->_rollout->getBucketBy() === null ? "key" : $this->_rollout->getBucketBy();
-            $bucket = $this->bucketUser($user, $_key, $bucketBy, $_salt);
+            $bucket = self::bucketUser($user, $_key, $bucketBy, $_salt);
             $sum = 0.0;
             foreach ($this->_rollout->getVariations() as $wv) {
                 $sum += $wv->getWeight() / 100000.0;
@@ -73,7 +73,7 @@ class VariationOrRollout
      * @param $_salt string
      * @return float
      */
-    private function bucketUser($user, $_key, $attr, $_salt)
+    public static function bucketUser($user, $_key, $attr, $_salt)
     {
         $userValue = $user->getValueForEvaluation($attr);
         $idHash = null;
