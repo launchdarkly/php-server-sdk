@@ -6,16 +6,26 @@ use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 
 /**
+ * Used internally.
+ */
+class InvalidSDKKeyException extends \Exception
+{
+}
+
+/**
  * A client for the LaunchDarkly API.
  */
 class LDClient {
     const DEFAULT_BASE_URI = 'https://app.launchdarkly.com';
-    const VERSION = '2.0.0';
+    const DEFAULT_EVENTS_URI = 'https://events.launchdarkly.com';
+    const VERSION = '2.4.0';
 
     /** @var string */
     protected $_sdkKey;
     /** @var string */
     protected $_baseUri;
+    /** @var string */
+    protected $_eventsUri;
     /** @var EventProcessor */
     protected $_eventProcessor;
     /** @var  bool */
@@ -24,10 +34,9 @@ class LDClient {
     protected $_send_events = true;
     /** @var array|mixed */
     protected $_defaults = array();
-    /** @var mixed|LoggerInterface */
+    /** @var LoggerInterface */
     protected $_logger;
-
-    /** @var  FeatureRequester */
+    /** @var FeatureRequester */
     protected $_featureRequester;
 
     /**
@@ -39,10 +48,16 @@ class LDClient {
      *     - events_uri: Base URI for sending events to LaunchDarkly. Defaults to 'https://events.launchdarkly.com'
      *     - timeout: Float describing the maximum length of a request in seconds. Defaults to 3
      *     - connect_timeout: Float describing the number of seconds to wait while trying to connect to a server. Defaults to 3
-     *     - cache_storage: An optional GuzzleHttp\Subscriber\Cache\CacheStorageInterface. Defaults to an in-memory cache.
+     *     - cache_storage: An optional Guzzle\Plugin\Cache\DefaultCacheStorage. Defaults to an in-memory cache.
      *     - send_events: An optional bool that can disable the sending of events to LaunchDarkly. Defaults to false.
      *     - logger: An optional Psr\Log\LoggerInterface. Defaults to a Monolog\Logger sending all messages to the php error_log.
      *     - offline: An optional boolean which will disable all network calls and always return the default value. Defaults to false.
+     *     - feature_requester: An optional LaunchDarkly\FeatureRequester instance.
+     *     - feature_requester_class: An optional class implementing LaunchDarkly\FeatureRequester, if `feature_requester` is not specified. Defaults to GuzzleFeatureRequester.
+     *     - event_publisher: An optional LaunchDarkly\EventPublisher instance.
+     *     - event_publisher_class: An optional class implementing LaunchDarkly\EventPublisher, if `event_publisher` is not specified. Defaults to CurlEventPublisher.
+     *     - all_attributes_private: True if no user attributes (other than the key) should be sent back to LaunchDarkly. By default, this is false.
+     *     - private_attribute_names: An optional array of user attribute names to be marked private. Any users sent to LaunchDarkly with this configuration active will have attributes with these names removed. You can also set private attributes on a per-user basis in LDUserBuilder.
      */
     public function __construct($sdkKey, $options = array()) {
         $this->_sdkKey = $sdkKey;
@@ -50,6 +65,11 @@ class LDClient {
             $this->_baseUri = self::DEFAULT_BASE_URI;
         } else {
             $this->_baseUri = rtrim($options['base_uri'], '/');
+        }
+        if (!isset($options['events_uri'])) {
+            $this->_eventsUri = self::DEFAULT_EVENTS_URI;
+        } else {
+            $this->_eventsUri = rtrim($options['events_uri'], '/');
         }
         if (isset($options['send_events'])) {
             $this->_send_events = $options['send_events'];
@@ -82,13 +102,30 @@ class LDClient {
 
         $this->_eventProcessor = new EventProcessor($sdkKey, $options);
 
+        $this->_featureRequester = $this->getFeatureRequester($sdkKey, $options);
+    }
+
+    /**
+     * @param string $sdkKey
+     * @param mixed[] $options
+     * @return FeatureRequester
+     */
+    private function getFeatureRequester($sdkKey, array $options)
+    {
+        if (isset($options['feature_requester']) && $options['feature_requester'] instanceof FeatureRequester) {
+            return $options['feature_requester'];
+        }
+
         if (isset($options['feature_requester_class'])) {
             $featureRequesterClass = $options['feature_requester_class'];
         } else {
-            $featureRequesterClass = '\\LaunchDarkly\\GuzzleFeatureRequester';
+            $featureRequesterClass = 'LaunchDarkly\GuzzleFeatureRequester';
         }
 
-        $this->_featureRequester = new $featureRequesterClass($this->_baseUri, $sdkKey, $options);
+        if (!is_a($featureRequesterClass, 'LaunchDarkly\FeatureRequester', true)) {
+            throw new \InvalidArgumentException;
+        }
+        return new $featureRequesterClass($this->_baseUri, $sdkKey, $options);
     }
 
     /**
@@ -96,7 +133,7 @@ class LDClient {
      *
      * @param string $key The unique key for the feature flag
      * @param LDUser $user The end user requesting the flag
-     * @param boolean $default The default value of the flag
+     * @param mixed $default The default value of the flag
      *
      * @return mixed The result of the Feature Flag evaluation, or $default if any errors occurred.
      */
@@ -110,13 +147,18 @@ class LDClient {
         try {
             if (is_null($user) || is_null($user->getKey())) {
                 $this->_sendFlagRequestEvent($key, $user, $default, $default);
-                $this->_logger->warn("Variation called with null user or null user key! Returning default value");
+                $this->_logger->warning("Variation called with null user or null user key! Returning default value");
                 return $default;
             }
             if ($user->isKeyBlank()) {
-                $this->_logger->warn("User key is blank. Flag evaluation will proceed, but the user will not be stored in LaunchDarkly.");
+                $this->_logger->warning("User key is blank. Flag evaluation will proceed, but the user will not be stored in LaunchDarkly.");
             }
-            $flag = $this->_featureRequester->get($key);
+            try {
+                $flag = $this->_featureRequester->get($key);
+            } catch (InvalidSDKKeyException $e) {
+                $this->handleInvalidSDKKey();
+                return $default;
+            }
 
             if (is_null($flag)) {
                 $this->_sendFlagRequestEvent($key, $user, $default, $default);
@@ -128,7 +170,7 @@ class LDClient {
                     $this->_eventProcessor->enqueue($e);
                 }
             }
-            if ($evalResult->getValue() != null) {
+            if ($evalResult->getValue() !== null) {
                 $this->_sendFlagRequestEvent($key, $user, $evalResult->getValue(), $default, $flag->getVersion());
                 return $evalResult->getValue();
             }
@@ -175,11 +217,11 @@ class LDClient {
             return;
         }
         if (is_null($user) || $user->isKeyBlank()) {
-            $this->_logger->warn("Track called with null user or null/empty user key!");
+            $this->_logger->warning("Track called with null user or null/empty user key!");
         }
 
         $event = array();
-        $event['user'] = $user->toJSON();
+        $event['user'] = $user;
         $event['kind'] = "custom";
         $event['creationDate'] = Util::currentTimeUnixMillis();
         $event['key'] = $eventName;
@@ -197,11 +239,11 @@ class LDClient {
             return;
         }
         if (is_null($user) || $user->isKeyBlank()) {
-            $this->_logger->warn("Track called with null user or null/empty user key!");
+            $this->_logger->warning("Track called with null user or null/empty user key!");
         }
 
         $event = array();
-        $event['user'] = $user->toJSON();
+        $event['user'] = $user;
         $event['kind'] = "identify";
         $event['creationDate'] = Util::currentTimeUnixMillis();
         $event['key'] = $user->getKey();
@@ -224,17 +266,29 @@ class LDClient {
             $this->_logger->warn("allFlags called with null user or null/empty user key! Returning null");
             return null;
         }
-        $flags = $this->_featureRequester->getAll();
+        if ($this->isOffline()) {
+            return null;
+        }
+        try {
+            $flags = $this->_featureRequester->getAll();
+        } catch (InvalidSDKKeyException $e) {
+            $this->handleInvalidSDKKey();
+            return null;
+        }
         if ($flags === null) {
             return null;
         }
 
-        $results = array();
+        /**
+         * @param $flag FeatureFlag
+         * @return mixed|null
+         */
+        $fr = $this->_featureRequester;
+        $eval = function($flag) use($user, $fr) {
+            return $flag->evaluate($user, $fr)->getValue();
+        };
 
-        foreach ($flags as $flag)
-            $results[$flag->getKey()] = $flag->evaluate($user, $this->_featureRequester)->getValue();
-
-        return $results;
+        return array_map($eval, $flags);
     }
 
     /** Generates an HMAC sha256 hash for use in Secure mode: https://github.com/launchdarkly/js-client#secure-mode
@@ -246,6 +300,19 @@ class LDClient {
             return "";
         }
         return hash_hmac("sha256", $user->getKey(), $this->_sdkKey, false);
+    }
+
+    /**
+     * Publish events to LaunchDarkly
+     * @return bool Whether the events were successfully published
+     */
+    public function flush()
+    {
+        try {
+            return $this->_eventProcessor->flush();
+        } catch (InvalidSDKKeyException $e) {
+            $this->handleInvalidSDKKey();
+        }
     }
 
     /**
@@ -269,5 +336,10 @@ class LDClient {
         } else {
             return $default;
         }
+    }
+
+    protected function handleInvalidSDKKey() {
+        $this->_logger->error("Received 401 error, no further HTTP requests will be made during lifetime of LDClient since SDK key is invalid");
+        $this->_offline = true;
     }
 }

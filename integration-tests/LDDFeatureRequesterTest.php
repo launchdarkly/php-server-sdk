@@ -1,19 +1,23 @@
 <?php
 namespace LaunchDarkly\Tests;
 
-require_once 'vendor/autoload.php';
-
 use LaunchDarkly\LDClient;
+use LaunchDarkly\LDUser;
 use LaunchDarkly\LDUserBuilder;
+use LaunchDarkly\LDDFeatureRequester;
+use LaunchDarkly\ApcLDDFeatureRequester;
+use Predis\Client;
+use LaunchDarkly\ApcuLDDFeatureRequester;
 
 class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
+    const API_KEY = 'BOGUS_API_KEY';
 
     public function testGet() {
-        $redis = new \Predis\Client(array(
+        $redis = new Client(array(
                                       "scheme" => "tcp",
                                       "host" => 'localhost',
                                       "port" => 6379));
-        $client = new LDClient("BOGUS_API_KEY", array('feature_requester_class' => '\\LaunchDarkly\\LDDFeatureRequester'));
+        $client = new LDClient(static::API_KEY, array('feature_requester_class' => 'LaunchDarkly\LDDFeatureRequester'));
         $builder = new LDUserBuilder(3);
         $user = $builder->build();
 
@@ -24,11 +28,14 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testGetApc() {
-        $redis = new \Predis\Client(array(
+        if (!extension_loaded('apc')) {
+            self::markTestSkipped('Install `apc` extension to run this test.');
+        }
+        $redis = new Client(array(
                                         "scheme" => "tcp",
                                         "host" => 'localhost',
                                         "port" => 6379));
-        $client = new LDClient("BOGUS_API_KEY", array('feature_requester_class' => '\\LaunchDarkly\\ApcLDDFeatureRequester',
+        $client = new LDClient(static::API_KEY, array('feature_requester_class' => 'LaunchDarkly\ApcLDDFeatureRequester',
             'apc_expiration' => 1));
         $builder = new LDUserBuilder(3);
         $user = $builder->build();
@@ -46,20 +53,123 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals("baz", $client->variation('foo', $user, 'jim'));
     }
 
+    public function testGetApcu() {
+        if (!extension_loaded('apcu')) {
+            self::markTestSkipped('Install `apcu` extension to run this test.');
+        }
+
+        $redis = new Client(array(
+            'scheme' => 'tcp',
+            'host' => 'localhost',
+            'port' => 6379
+        ));
+
+        $client = new LDClient(static::API_KEY, array(
+            'feature_requester_class' => 'LaunchDarkly\ApcuLDDFeatureRequester',
+            'apc_expiration' => 1
+        ));
+
+        $builder = new LDUserBuilder(3);
+        $user = $builder->build();
+
+        $redis->del('launchdarkly:features');
+        $this->assertEquals('alice', $client->variation('fiz', $user, 'alice'));
+        $redis->hset('launchdarkly:features', 'fiz', $this->gen_feature('fiz', 'buz'));
+        $this->assertEquals('buz', $client->variation('fiz', $user, 'alice'));
+
+        # cached value so not updated
+        $redis->hset('launchdarkly:features', 'fiz', $this->gen_feature('fiz', 'bob'));
+        $this->assertEquals('buz', $client->variation('fiz', $user, 'alice'));
+
+        \apcu_delete('launchdarkly:features.fiz');
+        $this->assertEquals('bob', $client->variation('fiz', $user, 'alice'));
+    }
+
+    public function testGetAllWithoutFeatures()
+    {
+        $redis = new \Predis\Client(array(
+            'scheme' => 'tcp',
+            'host' => 'localhost',
+            'port' => 6379,
+        ));
+        $redis->flushall();
+
+        $client = new LDClient(static::API_KEY, array('feature_requester_class' => 'LaunchDarkly\LDDFeatureRequester'));
+        $user = new LDUser(static::API_KEY);
+        $allFlags = $client->allFlags($user);
+
+        $this->assertNull($allFlags);
+    }
+
+    public function testGetAll()
+    {
+        $featureKey = 'foo';
+        $featureValue = 'bar';
+
+        $redis = new \Predis\Client(array(
+            'scheme' => 'tcp',
+            'host' => 'localhost',
+            'port' => 6379,
+        ));
+        $client = new LDClient(static::API_KEY, array('feature_requester_class' => 'LaunchDarkly\LDDFeatureRequester'));
+        $redis->hset('launchdarkly:features', $featureKey, $this->gen_feature($featureKey, $featureValue));
+        $user = new LDUser(static::API_KEY);
+        $allFlags = $client->allFlags($user);
+
+        $this->assertInternalType('array', $allFlags);
+        $this->assertArrayHasKey($featureKey, $allFlags);
+        $this->assertEquals($featureValue, $allFlags[$featureKey]);
+    }
+
     private function gen_feature($key, $val) {
-        $data = <<<EOF
-           {"name": "Feature $key", "key": "$key", "kind": "flag", "salt": "Zm9v", "on": true,
-            "variations": [{"value": "$val", "weight": 100,
-                            "targets": [{"attribute": "key", "op": "in", "values": []}],
-                            "userTarget": {"attribute": "key", "op": "in", "values": []}},
-                           {"value": false, "weight": 0,
-                            "targets": [{"attribute": "key", "op": "in", "values": []}],
-                            "userTarget": {"attribute": "key", "op": "in", "values": []}}],
-            "commitDate": "2015-09-08T21:24:16.712Z",
-            "creationDate": "2015-09-08T21:06:16.527Z",
-            "version": 4}
-EOF;
-         return $data;
+        $data = array(
+            'name' => 'Feature ' . $key,
+            'key' => $key,
+            'kind' => 'flag',
+            'salt' => 'Zm9v',
+            'on' => true,
+            'variations' => array(
+                $val,
+                false,
+            ),
+            'commitDate' => '2015-09-08T21:24:16.712Z',
+            'creationDate' => '2015-09-08T21:06:16.527Z',
+            'version' => 4,
+            'prerequisites' => array(),
+            'targets' => array(
+                array(
+                    'values' => array(
+                        $val,
+                    ),
+                    'variation' => 0,
+                ),
+                array(
+                    'values' => array(
+                        false,
+                    ),
+                    'variation' => 1,
+                ),
+            ),
+            'rules' => array(),
+            'fallthrough' => array(
+                'rollout' => array(
+                    'variations' => array(
+                        array(
+                            'variation' => 0,
+                            'weight' => 95000,
+                        ),
+                        array(
+                            'variation' => 1,
+                            'weight' => 5000,
+                        ),
+                    ),
+                ),
+            ),
+            'offVariation' => null,
+            'deleted' => false,
+        );
+
+        return \json_encode($data);
     }
 
 }

@@ -6,44 +6,20 @@ namespace LaunchDarkly;
  */
 class EventProcessor {
 
-  private $_sdkKey;
+  private $_eventPublisher;
+  private $_eventSerializer;
   private $_queue;
   private $_capacity;
   private $_timeout;
-  private $_host;
-  private $_port;
-  private $_ssl;
 
-  public function __construct($apiKey, $options = array()) {
-    $this->_sdkKey = $apiKey;
-    if (!isset($options['events_uri'])) {
-        $this->_host = 'events.launchdarkly.com';
-        $this->_port = 443;
-        $this->_ssl = true;
-        $this->_path = '';
-    } 
-    else {
-        $url = parse_url(rtrim($options['events_uri'],'/'));
-        $this->_host = $url['host'];
-        $this->_ssl = $url['scheme'] === 'https';
-        if (isset($url['port'])) {
-          $this->_port = $url['port'];
-        } 
-        else {
-          $this->_port = $this->_ssl ? 443 : 80;
-        }
-        if (isset($url['path'])) {
-          $this->_path = $url['path'];
-        }
-        else {
-          $this->_path = '';
-        }
-    }
-
+  public function __construct($sdkKey, $options = array()) {
+    $this->_eventPublisher = $this->getEventPublisher($sdkKey, $options);
+    $this->_eventSerializer = new EventSerializer($options);
+    
     $this->_capacity = $options['capacity'];
     $this->_timeout = $options['timeout'];
 
-    $this->_queue = array(); 
+    $this->_queue = array();
   }
 
   public function __destruct() {
@@ -64,35 +40,45 @@ class EventProcessor {
     return true;
   }
 
-  protected function flush() {
+  /**
+   * Publish events to LaunchDarkly
+   * @return bool Whether the events were successfully published
+   */
+  public function flush() {
     if (empty($this->_queue)) {
       return null;
     }
 
-    $payload = json_encode($this->_queue);
+    $payload = $this->_eventSerializer->serializeEvents($this->_queue);
 
-    $args = $this->createArgs($payload);
+    // We don't expect flush to be called more than once per request cycle, but let's empty the queue just in case
+    $this->_queue = array();
 
-    return $this->makeRequest($args);
+    $this->_queue = array();
+
+    return $this->_eventPublisher->publish($payload);
   }
 
-  private function createArgs($payload) {
-    $scheme = $this->_ssl ? "https://" : "http://";
-    $args = " -X POST";
-    $args.= " -H 'Content-Type: application/json'";
-    $args.= " -H " . escapeshellarg("Authorization: " . $this->_sdkKey);
-    $args.= " -H 'User-Agent: PHPClient/" . LDClient::VERSION . "'";
-    $args.= " -H 'Accept: application/json'";
-    $args.= " -d " . escapeshellarg($payload);
-    $args.= " " . escapeshellarg($scheme . $this->_host . ":" . $this->_port . $this->_path . "/bulk");
-    return $args;
+  /**
+   * @param string $sdkKey
+   * @param mixed[] $options
+   * @return EventPublisher
+   */
+  private function getEventPublisher($sdkKey, array $options)
+  {
+    if (isset($options['event_publisher']) && $options['event_publisher'] instanceof EventPublisher) {
+      return $options['event_publisher'];
+    }
+
+    if (isset($options['event_publisher_class'])) {
+      $eventPublisherClass = $options['event_publisher_class'];
+    } else {
+      $eventPublisherClass = 'LaunchDarkly\CurlEventPublisher';
+    }
+
+    if (!is_a($eventPublisherClass, 'LaunchDarkly\EventPublisher', true)) {
+      throw new \InvalidArgumentException;
+    }
+    return new $eventPublisherClass($sdkKey, $options);
   }
-
-  private function makeRequest($args) {
-    $cmd = "/usr/bin/env curl " . $args . ">> /dev/null 2>&1 &";
-    shell_exec($cmd);
-    return true;
-  }
-
-
 }
