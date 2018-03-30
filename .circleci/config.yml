@@ -4,6 +4,7 @@ workflows:
   version: 2
   test:
     jobs:
+      - test-5.5
       - test-5.6
       - test-7.0
       - test-7.1
@@ -50,7 +51,7 @@ jobs:
 
   test-5.5: # CircleCI doesn't provide a Docker image for 5.5
     machine:
-      - image: circleci/classic:latest # Ubuntu 14.04
+      image: circleci/classic:latest # Ubuntu 14.04
     steps:
       - checkout
       - run:
