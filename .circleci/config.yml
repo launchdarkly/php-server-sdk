@@ -11,7 +11,7 @@ workflows:
       - integration-test-5.6
 
 php-docker-template: &php-docker-template
-  steps: &php-build-steps
+  steps:
     - checkout
     - run:
         name: install current dependencies
@@ -52,7 +52,23 @@ jobs:
     machine:
       - image: circleci/classic:latest # Ubuntu 14.04
     steps:
-      <<: *php-build-steps
+      - checkout
+      - run:
+          name: install current dependencies
+          command: composer install --no-progress
+      - run:
+          name: run tests with current dependency versions
+          command: vendor/bin/phpunit --log-junit ~/phpunit/junit.xml --coverage-text tests
+      - store_test_results:
+          path: ~/phpunit
+      - store_artifacts:
+          path: ~/phpunit
+      - run:
+          name: run tests with highest available dependency versions
+          command: composer update --no-progress && vendor/bin/phpunit tests
+      - run:
+          name: run tests with lowest available dependency versions
+          command: composer update --prefer-lowest --no-progress && vendor/bin/phpunit tests
 
   integration-test-5.6:
     docker:
