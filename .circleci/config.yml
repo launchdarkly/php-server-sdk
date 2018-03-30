@@ -10,7 +10,7 @@ workflows:
       - test-7.2
       - integration-test-5.6
 
-php-docker-template: &test-template
+php-docker-template: &php-docker-template
   steps:
     - checkout
     - run:
