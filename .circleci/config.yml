@@ -16,9 +16,9 @@ php-docker-template: &php-docker-template
     - run:
         name: setup apcu
         command: |
-          yes '' | pecl install -f apcu-4.0.10;
-          echo "extension=apcu.so" >> $(php-config --prefix)/etc/conf.d/apcu.ini;
-          echo "apc.enable_cli = 1" >> $(php-config --prefix)/etc/conf.d/apcu.ini
+          sudo yes '' | pecl install -f apcu-4.0.10;
+          sudo echo "extension=apcu.so" >> $(php-config --prefix)/etc/conf.d/apcu.ini;
+          sudo echo "apc.enable_cli = 1" >> $(php-config --prefix)/etc/conf.d/apcu.ini
     - run:
         name: run tests with current dependency versions
         command: vendor/bin/phpunit tests --coverage-text
