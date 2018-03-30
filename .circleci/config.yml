@@ -50,8 +50,9 @@ jobs:
       - run:
           name: setup apcu
           command: |
+            pecl config-set php_ini /usr/local/etc/php/php.ini
             yes '' | sudo pecl install -f apcu-4.0.10;
             echo "extension=apcu.so" | sudo tee -a /usr/local/etc/php/conf.d/apcu.ini;
-            echo "apc.enable_cli = 1" | sudo tee -a /urs/local/etc/php/conf.d/apcu.ini
+            echo "apc.enable_cli = 1" | sudo tee -a /usr/local/etc/php/conf.d/apcu.ini
       - run: composer update --no-progress
       - run: vendor/bin/phpunit integration-tests/LDDFeatureRequesterTest.php
