@@ -9,7 +9,7 @@ workflows:
       - test-7.0
       - test-7.1
       # - test-7.2 # TODO: make our code compatible with PHP 7.2
-      - integration-test-5.6
+      - integration-test
 
 php-docker-template: &php-docker-template
   steps:
@@ -53,25 +53,26 @@ jobs:
     machine:
       image: circleci/classic:latest # Ubuntu 14.04
     steps:
+      - run:
+          name: install PHP and Composer
+          command: |
+            sudo apt-get update &&
+            sudo apt-get install circleci-php-5.5.36 &&
+            php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');" &&
+            sudo php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
       - checkout
       - run:
-          name: install current dependencies
-          command: composer install --no-progress
+          name: update dependencies # the dependencies in composer.lock don't work with 5.5
+          command: composer update --no-progress
       - run:
-          name: run tests with current dependency versions
+          name: run tests
           command: vendor/bin/phpunit --log-junit ~/phpunit/junit.xml --coverage-text tests
       - store_test_results:
           path: ~/phpunit
       - store_artifacts:
           path: ~/phpunit
-      - run:
-          name: run tests with highest available dependency versions
-          command: composer update --no-progress && vendor/bin/phpunit tests
-      - run:
-          name: run tests with lowest available dependency versions
-          command: composer update --prefer-lowest --no-progress && vendor/bin/phpunit tests
 
-  integration-test-5.6:
+  integration-test:
     docker:
       - image: circleci/php:5.6.34-cli-jessie
       - image: redis
