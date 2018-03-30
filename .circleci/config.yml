@@ -11,7 +11,7 @@ workflows:
       - integration-test-5.6
 
 php-docker-template: &php-docker-template
-  steps:
+  steps: &php-build-steps
     - checkout
     - run:
         name: install current dependencies
@@ -47,6 +47,12 @@ jobs:
     <<: *php-docker-template
     docker:
       - image: circleci/php:7.2.3-cli-stretch
+
+  test-5.5: # CircleCI doesn't provide a Docker image for 5.5
+    machine:
+      - image: circleci/classic:latest # Ubuntu 14.04
+    steps:
+      <<: *php-build-steps
 
   integration-test-5.6:
     docker:
