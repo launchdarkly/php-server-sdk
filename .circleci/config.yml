@@ -14,14 +14,8 @@ php-docker-template: &php-docker-template
   steps:
     - checkout
     - run:
-        name: setup apcu
-        command: |
-          sudo yes '' | pecl install -f apcu-4.0.10;
-          sudo echo "extension=apcu.so" >> $(php-config --prefix)/etc/conf.d/apcu.ini;
-          sudo echo "apc.enable_cli = 1" >> $(php-config --prefix)/etc/conf.d/apcu.ini
-    - run:
         name: run tests with current dependency versions
-        command: vendor/bin/phpunit tests --coverage-text
+        command: composer install && vendor/bin/phpunit tests --coverage-text
     - run:
         name: run tests with highest available dependency versions
         command: composer update && vendor/bin/phpunit tests
@@ -49,7 +43,13 @@ jobs:
 
   integration-test-5.6:
     docker:
-      - image: circleci/php:5.6.34-cli-jessie
+      - image: circleci/php:5.6.34-apache-jessie
     steps:
       - checkout
+      - run:
+          name: setup apcu
+          command: |
+            yes '' | sudo pecl install -f apcu-4.0.10;
+            sudo echo "extension=apcu.so" >> $(php-config --prefix)/etc/conf.d/apcu.ini;
+            sudo echo "apc.enable_cli = 1" >> $(php-config --prefix)/etc/conf.d/apcu.ini
       - run: vendor/bin/phpunit integration-tests/LDDFeatureRequesterTest.php
