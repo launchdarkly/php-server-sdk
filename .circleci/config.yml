@@ -14,8 +14,15 @@ php-docker-template: &php-docker-template
   steps:
     - checkout
     - run:
+        name: install current dependencies
+        command: composer install --no-progress
+    - run:
         name: run tests with current dependency versions
-        command: composer install --no-progress && vendor/bin/phpunit tests --coverage-text
+        command: vendor/bin/phpunit --log-junit ~/phpunit/junit.xml --coverage-text tests
+    - store_test_results:
+        path: ~/phpunit
+    - store_artifacts:
+        path: ~/phpunit
     - run:
         name: run tests with highest available dependency versions
         command: composer update --no-progress && vendor/bin/phpunit tests
