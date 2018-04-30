@@ -6,6 +6,8 @@ namespace LaunchDarkly;
  */
 interface EventPublisher
 {
+    const CURRENT_SCHEMA_VERSION = 2;
+
     /**
      * @param string $sdkKey The SDK key for your account
      * @param mixed[] $options Client configuration settings

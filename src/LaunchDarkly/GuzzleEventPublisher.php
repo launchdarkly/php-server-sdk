@@ -39,7 +39,8 @@ class GuzzleEventPublisher implements EventPublisher
                 'Content-Type'  => 'application/json',
                 'Authorization' => $this->_sdkKey,
                 'User-Agent'    => 'PHPClient/' . LDClient::VERSION,
-                'Accept'        => 'application/json'
+                'Accept'        => 'application/json',
+                'X-LaunchDarkly-Event-Schema' => strval(EventPublisher::CURRENT_SCHEMA_VERSION)
             ],
             'timeout' => $options['timeout'],
             'connect_timeout' => $options['connect_timeout']
