@@ -149,7 +149,7 @@ class LDClient
 
         try {
             if (is_null($user) || is_null($user->getKey())) {
-                $this->_sendFlagRequestEvent($key, $user, $default, $default);
+                $this->_sendFlagRequestEvent($key, $user, null, $default, $default);
                 $this->_logger->warning("Variation called with null user or null user key! Returning default value");
                 return $default;
             }
@@ -164,7 +164,7 @@ class LDClient
             }
 
             if (is_null($flag)) {
-                $this->_sendFlagRequestEvent($key, $user, $default, $default);
+                $this->_sendFlagRequestEvent($key, $user, null, $default, $default);
                 return $default;
             }
             $evalResult = $flag->evaluate($user, $this->_featureRequester);
@@ -173,15 +173,15 @@ class LDClient
                     $this->_eventProcessor->enqueue($e);
                 }
             }
-            if ($evalResult->getValue() !== null) {
-                $this->_sendFlagRequestEvent($key, $user, $evalResult->getValue(), $default, $flag->getVersion());
+            if ($evalResult !== null && $evalResult->getValue() !== null) {
+                $this->_sendFlagRequestEvent($key, $user, $evalResult->getVariation(), $evalResult->getValue(), $default, $flag->getVersion());
                 return $evalResult->getValue();
             }
         } catch (\Exception $e) {
             $this->_logger->error("Caught $e");
         }
         try {
-            $this->_sendFlagRequestEvent($key, $user, $default, $default);
+            $this->_sendFlagRequestEvent($key, $user, null, $default, $default);
         } catch (\Exception $e) {
             $this->_logger->error("Caught $e");
         }
@@ -326,17 +326,18 @@ class LDClient
     /**
      * @param $key string
      * @param $user LDUser
+     * @param $variation int | null
      * @param $value mixed
      * @param $default
      * @param $version int | null
      * @param string | null $prereqOf
      */
-    protected function _sendFlagRequestEvent($key, $user, $value, $default, $version = null, $prereqOf = null)
+    protected function _sendFlagRequestEvent($key, $user, $variation, $value, $default, $version = null, $prereqOf = null)
     {
         if ($this->isOffline() || !$this->_send_events) {
             return;
         }
-        $this->_eventProcessor->enqueue(Util::newFeatureRequestEvent($key, $user, $value, $default, $version, $prereqOf));
+        $this->_eventProcessor->enqueue(Util::newFeatureRequestEvent($key, $user, $variation, $value, $default, $version, $prereqOf));
     }
 
     protected function _get_default($key, $default)

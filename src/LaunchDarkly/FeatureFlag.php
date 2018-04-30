@@ -95,18 +95,18 @@ class FeatureFlag
         if ($this->isOn()) {
             $result = $this->_evaluate($user, $featureRequester, $prereqEvents);
             if ($result !== null) {
-                return new EvalResult($result, $prereqEvents);
+                return $result;
             }
         }
-        $offVariation = $this->getOffVariationValue();
-        return new EvalResult($offVariation, $prereqEvents);
+        $offVariationValue = $this->getOffVariationValue();
+        return new EvalResult($this->_offVariation, $offVariationValue, $prereqEvents);
     }
 
     /**
      * @param $user LDUser
      * @param $featureRequester FeatureRequester
      * @param $events
-     * @return mixed|null
+     * @return EvalResult|null
      */
     private function _evaluate($user, $featureRequester, &$events)
     {
@@ -120,21 +120,26 @@ class FeatureFlag
                         return null;
                     } elseif ($prereqFeatureFlag->isOn()) {
                         $prereqEvalResult = $prereqFeatureFlag->_evaluate($user, $featureRequester, $events);
-                        $variation = $prereqFeatureFlag->getVariation($prereq->getVariation());
-                        if ($prereqEvalResult === null || $variation === null || $prereqEvalResult !== $variation) {
+                        $variation = $prereq->getVariation();
+                        if ($prereqEvalResult === null || $variation === null || $prereqEvalResult->getVariation() !== $variation) {
                             $prereqOk = false;
                         }
                     } else {
                         $prereqOk = false;
                     }
-                    array_push($events, Util::newFeatureRequestEvent($prereqFeatureFlag->getKey(), $user, $prereqEvalResult, null, $prereqFeatureFlag->getVersion(), $this->_key));
+                    array_push($events, Util::newFeatureRequestEvent($prereqFeatureFlag->getKey(), $user,
+                        $prereqEvalResult === null ? null : $prereqEvalResult->getVariation(),
+                        $prereqEvalResult === null ? null : $prereqEvalResult->getValue(),
+                        null, $prereqFeatureFlag->getVersion(), $this->_key));
                 } catch (EvaluationException $e) {
                     $prereqOk = false;
                 }
             }
         }
         if ($prereqOk) {
-            return $this->getVariation($this->evaluateIndex($user, $featureRequester));
+            $variation = $this->evaluateIndex($user, $featureRequester);
+            $value = $this->getVariation($variation);
+            return new EvalResult($variation, $value, $events);
         }
         return null;
     }
@@ -221,6 +226,7 @@ class FeatureFlag
 
 class EvalResult
 {
+    private $_variation = null;
     private $_value = null;
     /** @var array */
     private $_prerequisiteEvents = [];
@@ -230,10 +236,19 @@ class EvalResult
      * @param null $value
      * @param array $prerequisiteEvents
      */
-    public function __construct($value, array $prerequisiteEvents)
+    public function __construct($variation, $value, array $prerequisiteEvents)
     {
+        $this->_variation = $variation;
         $this->_value = $value;
         $this->_prerequisiteEvents = $prerequisiteEvents;
+    }
+
+    /**
+     * @return int
+     */
+    public function getVariation()
+    {
+        return $this->_variation;
     }
 
     /**

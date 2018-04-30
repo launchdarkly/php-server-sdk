@@ -37,10 +37,11 @@ class Util
      * @param null $prereqOf string | null
      * @return array
      */
-    public static function newFeatureRequestEvent($key, $user, $value, $default, $version = null, $prereqOf = null)
+    public static function newFeatureRequestEvent($key, $user, $variation, $value, $default, $version = null, $prereqOf = null)
     {
         $event = array();
         $event['user'] = $user;
+        $event['variation'] = $variation;
         $event['value'] = $value;
         $event['kind'] = "feature";
         $event['creationDate'] = Util::currentTimeUnixMillis();
