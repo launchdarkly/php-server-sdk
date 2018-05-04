@@ -148,7 +148,7 @@ class LDClient
         }
 
         try {
-            if (!is_null(user) && $user->isKeyBlank()) {
+            if (!is_null($user) && $user->isKeyBlank()) {
                 $this->_logger->warning("User key is blank. Flag evaluation will proceed, but the user will not be stored in LaunchDarkly.");
             }
             try {
