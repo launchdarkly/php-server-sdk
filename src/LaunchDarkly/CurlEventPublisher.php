@@ -60,6 +60,7 @@ class CurlEventPublisher implements EventPublisher
         $args.= " -H 'Content-Type: application/json'";
         $args.= " -H " . escapeshellarg("Authorization: " . $this->_sdkKey);
         $args.= " -H 'User-Agent: PHPClient/" . LDClient::VERSION . "'";
+        $args.= " -H 'X-LaunchDarkly-Event-Schema: " . EventPublisher::CURRENT_SCHEMA_VERSION . "'";
         $args.= " -H 'Accept: application/json'";
         $args.= " -d " . escapeshellarg($payload);
         $args.= " " . escapeshellarg($scheme . $this->_host . ":" . $this->_port . $this->_path . "/bulk");
