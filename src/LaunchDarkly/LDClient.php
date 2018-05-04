@@ -176,6 +176,9 @@ class LDClient
             if ($evalResult !== null && $evalResult->getValue() !== null) {
                 $this->_sendFlagRequestEvent($key, $user, $evalResult->getVariation(), $evalResult->getValue(), $default, $flag->getVersion());
                 return $evalResult->getValue();
+            } else {
+                $this->_sendFlagRequestEvent($key, $user, null, $default, $default, $flag->getVersion());
+                return $default;
             }
         } catch (\Exception $e) {
             $this->_logger->error("Caught $e");
