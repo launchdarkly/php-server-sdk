@@ -148,12 +148,7 @@ class LDClient
         }
 
         try {
-            if (is_null($user) || is_null($user->getKey())) {
-                $this->_sendFlagRequestEvent($key, $user, null, $default, $default);
-                $this->_logger->warning("Variation called with null user or null user key! Returning default value");
-                return $default;
-            }
-            if ($user->isKeyBlank()) {
+            if (!is_null($user) && $user->isKeyBlank()) {
                 $this->_logger->warning("User key is blank. Flag evaluation will proceed, but the user will not be stored in LaunchDarkly.");
             }
             try {
@@ -167,6 +162,11 @@ class LDClient
                 $this->_sendFlagRequestEvent($key, $user, null, $default, $default);
                 return $default;
             }
+            if (is_null($user) || is_null($user->getKey())) {
+                $this->_sendFlagRequestEvent($key, $user, null, $default, $default, $flag->getVersion());
+                $this->_logger->warning("Variation called with null user or null user key! Returning default value");
+                return $default;
+            }
             $evalResult = $flag->evaluate($user, $this->_featureRequester);
             if (!$this->isOffline() && $this->_send_events) {
                 foreach ($evalResult->getPrerequisiteEvents() as $e) {
@@ -176,6 +176,9 @@ class LDClient
             if ($evalResult !== null && $evalResult->getValue() !== null) {
                 $this->_sendFlagRequestEvent($key, $user, $evalResult->getVariation(), $evalResult->getValue(), $default, $flag->getVersion());
                 return $evalResult->getValue();
+            } else {
+                $this->_sendFlagRequestEvent($key, $user, null, $default, $default, $flag->getVersion());
+                return $default;
             }
         } catch (\Exception $e) {
             $this->_logger->error("Caught $e");

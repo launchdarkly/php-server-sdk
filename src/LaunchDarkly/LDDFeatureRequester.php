@@ -98,7 +98,7 @@ class LDDFeatureRequester implements FeatureRequester
         $raw = $this->get_from_cache($this->_segments_key, $key);
         if ($raw === null) {
             $redis = $this->get_connection();
-            $raw = $redis->hget($this->_features_key, $key);
+            $raw = $redis->hget($this->_segments_key, $key);
             if ($raw) {
                 $this->store_in_cache($this->_segments_key, $key, $raw);
             }
