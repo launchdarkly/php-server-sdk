@@ -5,6 +5,8 @@ All notable changes to the LaunchDarkly PHP SDK will be documented in this file.
 ## [3.1.0] - 2018-04-30
 ### Added
 - Analytics events for feature evaluations now have a `variation` property (the variation index) as well as `value`. This will allow for better performance in future versions of [`ld-relay`](https://github.com/launchdarkly/ld-relay) when it is used with the PHP client.
+### Fixed
+- Fixed a bug that made segment-based rules always fall through when using `LDDFeatureRequester`.
 
 ## [3.0.0] - 2018-02-21
 ### Added
