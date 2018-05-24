@@ -142,8 +142,8 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
 
     public function testDecode()
     {
-        FeatureFlag::decode(\GuzzleHttp\json_decode(FeatureFlagTest::$json1, true));
-        FeatureFlag::decode(\GuzzleHttp\json_decode(FeatureFlagTest::$json2, true));
+        $this->assertInstanceOf(FeatureFlag::class, FeatureFlag::decode(\GuzzleHttp\json_decode(FeatureFlagTest::$json1, true)));
+        $this->assertInstanceOf(FeatureFlag::class, FeatureFlag::decode(\GuzzleHttp\json_decode(FeatureFlagTest::$json2, true)));
     }
     
     public function dataDecodeMulti()
