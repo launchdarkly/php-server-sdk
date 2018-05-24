@@ -14,7 +14,7 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
 
     public function testDefaultCtor()
     {
-        new LDClient("BOGUS_SDK_KEY");
+        $this->assertInstanceOf(LDClient::class, new LDClient("BOGUS_SDK_KEY"));
     }
 
     public function testToggleDefault()
