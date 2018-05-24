@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ad2c6c29c2c748655900711de6dba807",
+    "content-hash": "ae5fba8f5b84830883d1071f40552206",
     "packages": [
         {
             "name": "monolog/monolog",
