@@ -14,7 +14,7 @@ class Util
      */
     public static function dateTimeToUnixMillis($dateTime)
     {
-        $timeStampSeconds = (int)$dateTime->getTimeStamp();
+        $timeStampSeconds = (int)$dateTime->getTimestamp();
         $timestampMicros = $dateTime->format('u');
         return $timeStampSeconds * 1000 + (int)($timestampMicros / 1000);
     }

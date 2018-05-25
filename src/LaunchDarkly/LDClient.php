@@ -19,7 +19,7 @@ class LDClient
 {
     const DEFAULT_BASE_URI = 'https://app.launchdarkly.com';
     const DEFAULT_EVENTS_URI = 'https://events.launchdarkly.com';
-    const VERSION = '3.0.0';
+    const VERSION = '3.1.0';
 
     /** @var string */
     protected $_sdkKey;
@@ -352,7 +352,8 @@ class LDClient
         }
     }
 
-    protected function handleInvalidSDKKey() {
+    protected function handleInvalidSDKKey()
+    {
         $this->_logger->error("Received 401 error, no further HTTP requests will be made during lifetime of LDClient since SDK key is invalid");
         $this->_offline = true;
     }

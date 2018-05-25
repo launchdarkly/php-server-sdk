@@ -2,7 +2,6 @@
 
 namespace LaunchDarkly\Tests;
 
-
 use LaunchDarkly\SemanticVersion;
 
 class SemanticVersionTest extends \PHPUnit_Framework_TestCase
@@ -47,32 +46,31 @@ class SemanticVersionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('build2.4', $sv->build);
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage not a valid semantic version
+     */
     public function testLeadingZeroNotAllowedInMajor()
     {
-        try {
-            SemanticVersion::parse('02.3.4');
-            $this->assertTrue(false, 'expected exception');
-            // can't use expectException method because we must support older PHPUnit
-        } catch (\InvalidArgumentException $e) {
-        }
+        SemanticVersion::parse('02.3.4');
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage not a valid semantic version
+     */
     public function testLeadingZeroNotAllowedInMinor()
     {
-        try {
-            SemanticVersion::parse('2.03.4');
-            $this->assertTrue(false, 'expected exception');
-        } catch (\InvalidArgumentException $e) {
-        }
+        SemanticVersion::parse('2.03.4');
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage not a valid semantic version
+     */
     public function testLeadingZeroNotAllowedInPatch()
     {
-        try {
-            SemanticVersion::parse('2.3.04');
-            $this->assertTrue(false, 'expected exception');
-        } catch (\InvalidArgumentException $e) {
-        }
+        SemanticVersion::parse('2.3.04');
     }
 
     public function testZeroByItselfIsAllowed()
@@ -147,22 +145,22 @@ class SemanticVersionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('build1', $sv->build);
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage not a valid semantic version
+     */
     public function testCannotParseVersionWithMajorOnlyByDefault()
     {
-        try {
-            SemanticVersion::parse('2');
-            $this->assertTrue(false, 'expected exception');
-        } catch (\InvalidArgumentException $e) {
-        }
+        SemanticVersion::parse('2');
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage not a valid semantic version
+     */
     public function testCannotParseVersionWithMajorAndMinorOnlyByDefault()
     {
-        try {
-            SemanticVersion::parse('2.3');
-            $this->assertTrue(false, 'expected exception');
-        } catch (\InvalidArgumentException $e) {
-        }
+        SemanticVersion::parse('2.3');
     }
 
     public function testEqualVersionsHaveEqualPrecedence()

@@ -15,6 +15,9 @@ php-docker-template: &php-docker-template
   steps:
     - checkout
     - run:
+        name: validate composer.json
+        command: composer validate
+    - run:
         name: install current dependencies
         command: composer install --no-progress
     - run:
@@ -67,8 +70,14 @@ jobs:
             sudo php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
       - checkout
       - run:
-          name: update dependencies # the dependencies in composer.lock don't work with 5.5
-          command: composer update --no-progress
+          name: validate composer.json
+          command: composer validate
+      - run:
+          name: install current dependencies
+          command: composer install --no-progress
+      - run:
+          name: run php-cs-fixer
+          command: vendor/bin/php-cs-fixer fix --diff --dry-run --verbose
       - run:
           name: run tests
           command: vendor/bin/phpunit --log-junit ~/phpunit/junit.xml --coverage-text tests

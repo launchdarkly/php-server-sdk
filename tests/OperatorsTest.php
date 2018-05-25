@@ -2,12 +2,10 @@
 
 namespace LaunchDarkly\Tests;
 
-
 use LaunchDarkly\Operators;
 
 class OperatorsTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testIn()
     {
         $this->assertTrue(Operators::apply("in", "A string to match", "A string to match"));
@@ -56,7 +54,8 @@ class OperatorsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(null, Operators::parseTime([]));
     }
 
-    public function testSemVer() {
+    public function testSemVer()
+    {
         $this->assertTrue(Operators::apply("semVerEqual", "2.0.0", "2.0.0"));
         $this->assertTrue(Operators::apply("semVerEqual", "2.0", "2.0.0"));
         $this->assertTrue(Operators::apply("semVerEqual", "2", "2.0.0"));

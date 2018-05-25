@@ -137,7 +137,8 @@ class Operators
      * @param $in
      * @return null|string
      */
-    public static function parseSemVer($in) {
+    public static function parseSemVer($in)
+    {
         try {
             return SemanticVersion::parse($in, true);
         } catch (\InvalidArgumentException $e) {

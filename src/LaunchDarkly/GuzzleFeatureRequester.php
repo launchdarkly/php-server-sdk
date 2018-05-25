@@ -29,7 +29,7 @@ class GuzzleFeatureRequester implements FeatureRequester
         $this->_logger = $options['logger'];
         $stack = HandlerStack::create();
         if (class_exists('Kevinrob\GuzzleCache\CacheMiddleware')) {
-            $stack->push(new CacheMiddleware(new PublicCacheStrategy(isset($options['cache']) ? $options['cache'] : null), 'cache'));
+            $stack->push(new CacheMiddleware(new PublicCacheStrategy(isset($options['cache']) ? $options['cache'] : null)), 'cache');
         } elseif (!$this->_loggedCacheNotice) {
             $this->_logger->info("GuzzleFeatureRequester is not using an HTTP cache because Kevinrob\GuzzleCache\CacheMiddleware was not installed");
             $this->_loggedCacheNotice = true;
@@ -113,7 +113,8 @@ class GuzzleFeatureRequester implements FeatureRequester
         }
     }
 
-    private function handleUnexpectedStatus($code, $method) {
+    private function handleUnexpectedStatus($code, $method)
+    {
         $this->_logger->error("$method received an unexpected HTTP status code $code");
         if ($code == 401) {
             throw new InvalidSDKKeyException();
