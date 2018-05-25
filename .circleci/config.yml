@@ -73,8 +73,8 @@ jobs:
           name: validate composer.json
           command: composer validate
       - run:
-          name: update dependencies # the dependencies in composer.lock don't work with 5.5
-          command: composer update --no-progress
+          name: install current dependencies
+          command: composer install --no-progress
       - run:
           name: run tests
           command: vendor/bin/phpunit --log-junit ~/phpunit/junit.xml --coverage-text tests
