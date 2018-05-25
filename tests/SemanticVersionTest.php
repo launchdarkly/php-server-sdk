@@ -2,7 +2,6 @@
 
 namespace LaunchDarkly\Tests;
 
-
 use LaunchDarkly\SemanticVersion;
 
 class SemanticVersionTest extends \PHPUnit_Framework_TestCase

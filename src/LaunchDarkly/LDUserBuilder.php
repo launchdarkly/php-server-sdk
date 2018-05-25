@@ -47,7 +47,8 @@ class LDUserBuilder
     /**
      * Sets the IP for a user.
      */
-    public function ip($ip){
+    public function ip($ip)
+    {
         $this->_ip = $ip;
         return $this;
     }

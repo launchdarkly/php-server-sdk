@@ -6,7 +6,6 @@ use LaunchDarkly\LDUserBuilder;
 
 class LDUserTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testLDUserKey()
     {
         $builder = new LDUserBuilder("foo@bar.com");
@@ -22,7 +21,7 @@ class LDUserTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testEmptyCustom()
-    {        
+    {
         $builder = new LDUserBuilder("foo@bar.com");
         
         $user = $builder->build();

@@ -6,7 +6,6 @@ namespace LaunchDarkly;
  */
 class EventSerializer
 {
-
     private $_allAttrsPrivate;
     private $_privateAttrNames;
 
@@ -31,8 +30,7 @@ class EventSerializer
         foreach ($e as $key => $value) {
             if ($key == 'user') {
                 $ret[$key] = $this->serializeUser($value);
-            }
-            else {
+            } else {
                 $ret[$key] = $value;
             }
         }
@@ -44,11 +42,10 @@ class EventSerializer
         foreach ($attrs as $key => $value) {
             if ($value != null) {
                 if ($this->_allAttrsPrivate ||
-                    array_search($key, $userPrivateAttrs) !== FALSE ||
-                    array_search($key, $this->_privateAttrNames) !== FALSE) {
+                    array_search($key, $userPrivateAttrs) !== false ||
+                    array_search($key, $this->_privateAttrNames) !== false) {
                     $allPrivateAttrs[$key] = true;
-                }
-                else {
+                } else {
                     $json[$key] = $value;
                 }
             }
