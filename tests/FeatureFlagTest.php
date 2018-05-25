@@ -6,7 +6,6 @@ use LaunchDarkly\FeatureRequester;
 use LaunchDarkly\LDUserBuilder;
 use LaunchDarkly\Segment;
 
-
 class FeatureFlagTest extends \PHPUnit_Framework_TestCase
 {
     private static $json1 = "{
@@ -154,7 +153,7 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
                     'key' => 'sysops-test',
                     'version' => 14,
                     'on' => true,
-                    'prerequisites' => NULL,
+                    'prerequisites' => null,
                     'salt' => 'c3lzb3BzLXRlc3Q=',
                     'sel' => '8ed13de1bfb14507ba7e6dde01f3e035',
                     'targets' => [
@@ -171,7 +170,7 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
                     'fallthrough' => [
                         'variation' => 0,
                     ],
-                    'offVariation' => NULL,
+                    'offVariation' => null,
                     'variations' => [
                         true,
                         false,
@@ -573,7 +572,7 @@ class MockFeatureRequesterForFeature implements FeatureRequester
     public $key = null;
     public $val = null;
 
-    function __construct($baseurl = null, $key = null, $options = null)
+    public function __construct($baseurl = null, $key = null, $options = null)
     {
     }
 
@@ -598,7 +597,7 @@ class MockFeatureRequesterForSegment implements FeatureRequester
     public $key = null;
     public $val = null;
 
-    function __construct($baseurl = null, $key = null, $options = null)
+    public function __construct($baseurl = null, $key = null, $options = null)
     {
     }
 
@@ -617,4 +616,3 @@ class MockFeatureRequesterForSegment implements FeatureRequester
         return null;
     }
 }
-

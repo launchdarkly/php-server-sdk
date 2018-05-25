@@ -9,10 +9,12 @@ use LaunchDarkly\ApcLDDFeatureRequester;
 use Predis\Client;
 use LaunchDarkly\ApcuLDDFeatureRequester;
 
-class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
+class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase
+{
     const API_KEY = 'BOGUS_API_KEY';
 
-    public function testGet() {
+    public function testGet()
+    {
         $redis = new Client(array(
                                       "scheme" => "tcp",
                                       "host" => 'localhost',
@@ -27,7 +29,8 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals("bar", $client->variation('foo', $user, 'jim'));
     }
 
-    public function testGetApc() {
+    public function testGetApc()
+    {
         if (!extension_loaded('apc')) {
             self::markTestSkipped('Install `apc` extension to run this test.');
         }
@@ -53,7 +56,8 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals("baz", $client->variation('foo', $user, 'jim'));
     }
 
-    public function testGetApcu() {
+    public function testGetApcu()
+    {
         if (!extension_loaded('apcu')) {
             self::markTestSkipped('Install `apcu` extension to run this test.');
         }
@@ -121,7 +125,8 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($featureValue, $allFlags[$featureKey]);
     }
 
-    private function gen_feature($key, $val) {
+    private function gen_feature($key, $val)
+    {
         $data = [
             'name' => 'Feature ' . $key,
             'key' => $key,
@@ -171,6 +176,4 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase {
 
         return \json_encode($data);
     }
-
 }
-

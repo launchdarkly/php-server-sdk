@@ -6,7 +6,6 @@ use LaunchDarkly\LDUserBuilder;
 
 class EventSerializerTest extends \PHPUnit_Framework_TestCase
 {
-
     private function getUser()
     {
         return (new LDUserBuilder('abc'))
@@ -41,7 +40,8 @@ class EventSerializerTest extends \PHPUnit_Framework_TestCase
         );
     }
     
-    private function getUserResultWithSomeAttrsHidden() {
+    private function getUserResultWithSomeAttrsHidden()
+    {
         return array(
             'key' => 'abc',
             'custom' => array('dizzle' => 'ghi'),
@@ -137,14 +137,16 @@ class EventSerializerTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse(isset($json['custom']));
     }
 
-    public function testEmptyPrivateCustom() {
+    public function testEmptyPrivateCustom()
+    {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->privateCustomAttribute("my-key", "my-value")->build();
         $json = $this->getJsonForUserBySerializingEvent($user);
         $this->assertFalse(isset($json['custom']));
     }
 
-    public function testUserSecondary() {
+    public function testUserSecondary()
+    {
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->secondary("secondary")->build();
         $json = $this->getJsonForUserBySerializingEvent($user);
@@ -212,7 +214,6 @@ class EventSerializerTest extends \PHPUnit_Framework_TestCase
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->anonymous(true)->build();
         $json = $this->getJsonForUserBySerializingEvent($user);
-        $this->assertEquals(true, $json['anonymous']);   
+        $this->assertEquals(true, $json['anonymous']);
     }
 }
-

@@ -76,6 +76,9 @@ jobs:
           name: install current dependencies
           command: composer install --no-progress
       - run:
+          name: run php-cs-fixer
+          command: vendor/bin/php-cs-fixer fix --diff --dry-run --verbose
+      - run:
           name: run tests
           command: vendor/bin/phpunit --log-junit ~/phpunit/junit.xml --coverage-text tests
       - store_test_results:

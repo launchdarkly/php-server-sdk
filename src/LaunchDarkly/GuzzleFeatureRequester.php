@@ -113,7 +113,8 @@ class GuzzleFeatureRequester implements FeatureRequester
         }
     }
 
-    private function handleUnexpectedStatus($code, $method) {
+    private function handleUnexpectedStatus($code, $method)
+    {
         $this->_logger->error("$method received an unexpected HTTP status code $code");
         if ($code == 401) {
             throw new InvalidSDKKeyException();

@@ -352,7 +352,8 @@ class LDClient
         }
     }
 
-    protected function handleInvalidSDKKey() {
+    protected function handleInvalidSDKKey()
+    {
         $this->_logger->error("Received 401 error, no further HTTP requests will be made during lifetime of LDClient since SDK key is invalid");
         $this->_offline = true;
     }

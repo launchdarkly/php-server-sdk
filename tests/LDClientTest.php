@@ -8,10 +8,8 @@ use LaunchDarkly\LDUser;
 use LaunchDarkly\LDUserBuilder;
 use Psr\Log\LoggerInterface;
 
-
 class LDClientTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testDefaultCtor()
     {
         $this->assertInstanceOf(LDClient::class, new LDClient("BOGUS_SDK_KEY"));
@@ -70,7 +68,7 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
     {
         $client = new LDClient("secret", ['offline' => true]);
         $user = new LDUser("Message");
-        $this->assertEquals("aa747c502a898200f9e4fa21bac68136f886a0e27aec70ba06daf2e2a5cb5597",  $client->secureModeHash($user));
+        $this->assertEquals("aa747c502a898200f9e4fa21bac68136f886a0e27aec70ba06daf2e2a5cb5597", $client->secureModeHash($user));
     }
     
     public function testLoggerInterfaceWarn()
@@ -103,7 +101,7 @@ class MockFeatureRequester implements FeatureRequester
 {
     public static $val = null;
 
-    function __construct($baseurl, $key, $options)
+    public function __construct($baseurl, $key, $options)
     {
     }
 

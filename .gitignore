@@ -2,6 +2,7 @@
 /doc/
 *.iml
 composer.phar
+.php_cs.cache
 .vagrant
 integration-tests/vendor
 composer.lock
