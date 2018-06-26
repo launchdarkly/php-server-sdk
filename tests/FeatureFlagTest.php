@@ -2,7 +2,6 @@
 namespace LaunchDarkly\Tests;
 
 use LaunchDarkly\FeatureFlag;
-use LaunchDarkly\FeatureRequester;
 use LaunchDarkly\LDUserBuilder;
 use LaunchDarkly\Segment;
 
@@ -564,55 +563,5 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
             'negate' => false
         );
         return $this->booleanFlagWithClauses(array($clause));
-    }
-}
-
-class MockFeatureRequesterForFeature implements FeatureRequester
-{
-    public $key = null;
-    public $val = null;
-
-    public function __construct($baseurl = null, $key = null, $options = null)
-    {
-    }
-
-    public function getFeature($key)
-    {
-        return ($key == $this->key) ? $this->val : null;
-    }
-
-    public function getSegment($key)
-    {
-        return null;
-    }
-
-    public function getAllFeatures()
-    {
-        return null;
-    }
-}
-
-class MockFeatureRequesterForSegment implements FeatureRequester
-{
-    public $key = null;
-    public $val = null;
-
-    public function __construct($baseurl = null, $key = null, $options = null)
-    {
-    }
-
-    public function getFeature($key)
-    {
-        return null;
-    }
-
-    public function getSegment($key)
-    {
-        return ($key == $this->key) ? $this->val : null;
-    }
-
-    public function getAllFeatures()
-    {
-        return null;
     }
 }

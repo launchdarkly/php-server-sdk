@@ -6,13 +6,6 @@ use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 
 /**
- * Used internally.
- */
-class InvalidSDKKeyException extends \Exception
-{
-}
-
-/**
  * A client for the LaunchDarkly API.
  */
 class LDClient

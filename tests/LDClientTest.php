@@ -53,8 +53,8 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
         $builder = new LDUserBuilder(3);
         $user = $builder->build();
         $client->variation('foo', $user, 'argdef');
-        $proc = getPrivateField($client, '_eventProcessor');
-        $queue = getPrivateField($proc, '_queue');
+        $proc = $this->getPrivateField($client, '_eventProcessor');
+        $queue = $this->getPrivateField($proc, '_queue');
         $this->assertEquals(1, sizeof($queue));
     }
 
@@ -86,37 +86,13 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
         
         $client->variation('MyFeature', $user);
     }
-}
-
-function getPrivateField(&$object, $fieldName)
-{
-    $reflection = new \ReflectionClass(get_class($object));
-    $field = $reflection->getProperty($fieldName);
-    $field->setAccessible(true);
-
-    return $field->getValue($object);
-}
-
-class MockFeatureRequester implements FeatureRequester
-{
-    public static $val = null;
-
-    public function __construct($baseurl, $key, $options)
+    
+    private function getPrivateField(&$object, $fieldName)
     {
-    }
-
-    public function getFeature($key)
-    {
-        return self::$val;
-    }
-
-    public function getSegment($key)
-    {
-        return null;
-    }
-
-    public function getAllFeatures()
-    {
-        return null;
+        $reflection = new \ReflectionClass(get_class($object));
+        $field = $reflection->getProperty($fieldName);
+        $field->setAccessible(true);
+    
+        return $field->getValue($object);
     }
 }
