@@ -13,5 +13,3 @@ class UnrecoverableHTTPStatusException extends \Exception
         $this->status = $status;
     }
 }
-
-?>
