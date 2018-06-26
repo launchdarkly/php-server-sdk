@@ -51,4 +51,30 @@ class Util
         $event['prereqOf'] = $prereqOf;
         return $event;
     }
+
+    /**
+     * @param $status int
+     * @return boolean
+     */
+    public static function isHttpErrorRecoverable($status)
+    {
+        if ($status >= 400 && $status < 500) {
+            return ($status == 408) || ($status == 429);
+        }
+        return true;
+    }
+
+    /**
+     * @param $status int
+     * @param $context string
+     * @param $retryMessage string
+     * @return string
+     */
+    public static function httpErrorMessage($status, $context, $retryMessage)
+    {
+        return 'Received error ' . $status
+            . (($status == 401) ? ' (invalid SDK key)' : '')
+            . ' for ' . $context . ' - '
+            . (Util::isHttpErrorRecoverable($status) ? $retryMessage : 'giving up permanently');
+    }
 }

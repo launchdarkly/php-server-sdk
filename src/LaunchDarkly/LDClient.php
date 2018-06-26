@@ -146,8 +146,8 @@ class LDClient
             }
             try {
                 $flag = $this->_featureRequester->getFeature($key);
-            } catch (InvalidSDKKeyException $e) {
-                $this->handleInvalidSDKKey();
+            } catch (UnrecoverableHTTPStatusException $e) {
+                $this->handleUnrecoverableError();
                 return $default;
             }
 
@@ -275,8 +275,8 @@ class LDClient
         }
         try {
             $flags = $this->_featureRequester->getAllFeatures();
-        } catch (InvalidSDKKeyException $e) {
-            $this->handleInvalidSDKKey();
+        } catch (UnrecoverableHTTPStatusException $e) {
+            $this->handleUnrecoverableError();
             return null;
         }
         if ($flags === null) {
@@ -314,8 +314,8 @@ class LDClient
     {
         try {
             return $this->_eventProcessor->flush();
-        } catch (InvalidSDKKeyException $e) {
-            $this->handleInvalidSDKKey();
+        } catch (UnrecoverableHTTPStatusException $e) {
+            $this->handleUnrecoverableError();
         }
     }
 
@@ -345,9 +345,9 @@ class LDClient
         }
     }
 
-    protected function handleInvalidSDKKey()
+    protected function handleUnrecoverableError()
     {
-        $this->_logger->error("Received 401 error, no further HTTP requests will be made during lifetime of LDClient since SDK key is invalid");
+        $this->_logger->error("Due to an unrecoverable HTTP error, no further HTTP requests will be made during lifetime of LDClient");
         $this->_offline = true;
     }
 }

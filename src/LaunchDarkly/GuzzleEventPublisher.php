@@ -60,9 +60,13 @@ class GuzzleEventPublisher implements EventPublisher
             $this->_logger->warning("GuzzleEventPublisher::publish caught $e");
             return false;
         }
-        if ($response && ($response->getStatusCode() == 401)) {
-            throw new InvalidSDKKeyException();
+        if ($response && ($response->getStatusCode() >= 300)) {
+            $this->_logger->error(Util::httpErrorMessage($response->getStatusCode(), 'event posting', 'some events were dropped'));
+            if (!Util::isHttpErrorRecoverable($response->getStatusCode())) {
+                throw new UnrecoverableHTTPStatusException($response->getStatusCode());
+            }
+            return false;
         }
-        return $response && ($response->getStatusCode() < 300);
+        return $response != null;
     }
 }
