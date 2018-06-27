@@ -59,7 +59,7 @@ class Util
     public static function isHttpErrorRecoverable($status)
     {
         if ($status >= 400 && $status < 500) {
-            return ($status == 408) || ($status == 429);
+            return ($status == 400) || ($status == 408) || ($status == 429);
         }
         return true;
     }
