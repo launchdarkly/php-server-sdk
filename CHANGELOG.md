@@ -2,6 +2,13 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [3.2.0] - 2018-06-26
+### Changed:
+- The client now treats most HTTP 4xx errors as unrecoverable: that is, after receiving such an error, it will take the client offline (for the lifetime of the client instance, which in most PHP applications is just the current request-response cycle). This is because such errors indicate either a configuration problem (invalid SDK key) or a bug, which is not likely to resolve without a restart or an upgrade. This does not apply if the error is 400, 408, 429, or any 5xx error.
+
+### Fixed:
+- Made various changes to project settings to improve the IDE experience and the build; enforced PSR-2 coding style. (Thanks, [localheinz](https://github.com/launchdarkly/php-client/pulls?utf8=%E2%9C%93&q=is%3Aclosed+is%3Apr+author%3Alocalheinz)!)
+
 ## [3.1.0] - 2018-04-30
 ### Added
 - Analytics events for feature evaluations now have a `variation` property (the variation index) as well as `value`. This will allow for better performance in future versions of [`ld-relay`](https://github.com/launchdarkly/ld-relay) when it is used with the PHP client.
