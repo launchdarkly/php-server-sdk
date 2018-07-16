@@ -2,6 +2,10 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [3.2.1] - 2018-07-16
+### Fixed:
+- The `LDClient::VERSION` constant has been fixed to report the current version. In the previous release, it was still set to 3.1.0.
+
 ## [3.2.0] - 2018-06-26
 ### Changed:
 - The client now treats most HTTP 4xx errors as unrecoverable: that is, after receiving such an error, it will take the client offline (for the lifetime of the client instance, which in most PHP applications is just the current request-response cycle). This is because such errors indicate either a configuration problem (invalid SDK key) or a bug, which is not likely to resolve without a restart or an upgrade. This does not apply if the error is 400, 408, 429, or any 5xx error.
