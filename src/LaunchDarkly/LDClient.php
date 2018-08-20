@@ -260,7 +260,6 @@ class LDClient
      * This method will not send analytics events back to LaunchDarkly.
      * <p>
      * The most common use case for this method is to bootstrap a set of client-side feature flags from a back-end service.
-     *
      * @deprecated Use allFlagsState() instead. Current versions of the client-side SDK will not
      * generate analytics events correctly if you pass the result of allFlags().
      * @param $user LDUser the end user requesting the feature flags
@@ -282,7 +281,6 @@ class LDClient
      * <p>
      * The most common use case for this method is to bootstrap a set of client-side feature flags from a back-end service.
      * To convert the state object into a JSON data structure, call its toJson() method.
-     * 
      * @param $user LDUser the end user requesting the feature flags
      * @return FeatureFlagsState a FeatureFlagsState object (will never be null; see FeatureFlagsState.isValid())
      */

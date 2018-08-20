@@ -35,7 +35,7 @@ class FeatureFlagsState
         }
         $meta['version'] = $flag->getVersion();
         $meta['trackEvents'] = $flag->isTrackEvents();
-        if ($flag->getDebugEventsUntilDate()) { 
+        if ($flag->getDebugEventsUntilDate()) {
             $meta['debugEventsUntilDate'] = $flag->getDebugEventsUntilDate();
         }
         $this->_flagMetadata[$flag->getKey()] = $meta;
@@ -78,7 +78,6 @@ class FeatureFlagsState
      * Returns a JSON representation of the entire state map (as an associative array), in the format used
      * by the LaunchDarkly JavaScript SDK. Use this method if you are passing data to the front end in
      * order to "bootstrap" the JavaScript client.
-     * 
      * @return array an associative array suitable for passing as a JSON object
      */
     public function toJson()
