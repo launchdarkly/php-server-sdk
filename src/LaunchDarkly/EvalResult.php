@@ -22,7 +22,7 @@ class EvalResult
     }
 
     /**
-     * @return int
+     * @return int | null
      */
     public function getVariation()
     {
