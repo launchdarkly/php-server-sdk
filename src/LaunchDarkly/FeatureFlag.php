@@ -79,8 +79,8 @@ class FeatureFlag
                 $v['offVariation'],
                 $v['variations'] ?: [],
                 $v['deleted'],
-                $v['trackEvents'],
-                $v['debugEventsUntilDate']
+                isset($v['trackEvents']) && $v['trackEvents'],
+                isset($v['debugEventsUntilDate']) ? $v['debugEventsUntilDate'] : null
             );
         };
     }
