@@ -58,7 +58,7 @@ class FeatureFlagsState
      */
     public function getFlagValue($key)
     {
-        return $this->_flagValues[$key];
+        return isset($this->_flagValues[$key]) ? $this->_flagValues[$key] : null;
     }
 
     /**

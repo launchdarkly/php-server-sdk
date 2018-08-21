@@ -13,7 +13,7 @@ class MockFeatureRequester implements FeatureRequester
 
     public function getFeature($key)
     {
-        return self::$flags[$key];
+        return isset(self::$flags[$key]) ? self::$flags[$key] : null;
     }
 
     public function getSegment($key)
