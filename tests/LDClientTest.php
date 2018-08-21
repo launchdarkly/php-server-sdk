@@ -2,6 +2,7 @@
 namespace LaunchDarkly\Tests;
 
 use InvalidArgumentException;
+use LaunchDarkly\FeatureFlag;
 use LaunchDarkly\FeatureRequester;
 use LaunchDarkly\LDClient;
 use LaunchDarkly\LDUser;
@@ -15,9 +16,38 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(LDClient::class, new LDClient("BOGUS_SDK_KEY"));
     }
 
-    public function testToggleDefault()
+    public function testVariationReturnsFlagValue()
     {
-        MockFeatureRequester::$val = null;
+        $flagJson = array(
+            'key' => 'feature',
+            'version' => 100,
+            'deleted' => false,
+            'on' => false,
+            'targets' => array(),
+            'prerequisites' => array(),
+            'rules' => array(),
+            'offVariation' => 1,
+            'fallthrough' => array('variation' => 0),
+            'variations' => array('fall', 'off', 'on'),
+            'salt' => ''
+        );
+        $flag = FeatureFlag::decode($flagJson);
+
+        MockFeatureRequester::$flags = array('feature' => $flag);
+        $client = new LDClient("someKey", array(
+            'feature_requester_class' => MockFeatureRequester::class,
+            'events' => false
+            ));
+
+        $builder = new LDUserBuilder(3);
+        $user = $builder->build();
+        $value = $client->variation('feature', $user, 'default');
+        $this->assertEquals('off', $value);
+    }
+
+    public function testVariationReturnsDefaultForUnknownFlag()
+    {
+        MockFeatureRequester::$flags = array();
         $client = new LDClient("someKey", array(
             'feature_requester_class' => MockFeatureRequester::class,
             'events' => false
@@ -28,9 +58,9 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('argdef', $client->variation('foo', $user, 'argdef'));
     }
 
-    public function testToggleFromArray()
+    public function testVariationReturnsDefaultFromConfigurationForUnknownFlag()
     {
-        MockFeatureRequester::$val = null;
+        MockFeatureRequester::$flags = array();
         $client = new LDClient("someKey", array(
             'feature_requester_class' => MockFeatureRequester::class,
             'events' => false,
@@ -42,9 +72,9 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('fromarray', $client->variation('foo', $user, 'argdef'));
     }
 
-    public function testToggleEvent()
+    public function testVariationSendsEvent()
     {
-        MockFeatureRequester::$val = null;
+        MockFeatureRequester::$flags = array();
         $client = new LDClient("someKey", array(
             'feature_requester_class' => MockFeatureRequester::class,
             'events' => true
@@ -56,6 +86,82 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
         $proc = $this->getPrivateField($client, '_eventProcessor');
         $queue = $this->getPrivateField($proc, '_queue');
         $this->assertEquals(1, sizeof($queue));
+    }
+
+    public function testAllFlagsReturnsFlagValues()
+    {
+        $flagJson = array(
+            'key' => 'feature',
+            'version' => 100,
+            'deleted' => false,
+            'on' => false,
+            'targets' => array(),
+            'prerequisites' => array(),
+            'rules' => array(),
+            'offVariation' => 1,
+            'fallthrough' => array('variation' => 0),
+            'variations' => array('fall', 'off', 'on'),
+            'salt' => ''
+        );
+        $flag = FeatureFlag::decode($flagJson);
+
+        MockFeatureRequester::$flags = array('feature' => $flag);
+        $client = new LDClient("someKey", array(
+            'feature_requester_class' => MockFeatureRequester::class,
+            'events' => false
+            ));
+
+        $builder = new LDUserBuilder(3);
+        $user = $builder->build();
+        $values = $client->allFlags($user);
+
+        $this->assertEquals(array('feature' => 'off'), $values);
+    }
+
+    public function testAllFlagsStateReturnsState()
+    {
+        $flagJson = array(
+            'key' => 'feature',
+            'version' => 100,
+            'deleted' => false,
+            'on' => false,
+            'targets' => array(),
+            'prerequisites' => array(),
+            'rules' => array(),
+            'offVariation' => 1,
+            'fallthrough' => array('variation' => 0),
+            'variations' => array('fall', 'off', 'on'),
+            'salt' => '',
+            'trackEvents' => true,
+            'debugEventsUntilDate' => 1000
+        );
+        $flag = FeatureFlag::decode($flagJson);
+
+        MockFeatureRequester::$flags = array('feature' => $flag);
+        $client = new LDClient("someKey", array(
+            'feature_requester_class' => MockFeatureRequester::class,
+            'events' => false
+            ));
+
+        $builder = new LDUserBuilder(3);
+        $user = $builder->build();
+        $state = $client->allFlagsState($user);
+         
+        $this->assertTrue($state->isValid());
+        $this->assertEquals(array('feature' => 'off'), $state->toValuesMap());
+        $expectedState = array(
+            'feature' => 'off',
+            '$flagsState' => array(
+                'feature' => array(
+                    'variation' => 1,
+                    'version' => 100,
+                    'trackEvents' => true,
+                    'debugEventsUntilDate' => 1000
+                )
+            ),
+            '$valid' => true
+        );
+        $this->assertEquals($expectedState, $state->jsonSerialize());
     }
 
     public function testOnlyValidFeatureRequester()

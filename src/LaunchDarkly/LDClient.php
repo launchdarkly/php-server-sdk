@@ -260,38 +260,55 @@ class LDClient
      * This method will not send analytics events back to LaunchDarkly.
      * <p>
      * The most common use case for this method is to bootstrap a set of client-side feature flags from a back-end service.
-     *
+     * @deprecated Use allFlagsState() instead. Current versions of the client-side SDK will not
+     * generate analytics events correctly if you pass the result of allFlags().
      * @param $user LDUser the end user requesting the feature flags
      * @return array()|null Mapping of feature flag keys to their evaluated results for $user
      */
     public function allFlags($user)
     {
-        if (is_null($user) || is_null($user->getKey())) {
-            $this->_logger->warn("allFlags called with null user or null/empty user key! Returning null");
+        $state = $this->allFlagsState($user);
+        if (!$state->isValid()) {
             return null;
         }
+        return $state->toValuesMap();
+    }
+
+    /**
+     * Returns an object that encapsulates the state of all feature flags for a given user, including the flag
+     * values and also metadata that can be used on the front end. This method does not send analytics events
+     * back to LaunchDarkly.
+     * <p>
+     * The most common use case for this method is to bootstrap a set of client-side feature flags from a back-end service.
+     * To convert the state object into a JSON data structure, call its toJson() method.
+     * @param $user LDUser the end user requesting the feature flags
+     * @return FeatureFlagsState a FeatureFlagsState object (will never be null; see FeatureFlagsState.isValid())
+     */
+    public function allFlagsState($user)
+    {
+        if (is_null($user) || is_null($user->getKey())) {
+            $this->_logger->warn("allFlagsState called with null user or null/empty user key! Returning empty state");
+            return new FeatureFlagsState(false);
+        }
         if ($this->isOffline()) {
-            return null;
+            return new FeatureFlagsState(false);
         }
         try {
             $flags = $this->_featureRequester->getAllFeatures();
         } catch (UnrecoverableHTTPStatusException $e) {
             $this->handleUnrecoverableError();
-            return null;
+            return new FeatureFlagsState(false);
         }
         if ($flags === null) {
-            return null;
+            return new FeatureFlagsState(false);
         }
 
-        /**
-         * @param $flag FeatureFlag
-         * @return mixed|null
-         */
-        $eval = function ($flag) use ($user) {
-            return $flag->evaluate($user, $this->_featureRequester)->getValue();
-        };
-
-        return array_map($eval, $flags);
+        $state = new FeatureFlagsState(true);
+        foreach ($flags as $key => $flag) {
+            $result = $flag->evaluate($user, $this->_featureRequester);
+            $state->addFlag($flag, $result);
+        }
+        return $state;
     }
 
     /** Generates an HMAC sha256 hash for use in Secure mode: https://github.com/launchdarkly/js-client#secure-mode
