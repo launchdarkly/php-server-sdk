@@ -158,9 +158,10 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
                     'trackEvents' => true,
                     'debugEventsUntilDate' => 1000
                 )
-            )
+            ),
+            '$valid' => true
         );
-        $this->assertEquals($expectedState, $state->toJson());
+        $this->assertEquals($expectedState, $state->jsonSerialize());
     }
 
     public function testOnlyValidFeatureRequester()
