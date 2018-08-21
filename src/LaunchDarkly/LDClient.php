@@ -282,9 +282,12 @@ class LDClient
      * The most common use case for this method is to bootstrap a set of client-side feature flags from a back-end service.
      * To convert the state object into a JSON data structure, call its toJson() method.
      * @param $user LDUser the end user requesting the feature flags
+     * @param $options array optional properties affecting how the state is computed; set
+     *   <code>'clientSideOnly' => true</code> to specify that only flags marked for client-side use
+     *   should be included (by default, all flags are included)
      * @return FeatureFlagsState a FeatureFlagsState object (will never be null; see FeatureFlagsState.isValid())
      */
-    public function allFlagsState($user)
+    public function allFlagsState($user, $options = array())
     {
         if (is_null($user) || is_null($user->getKey())) {
             $this->_logger->warn("allFlagsState called with null user or null/empty user key! Returning empty state");
@@ -304,7 +307,11 @@ class LDClient
         }
 
         $state = new FeatureFlagsState(true);
+        $clientOnly = isset($options['clientSideOnly']) && $options['clientSideOnly'];
         foreach ($flags as $key => $flag) {
+            if ($clientOnly && !$flag->isClientSide()) {
+                continue;
+            }
             $result = $flag->evaluate($user, $this->_featureRequester);
             $state->addFlag($flag, $result);
         }

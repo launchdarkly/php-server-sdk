@@ -164,6 +164,32 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedState, $state->jsonSerialize());
     }
 
+    public function testAllFlagsStateCanFilterForClientSideFlags()
+    {
+        $flag1Json = array('key' => 'server-side-1', 'on' => false, 'offVariation' => 0, 'variations' => array('a'), 'clientSide' => false);
+        $flag1 = FeatureFlag::decode($flag1Json);
+        $flag2Json = array('key' => 'server-side-2', 'on' => false, 'offVariation' => 0, 'variations' => array('b'), 'clientSide' => false);
+        $flag2 = FeatureFlag::decode($flag2Json);
+        $flag3Json = array('key' => 'client-side-1', 'on' => false, 'offVariation' => 0, 'variations' => array('value1'), 'clientSide' => true);
+        $flag3 = FeatureFlag::decode($flag3Json);
+        $flag4Json = array('key' => 'client-side-2', 'on' => false, 'offVariation' => 0, 'variations' => array('value2'), 'clientSide' => true);
+        $flag4 = FeatureFlag::decode($flag4Json);
+        MockFeatureRequester::$flags = array(
+            $flag1->getKey() => $flag1, $flag2->getKey() => $flag2, $flag3->getKey() => $flag3, $flag4->getKey() => $flag4
+        );
+        $client = new LDClient("someKey", array(
+            'feature_requester_class' => MockFeatureRequester::class,
+            'events' => false
+            ));
+
+        $builder = new LDUserBuilder(3);
+        $user = $builder->build();
+        $state = $client->allFlagsState($user, array('clientSideOnly' => true));
+         
+        $this->assertTrue($state->isValid());
+        $this->assertEquals(array('client-side-1' => 'value1', 'client-side-2' => 'value2'), $state->toValuesMap());
+    }
+
     public function testOnlyValidFeatureRequester()
     {
         $this->setExpectedException(InvalidArgumentException::class);

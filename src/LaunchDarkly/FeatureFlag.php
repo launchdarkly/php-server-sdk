@@ -31,6 +31,9 @@ class FeatureFlag
     protected $_trackEvents = false;
     /** @var int | null */
     protected $_debugEventsUntilDate = null;
+    /** @var bool */
+    protected $_clientSide = false;
+
     // Note, trackEvents and debugEventsUntilDate are not used in EventProcessor, because
     // the PHP client doesn't do summary events. However, we need to capture them in case
     // they want to pass the flag data to the front end with allFlagsState().
@@ -47,7 +50,8 @@ class FeatureFlag
                                    array $variations,
                                    $deleted,
                                    $trackEvents,
-                                   $debugEventsUntilDate)
+                                   $debugEventsUntilDate,
+                                   $clientSide)
     {
         $this->_key = $key;
         $this->_version = $version;
@@ -62,6 +66,7 @@ class FeatureFlag
         $this->_deleted = $deleted;
         $this->_trackEvents = $trackEvents;
         $this->_debugEventsUntilDate = $debugEventsUntilDate;
+        $this->_clientSide = $clientSide;
     }
 
     public static function getDecoder()
@@ -80,7 +85,8 @@ class FeatureFlag
                 $v['variations'] ?: [],
                 $v['deleted'],
                 isset($v['trackEvents']) && $v['trackEvents'],
-                isset($v['debugEventsUntilDate']) ? $v['debugEventsUntilDate'] : null
+                isset($v['debugEventsUntilDate']) ? $v['debugEventsUntilDate'] : null,
+                isset($v['clientSide']) && $v['clientSide']
             );
         };
     }
@@ -251,5 +257,13 @@ class FeatureFlag
     public function getDebugEventsUntilDate()
     {
         return $this->_debugEventsUntilDate;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isClientSide()
+    {
+        return $this->_clientSide;
     }
 }
