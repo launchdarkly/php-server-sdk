@@ -4,12 +4,15 @@ namespace LaunchDarkly;
 
 class Rule extends VariationOrRollout
 {
+    /** @var string */
+    private $_id = null;
     /** @var Clause[] */
     private $_clauses = array();
 
-    protected function __construct($variation, $rollout, array $clauses)
+    protected function __construct($variation, $rollout, $id, array $clauses)
     {
         parent::__construct($variation, $rollout);
+        $this->_id = $id;
         $this->_clauses = $clauses;
     }
 
@@ -19,6 +22,7 @@ class Rule extends VariationOrRollout
             return new Rule(
                 isset($v['variation']) ? $v['variation'] : null,
                 isset($v['rollout']) ? call_user_func(Rollout::getDecoder(), $v['rollout']) : null,
+                isset($v['id']) ? $v['id'] : null,
                 array_map(Clause::getDecoder(), $v['clauses']));
         };
     }
@@ -37,6 +41,14 @@ class Rule extends VariationOrRollout
         return true;
     }
 
+    /**
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->_id;
+    }
+    
     /**
      * @return Clause[]
      */

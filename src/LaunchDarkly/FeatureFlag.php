@@ -102,121 +102,140 @@ class FeatureFlag
     }
 
     /**
-     * @param $user LDUser
-     * @param $featureRequester FeatureRequester
-     * @return EvalResult|null
+     * @param LDUser $user
+     * @param FeatureRequester $featureRequester
+     * @param bool $includeReasonsInEvents
+     * @return EvalResult
      */
-    public function evaluate($user, $featureRequester)
+    public function evaluate($user, $featureRequester, $includeReasonsInEvents = false)
     {
-        $prereqEvents = array();
-        if (is_null($user) || is_null($user->getKey())) {
-            return new EvalResult(null, $prereqEvents);
-        }
         if ($this->isOn()) {
-            $result = $this->_evaluate($user, $featureRequester, $prereqEvents);
-            if ($result !== null) {
-                return $result;
-            }
+            $prereqEvents = array();
+            $detail = $this->evaluateInternal($user, $featureRequester, $prereqEvents, $includeReasonsInEvents);
+            return new EvalResult($detail, $prereqEvents);
         }
-        $offVariationValue = $this->getOffVariationValue();
-        return new EvalResult($this->_offVariation, $offVariationValue, $prereqEvents);
+        return new EvalResult($this->getOffValue(EvaluationReason::off()), array());
     }
 
     /**
-     * @param $user LDUser
-     * @param $featureRequester FeatureRequester
-     * @param $events
-     * @return EvalResult|null
+     * @param LDUser $user
+     * @param FeatureRequester $featureRequester
+     * @param array $events
+     * @param bool $includeReasonsInEvents
+     * @return EvaluationDetail
      */
-    private function _evaluate($user, $featureRequester, &$events)
+    private function evaluateInternal($user, $featureRequester, &$events, $includeReasonsInEvents)
     {
-        $prereqOk = true;
-        if ($this->_prerequisites != null) {
-            foreach ($this->_prerequisites as $prereq) {
-                try {
-                    $prereqEvalResult = null;
-                    $prereqFeatureFlag = $featureRequester->getFeature($prereq->getKey());
-                    if ($prereqFeatureFlag == null) {
-                        return null;
-                    } elseif ($prereqFeatureFlag->isOn()) {
-                        $prereqEvalResult = $prereqFeatureFlag->_evaluate($user, $featureRequester, $events);
-                        $variation = $prereq->getVariation();
-                        if ($prereqEvalResult === null || $variation === null || $prereqEvalResult->getVariation() !== $variation) {
-                            $prereqOk = false;
-                        }
-                    } else {
-                        $prereqOk = false;
-                    }
-                    array_push($events, Util::newFeatureRequestEvent($prereqFeatureFlag->getKey(), $user,
-                        $prereqEvalResult === null ? null : $prereqEvalResult->getVariation(),
-                        $prereqEvalResult === null ? null : $prereqEvalResult->getValue(),
-                        null, $prereqFeatureFlag->getVersion(), $this->_key));
-                } catch (EvaluationException $e) {
-                    $prereqOk = false;
-                }
-            }
+        $prereqFailureReason = $this->checkPrerequisites($user, $featureRequester, $events, $includeReasonsInEvents);
+        if ($prereqFailureReason !== null) {
+            return $this->getOffValue($prereqFailureReason);
         }
-        if ($prereqOk) {
-            $variation = $this->evaluateIndex($user, $featureRequester);
-            $value = $this->getVariation($variation);
-            return new EvalResult($variation, $value, $events);
-        }
-        return null;
-    }
 
-    /**
-     * @param $user LDUser
-     * @return int|null
-     */
-    private function evaluateIndex($user, $featureRequester)
-    {
         // Check to see if targets match
         if ($this->_targets != null) {
             foreach ($this->_targets as $target) {
                 foreach ($target->getValues() as $value) {
                     if ($value === $user->getKey()) {
-                        return $target->getVariation();
+                        return $this->getVariation($target->getVariation(), EvaluationReason::targetMatch());
                     }
                 }
             }
         }
         // Now walk through the rules and see if any match
         if ($this->_rules != null) {
-            foreach ($this->_rules as $rule) {
+            foreach ($this->_rules as $i => $rule) {
                 if ($rule->matchesUser($user, $featureRequester)) {
-                    return $rule->variationIndexForUser($user, $this->_key, $this->_salt);
+                    return $this->getValueForVariationOrRollout($rule, $user,
+                        EvaluationReason::ruleMatch($i, $rule->getId()));
                 }
             }
         }
-        // Walk through the fallthrough and see if it matches
-        return $this->_fallthrough->variationIndexForUser($user, $this->_key, $this->_salt);
+        return $this->getValueForVariationOrRollout($this->_fallthrough, $user, EvaluationReason::fallthrough());
     }
 
-    private function getVariation($index)
+    /**
+     * @param LDUser $user
+     * @param FeatureRequester $featureRequester
+     * @param array $events
+     * @param bool $includeReasonsInEvents
+     * @return EvaluationReason|null
+     */
+    private function checkPrerequisites($user, $featureRequester, &$events, $includeReasonsInEvents)
     {
-        // If the supplied index is null, then rules didn't match, and we want to return
-        // the off variation
-        if (!isset($index)) {
-            return null;
+        if ($this->_prerequisites != null) {
+            foreach ($this->_prerequisites as $prereq) {
+                $prereqOk = true;
+                try {
+                    $prereqEvalResult = null;
+                    $prereqFeatureFlag = $featureRequester->getFeature($prereq->getKey());
+                    if ($prereqFeatureFlag == null) {
+                        $prereqOk = false;
+                    } elseif ($prereqFeatureFlag->isOn()) {
+                        $prereqEvalResult = $prereqFeatureFlag->evaluateInternal($user, $featureRequester, $events, $includeReasonsInEvents);
+                        $variation = $prereq->getVariation();
+                        if ($prereqEvalResult->getVariationIndex() !== $variation) {
+                            $prereqOk = false;
+                        }
+                    } else {
+                        $prereqOk = false;
+                    }
+                    if ($prereqFeatureFlag) {
+                        array_push($events, Util::newFeatureRequestEvent($prereq->getKey(), $user,
+                            $prereqEvalResult ? $prereqEvalResult->getVariationIndex() : null,
+                            $prereqEvalResult ? $prereqEvalResult->getValue() : null,
+                            null, $prereqFeatureFlag->getVersion(), $this->_key,
+                            ($includeReasonsInEvents && $prereqEvalResult) ? $prereqEvalResult->getReason() : null
+                        ));
+                    }
+                } catch (EvaluationException $e) {
+                    $prereqOk = false;
+                }
+                if (!$prereqOk) {
+                    return EvaluationReason::prerequisiteFailed($prereq->getKey());
+                }
+            }
         }
-        // If the index doesn't refer to a valid variation, that's an unexpected exception and we will
-        // return the default variation
-        if ($index >= count($this->_variations)) {
-            throw new EvaluationException("Invalid Index");
-        } else {
-            return $this->_variations[$index];
-        }
+        return null;
     }
 
-    public function getOffVariationValue()
+    /**
+     * @param int $index
+     * @param EvaluationReason $reason
+     * @return EvaluationDetail
+     */
+    private function getVariation($index, $reason)
+    {
+        if ($index < 0 || $index >= count($this->_variations)) {
+            return new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR));
+        }
+        return new EvaluationDetail($this->_variations[$index], $index, $reason);
+    }
+
+    /**
+     * @param EvaluationReason reason
+     * @return EvaluationDetail
+     */
+    private function getOffValue($reason)
     {
         if ($this->_offVariation === null) {
-            return null;
+            return new EvaluationDetail(null, null, $reason);
         }
-        if ($this->_offVariation >= count($this->_variations)) {
-            throw new EvaluationException("Invalid offVariation index");
+        return $this->getVariation($this->_offVariation, $reason);
+    }
+    
+    /**
+     * @param VariationOrRollout $r
+     * @param LDUser $user
+     * @param EvaluationReason $reason
+     * @return EvaluationDetail
+     */
+    private function getValueForVariationOrRollout($r, $user, $reason)
+    {
+        $index = $r->variationIndexForUser($user, $this->_key, $this->_salt);
+        if ($index === null) {
+            return new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR));
         }
-        return $this->_variations[$this->_offVariation];
+        return $this->getVariation($index, $reason);
     }
 
     /**

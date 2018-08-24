@@ -1,7 +1,10 @@
 <?php
 namespace LaunchDarkly\Tests;
 
+use LaunchDarkly\EvaluationDetail;
+use LaunchDarkly\EvaluationReason;
 use LaunchDarkly\FeatureFlag;
+use LaunchDarkly\LDUser;
 use LaunchDarkly\LDUserBuilder;
 use LaunchDarkly\Segment;
 
@@ -207,12 +210,10 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
             'salt' => ''
         );
         $flag = FeatureFlag::decode($flagJson);
-        $ub = new LDUserBuilder('x');
-        $user = $ub->build();
 
-        $result = $flag->evaluate($user, null);
-        self::assertEquals(1, $result->getVariation());
-        self::assertEquals('off', $result->getValue());
+        $result = $flag->evaluate(new LDUser('user'), null);
+        $detail = new EvaluationDetail('off', 1, EvaluationReason::off());
+        self::assertEquals($detail, $result->getDetail());
         self::assertEquals(array(), $result->getPrerequisiteEvents());
     }
 
@@ -232,12 +233,56 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
             'salt' => ''
         );
         $flag = FeatureFlag::decode($flagJson);
-        $ub = new LDUserBuilder('x');
-        $user = $ub->build();
 
-        $result = $flag->evaluate($user, null);
-        self::assertNull($result->getVariation());
-        self::assertNull($result->getValue());
+        $result = $flag->evaluate(new LDUser('user'), null);
+        $detail = new EvaluationDetail(null, null, EvaluationReason::off());
+        self::assertEquals($detail, $result->getDetail());
+        self::assertEquals(array(), $result->getPrerequisiteEvents());
+    }
+
+    public function testFlagReturnsErrorIfOffVariationIsTooHigh()
+    {
+        $flagJson = array(
+            'key' => 'feature',
+            'version' => 1,
+            'deleted' => false,
+            'on' => false,
+            'targets' => array(),
+            'prerequisites' => array(),
+            'rules' => array(),
+            'offVariation' => 999,
+            'fallthrough' => array('variation' => 0),
+            'variations' => array('fall', 'off', 'on'),
+            'salt' => ''
+        );
+        $flag = FeatureFlag::decode($flagJson);
+
+        $result = $flag->evaluate(new LDUser('user'), null);
+        $detail = new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR));
+        self::assertEquals($detail, $result->getDetail());
+        self::assertEquals(array(), $result->getPrerequisiteEvents());
+    }
+
+    public function testFlagReturnsErrorIfOffVariationIsNegative()
+    {
+        $flagJson = array(
+            'key' => 'feature',
+            'version' => 1,
+            'deleted' => false,
+            'on' => false,
+            'targets' => array(),
+            'prerequisites' => array(),
+            'rules' => array(),
+            'offVariation' => -1,
+            'fallthrough' => array('variation' => 0),
+            'variations' => array('fall', 'off', 'on'),
+            'salt' => ''
+        );
+        $flag = FeatureFlag::decode($flagJson);
+
+        $result = $flag->evaluate(new LDUser('user'), null);
+        $detail = new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR));
+        self::assertEquals($detail, $result->getDetail());
         self::assertEquals(array(), $result->getPrerequisiteEvents());
     }
 
@@ -264,8 +309,8 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         $requester = new MockFeatureRequesterForFeature();
 
         $result = $flag->evaluate($user, $requester);
-        self::assertEquals(1, $result->getVariation());
-        self::assertEquals('off', $result->getValue());
+        $detail = new EvaluationDetail('off', 1, EvaluationReason::prerequisiteFailed('feature1'));
+        self::assertEquals($detail, $result->getDetail());
         self::assertEquals(array(), $result->getPrerequisiteEvents());
     }
 
@@ -308,8 +353,8 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         $requester->val = $flag1;
 
         $result = $flag0->evaluate($user, $requester);
-        self::assertEquals(1, $result->getVariation());
-        self::assertEquals('off', $result->getValue());
+        $detail = new EvaluationDetail('off', 1, EvaluationReason::prerequisiteFailed('feature1'));
+        self::assertEquals($detail, $result->getDetail());
 
         $events = $result->getPrerequisiteEvents();
         self::assertEquals(1, count($events));
@@ -360,8 +405,8 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         $requester->val = $flag1;
 
         $result = $flag0->evaluate($user, $requester);
-        self::assertEquals(0, $result->getVariation());
-        self::assertEquals('fall', $result->getValue());
+        $detail = new EvaluationDetail('fall', 0, EvaluationReason::fallthrough());
+        self::assertEquals($detail, $result->getDetail());
 
         $events = $result->getPrerequisiteEvents();
         self::assertEquals(1, count($events));
@@ -395,12 +440,12 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         $user = $ub->build();
 
         $result = $flag->evaluate($user, null);
-        self::assertEquals(2, $result->getVariation());
-        self::assertEquals('on', $result->getValue());
+        $detail = new EvaluationDetail('on', 2, EvaluationReason::targetMatch());
+        self::assertEquals($detail, $result->getDetail());
         self::assertEquals(array(), $result->getPrerequisiteEvents());
     }
 
-    public function testFlagMatchesUserFromRules()
+    private function makeBooleanFlagWithRules(array $rules)
     {
         $flagJson = array(
             'key' => 'feature',
@@ -409,31 +454,111 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
             'on' => true,
             'targets' => array(),
             'prerequisites' => array(),
-            'rules' => array(
-                array(
-                    'clauses' => array(
-                        array(
-                            'attribute' => 'key',
-                            'op' => 'in',
-                            'values' => array('userkey'),
-                            'negate' => false
-                        )
-                    ),
-                    'variation' => 2
-                )
-            ),
-            'offVariation' => 1,
+            'rules' => $rules,
+            'offVariation' => 0,
             'fallthrough' => array('variation' => 0),
-            'variations' => array('fall', 'off', 'on'),
+            'variations' => array(false, true),
             'salt' => ''
         );
-        $flag = FeatureFlag::decode($flagJson);
+        return FeatureFlag::decode($flagJson);
+    }
+
+    public function testFlagMatchesUserFromRules()
+    {
+        $flag = $this->makeBooleanFlagWithRules(array(
+            array(
+                'id' => 'ruleid',
+                'clauses' => array(
+                    array('attribute' => 'key', 'op' => 'in', 'values' => array('userkey'), 'negate' => false)
+                ),
+                'variation' => 1
+            )
+        ));
         $ub = new LDUserBuilder('userkey');
         $user = $ub->build();
 
         $result = $flag->evaluate($user, null);
-        self::assertEquals(2, $result->getVariation());
-        self::assertEquals('on', $result->getValue());
+        $detail = new EvaluationDetail(true, 1, EvaluationReason::ruleMatch(0, 'ruleid'));
+        self::assertEquals($detail, $result->getDetail());
+        self::assertEquals(array(), $result->getPrerequisiteEvents());
+    }
+
+    public function testFlagReturnsErrorIfRuleVariationIsTooHigh()
+    {
+        $flag = $this->makeBooleanFlagWithRules(array(
+            array(
+                'id' => 'ruleid',
+                'clauses' => array(
+                    array('attribute' => 'key', 'op' => 'in', 'values' => array('userkey'), 'negate' => false)
+                ),
+                'variation' => 999
+            )
+        ));
+        $ub = new LDUserBuilder('userkey');
+        $user = $ub->build();
+
+        $result = $flag->evaluate($user, null);
+        $detail = new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR));
+        self::assertEquals($detail, $result->getDetail());
+        self::assertEquals(array(), $result->getPrerequisiteEvents());
+    }
+
+    public function testFlagReturnsErrorIfRuleVariationIsNegative()
+    {
+        $flag = $this->makeBooleanFlagWithRules(array(
+            array(
+                'id' => 'ruleid',
+                'clauses' => array(
+                    array('attribute' => 'key', 'op' => 'in', 'values' => array('userkey'), 'negate' => false)
+                ),
+                'variation' => -1
+            )
+        ));
+        $ub = new LDUserBuilder('userkey');
+        $user = $ub->build();
+
+        $result = $flag->evaluate($user, null);
+        $detail = new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR));
+        self::assertEquals($detail, $result->getDetail());
+        self::assertEquals(array(), $result->getPrerequisiteEvents());
+    }
+
+    public function testFlagReturnsErrorIfRuleHasNoVariationOrRollout()
+    {
+        $flag = $this->makeBooleanFlagWithRules(array(
+            array(
+                'id' => 'ruleid',
+                'clauses' => array(
+                    array('attribute' => 'key', 'op' => 'in', 'values' => array('userkey'), 'negate' => false)
+                )
+            )
+        ));
+        $ub = new LDUserBuilder('userkey');
+        $user = $ub->build();
+
+        $result = $flag->evaluate($user, null);
+        $detail = new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR));
+        self::assertEquals($detail, $result->getDetail());
+        self::assertEquals(array(), $result->getPrerequisiteEvents());
+    }
+
+    public function testFlagReturnsErrorIfRuleHasRolloutWithNoVariations()
+    {
+        $flag = $this->makeBooleanFlagWithRules(array(
+            array(
+                'id' => 'ruleid',
+                'clauses' => array(
+                    array('attribute' => 'key', 'op' => 'in', 'values' => array('userkey'), 'negate' => false)
+                ),
+                'rollout' => array('variations' => array())
+            )
+        ));
+        $ub = new LDUserBuilder('userkey');
+        $user = $ub->build();
+
+        $result = $flag->evaluate($user, null);
+        $detail = new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR));
+        self::assertEquals($detail, $result->getDetail());
         self::assertEquals(array(), $result->getPrerequisiteEvents());
     }
 
@@ -517,7 +642,7 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
 
         $result = $feature->evaluate($user, $requester);
 
-        self::assertTrue($result->getValue());
+        self::assertTrue($result->getDetail()->getValue());
     }
 
     public function testSegmentMatchClauseFallsThroughWithNoErrorsIfSegmentNotFound()
@@ -531,7 +656,7 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
 
         $result = $feature->evaluate($user, $requester);
 
-        self::assertFalse($result->getValue());
+        self::assertFalse($result->getDetail()->getValue());
     }
 
     private function booleanFlagWithClauses($clauses)
