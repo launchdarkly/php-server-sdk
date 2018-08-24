@@ -142,7 +142,7 @@ class LDClient
      * Calculates the value of a feature flag, and returns an object that describes the way the
      * value was determined. The "reason" property in the result will also be included in
      * analytics events, if you are capturing detailed event data for this flag.
-     * 
+     *
      * @param string $key The unique key for the feature flag
      * @param LDUser $user The end user requesting the flag
      * @param mixed $default The default value of the flag
@@ -161,13 +161,14 @@ class LDClient
      * @param mixed $default
      * @param bool $includeReasonsInEvents
      */
-    private function variationDetailInternal($key, $user, $default, $includeReasonsInEvents) {
+    private function variationDetailInternal($key, $user, $default, $includeReasonsInEvents)
+    {
         $default = $this->_get_default($key, $default);
 
-        $errorResult = function($errorKind) use ($key, $default) {
+        $errorResult = function ($errorKind) use ($key, $default) {
             return new EvaluationDetail($default, null, EvaluationReason::error($errorKind));
         };
-        $sendEvent = function($detail, $flag) use ($key, $user, $default, $includeReasonsInEvents) {
+        $sendEvent = function ($detail, $flag) use ($key, $user, $default, $includeReasonsInEvents) {
             if ($this->isOffline() || !$this->_send_events) {
                 return;
             }

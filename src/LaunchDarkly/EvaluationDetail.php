@@ -27,7 +27,7 @@ class EvaluationDetail
 
     /**
      * Returns the value of the flag variation for the user.
-     * 
+     *
      * @return mixed
      */
     public function getValue()
@@ -38,7 +38,7 @@ class EvaluationDetail
     /**
      * Returns the index of the flag variation for the user, e.g. 0 for the first variation -
      * or null if it was the default value.
-     * 
+     *
      * @return int | null
      */
     public function getVariationIndex()
@@ -48,7 +48,7 @@ class EvaluationDetail
 
     /**
      * Returns information about how the flag value was calculated.
-     * 
+     *
      * @return EvaluationReason
      */
     public function getReason()
@@ -58,7 +58,7 @@ class EvaluationDetail
 
     /**
      * Returns true if the flag evaluated to the default value, rather than one of its variations.
-     * 
+     *
      * @return bool
      */
     public function isDefaultValue()
