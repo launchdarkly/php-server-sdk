@@ -35,6 +35,24 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
         return FeatureFlag::decode($flagJson);
     }
 
+    private function makeFlagThatEvaluatesToNull($key)
+    {
+        $flagJson = array(
+            'key' => $key,
+            'version' => 100,
+            'deleted' => false,
+            'on' => false,
+            'targets' => array(),
+            'prerequisites' => array(),
+            'rules' => array(),
+            'offVariation' => null,
+            'fallthrough' => array('variation' => 0),
+            'variations' => array('FALLTHROUGH', $value),
+            'salt' => ''
+        );
+        return FeatureFlag::decode($flagJson);
+    }
+
     public function testVariationReturnsFlagValue()
     {
         $flag = $this->makeOffFlagWithValue('feature', 'value');
@@ -61,6 +79,35 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('value', $detail->getValue());
         $this->assertFalse($detail->isDefaultValue());
         $this->assertEquals(1, $detail->getVariationIndex());
+        $this->assertEquals(EvaluationReason::off(), $detail->getReason());
+    }
+
+    public function testVariationReturnsDefaultIfFlagEvaluatesToNull()
+    {
+        $flag = $this->makeFlagThatEvaluatesToNull('feature');
+        MockFeatureRequester::$flags = array('feature' => $flag);
+        $client = new LDClient("someKey", array(
+            'feature_requester_class' => MockFeatureRequester::class,
+            'events' => false
+            ));
+
+        $value = $client->variation('feature', new LDUser('userkey'), 'default');
+        $this->assertEquals('default', $value);
+    }
+
+    public function testVariationDetailReturnsDefaultIfFlagEvaluatesToNull()
+    {
+        $flag = $this->makeFlagThatEvaluatesToNull('feature');
+        MockFeatureRequester::$flags = array('feature' => $flag);
+        $client = new LDClient("someKey", array(
+            'feature_requester_class' => MockFeatureRequester::class,
+            'events' => false
+            ));
+
+        $detail = $client->variationDetail('feature', new LDUser('userkey'), 'default');
+        $this->assertEquals('default', $detail->getValue());
+        $this->assertTrue($detail->isDefaultValue());
+        $this->assertNull($detail->getVariationIndex());
         $this->assertEquals(EvaluationReason::off(), $detail->getReason());
     }
 
