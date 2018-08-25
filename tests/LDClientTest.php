@@ -47,7 +47,7 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
             'rules' => array(),
             'offVariation' => null,
             'fallthrough' => array('variation' => 0),
-            'variations' => array('FALLTHROUGH', $value),
+            'variations' => array('none'),
             'salt' => ''
         );
         return FeatureFlag::decode($flagJson);
