@@ -27,6 +27,16 @@ class FeatureFlag
     protected $_variations = array();
     /** @var bool */
     protected $_deleted = false;
+    /** @var bool */
+    protected $_trackEvents = false;
+    /** @var int | null */
+    protected $_debugEventsUntilDate = null;
+    /** @var bool */
+    protected $_clientSide = false;
+
+    // Note, trackEvents and debugEventsUntilDate are not used in EventProcessor, because
+    // the PHP client doesn't do summary events. However, we need to capture them in case
+    // they want to pass the flag data to the front end with allFlagsState().
 
     protected function __construct($key,
                                    $version,
@@ -38,7 +48,10 @@ class FeatureFlag
                                    $fallthrough,
                                    $offVariation,
                                    array $variations,
-                                   $deleted)
+                                   $deleted,
+                                   $trackEvents,
+                                   $debugEventsUntilDate,
+                                   $clientSide)
     {
         $this->_key = $key;
         $this->_version = $version;
@@ -51,6 +64,9 @@ class FeatureFlag
         $this->_offVariation = $offVariation;
         $this->_variations = $variations;
         $this->_deleted = $deleted;
+        $this->_trackEvents = $trackEvents;
+        $this->_debugEventsUntilDate = $debugEventsUntilDate;
+        $this->_clientSide = $clientSide;
     }
 
     public static function getDecoder()
@@ -67,7 +83,11 @@ class FeatureFlag
                 call_user_func(VariationOrRollout::getDecoder(), $v['fallthrough']),
                 $v['offVariation'],
                 $v['variations'] ?: [],
-                $v['deleted']);
+                $v['deleted'],
+                isset($v['trackEvents']) && $v['trackEvents'],
+                isset($v['debugEventsUntilDate']) ? $v['debugEventsUntilDate'] : null,
+                isset($v['clientSide']) && $v['clientSide']
+            );
         };
     }
 
@@ -221,5 +241,29 @@ class FeatureFlag
     public function isDeleted()
     {
         return $this->_deleted;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isTrackEvents()
+    {
+        return $this->_trackEvents;
+    }
+
+    /**
+     * @return int | null
+     */
+    public function getDebugEventsUntilDate()
+    {
+        return $this->_debugEventsUntilDate;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isClientSide()
+    {
+        return $this->_clientSide;
     }
 }

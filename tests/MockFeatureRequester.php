@@ -5,7 +5,7 @@ use LaunchDarkly\FeatureRequester;
 
 class MockFeatureRequester implements FeatureRequester
 {
-    public static $val = null;
+    public static $flags = array();
 
     public function __construct($baseurl, $key, $options)
     {
@@ -13,7 +13,7 @@ class MockFeatureRequester implements FeatureRequester
 
     public function getFeature($key)
     {
-        return self::$val;
+        return isset(self::$flags[$key]) ? self::$flags[$key] : null;
     }
 
     public function getSegment($key)
@@ -23,6 +23,6 @@ class MockFeatureRequester implements FeatureRequester
 
     public function getAllFeatures()
     {
-        return null;
+        return self::$flags;
     }
 }
