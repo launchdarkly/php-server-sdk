@@ -314,6 +314,59 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         self::assertEquals(array(), $result->getPrerequisiteEvents());
     }
 
+    public function testFlagReturnsOffVariationAndEventIfPrerequisiteIsOff()
+    {
+        $flag0Json = array(
+            'key' => 'feature0',
+            'version' => 1,
+            'deleted' => false,
+            'on' => true,
+            'targets' => array(),
+            'prerequisites' => array(
+                array('key' => 'feature1', 'variation' => 1)
+            ),
+            'rules' => array(),
+            'offVariation' => 1,
+            'fallthrough' => array('variation' => 0),
+            'variations' => array('fall', 'off', 'on'),
+            'salt' => ''
+        );
+        $flag1Json = array(
+            'key' => 'feature1',
+            'version' => 2,
+            'deleted' => false,
+            'on' => false,
+            'targets' => array(),
+            'prerequisites' => array(),
+            'rules' => array(),
+            'offVariation' => 1,
+            // note that even though it returns the desired variation, it is still off and therefore not a match
+            'fallthrough' => array('variation' => 0),
+            'variations' => array('nogo', 'go'),
+            'salt' => ''
+        );
+        $flag0 = FeatureFlag::decode($flag0Json);
+        $flag1 = FeatureFlag::decode($flag1Json);
+        $ub = new LDUserBuilder('x');
+        $user = $ub->build();
+        $requester = new MockFeatureRequesterForFeature();
+        $requester->key = $flag1->getKey();
+        $requester->val = $flag1;
+
+        $result = $flag0->evaluate($user, $requester);
+        $detail = new EvaluationDetail('off', 1, EvaluationReason::prerequisiteFailed('feature1'));
+        self::assertEquals($detail, $result->getDetail());
+
+        $events = $result->getPrerequisiteEvents();
+        self::assertEquals(1, count($events));
+        $event = $events[0];
+        self::assertEquals('feature', $event['kind']);
+        self::assertEquals($flag1->getKey(), $event['key']);
+        self::assertEquals('go', $event['value']);
+        self::assertEquals($flag1->getVersion(), $event['version']);
+        self::assertEquals($flag0->getKey(), $event['prereqOf']);
+    }
+
     public function testFlagReturnsOffVariationAndEventIfPrerequisiteIsNotMet()
     {
         $flag0Json = array(

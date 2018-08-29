@@ -109,12 +109,9 @@ class FeatureFlag
      */
     public function evaluate($user, $featureRequester, $includeReasonsInEvents = false)
     {
-        if ($this->isOn()) {
-            $prereqEvents = array();
-            $detail = $this->evaluateInternal($user, $featureRequester, $prereqEvents, $includeReasonsInEvents);
-            return new EvalResult($detail, $prereqEvents);
-        }
-        return new EvalResult($this->getOffValue(EvaluationReason::off()), array());
+        $prereqEvents = array();
+        $detail = $this->evaluateInternal($user, $featureRequester, $prereqEvents, $includeReasonsInEvents);
+        return new EvalResult($detail, $prereqEvents);
     }
 
     /**
@@ -126,6 +123,10 @@ class FeatureFlag
      */
     private function evaluateInternal($user, $featureRequester, &$events, $includeReasonsInEvents)
     {
+        if (!$this->isOn()) {
+            return $this->getOffValue(EvaluationReason::off());
+        }
+
         $prereqFailureReason = $this->checkPrerequisites($user, $featureRequester, $events, $includeReasonsInEvents);
         if ($prereqFailureReason !== null) {
             return $this->getOffValue($prereqFailureReason);
@@ -170,19 +171,14 @@ class FeatureFlag
                     $prereqFeatureFlag = $featureRequester->getFeature($prereq->getKey());
                     if ($prereqFeatureFlag == null) {
                         $prereqOk = false;
-                    } elseif ($prereqFeatureFlag->isOn()) {
+                    } else {
                         $prereqEvalResult = $prereqFeatureFlag->evaluateInternal($user, $featureRequester, $events, $includeReasonsInEvents);
                         $variation = $prereq->getVariation();
-                        if ($prereqEvalResult->getVariationIndex() !== $variation) {
+                        if (!$prereqFeatureFlag->isOn() || $prereqEvalResult->getVariationIndex() !== $variation) {
                             $prereqOk = false;
                         }
-                    } else {
-                        $prereqOk = false;
-                    }
-                    if ($prereqFeatureFlag) {
                         array_push($events, Util::newFeatureRequestEvent($prereq->getKey(), $user,
-                            $prereqEvalResult ? $prereqEvalResult->getVariationIndex() : null,
-                            $prereqEvalResult ? $prereqEvalResult->getValue() : null,
+                            $prereqEvalResult->getVariationIndex(), $prereqEvalResult->getValue(),
                             null, $prereqFeatureFlag->getVersion(), $this->_key,
                             ($includeReasonsInEvents && $prereqEvalResult) ? $prereqEvalResult->getReason() : null
                         ));
