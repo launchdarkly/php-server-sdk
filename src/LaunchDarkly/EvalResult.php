@@ -4,37 +4,28 @@ namespace LaunchDarkly;
 
 class EvalResult
 {
-    private $_variation = null;
-    private $_value = null;
+    /** @var EvaluationDetail */
+    private $_detail = null;
     /** @var array */
     private $_prerequisiteEvents = [];
 
     /**
      * EvalResult constructor.
-     * @param null $value
+     * @param EvaluationDetail $detail
      * @param array $prerequisiteEvents
      */
-    public function __construct($variation, $value, array $prerequisiteEvents)
+    public function __construct($detail, array $prerequisiteEvents)
     {
-        $this->_variation = $variation;
-        $this->_value = $value;
+        $this->_detail = $detail;
         $this->_prerequisiteEvents = $prerequisiteEvents;
     }
 
     /**
-     * @return int | null
+     * @return EvaluationDetail
      */
-    public function getVariation()
+    public function getDetail()
     {
-        return $this->_variation;
-    }
-
-    /**
-     * @return null
-     */
-    public function getValue()
-    {
-        return $this->_value;
+        return $this->_detail;
     }
 
     /**

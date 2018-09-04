@@ -28,15 +28,18 @@ class FeatureFlagsState implements \JsonSerializable
     /**
      * Used internally to build the state map.
      */
-    public function addFlag($flag, $evalResult)
+    public function addFlag($flag, $detail, $withReason = false)
     {
-        $this->_flagValues[$flag->getKey()] = $evalResult->getValue();
+        $this->_flagValues[$flag->getKey()] = $detail->getValue();
         $meta = array();
-        if (!is_null($evalResult->getVariation())) {
-            $meta['variation'] = $evalResult->getVariation();
+        if (!is_null($detail->getVariationIndex())) {
+            $meta['variation'] = $detail->getVariationIndex();
         }
         $meta['version'] = $flag->getVersion();
         $meta['trackEvents'] = $flag->isTrackEvents();
+        if ($withReason) {
+            $meta['reason'] = $detail->getReason();
+        }
         if ($flag->getDebugEventsUntilDate()) {
             $meta['debugEventsUntilDate'] = $flag->getDebugEventsUntilDate();
         }
@@ -55,12 +58,28 @@ class FeatureFlagsState implements \JsonSerializable
 
     /**
      * Returns the value of an individual feature flag at the time the state was recorded.
-     * @param $key string
+     * @param $key string the feature flag key
      * @return mixed the flag's value; null if the flag returned the default value, or if there was no such flag
      */
     public function getFlagValue($key)
     {
         return isset($this->_flagValues[$key]) ? $this->_flagValues[$key] : null;
+    }
+
+    /**
+     * Returns the evaluation reason for an individual feature flag (as returned by LDClient.variationDetail())
+     * at the time the state was recorded.
+     * @param $key string the feature flag key
+     * @return EvaluationReason|null the evaluation reason; null if reasons were not recorded, or if there
+     * was no such flag
+     */
+    public function getFlagReason($key)
+    {
+        if (isset($this->_flagMetadata[$key])) {
+            $meta = $this->_flagMetadata[$key];
+            return isset($meta['reason']) ? $meta['reason'] : null;
+        }
+        return null;
     }
 
     /**
@@ -88,7 +107,15 @@ class FeatureFlagsState implements \JsonSerializable
     public function jsonSerialize()
     {
         $ret = array_replace([], $this->_flagValues);
-        $ret['$flagsState'] = $this->_flagMetadata;
+        $metaMap = array();
+        foreach ($this->_flagMetadata as $key => $meta) {
+            $meta = array_replace([], $meta);
+            if (isset($meta['reason'])) {
+                $meta['reason'] = $meta['reason']->jsonSerialize();
+            }
+            $metaMap[$key] = $meta;
+        }
+        $ret['$flagsState'] = $metaMap;
         $ret['$valid'] = $this->_valid;
         return $ret;
     }

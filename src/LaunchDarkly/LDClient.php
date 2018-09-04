@@ -134,10 +134,52 @@ class LDClient
      */
     public function variation($key, $user, $default = false)
     {
+        $detail = $this->variationDetailInternal($key, $user, $default, false);
+        return $detail->getValue();
+    }
+
+    /**
+     * Calculates the value of a feature flag, and returns an object that describes the way the
+     * value was determined. The "reason" property in the result will also be included in
+     * analytics events, if you are capturing detailed event data for this flag.
+     *
+     * @param string $key The unique key for the feature flag
+     * @param LDUser $user The end user requesting the flag
+     * @param mixed $default The default value of the flag
+     *
+     * @return EvaluationDetail An EvaluationDetail object that includes the feature flag value
+     * and evaluation reason.
+     */
+    public function variationDetail($key, $user, $default = false)
+    {
+        return $this->variationDetailInternal($key, $user, $default, true);
+    }
+
+    /**
+     * @param string $key
+     * @param LDUser $user
+     * @param mixed $default
+     * @param bool $includeReasonsInEvents
+     */
+    private function variationDetailInternal($key, $user, $default, $includeReasonsInEvents)
+    {
         $default = $this->_get_default($key, $default);
 
+        $errorResult = function ($errorKind) use ($key, $default) {
+            return new EvaluationDetail($default, null, EvaluationReason::error($errorKind));
+        };
+        $sendEvent = function ($detail, $flag) use ($key, $user, $default, $includeReasonsInEvents) {
+            if ($this->isOffline() || !$this->_send_events) {
+                return;
+            }
+            $event = Util::newFeatureRequestEvent($key, $user, $detail->getVariationIndex(), $detail->getValue(),
+                $default, $flag ? $flag->getVersion() : null, null,
+                $includeReasonsInEvents ? $detail->getReason() : null);
+            $this->_eventProcessor->enqueue($event);
+        };
+
         if ($this->_offline) {
-            return $default;
+            return $errorResult(EvaluationReason::CLIENT_NOT_READY_ERROR);
         }
 
         try {
@@ -148,42 +190,43 @@ class LDClient
                 $flag = $this->_featureRequester->getFeature($key);
             } catch (UnrecoverableHTTPStatusException $e) {
                 $this->handleUnrecoverableError();
-                return $default;
+                return $errorResult(EvaluationReason::EXCEPTION_ERROR);
             }
 
             if (is_null($flag)) {
-                $this->_sendFlagRequestEvent($key, $user, null, $default, $default);
-                return $default;
+                $result = $errorResult(EvaluationReason::FLAG_NOT_FOUND_ERROR);
+                $sendEvent($result, null);
+                return $result;
             }
             if (is_null($user) || is_null($user->getKey())) {
-                $this->_sendFlagRequestEvent($key, $user, null, $default, $default, $flag->getVersion());
+                $result = $errorResult(EvaluationReason::USER_NOT_SPECIFIED_ERROR);
+                $sendEvent($result, $flag);
                 $this->_logger->warning("Variation called with null user or null user key! Returning default value");
-                return $default;
+                return $result;
             }
-            $evalResult = $flag->evaluate($user, $this->_featureRequester);
+            $evalResult = $flag->evaluate($user, $this->_featureRequester, $includeReasonsInEvents);
             if (!$this->isOffline() && $this->_send_events) {
                 foreach ($evalResult->getPrerequisiteEvents() as $e) {
                     $this->_eventProcessor->enqueue($e);
                 }
             }
-            if ($evalResult !== null && $evalResult->getValue() !== null) {
-                $this->_sendFlagRequestEvent($key, $user, $evalResult->getVariation(), $evalResult->getValue(), $default, $flag->getVersion());
-                return $evalResult->getValue();
-            } else {
-                $this->_sendFlagRequestEvent($key, $user, null, $default, $default, $flag->getVersion());
-                return $default;
+            $detail = $evalResult->getDetail();
+            if ($detail->isDefaultValue()) {
+                $detail = new EvaluationDetail($default, null, $detail->getReason());
             }
+            $sendEvent($detail, $flag);
+            return $detail;
         } catch (\Exception $e) {
             $this->_logger->error("Caught $e");
+            $result = $errorResult(EvaluationReason::EXCEPTION_ERROR);
+            try {
+                $sendEvent($result, null);
+            } catch (\Exception $e) {
+                $this->_logger->error("Caught $e");
+            }
+            return $result;
         }
-        try {
-            $this->_sendFlagRequestEvent($key, $user, null, $default, $default);
-        } catch (\Exception $e) {
-            $this->_logger->error("Caught $e");
-        }
-        return $default;
     }
-
 
     /** @deprecated Use variation() instead.
      * @param $key
@@ -284,7 +327,8 @@ class LDClient
      * @param $user LDUser the end user requesting the feature flags
      * @param $options array optional properties affecting how the state is computed; set
      *   <code>'clientSideOnly' => true</code> to specify that only flags marked for client-side use
-     *   should be included (by default, all flags are included)
+     *   should be included (by default, all flags are included); set <code>'withReasons' => true</code>
+     *   to include evaluation reasons (see <code>variationDetail</code>)
      * @return FeatureFlagsState a FeatureFlagsState object (will never be null; see FeatureFlagsState.isValid())
      */
     public function allFlagsState($user, $options = array())
@@ -308,12 +352,13 @@ class LDClient
 
         $state = new FeatureFlagsState(true);
         $clientOnly = isset($options['clientSideOnly']) && $options['clientSideOnly'];
+        $withReasons = isset($options['withReasons']) && $options['withReasons'];
         foreach ($flags as $key => $flag) {
             if ($clientOnly && !$flag->isClientSide()) {
                 continue;
             }
             $result = $flag->evaluate($user, $this->_featureRequester);
-            $state->addFlag($flag, $result);
+            $state->addFlag($flag, $result->getDetail(), $withReasons);
         }
         return $state;
     }
@@ -341,23 +386,6 @@ class LDClient
         } catch (UnrecoverableHTTPStatusException $e) {
             $this->handleUnrecoverableError();
         }
-    }
-
-    /**
-     * @param $key string
-     * @param $user LDUser
-     * @param $variation int | null
-     * @param $value mixed
-     * @param $default
-     * @param $version int | null
-     * @param string | null $prereqOf
-     */
-    protected function _sendFlagRequestEvent($key, $user, $variation, $value, $default, $version = null, $prereqOf = null)
-    {
-        if ($this->isOffline() || !$this->_send_events) {
-            return;
-        }
-        $this->_eventProcessor->enqueue(Util::newFeatureRequestEvent($key, $user, $variation, $value, $default, $version, $prereqOf));
     }
 
     protected function _get_default($key, $default)
