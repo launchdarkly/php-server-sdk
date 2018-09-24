@@ -1,13 +1,6 @@
 <?php
 namespace LaunchDarkly;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\BadResponseException;
-use GuzzleHttp\HandlerStack;
-use Kevinrob\GuzzleCache\CacheMiddleware;
-use Kevinrob\GuzzleCache\Strategy\PublicCacheStrategy;
-use Psr\Log\LoggerInterface;
-
 class PreloadedFeatureRequester implements FeatureRequester
 {
     /** @var FeatureRequester */
