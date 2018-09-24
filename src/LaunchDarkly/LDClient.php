@@ -350,6 +350,9 @@ class LDClient
             return new FeatureFlagsState(false);
         }
 
+        $preloadedRequester = new PreloadedFeatureRequester($this->_featureRequester, $flags);
+        // This saves us from doing repeated queries for prerequisite flags during evaluation
+
         $state = new FeatureFlagsState(true);
         $clientOnly = isset($options['clientSideOnly']) && $options['clientSideOnly'];
         $withReasons = isset($options['withReasons']) && $options['withReasons'];
@@ -357,7 +360,7 @@ class LDClient
             if ($clientOnly && !$flag->isClientSide()) {
                 continue;
             }
-            $result = $flag->evaluate($user, $this->_featureRequester);
+            $result = $flag->evaluate($user, $preloadedRequester);
             $state->addFlag($flag, $result->getDetail(), $withReasons);
         }
         return $state;
