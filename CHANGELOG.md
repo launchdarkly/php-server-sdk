@@ -2,6 +2,10 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [3.4.1] - 2018-09-25
+### Fixed:
+- Improved the performance of `allFlags`/`allFlagsState` by not making redundant individual requests for prerequisite flags, when a flag is being evaluated that has prerequisites. Instead it will reuse the same flag data that it already obtained from LaunchDarkly in the "get all the flags" request.
+
 ## [3.4.0] - 2018-09-04
 ### Added:
 - The new `LDClient` method `variationDetail` allows you to evaluate a feature flag (using the same parameters as you would for `variation`) and receive more information about how the value was calculated. This information is returned in an object that contains both the result value and a "reason" object which will tell you, for instance, if the user was individually targeted for the flag or was matched by one of the flag's rules, or if the flag returned the default value due to an error.
