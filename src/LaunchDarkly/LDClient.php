@@ -12,7 +12,7 @@ class LDClient
 {
     const DEFAULT_BASE_URI = 'https://app.launchdarkly.com';
     const DEFAULT_EVENTS_URI = 'https://events.launchdarkly.com';
-    const VERSION = '3.4.0';
+    const VERSION = '3.4.1';
 
     /** @var string */
     protected $_sdkKey;
@@ -350,6 +350,9 @@ class LDClient
             return new FeatureFlagsState(false);
         }
 
+        $preloadedRequester = new PreloadedFeatureRequester($this->_featureRequester, $flags);
+        // This saves us from doing repeated queries for prerequisite flags during evaluation
+
         $state = new FeatureFlagsState(true);
         $clientOnly = isset($options['clientSideOnly']) && $options['clientSideOnly'];
         $withReasons = isset($options['withReasons']) && $options['withReasons'];
@@ -357,7 +360,7 @@ class LDClient
             if ($clientOnly && !$flag->isClientSide()) {
                 continue;
             }
-            $result = $flag->evaluate($user, $this->_featureRequester);
+            $result = $flag->evaluate($user, $preloadedRequester);
             $state->addFlag($flag, $result->getDetail(), $withReasons);
         }
         return $state;
