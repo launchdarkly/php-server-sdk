@@ -28,17 +28,21 @@ class FeatureFlagsState implements \JsonSerializable
     /**
      * Used internally to build the state map.
      */
-    public function addFlag($flag, $detail, $withReason = false)
+    public function addFlag($flag, $detail, $withReason = false, $detailsOnlyIfTracked = false)
     {
         $this->_flagValues[$flag->getKey()] = $detail->getValue();
         $meta = array();
+        if (!$detailsOnlyIfTracked || $flag->isTrackEvents() || $flag->getDebugEventsUntilDate()) {
+            $meta['version'] = $flag->getVersion();
+            if ($withReason) {
+                $meta['reason'] = $detail->getReason();
+            }
+        }
         if (!is_null($detail->getVariationIndex())) {
             $meta['variation'] = $detail->getVariationIndex();
         }
-        $meta['version'] = $flag->getVersion();
-        $meta['trackEvents'] = $flag->isTrackEvents();
-        if ($withReason) {
-            $meta['reason'] = $detail->getReason();
+        if ($flag->isTrackEvents()) {
+            $meta['trackEvents'] = true;
         }
         if ($flag->getDebugEventsUntilDate()) {
             $meta['debugEventsUntilDate'] = $flag->getDebugEventsUntilDate();
