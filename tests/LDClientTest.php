@@ -402,9 +402,11 @@ class LDClientTest extends TestCase
         $this->assertEquals(array('client-side-1' => 'value1', 'client-side-2' => 'value2'), $state->toValuesMap());
     }
 
+    /**
+     * @expectedException InvalidArgumentException
+     */
     public function testOnlyValidFeatureRequester()
     {
-        $this->setExpectedException(InvalidArgumentException::class);
         new LDClient("BOGUS_SDK_KEY", ['feature_requester_class' => \stdClass::class]);
     }
 
