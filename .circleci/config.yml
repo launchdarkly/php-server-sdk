@@ -18,9 +18,6 @@ php-docker-template: &php-docker-template
         name: update and validate composer.json
         command: composer update && composer validate
     - run:
-        name: install current dependencies
-        command: composer install --no-progress
-    - run:
         name: run tests with current dependency versions
         command: vendor/bin/phpunit --log-junit ~/phpunit/junit.xml --coverage-text tests
     - store_test_results:
@@ -72,9 +69,6 @@ jobs:
       - run:
           name: update and validate composer.json
           command: composer update && composer validate
-      - run:
-          name: install current dependencies
-          command: composer update --no-progress
       - run:
           name: run php-cs-fixer
           command: vendor/bin/php-cs-fixer fix --diff --dry-run --verbose
