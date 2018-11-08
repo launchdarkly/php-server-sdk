@@ -401,6 +401,93 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('client-side-1' => 'value1', 'client-side-2' => 'value2'), $state->toValuesMap());
     }
 
+    public function testAllFlagsStateCanOmitDetailsForUntrackedFlags()
+    {
+        $flag1Json = array(
+            'key' => 'flag1',
+            'version' => 100,
+            'deleted' => false,
+            'on' => false,
+            'targets' => array(),
+            'prerequisites' => array(),
+            'rules' => array(),
+            'offVariation' => 0,
+            'fallthrough' => null,
+            'variations' => array('value1'),
+            'salt' => '',
+            'trackEvents' => false
+        );
+        $flag2Json = array(
+            'key' => 'flag2',
+            'version' => 200,
+            'deleted' => false,
+            'on' => false,
+            'targets' => array(),
+            'prerequisites' => array(),
+            'rules' => array(),
+            'offVariation' => 0,
+            'fallthrough' => null,
+            'variations' => array('value2'),
+            'salt' => '',
+            'trackEvents' => true
+        );
+        $flag3Json = array(
+            'key' => 'flag3',
+            'version' => 300,
+            'deleted' => false,
+            'on' => false,
+            'targets' => array(),
+            'prerequisites' => array(),
+            'rules' => array(),
+            'offVariation' => 0,
+            'fallthrough' => null,
+            'variations' => array('value3'),
+            'salt' => '',
+            'trackEvents' => false,
+            'debugEventsUntilDate' => 1000
+        );
+        $flag1 = FeatureFlag::decode($flag1Json);
+        $flag2 = FeatureFlag::decode($flag2Json);
+        $flag3 = FeatureFlag::decode($flag3Json);
+
+        MockFeatureRequester::$flags = array('flag1' => $flag1, 'flag2' => $flag2, 'flag3' => $flag3);
+        $client = new LDClient("someKey", array(
+            'feature_requester_class' => MockFeatureRequester::class,
+            'events' => false
+            ));
+
+        $builder = new LDUserBuilder(3);
+        $user = $builder->build();
+        $state = $client->allFlagsState($user, array('withReasons' => true, 'detailsOnlyForTrackedFlags' => true));
+         
+        $this->assertTrue($state->isValid());
+        $this->assertEquals(array('flag1' => 'value1', 'flag2' => 'value2', 'flag3' => 'value3'), $state->toValuesMap());
+        $expectedState = array(
+            'flag1' => 'value1',
+            'flag2' => 'value2',
+            'flag3' => 'value3',
+            '$flagsState' => array(
+                'flag1' => array(
+                    'variation' => 0,
+                ),
+                'flag2' => array(
+                    'variation' =>  0,
+                    'version' => 200,
+                    'reason' => array('kind' => 'OFF'),
+                    'trackEvents' => true
+                ),
+                'flag3' => array(
+                    'variation' => 0,
+                    'version' => 300,
+                    'reason' => array('kind' => 'OFF'),
+                    'debugEventsUntilDate' => 1000
+                )
+            ),
+            '$valid' => true
+        );
+        $this->assertEquals($expectedState, $state->jsonSerialize());
+    }
+
     public function testOnlyValidFeatureRequester()
     {
         $this->setExpectedException(InvalidArgumentException::class);

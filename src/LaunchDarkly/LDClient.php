@@ -356,12 +356,13 @@ class LDClient
         $state = new FeatureFlagsState(true);
         $clientOnly = isset($options['clientSideOnly']) && $options['clientSideOnly'];
         $withReasons = isset($options['withReasons']) && $options['withReasons'];
+        $detailsOnlyIfTracked = isset($options['detailsOnlyForTrackedFlags']) && $options['detailsOnlyForTrackedFlags'];
         foreach ($flags as $key => $flag) {
             if ($clientOnly && !$flag->isClientSide()) {
                 continue;
             }
             $result = $flag->evaluate($user, $preloadedRequester);
-            $state->addFlag($flag, $result->getDetail(), $withReasons);
+            $state->addFlag($flag, $result->getDetail(), $withReasons, $detailsOnlyIfTracked);
         }
         return $state;
     }

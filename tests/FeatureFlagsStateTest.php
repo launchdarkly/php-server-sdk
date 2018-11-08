@@ -106,8 +106,7 @@ class FeatureFlagsStateTest extends \PHPUnit_Framework_TestCase
             '$flagsState' => array(
                 'key1' => array(
                     'variation' => 0,
-                    'version' => 100,
-                    'trackEvents' => false
+                    'version' => 100
                 ),
                 'key2' => array(
                     'variation' => 1,
