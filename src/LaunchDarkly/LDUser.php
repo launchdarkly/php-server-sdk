@@ -17,7 +17,7 @@ class LDUser
     protected $_avatar = null;
     protected $_firstName = null;
     protected $_lastName = null;
-    protected $_anonyomus = false;
+    protected $_anonymous = false;
     protected $_custom = array();
     protected $_privateAttributeNames = array();
 
