@@ -26,6 +26,9 @@ class LDDFeatureRequester implements FeatureRequester
         if (!isset($options['redis_port'])) {
             $options['redis_port'] = 6379;
         }
+        if (!isset($options['redis_timeout'])) {
+            $options['redis_timeout'] = 5;
+        }
 
         $this->_options = $options;
 
@@ -50,12 +53,14 @@ class LDDFeatureRequester implements FeatureRequester
         if ($this->_connection instanceof ClientInterface) {
             return $this->_connection;
         }
-        
+
         /** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
         return $this->_connection = new \Predis\Client(array(
-                                      "scheme" => "tcp",
-                                      "host" => $this->_options['redis_host'],
-                                      "port" => $this->_options['redis_port']));
+            "scheme" => "tcp",
+            "timeout" => $this->_options['redis_timeout'],
+            "host" => $this->_options['redis_host'],
+            "port" => $this->_options['redis_port']
+        ));
     }
 
     /**
