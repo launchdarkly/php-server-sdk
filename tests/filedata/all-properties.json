@@ -26,7 +26,10 @@
       "key": "seg1",
       "version": 1,
       "deleted": false,
-      "include": ["user1"]
+      "included": ["user1"],
+      "excluded": [],
+      "rules": [],
+      "salt": ""
     }
   }
 }

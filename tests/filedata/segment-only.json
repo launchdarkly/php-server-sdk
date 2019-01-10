@@ -2,7 +2,10 @@
   "segments": {
   	"seg1": {
   	  "key": "seg1",
-  	  "include": ["user1"]
+      "included": ["user1"],
+      "excluded": [],
+      "rules": [],
+      "salt": ""
   	}
   }
 }
