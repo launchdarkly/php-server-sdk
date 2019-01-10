@@ -43,7 +43,7 @@ class LDClient
      *     - timeout: Float describing the maximum length of a request in seconds. Defaults to 3
      *     - connect_timeout: Float describing the number of seconds to wait while trying to connect to a server. Defaults to 3
      *     - cache: An optional Kevinrob\GuzzleCache\Storage\CacheStorageInterface. Defaults to an in-memory cache.
-     *     - send_events: An optional bool that can disable the sending of events to LaunchDarkly. Defaults to false.
+     *     - send_events: An optional bool that can disable the sending of events to LaunchDarkly. Defaults to true.
      *     - logger: An optional Psr\Log\LoggerInterface. Defaults to a Monolog\Logger sending all messages to the php error_log.
      *     - offline: An optional boolean which will disable all network calls and always return the default value. Defaults to false.
      *     - feature_requester: An optional LaunchDarkly\FeatureRequester instance.
