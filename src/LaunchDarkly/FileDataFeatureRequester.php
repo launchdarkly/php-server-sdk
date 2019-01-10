@@ -127,7 +127,8 @@ class FileDataFeatureRequester implements FeatureRequester
         }
     }
 
-    private function tryToAdd(&$array, $key, $item, $kind) {
+    private function tryToAdd(&$array, $key, $item, $kind)
+    {
         if (isset($array[$key])) {
             throw new \InvalidArgumentException("File data contains more than one " . $kind . " with key: " . $key);
         } else {
