@@ -1,8 +1,6 @@
 <?php
 namespace LaunchDarkly;
 
-use Psr\Log\LoggerInterface;
-
 /**
  * This component allows you to use local files as a source of feature flag state. This would
  * typically be used in a test environment, to operate using a predetermined feature flag state
@@ -30,16 +28,12 @@ class FileDataFeatureRequester implements FeatureRequester
     private $_flags;
     /** @var array  */
     private $_segments;
-    /** @var LoggerInterface */
-    private $_logger;
 
-    public function __construct($filePaths, $options = array())
+    public function __construct($filePaths)
     {
         $this->_filePaths = is_array($filePaths) ? $filePaths : array($filePaths);
-        $this->_options = $options;
         $this->_flags = array();
         $this->_segments = array();
-        $this->_logger = isset($options['logger']) ? $options['logger'] : null;
         $this->readAllData();
     }
 
