@@ -2,11 +2,20 @@
   "flags": {
     "flag1": {
       "key": "flag1",
+      "version": 1,
+      "deleted": false,
       "on": true,
+      "prerequisites": [],
+      "targets": [],
+      "rules": [],
       "fallthrough": {
         "variation": 2
       },
-      "variations": [ "fall", "off", "on" ]
+      "variations": [ "fall", "off", "on" ],
+      "offVariation": 0,
+      "salt": "",
+      "trackEvents": false,
+      "clientSide": false
     }
   },
   "flagValues": {
@@ -15,6 +24,8 @@
   "segments": {
     "seg1": {
       "key": "seg1",
+      "version": 1,
+      "deleted": false,
       "include": ["user1"]
     }
   }
