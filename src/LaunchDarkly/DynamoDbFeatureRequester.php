@@ -27,7 +27,7 @@ class DynamoDbFeatureRequester implements FeatureRequester
         $this->_client = new DynamoDbClient($dynamoDbOptions);
 
         $prefix = isset($options['dynamodb_prefix']) ? $options['dynamodb_prefix'] : '';
-        $this->_prefix = ($prefix != null && count($prefix) > 0) ? $prefix . '/' : '';
+        $this->_prefix = ($prefix != null && $prefix != '') ? ($prefix . '/') : '';
 
         $this->_logger = $options['logger'];
     }
