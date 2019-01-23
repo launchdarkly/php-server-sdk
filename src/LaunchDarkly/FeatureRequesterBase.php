@@ -6,10 +6,10 @@ use Psr\Log\NullLogger;
 
 class FeatureRequesterBase implements FeatureRequester
 {
-    protected const FEATURES_NAMESPACE = 'features';
-    protected const SEGMENTS_NAMESPACE = 'segments';
-    private const ALL_ITEMS_KEY = '$all';
-    private const CACHE_PREFIX = 'LaunchDarkly:';
+    const FEATURES_NAMESPACE = 'features';
+    const SEGMENTS_NAMESPACE = 'segments';
+    const ALL_ITEMS_KEY = '$all';
+    const CACHE_PREFIX = 'LaunchDarkly:';
 
     /** @var string */
     protected $_baseUri;
