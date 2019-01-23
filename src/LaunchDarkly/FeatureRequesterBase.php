@@ -167,6 +167,9 @@ class FeatureRequesterBase implements FeatureRequester
             $values = json_decode($raw, true);
         } else {
             $values = $this->readItemStringList($namespace);
+            if (!$values) {
+                $values = array();
+            }
             $this->putCachedString($namespace, self::ALL_ITEMS_KEY, json_encode($values));
         }
         foreach ($values as $i => $s) {
