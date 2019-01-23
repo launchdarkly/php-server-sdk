@@ -64,32 +64,50 @@ With Guzzle, you could persist your cache somewhere other than the default in-me
 Using LD-Relay
 ==============
 
-The LaunchDarkly Relay Proxy ([ld-relay](https://github.com/launchdarkly/ld-relay)) consumes the LaunchDarkly streaming API and can update
-a Redis cache operating in your production environment. The ld-relay offers many benefits such as performance and feature flag consistency. With PHP applications, we strongly recommend setting up ld-relay with a Redis store.
+The LaunchDarkly Relay Proxy ([ld-relay](https://github.com/launchdarkly/ld-relay)) consumes the LaunchDarkly streaming API and can update a database cache operating in your production environment. The ld-relay offers many benefits such as performance and feature flag consistency. With PHP applications, we strongly recommend setting up ld-relay with a database store. The database can be Redis or DynamoDB.
 
 1. Set up ld-relay in [daemon-mode](https://github.com/launchdarkly/ld-relay#redis-storage-and-daemon-mode) with Redis
 
-2. Require Predis as a dependency:
+2. Add the necessary dependency for the chosen database.
+
+    For Redis:
 
         php composer.phar require "predis/predis:1.0.*"
 
-3. Create the LDClient with the Redis feature requester as an option:
+    For DynamoDB:
+
+        php composer.phar require "aws/aws-sdk-php:3.*"
+
+3. Create the LDClient with the appropriate parameters for the chosen database. These examples show all of the available options.
+
+    For Redis:
 
         $client = new LaunchDarkly\LDClient("your_sdk_key", [
             'feature_requester_class' => 'LaunchDarkly\LDDFeatureRequester',
-            'redis_host' => 'your.redis.host',
-            'redis_port' => 6379
+            'redis_host' => 'your.redis.host',  // defaults to "localhost" if not specified
+            'redis_port' => 6379,               // defaults to 6379 if not specified
+            'redis_timeout' => 5,               // connection timeout in seconds; defaults to 5
+            'redis_prefix' => 'env1'            // corresponds to the prefix setting in ld-relay,
+            'predis_client' => $myClient        // use this if you have already configured a Predis client instance
         ]);
 
-4. If ld-relay is configured for [event forwarding](https://github.com/launchdarkly/ld-relay#event-forwarding), you can configure the LDClient to publish events to ld-relay instead of directly to `events.launchdarkly.com`. Using `GuzzleEventPublisher` with ld-relay event forwarding can be an efficient alternative to the default `curl`-based event publishing.
+    For DynamoDB:
 
         $client = new LaunchDarkly\LDClient("your_sdk_key", [
+            'feature_requester_class' => 'LaunchDarkly\DynamoDbFeatureRequester',
+            'dynamodb_table' => 'your.table.name',  // required
+            'dynamodb_prefix' => 'env1',            // corresponds to the prefix setting in ld-relay
+            'dynamodb_options' => array()           // you may pass any options supported by the AWS SDK
+        ]);
+
+4. If you are using DynamoDB, you must create your table manually. It must have a partition key called "namespace", and a sort key called "key" (both strings).
+
+5. If ld-relay is configured for [event forwarding](https://github.com/launchdarkly/ld-relay#event-forwarding), you can configure the LDClient to publish events to ld-relay instead of directly to `events.launchdarkly.com`. Using `GuzzleEventPublisher` with ld-relay event forwarding can be an efficient alternative to the default `curl`-based event publishing.
+
+    To forward events, add the following configuration properties to the configuration shown above:
+
             'event_publisher_class' => 'LaunchDarkly\GuzzleEventPublisher',
-            'events_uri' => 'http://your-ldrelay-host:8030',
-            'feature_requester_class' => 'LaunchDarkly\LDDFeatureRequester',
-            'redis_host' => 'your.redis.host',
-            'redis_port' => 6379
-        ]);
+            'events_uri' => 'http://your-ldrelay-host:8030'
 
 Testing
 -------
@@ -119,9 +137,9 @@ About LaunchDarkly
     * [JavaScript](http://docs.launchdarkly.com/docs/js-sdk-reference "LaunchDarkly JavaScript SDK")
     * [PHP](http://docs.launchdarkly.com/docs/php-sdk-reference "LaunchDarkly PHP SDK")
     * [Python](http://docs.launchdarkly.com/docs/python-sdk-reference "LaunchDarkly Python SDK")
-    * [Python Twisted](http://docs.launchdarkly.com/docs/python-twisted-sdk-reference "LaunchDarkly Python Twisted SDK")
     * [Go](http://docs.launchdarkly.com/docs/go-sdk-reference "LaunchDarkly Go SDK")
     * [Node.JS](http://docs.launchdarkly.com/docs/node-sdk-reference "LaunchDarkly Node SDK")
+    * [Electron](http://docs.launchdarkly.com/docs/electron-sdk-reference "LaunchDarkly Electron SDK")
     * [.NET](http://docs.launchdarkly.com/docs/dotnet-sdk-reference "LaunchDarkly .Net SDK")
     * [Ruby](http://docs.launchdarkly.com/docs/ruby-sdk-reference "LaunchDarkly Ruby SDK")
     * [iOS](http://docs.launchdarkly.com/docs/ios-sdk-reference "LaunchDarkly iOS SDK")
