@@ -107,20 +107,23 @@ class LDClient
      */
     private function getFeatureRequester($sdkKey, array $options)
     {
-        if (isset($options['feature_requester']) && $options['feature_requester'] instanceof FeatureRequester) {
-            return $options['feature_requester'];
-        }
-
-        if (isset($options['feature_requester_class'])) {
-            $featureRequesterClass = $options['feature_requester_class'];
+        if (isset($options['feature_requester']) && $options['feature_requester']) {
+            $fr = $options['feature_requester'];
+        } else if (isset($options['feature_requester_class']) && $options['feature_requester_class']) {
+            $fr = $options['feature_requester_class'];
         } else {
-            $featureRequesterClass = GuzzleFeatureRequester::class;
+            $fr = GuzzleFeatureRequester::class;
         }
-
-        if (!is_a($featureRequesterClass, FeatureRequester::class, true)) {
-            throw new \InvalidArgumentException;
+        if ($fr instanceof FeatureRequester) {
+            return $fr;
         }
-        return new $featureRequesterClass($this->_baseUri, $sdkKey, $options);
+        if (is_callable($fr)) {
+            return $fr($this->_baseUri, $sdkKey, $options);
+        }
+        if (is_a($fr, FeatureRequester::class, true)) {
+            return new $fr($this->_baseUri, $sdkKey, $options);
+        }
+        throw new \InvalidArgumentException('invalid feature_requester');
     }
 
     /**

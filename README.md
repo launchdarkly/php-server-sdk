@@ -83,24 +83,25 @@ The LaunchDarkly Relay Proxy ([ld-relay](https://github.com/launchdarkly/ld-rela
     For Redis:
 
         $client = new LaunchDarkly\LDClient("your_sdk_key", [
-            'feature_requester_class' => 'LaunchDarkly\LDDFeatureRequester',
+            'feature_requester' => 'LaunchDarkly\LDDFeatureRequester',
             'redis_host' => 'your.redis.host',  // defaults to "localhost" if not specified
             'redis_port' => 6379,               // defaults to 6379 if not specified
             'redis_timeout' => 5,               // connection timeout in seconds; defaults to 5
-            'redis_prefix' => 'env1'            // corresponds to the prefix setting in ld-relay,
+            'redis_prefix' => 'env1'            // corresponds to the prefix setting in ld-relay
             'predis_client' => $myClient        // use this if you have already configured a Predis client instance
         ]);
 
     For DynamoDB:
 
         $client = new LaunchDarkly\LDClient("your_sdk_key", [
-            'feature_requester_class' => 'LaunchDarkly\DynamoDbFeatureRequester',
+            'feature_requester' => 'LaunchDarkly\DynamoDbFeatureRequester',
             'dynamodb_table' => 'your.table.name',  // required
             'dynamodb_prefix' => 'env1',            // corresponds to the prefix setting in ld-relay
-            'dynamodb_options' => array()           // you may pass any options supported by the AWS SDK
+            'dynamodb_options' => array(),          // you may pass any options supported by the AWS SDK
+            'apc_expiration' => 30                  // expiration time for local caching, if you have apcu installed
         ]);
 
-4. If you are using DynamoDB, you must create your table manually. It must have a partition key called "namespace", and a sort key called "key" (both strings).
+4. If you are using DynamoDB, you must create your table manually. It must have a partition key called "namespace", and a sort key called "key" (both strings). Note that by default the AWS SDK will attempt to get your AWS credentials and region from environment variables and/or local configuration files, but you may also specify them in `dynamodb_options`.
 
 5. If ld-relay is configured for [event forwarding](https://github.com/launchdarkly/ld-relay#event-forwarding), you can configure the LDClient to publish events to ld-relay instead of directly to `events.launchdarkly.com`. Using `GuzzleEventPublisher` with ld-relay event forwarding can be an efficient alternative to the default `curl`-based event publishing.
 

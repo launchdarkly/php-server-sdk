@@ -2,9 +2,8 @@
 namespace LaunchDarkly;
 
 use Aws\DynamoDb\DynamoDbClient;
-use Psr\Log\LoggerInterface;
 
-class DynamoDbFeatureRequester implements FeatureRequester
+class DynamoDbFeatureRequester extends FeatureRequesterBase
 {
     /** @var string */
     protected $_tableName;
@@ -12,11 +11,11 @@ class DynamoDbFeatureRequester implements FeatureRequester
     protected $_prefix;
     /** @var DynamoDbClient */
     protected $_client;
-    /** @var LoggerInterface */
-    private $_logger;
 
     public function __construct($baseUri, $sdkKey, $options)
     {
+        parent::__construct($baseUri, $sdkKey, $options);
+
         if (!isset($options['dynamodb_table'])) {
             throw new \InvalidArgumentException('dynamodb_table must be specified');
         }
@@ -28,81 +27,9 @@ class DynamoDbFeatureRequester implements FeatureRequester
 
         $prefix = isset($options['dynamodb_prefix']) ? $options['dynamodb_prefix'] : '';
         $this->_prefix = ($prefix != null && $prefix != '') ? ($prefix . '/') : '';
-
-        $this->_logger = $options['logger'];
     }
 
-    /**
-     * Gets an individual feature flag.
-     *
-     * @param $key string feature flag key
-     * @return FeatureFlag|null The decoded JSON feature data, or null if missing
-     */
-    public function getFeature($key)
-    {
-        $json = $this->getJsonItem('features', $key);
-        if (!$json) {
-            $this->_logger->warning("DynamoDBFeatureRequester: Attempted to get missing feature with key: " . $key);
-            return null;
-        }
-        $flag = FeatureFlag::decode($json);
-        if ($flag) {
-            if ($flag->isDeleted()) {
-                $this->_logger->warning("DynamoDBFeatureRequester: Attempted to get deleted feature with key: " . $key);
-                return null;
-            }
-            return $flag;
-        } else {
-            $this->_logger->warning("DynamoDBFeatureRequester: Attempted to get missing feature with key: " . $key);
-            return null;
-        }
-    }
-
-    /**
-     * Gets an individual user segment.
-     *
-     * @param $key string segment key
-     * @return Segment|null The decoded JSON segment data, or null if missing
-     */
-    public function getSegment($key)
-    {
-        $json = $this->getJsonItem('segments', $key);
-        if (!$json) {
-            $this->_logger->warning("DynamoDBFeatureRequester: Attempted to get missing segment with key: " . $key);
-            return null;
-        }
-        $segment = Segment::decode($json);
-        if ($segment) {
-            if ($segment->isDeleted()) {
-                $this->_logger->warning("DynamoDBFeatureRequester: Attempted to get deleted segment with key: " . $key);
-                return null;
-            }
-            return $segment;
-        } else {
-            $this->_logger->warning("DynamoDBFeatureRequester: Attempted to get missing segment with key: " . $key);
-            return null;
-        }
-    }
-
-    /**
-     * Gets all features
-     *
-     * @return array()|null The decoded FeatureFlags, or null if missing
-     */
-    public function getAllFeatures()
-    {
-        $jsonItems = $this->queryJsonItems('features');
-        $itemsOut = array();
-        foreach ($jsonItems as $json) {
-            $flag = FeatureFlag::decode($json);
-            if ($flag && !$flag->isDeleted()) {
-                $itemsOut[$flag->getKey()] = $flag;
-            }
-        }
-        return $itemsOut;
-    }
-
-    protected function getJsonItem($namespace, $key)
+    protected function readItemString($namespace, $key)
     {
         $request = array(
             'TableName' => $this->_tableName,
@@ -121,10 +48,10 @@ class DynamoDbFeatureRequester implements FeatureRequester
             return null;
         }
         $attr = $item['item'];
-        return isset($attr['S']) ? json_decode($attr['S'], true) : null;
+        return isset($attr['S']) ? $attr['S'] : null;
     }
 
-    protected function queryJsonItems($namespace)
+    protected function readItemStringList($namespace)
     {
         $items = array();
         $request = array(
@@ -145,7 +72,7 @@ class DynamoDbFeatureRequester implements FeatureRequester
                 if (isset($item['item'])) {
                     $attr = $item['item'];
                     if (isset($attr['S'])) {
-                        $items[] = json_decode($attr['S'], true);
+                        $items[] = $attr['S'];
                     }
                 }
             }

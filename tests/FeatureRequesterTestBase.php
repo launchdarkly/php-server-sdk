@@ -7,6 +7,8 @@ use LaunchDarkly\Segment;
 
 class FeatureRequesterTestBase extends \PHPUnit_Framework_TestCase
 {
+    private const CACHE_TTL = 30;
+
     public function setUp()
     {
         $this->deleteExistingData();
