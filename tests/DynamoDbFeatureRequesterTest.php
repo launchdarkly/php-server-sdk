@@ -22,6 +22,7 @@ class DynamoDbFeatureRequesterTest extends FeatureRequesterTestBase
     private static function makeDynamoDbOptions()
     {
         return array(
+            'credentials' => array('key' => 'x', 'secret' => 'x'), // credentials for local test instance are arbitrary
             'endpoint' => 'http://localhost:8000',
             'region' => 'us-east-1',
             'version' => '2012-08-10'
