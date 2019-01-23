@@ -145,9 +145,10 @@ class FeatureRequesterTestBase extends \PHPUnit_Framework_TestCase
         return json_encode(array(
             'key' => $key,
             'version' => $version,
-            'includes' => array(),
-            'excludes' => array(),
+            'included' => array(),
+            'excluded' => array(),
             'rules' => [],
+            'salt' => '',
             'deleted' => $deleted
         ));
     }
