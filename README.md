@@ -64,7 +64,7 @@ With Guzzle, you could persist your cache somewhere other than the default in-me
 Using LD-Relay
 ==============
 
-The LaunchDarkly Relay Proxy ([ld-relay](https://github.com/launchdarkly/ld-relay)) consumes the LaunchDarkly streaming API and can update a database cache operating in your production environment. The ld-relay offers many benefits such as performance and feature flag consistency. With PHP applications, we strongly recommend setting up ld-relay with a database store. The database can be Redis or DynamoDB.
+The LaunchDarkly Relay Proxy ([ld-relay](https://github.com/launchdarkly/ld-relay)) consumes the LaunchDarkly streaming API and can update a database cache operating in your production environment. The ld-relay offers many benefits such as performance and feature flag consistency. With PHP applications, we strongly recommend setting up ld-relay with a database store. The database can be Redis or DynamoDB. (For more about using LaunchDarkly with Redis or DynamoDB, see the [SDK reference guide](https://docs.launchdarkly.com/v2.0/docs/using-a-persistent-feature-store).)
 
 1. Set up ld-relay in [daemon-mode](https://github.com/launchdarkly/ld-relay#redis-storage-and-daemon-mode) with Redis
 
