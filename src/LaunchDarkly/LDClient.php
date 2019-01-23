@@ -108,7 +108,7 @@ class LDClient
     {
         if (isset($options['feature_requester']) && $options['feature_requester']) {
             $fr = $options['feature_requester'];
-        } else if (isset($options['feature_requester_class']) && $options['feature_requester_class']) {
+        } elseif (isset($options['feature_requester_class']) && $options['feature_requester_class']) {
             $fr = $options['feature_requester_class'];
         } else {
             $fr = GuzzleFeatureRequester::class;

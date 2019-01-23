@@ -83,7 +83,8 @@ class FeatureRequesterBase implements FeatureRequester
         }
     }
 
-    protected function makeCacheKey($namespace, $key) {
+    protected function makeCacheKey($namespace, $key)
+    {
         return self::CACHE_PREFIX . $namespace . ':' . $key;
     }
 
