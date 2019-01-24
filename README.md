@@ -124,6 +124,11 @@ The LaunchDarkly Relay Proxy ([ld-relay](https://github.com/launchdarkly/ld-rela
             'event_publisher_class' => 'LaunchDarkly\GuzzleEventPublisher',
             'events_uri' => 'http://your-ldrelay-host:8030'
 
+Using flag data from a file
+---------------------------
+
+For testing purposes, the SDK can be made to read feature flag state from a file or files instead of connecting to LaunchDarkly. See [`FileDataFeatureRequester`](https://github.com/launchdarkly/php-client/blob/master/FileDataFeatureRequester.php) and ["Reading flags from a file"](https://docs.launchdarkly.com/docs/reading-flags-from-a-file).
+
 Testing
 -------
 
@@ -140,7 +145,7 @@ Contributing
 We encourage pull-requests and other contributions from the community. We've also published an [SDK contributor's guide](http://docs.launchdarkly.com/docs/sdk-contributors-guide) that provides a detailed explanation of how our SDKs work.
 
 About LaunchDarkly
------------
+------------------
 
 * LaunchDarkly is a continuous delivery platform that provides feature flags as a service and allows developers to iterate quickly and safely. We allow you to easily flag your features and manage them from the LaunchDarkly dashboard.  With LaunchDarkly, you can:
     * Roll out a new feature to a subset of your users (like a group of users who opt-in to a beta tester group), gathering feedback and bug reports from real-world use cases.
