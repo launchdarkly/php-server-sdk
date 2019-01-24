@@ -82,33 +82,41 @@ class DynamoDbFeatureRequesterTest extends FeatureRequesterTestBase
             return; // table already exists
         } catch (\Exception $e) {
         }
-        self::$dynamoDbClient->createTable(array(
-            'TableName' => self::TABLE_NAME,
-            'AttributeDefinitions' => array(
-                array(
-                    'AttributeName' => 'namespace',
-                    'AttributeType' => 'S'
-                ),
-                array(
-                    'AttributeName' => 'key',
-                    'AttributeType' => 'S'
-                )
-            ),
-            'KeySchema' => array(
-                array(
-                    'AttributeName' => 'namespace',
-                    'KeyType' => 'HASH'
-                ),
-                array(
-                    'AttributeName' => 'key',
-                    'KeyType' => 'RANGE'
-                )
-            ),
-            'ProvisionedThroughput' => array(
-                'ReadCapacityUnits' => 1,
-                'WriteCapacityUnits' => 1
-            )
-        ));
+        while (true) {
+            // We may need to retry this because in the CI build, the local DynamoDB may not have finished starting yet.
+            try {
+                self::$dynamoDbClient->createTable(array(
+                    'TableName' => self::TABLE_NAME,
+                    'AttributeDefinitions' => array(
+                        array(
+                            'AttributeName' => 'namespace',
+                            'AttributeType' => 'S'
+                        ),
+                        array(
+                            'AttributeName' => 'key',
+                            'AttributeType' => 'S'
+                        )
+                    ),
+                    'KeySchema' => array(
+                        array(
+                            'AttributeName' => 'namespace',
+                            'KeyType' => 'HASH'
+                        ),
+                        array(
+                            'AttributeName' => 'key',
+                            'KeyType' => 'RANGE'
+                        )
+                    ),
+                    'ProvisionedThroughput' => array(
+                        'ReadCapacityUnits' => 1,
+                        'WriteCapacityUnits' => 1
+                    )
+                ));
+                break;
+            } catch (\Exception $e) {
+                sleep(1);
+            }
+        }
         while (true) { // table may not be available immediately
             try {
                 self::$dynamoDbClient->describeTable(array('TableName' => self::TABLE_NAME));
