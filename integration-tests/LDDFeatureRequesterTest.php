@@ -102,7 +102,7 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase
         $user = new LDUser(static::API_KEY);
         $allFlags = $client->allFlags($user);
 
-        $this->assertNull($allFlags);
+        $this->assertEquals(array(), $allFlags);
     }
 
     public function testGetAll()
@@ -137,8 +137,6 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase
                 $val,
                 false,
             ],
-            'commitDate' => '2015-09-08T21:24:16.712Z',
-            'creationDate' => '2015-09-08T21:06:16.527Z',
             'version' => 4,
             'prerequisites' => [],
             'targets' => [
