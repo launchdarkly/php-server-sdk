@@ -2,10 +2,12 @@
 namespace LaunchDarkly;
 
 /**
- * Feature requester from an LDD-populated redis, with APC caching
+ * Deprecated feature requester from an LDD-populated Redis, with APC caching.
+ *
  * @deprecated Per the docs (http://php.net/manual/en/intro.apc.php):
  * "This extension (APC) is considered unmaintained and dead".
- * Install APCu and use \LaunchDarkly\ApcuLDDFeatureRequester instead!
+ *
+ * Install APCu and use {@link \LaunchDarkly\Integrations\Redis::newFeatureRequester()} instead!
  *
  * @package LaunchDarkly
  */

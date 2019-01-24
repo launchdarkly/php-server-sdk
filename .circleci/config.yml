@@ -46,24 +46,28 @@ jobs:
       - image: circleci/php:5.6.34-cli-jessie
       - image: amazon/dynamodb-local
       - image: consul
+      - image: redis
   test-7.0:
     <<: *php-docker-template
     docker:
       - image: circleci/php:7.0.28-cli-jessie
       - image: amazon/dynamodb-local
       - image: consul
+      - image: redis
   test-7.1:
     <<: *php-docker-template
     docker:
       - image: circleci/php:7.1.15-cli-jessie
       - image: amazon/dynamodb-local
       - image: consul
+      - image: redis
   test-7.2:
     <<: *php-docker-template
     docker:
       - image: circleci/php:7.2.3-cli-stretch
       - image: amazon/dynamodb-local
       - image: consul
+      - image: redis
 
   test-5.5: # CircleCI doesn't provide a Docker image for 5.5
     machine:
@@ -83,6 +87,7 @@ jobs:
             sudo apt-get -q update &&
             sudo apt-cache policy docker-ce &&
             sudo apt-get -qy install docker-ce
+      - run: sudo apt-get -qy install redis-server
       - checkout
       - run:
           name: validate composer.json

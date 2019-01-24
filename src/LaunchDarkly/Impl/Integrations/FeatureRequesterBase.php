@@ -1,10 +1,12 @@
 <?php
-namespace LaunchDarkly;
+namespace LaunchDarkly\Impl\Integrations;
 
+use LaunchDarkly\FeatureFlag;
+use LaunchDarkly\Segment;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
-class FeatureRequesterBase implements FeatureRequester
+class FeatureRequesterBase implements \LaunchDarkly\FeatureRequester
 {
     const FEATURES_NAMESPACE = 'features';
     const SEGMENTS_NAMESPACE = 'segments';

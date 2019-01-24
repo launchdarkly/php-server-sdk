@@ -1,25 +1,10 @@
 <?php
-namespace LaunchDarkly;
+namespace LaunchDarkly\Impl\Integrations;
 
-/**
- * This component allows you to use local files as a source of feature flag state. This would
- * typically be used in a test environment, to operate using a predetermined feature flag state
- * without an actual LaunchDarkly connection.
- * <p>
- * To use this component, create an instance of this class, passing the path(s) of your data
- * file(s). Then place the resulting object in your LaunchDarkly client configuration with the
- * key "feature_requester".
- * <pre>
- *     $file_data = new FileDataFeatureRequester("./testData/flags.json");
- *     $config = array("feature_requester" => $file_data, "send_events" => false);
- *     $client = new LDClient("sdk_key", $config);
- * </pre>
- * <p>
- * This will cause the client <i>not</i> to connect to LaunchDarkly to get feature flags. (Note
- * that in this example, <code>send_events</core> is also set to false so that it will not
- * connect to LaunchDarkly to send analytics events either.)
- * <p>
- */
+use LaunchDarkly\FeatureFlag;
+use LaunchDarkly\FeatureRequester;
+use LaunchDarkly\Segment;
+
 class FileDataFeatureRequester implements FeatureRequester
 {
     /** @var array  */
