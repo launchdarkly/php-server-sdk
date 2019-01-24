@@ -15,8 +15,6 @@ class ConsulFeatureRequester extends FeatureRequesterBase
     {
         parent::__construct($baseUri, $sdkKey, $options);
 
-        // TODO: config
-
         $consulOpts = isset($options['consul_options']) ? $options['consul_options'] : array();
         if (isset($options['consul_uri'])) {
             $consulOpts['base_uri'] = $options['consul_uri'];
