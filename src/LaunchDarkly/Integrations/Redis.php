@@ -6,7 +6,8 @@ namespace LaunchDarkly\Integrations;
  * Integration with a Redis data store.
  * @since 3.5.0
  */
-class Redis {
+class Redis
+{
     /**
      * Configures an adapter for reading feature flag data from Redis.
      *
@@ -30,8 +31,9 @@ class Redis {
      *   - `apc_expiration`: expiration time in seconds for local caching, if `APCu` is installed
      * @return object  an object to be stored in the `feature_requester` configuration property
      */
-    public static function newFeatureRequester($options = array()) {
-        return function($baseUri, $sdkKey, $baseOptions) use ($options) {
+    public static function newFeatureRequester($options = array())
+    {
+        return function ($baseUri, $sdkKey, $baseOptions) use ($options) {
             return new \LaunchDarkly\Impl\Integrations\RedisFeatureRequester($baseUri, $sdkKey,
                 array_merge($baseOptions, $options));
         };

@@ -6,7 +6,8 @@ namespace LaunchDarkly\Integrations;
  * Integration with a DynamoDB data store.
  * @since 3.5.0
  */
-class DynamoDb {
+class DynamoDb
+{
     /**
      * Configures an adapter for reading feature flag data from DynamoDB.
      *
@@ -28,8 +29,9 @@ class DynamoDb {
      *   - `apc_expiration`: expiration time in seconds for local caching, if `APCu` is installed
      * @return object  an object to be stored in the `feature_requester` configuration property
      */
-    public static function newFeatureRequester($options = array()) {
-        return function($baseUri, $sdkKey, $baseOptions) use ($options) {
+    public static function newFeatureRequester($options = array())
+    {
+        return function ($baseUri, $sdkKey, $baseOptions) use ($options) {
             return new \LaunchDarkly\Impl\Integrations\DynamoDbFeatureRequester($baseUri, $sdkKey,
                 array_merge($baseOptions, $options));
         };

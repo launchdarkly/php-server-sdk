@@ -6,7 +6,8 @@ namespace LaunchDarkly\Integrations;
  * Integration with a Consul data store.
  * @since 3.5.0
  */
-class Consul {
+class Consul
+{
     /**
      * Configures an adapter for reading feature flag data from Consul.
      *
@@ -29,8 +30,9 @@ class Consul {
      *   - `apc_expiration`: expiration time in seconds for local caching, if `APCu` is installed
      * @return object  an object to be stored in the `feature_requester` configuration property
      */
-    public static function newFeatureRequester($options = array()) {
-        return function($baseUri, $sdkKey, $baseOptions) use ($options) {
+    public static function newFeatureRequester($options = array())
+    {
+        return function ($baseUri, $sdkKey, $baseOptions) use ($options) {
             return new \LaunchDarkly\Impl\Integrations\ConsulFeatureRequester($baseUri, $sdkKey,
                 array_merge($baseOptions, $options));
         };
