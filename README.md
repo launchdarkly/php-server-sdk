@@ -94,7 +94,7 @@ a Redis cache operating in your production environment. The ld-relay offers many
 Using flag data from a file
 ---------------------------
 
-For testing purposes, the SDK can be made to read feature flag state from a file or files instead of connecting to LaunchDarkly. See [`FileDataFeatureRequester`](https://github.com/launchdarkly/node-client/blob/master/FileDataFeatureRequester.php) and ["Reading flags from a file"](https://docs.launchdarkly.com/docs/reading-flags-from-a-file).
+For testing purposes, the SDK can be made to read feature flag state from a file or files instead of connecting to LaunchDarkly. See [`FileDataFeatureRequester`](https://github.com/launchdarkly/php-client/blob/master/FileDataFeatureRequester.php) and ["Reading flags from a file"](https://docs.launchdarkly.com/docs/reading-flags-from-a-file).
 
 Testing
 -------
