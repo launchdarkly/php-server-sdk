@@ -1,5 +1,5 @@
 <?php
-namespace LaunchDarkly;
+namespace LaunchDarkly\Impl\Integrations;
 
 /**
  * Deprecated caching implementation based on the APC extension.

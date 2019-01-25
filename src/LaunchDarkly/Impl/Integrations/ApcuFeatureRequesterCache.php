@@ -1,5 +1,5 @@
 <?php
-namespace LaunchDarkly;
+namespace LaunchDarkly\Impl\Integrations;
 
 /**
  * Caching implementation based on the APCu extension. This is used by default by all database feature
