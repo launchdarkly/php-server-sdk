@@ -42,21 +42,25 @@ jobs:
     docker:
       - image: circleci/php:5.6.34-cli-jessie
       - image: amazon/dynamodb-local
+      - image: consul
   test-7.0:
     <<: *php-docker-template
     docker:
       - image: circleci/php:7.0.28-cli-jessie
       - image: amazon/dynamodb-local
+      - image: consul
   test-7.1:
     <<: *php-docker-template
     docker:
       - image: circleci/php:7.1.15-cli-jessie
       - image: amazon/dynamodb-local
+      - image: consul
   test-7.2:
     <<: *php-docker-template
     docker:
       - image: circleci/php:7.2.3-cli-stretch
       - image: amazon/dynamodb-local
+      - image: consul
 
   test-5.5: # CircleCI doesn't provide a Docker image for 5.5
     machine:
@@ -89,6 +93,16 @@ jobs:
       - run:
           name: start DynamoDB
           command: docker run -p 8000:8000 amazon/dynamodb-local
+          background: true
+      - run:
+          name: download Consul
+          command: wget https://releases.hashicorp.com/consul/0.8.0/consul_0.8.0_linux_amd64.zip
+      - run:
+          name: extract Consul
+          command: unzip consul_0.8.0_linux_amd64.zip
+      - run:
+          name: start Consul
+          command: ./consul agent -dev
           background: true
       - run:
           name: run tests

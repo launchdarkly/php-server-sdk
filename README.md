@@ -64,7 +64,7 @@ With Guzzle, you could persist your cache somewhere other than the default in-me
 Using LD-Relay
 ==============
 
-The LaunchDarkly Relay Proxy ([ld-relay](https://github.com/launchdarkly/ld-relay)) consumes the LaunchDarkly streaming API and can update a database cache operating in your production environment. The ld-relay offers many benefits such as performance and feature flag consistency. With PHP applications, we strongly recommend setting up ld-relay with a database store. The database can be Redis or DynamoDB. (For more about using LaunchDarkly with Redis or DynamoDB, see the [SDK reference guide](https://docs.launchdarkly.com/v2.0/docs/using-a-persistent-feature-store).)
+The LaunchDarkly Relay Proxy ([ld-relay](https://github.com/launchdarkly/ld-relay)) consumes the LaunchDarkly streaming API and can update a database cache operating in your production environment. The ld-relay offers many benefits such as performance and feature flag consistency. With PHP applications, we strongly recommend setting up ld-relay with a database store. The database can be Redis, Consul, or DynamoDB. (For more about using LaunchDarkly with databases, see the [SDK reference guide](https://docs.launchdarkly.com/v2.0/docs/using-a-persistent-feature-store).)
 
 1. Set up ld-relay in [daemon-mode](https://github.com/launchdarkly/ld-relay#redis-storage-and-daemon-mode) with Redis
 
@@ -73,6 +73,10 @@ The LaunchDarkly Relay Proxy ([ld-relay](https://github.com/launchdarkly/ld-rela
     For Redis:
 
         php composer.phar require "predis/predis:1.0.*"
+
+    For Consul:
+
+        php composer.phar require "sensiolabs/consul-php-sdk:2.*"
 
     For DynamoDB:
 
@@ -89,6 +93,16 @@ The LaunchDarkly Relay Proxy ([ld-relay](https://github.com/launchdarkly/ld-rela
             'redis_timeout' => 5,               // connection timeout in seconds; defaults to 5
             'redis_prefix' => 'env1'            // corresponds to the prefix setting in ld-relay
             'predis_client' => $myClient        // use this if you have already configured a Predis client instance
+        ]);
+
+    For Consul:
+
+        $client = new LaunchDarkly\LDClient("your_sdk_key", [
+            'feature_requester' => 'LaunchDarkly\ConsulFeatureRequester',
+            'consul_uri' => 'http://localhost:8500',  // this is the default
+            'consul_prefix' => 'env1',                // corresponds to the prefix setting in ld-relay
+            'consul_options' => array(),              // you may pass any options supported by the Guzzle client
+            'apc_expiration' => 30                    // expiration time for local caching, if you have apcu installed
         ]);
 
     For DynamoDB:
