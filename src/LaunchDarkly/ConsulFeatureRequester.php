@@ -8,7 +8,7 @@ class ConsulFeatureRequester extends FeatureRequesterBase
 {
     /** @var string */
     protected $_prefix;
-    /** @var DynamoDbClient */
+    /** @var \SensioLabs\Consul\Services\KV */
     protected $_kvClient;
 
     public function __construct($baseUri, $sdkKey, $options)
