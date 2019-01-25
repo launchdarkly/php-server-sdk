@@ -13,19 +13,22 @@ class ApcuFeatureRequesterCache implements FeatureRequesterCache
     /** @var int */
     private $_expiration;
 
-    public function __construct($expiration) {
+    public function __construct($expiration)
+    {
         if (!extension_loaded('apcu')) {
             throw new \InvalidArgumentException('apc_expiration was specified but apcu is not installed');
         }
         $this->_expiration = $expiration;
     }
 
-    public function getCachedString($cacheKey) {
+    public function getCachedString($cacheKey)
+    {
         $value = \apcu_fetch($cacheKey);
         return $value === false ? null : $value;
     }
 
-    public function putCachedString($cacheKey, $data) {
+    public function putCachedString($cacheKey, $data)
+    {
         \apcu_store($cacheKey, $data, $this->_expiration);
     }
 }

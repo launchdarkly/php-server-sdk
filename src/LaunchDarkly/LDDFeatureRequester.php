@@ -11,8 +11,9 @@ use LaunchDarkly\Impl\Integrations\RedisFeatureRequester;
  */
 class LDDFeatureRequester extends RedisFeatureRequester
 {
-	protected function createCache($options) {
-		// The new base class has optional caching behavior, but this deprecated class doesn't.
-		return null;
-	}
+    protected function createCache($options)
+    {
+        // The new base class has optional caching behavior, but this deprecated class doesn't.
+        return null;
+    }
 }

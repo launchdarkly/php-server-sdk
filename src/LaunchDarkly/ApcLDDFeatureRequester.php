@@ -16,7 +16,8 @@ use LaunchDarkly\Impl\Integrations\RedisFeatureRequester;
  */
 class ApcLDDFeatureRequester extends RedisFeatureRequester
 {
-    protected function createCache($options) {
+    protected function createCache($options)
+    {
         $expiration = isset($options['apc_expiration']) ? (int)$options['apc_expiration'] : 30;
         return new ApcFeatureRequesterCache($expiration);
     }
