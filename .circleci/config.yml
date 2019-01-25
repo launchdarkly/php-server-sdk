@@ -18,20 +18,17 @@ php-docker-template: &php-docker-template
         name: validate composer.json
         command: composer validate
     - run:
-        name: install current dependencies
+        name: install dependencies
         command: composer install --no-progress
     - run:
-        name: run tests with current dependency versions
+        name: run tests with highest compatible dependency versions
         command: vendor/bin/phpunit --log-junit ~/phpunit/junit.xml --coverage-text tests
     - store_test_results:
         path: ~/phpunit
     - store_artifacts:
         path: ~/phpunit
     - run:
-        name: run tests with highest available dependency versions
-        command: composer update --no-progress && vendor/bin/phpunit tests
-    - run:
-        name: run tests with lowest available dependency versions
+        name: run tests with lowest compatible dependency versions
         # we skip this for 7.2 because the lowest compatible version of PHPUnit has a bug:
         # https://github.com/sebastianbergmann/comparator/pull/30
         command: |
