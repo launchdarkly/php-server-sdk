@@ -11,7 +11,7 @@ class FeatureRequesterBase implements \LaunchDarkly\FeatureRequester
     const FEATURES_NAMESPACE = 'features';
     const SEGMENTS_NAMESPACE = 'segments';
     const ALL_ITEMS_KEY = '$all';
-    const CACHE_PREFIX = 'LaunchDarkly:';
+    const CACHE_PREFIX = 'launchdarkly:';
 
     /** @var string */
     protected $_baseUri;

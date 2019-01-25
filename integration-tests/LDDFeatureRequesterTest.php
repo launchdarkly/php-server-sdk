@@ -52,7 +52,7 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase
         $redis->hset("launchdarkly:features", 'foo', $this->gen_feature("foo", "baz"));
         $this->assertEquals("bar", $client->variation('foo', $user, 'jim'));
 
-        apc_delete("launchdarkly:features.foo");
+        apc_delete("launchdarkly:features:foo");
         $this->assertEquals("baz", $client->variation('foo', $user, 'jim'));
     }
 
@@ -85,7 +85,7 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase
         $redis->hset('launchdarkly:features', 'fiz', $this->gen_feature('fiz', 'bob'));
         $this->assertEquals('buz', $client->variation('fiz', $user, 'alice'));
 
-        \apcu_delete('launchdarkly:features.fiz');
+        \apcu_delete('launchdarkly:features:fiz');
         $this->assertEquals('bob', $client->variation('fiz', $user, 'alice'));
     }
 
