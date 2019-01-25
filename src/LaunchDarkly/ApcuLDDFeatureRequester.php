@@ -2,6 +2,9 @@
 
 namespace LaunchDarkly;
 
+use LaunchDarkly\Impl\Integrations\ApcuFeatureRequesterCache;
+use LaunchDarkly\Impl\Integrations\RedisFeatureRequester;
+
 /**
  * Feature requester from an LDD-populated redis, with APCu caching.
  *
@@ -14,13 +17,10 @@ namespace LaunchDarkly;
  *
  * @package LaunchDarkly
  */
-class ApcuLDDFeatureRequester extends LDDFeatureRequester
+class ApcuLDDFeatureRequester extends RedisFeatureRequester
 {
-    public function __construct($baseUri, $sdkKey, $options)
-    {
-        if (!isset($options['apc_expiration'])) {
-            $options['apc_expiration'] = 30;
-        }
-        parent::__construct($baseUri, $sdkKey, $options);
+    protected function createCache($options) {
+        $expiration = isset($options['apc_expiration']) ? (int)$options['apc_expiration'] : 30;
+        return new ApcuFeatureRequesterCache($expiration);
     }
 }

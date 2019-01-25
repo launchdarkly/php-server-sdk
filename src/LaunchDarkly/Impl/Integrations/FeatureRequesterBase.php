@@ -19,8 +19,8 @@ class FeatureRequesterBase implements \LaunchDarkly\FeatureRequester
     protected $_sdkKey;
     /** @var array */
     protected $_options;
-    /** @var int */
-    protected $_apcExpiration;
+    /** @var FeatureRequesterCache */
+    protected $_cache;
     /** @var LoggerInterface */
     protected $_logger;
 
@@ -29,15 +29,7 @@ class FeatureRequesterBase implements \LaunchDarkly\FeatureRequester
         $this->_baseUri = $baseUri;
         $this->_sdkKey = $sdkKey;
         $this->_options = $options;
-
-        if (isset($options['apc_expiration'])) {
-            if (!extension_loaded('apcu')) {
-                throw new \InvalidArgumentException('apc_expiration was specified but apcu is not installed');
-            }
-            $this->_apcExpiration = (int)$options['apc_expiration'];
-        } else {
-            $this->_apcExpiration = 0;
-        }
+        $this->_cache = $this->createCache($options);
 
         if (isset($options['logger']) && $options['logger']) {
             $this->_logger = $options['logger'];
@@ -69,20 +61,15 @@ class FeatureRequesterBase implements \LaunchDarkly\FeatureRequester
         return array();
     }
 
-    protected function getCachedString($cacheKey)
+    /**
+     * Determines the caching implementation to use, if any.
+     *
+     * @return FeatureRequesterCache a cache implementation, or null
+     */
+    protected function createCache($options)
     {
-        if ($this->_apcExpiration) {
-            $value = \apcu_fetch($cacheKey);
-            return $value === false ? null : $value;
-        }
-        return null;
-    }
-
-    protected function putCachedString($cacheKey, $data)
-    {
-        if ($this->_apcExpiration) {
-            \apcu_store($cacheKey, $data, $this->_apcExpiration);
-        }
+        $expiration = isset($options['apc_expiration']) ? (int)$options['apc_expiration'] : 0;
+        return (expiration > 0) ? new ApcuFeatureRequesterCache($expiration) : null;
     }
 
     /**
@@ -150,10 +137,12 @@ class FeatureRequesterBase implements \LaunchDarkly\FeatureRequester
     protected function getJsonItem($namespace, $key)
     {
         $cacheKey = $this->makeCacheKey($namespace, $key);
-        $raw = $this->getCachedString($cacheKey);
+        $raw = $this->_cache ? $this->_cache->getCachedString($cacheKey) : null;
         if ($raw === null) {
             $raw = $this->readItemString($namespace, $key);
-            $this->putCachedString($cacheKey, $raw);
+            if ($this->_cache) {
+                $this->_cache->putCachedString($cacheKey, $raw);
+            }
         }
         return ($raw === null) ? null : json_decode($raw, true);
     }
@@ -161,7 +150,7 @@ class FeatureRequesterBase implements \LaunchDarkly\FeatureRequester
     protected function getJsonItemList($namespace)
     {
         $cacheKey = $this->makeCacheKey($namespace, self::ALL_ITEMS_KEY);
-        $raw = $this->getCachedString($cacheKey);
+        $raw = $this->_cache ? $this->_cache->getCachedString($cacheKey) : null;
         if ($raw) {
             $values = json_decode($raw, true);
         } else {
@@ -169,7 +158,9 @@ class FeatureRequesterBase implements \LaunchDarkly\FeatureRequester
             if (!$values) {
                 $values = array();
             }
-            $this->putCachedString($cacheKey, json_encode($values));
+            if ($this->_cache) {
+                $this->_cache->putCachedString($cacheKey, json_encode(values));
+            }
         }
         foreach ($values as $i => $s) {
             $values[$i] = json_decode($s, true);

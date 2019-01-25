@@ -1,6 +1,9 @@
 <?php
 namespace LaunchDarkly;
 
+use LaunchDarkly\Impl\Integrations\ApcFeatureRequesterCache;
+use LaunchDarkly\Impl\Integrations\RedisFeatureRequester;
+
 /**
  * Deprecated feature requester from an LDD-populated Redis, with APC caching.
  *
@@ -11,32 +14,10 @@ namespace LaunchDarkly;
  *
  * @package LaunchDarkly
  */
-class ApcLDDFeatureRequester extends LDDFeatureRequester
+class ApcLDDFeatureRequester extends RedisFeatureRequester
 {
-    protected $_expiration = 30;
-
-    public function __construct($baseUri, $sdkKey, $options)
-    {
-        parent::__construct($baseUri, $sdkKey, $options);
-
-        if (isset($options['apc_expiration'])) {
-            $this->_expiration = (int)$options['apc_expiration'];
-        }
-    }
-
-    protected function getCachedString($cacheKey)
-    {
-        if ($this->_expiration) {
-            $value = \apc_fetch($cacheKey);
-            return $value === false ? null : $value;
-        }
-        return null;
-    }
-
-    protected function putCachedString($cacheKey, $data)
-    {
-        if ($this->_expiration) {
-            \apc_store($cacheKey, $data, $this->_expiration);
-        }
+    protected function createCache($options) {
+        $expiration = isset($options['apc_expiration']) ? (int)$options['apc_expiration'] : 30;
+        return new ApcFeatureRequesterCache($expiration);
     }
 }
