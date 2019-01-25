@@ -19,6 +19,7 @@
         "psr/log": "^1.0"
     },
     "require-dev": {
+        "aws/aws-sdk-php": "^3.86",
         "friendsofphp/php-cs-fixer": "~2.2.19",
         "guzzlehttp/guzzle": "^6.2.1",
         "kevinrob/guzzle-cache-middleware": "^1.4.1",
@@ -30,7 +31,8 @@
     "suggest": {
         "guzzlehttp/guzzle": "(^6.2.1) Required when using GuzzleEventPublisher or the default FeatureRequester",
         "kevinrob/guzzle-cache-middleware": "(^1.4.1) Recommended for performance when using the default FeatureRequester",
-        "predis/predis": "(^1.0) Required when using LDDFeatureRequester"
+        "predis/predis": "(^1.0) Required when using LDDFeatureRequester",
+        "aws/aws-sdk-php": "(^3.86) Required when using DynamoDbFeatureRequester"
     },
     "autoload": {
         "psr-4": {

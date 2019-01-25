@@ -41,18 +41,22 @@ jobs:
     <<: *php-docker-template
     docker:
       - image: circleci/php:5.6.34-cli-jessie
+      - image: amazon/dynamodb-local
   test-7.0:
     <<: *php-docker-template
     docker:
       - image: circleci/php:7.0.28-cli-jessie
+      - image: amazon/dynamodb-local
   test-7.1:
     <<: *php-docker-template
     docker:
       - image: circleci/php:7.1.15-cli-jessie
+      - image: amazon/dynamodb-local
   test-7.2:
     <<: *php-docker-template
     docker:
       - image: circleci/php:7.2.3-cli-stretch
+      - image: amazon/dynamodb-local
 
   test-5.5: # CircleCI doesn't provide a Docker image for 5.5
     machine:
@@ -65,6 +69,13 @@ jobs:
             sudo apt-get install circleci-php-5.5.36 &&
             php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');" &&
             sudo php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
+      - run:
+          name: install Docker
+          command: |
+            sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" &&
+            sudo apt-get -q update &&
+            sudo apt-cache policy docker-ce &&
+            sudo apt-get -qy install docker-ce
       - checkout
       - run:
           name: validate composer.json
@@ -75,6 +86,10 @@ jobs:
       - run:
           name: run php-cs-fixer
           command: vendor/bin/php-cs-fixer fix --diff --dry-run --verbose
+      - run:
+          name: start DynamoDB
+          command: docker run -p 8000:8000 amazon/dynamodb-local
+          background: true
       - run:
           name: run tests
           command: vendor/bin/phpunit --log-junit ~/phpunit/junit.xml --coverage-text tests

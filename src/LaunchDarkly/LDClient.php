@@ -46,8 +46,7 @@ class LDClient
      *     - send_events: An optional bool that can disable the sending of events to LaunchDarkly. Defaults to true.
      *     - logger: An optional Psr\Log\LoggerInterface. Defaults to a Monolog\Logger sending all messages to the php error_log.
      *     - offline: An optional boolean which will disable all network calls and always return the default value. Defaults to false.
-     *     - feature_requester: An optional LaunchDarkly\FeatureRequester instance.
-     *     - feature_requester_class: An optional class implementing LaunchDarkly\FeatureRequester, if `feature_requester` is not specified. Defaults to GuzzleFeatureRequester.
+     *     - feature_requester: An optional LaunchDarkly\FeatureRequester instance, or a class that implements LaunchDarkly\FeatureRequester. Defaults to GuzzleFeatureRequester.
      *     - event_publisher: An optional LaunchDarkly\EventPublisher instance.
      *     - event_publisher_class: An optional class implementing LaunchDarkly\EventPublisher, if `event_publisher` is not specified. Defaults to CurlEventPublisher.
      *     - all_attributes_private: True if no user attributes (other than the key) should be sent back to LaunchDarkly. By default, this is false.
@@ -107,20 +106,23 @@ class LDClient
      */
     private function getFeatureRequester($sdkKey, array $options)
     {
-        if (isset($options['feature_requester']) && $options['feature_requester'] instanceof FeatureRequester) {
-            return $options['feature_requester'];
-        }
-
-        if (isset($options['feature_requester_class'])) {
-            $featureRequesterClass = $options['feature_requester_class'];
+        if (isset($options['feature_requester']) && $options['feature_requester']) {
+            $fr = $options['feature_requester'];
+        } elseif (isset($options['feature_requester_class']) && $options['feature_requester_class']) {
+            $fr = $options['feature_requester_class'];
         } else {
-            $featureRequesterClass = GuzzleFeatureRequester::class;
+            $fr = GuzzleFeatureRequester::class;
         }
-
-        if (!is_a($featureRequesterClass, FeatureRequester::class, true)) {
-            throw new \InvalidArgumentException;
+        if ($fr instanceof FeatureRequester) {
+            return $fr;
         }
-        return new $featureRequesterClass($this->_baseUri, $sdkKey, $options);
+        if (is_callable($fr)) {
+            return $fr($this->_baseUri, $sdkKey, $options);
+        }
+        if (is_a($fr, FeatureRequester::class, true)) {
+            return new $fr($this->_baseUri, $sdkKey, $options);
+        }
+        throw new \InvalidArgumentException('invalid feature_requester');
     }
 
     /**

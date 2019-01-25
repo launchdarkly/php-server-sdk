@@ -64,32 +64,51 @@ With Guzzle, you could persist your cache somewhere other than the default in-me
 Using LD-Relay
 ==============
 
-The LaunchDarkly Relay Proxy ([ld-relay](https://github.com/launchdarkly/ld-relay)) consumes the LaunchDarkly streaming API and can update
-a Redis cache operating in your production environment. The ld-relay offers many benefits such as performance and feature flag consistency. With PHP applications, we strongly recommend setting up ld-relay with a Redis store.
+The LaunchDarkly Relay Proxy ([ld-relay](https://github.com/launchdarkly/ld-relay)) consumes the LaunchDarkly streaming API and can update a database cache operating in your production environment. The ld-relay offers many benefits such as performance and feature flag consistency. With PHP applications, we strongly recommend setting up ld-relay with a database store. The database can be Redis or DynamoDB. (For more about using LaunchDarkly with Redis or DynamoDB, see the [SDK reference guide](https://docs.launchdarkly.com/v2.0/docs/using-a-persistent-feature-store).)
 
 1. Set up ld-relay in [daemon-mode](https://github.com/launchdarkly/ld-relay#redis-storage-and-daemon-mode) with Redis
 
-2. Require Predis as a dependency:
+2. Add the necessary dependency for the chosen database.
+
+    For Redis:
 
         php composer.phar require "predis/predis:1.0.*"
 
-3. Create the LDClient with the Redis feature requester as an option:
+    For DynamoDB:
+
+        php composer.phar require "aws/aws-sdk-php:3.*"
+
+3. Create the LDClient with the appropriate parameters for the chosen database. These examples show all of the available options.
+
+    For Redis:
 
         $client = new LaunchDarkly\LDClient("your_sdk_key", [
-            'feature_requester_class' => 'LaunchDarkly\LDDFeatureRequester',
-            'redis_host' => 'your.redis.host',
-            'redis_port' => 6379
+            'feature_requester' => 'LaunchDarkly\LDDFeatureRequester',
+            'redis_host' => 'your.redis.host',  // defaults to "localhost" if not specified
+            'redis_port' => 6379,               // defaults to 6379 if not specified
+            'redis_timeout' => 5,               // connection timeout in seconds; defaults to 5
+            'redis_prefix' => 'env1'            // corresponds to the prefix setting in ld-relay
+            'predis_client' => $myClient        // use this if you have already configured a Predis client instance
         ]);
 
-4. If ld-relay is configured for [event forwarding](https://github.com/launchdarkly/ld-relay#event-forwarding), you can configure the LDClient to publish events to ld-relay instead of directly to `events.launchdarkly.com`. Using `GuzzleEventPublisher` with ld-relay event forwarding can be an efficient alternative to the default `curl`-based event publishing.
+    For DynamoDB:
 
         $client = new LaunchDarkly\LDClient("your_sdk_key", [
+            'feature_requester' => 'LaunchDarkly\DynamoDbFeatureRequester',
+            'dynamodb_table' => 'your.table.name',  // required
+            'dynamodb_prefix' => 'env1',            // corresponds to the prefix setting in ld-relay
+            'dynamodb_options' => array(),          // you may pass any options supported by the AWS SDK
+            'apc_expiration' => 30                  // expiration time for local caching, if you have apcu installed
+        ]);
+
+4. If you are using DynamoDB, you must create your table manually. It must have a partition key called "namespace", and a sort key called "key" (both strings). Note that by default the AWS SDK will attempt to get your AWS credentials and region from environment variables and/or local configuration files, but you may also specify them in `dynamodb_options`.
+
+5. If ld-relay is configured for [event forwarding](https://github.com/launchdarkly/ld-relay#event-forwarding), you can configure the LDClient to publish events to ld-relay instead of directly to `events.launchdarkly.com`. Using `GuzzleEventPublisher` with ld-relay event forwarding can be an efficient alternative to the default `curl`-based event publishing.
+
+    To forward events, add the following configuration properties to the configuration shown above:
+
             'event_publisher_class' => 'LaunchDarkly\GuzzleEventPublisher',
-            'events_uri' => 'http://your-ldrelay-host:8030',
-            'feature_requester_class' => 'LaunchDarkly\LDDFeatureRequester',
-            'redis_host' => 'your.redis.host',
-            'redis_port' => 6379
-        ]);
+            'events_uri' => 'http://your-ldrelay-host:8030'
 
 Using flag data from a file
 ---------------------------
@@ -112,7 +131,7 @@ Contributing
 We encourage pull-requests and other contributions from the community. We've also published an [SDK contributor's guide](http://docs.launchdarkly.com/docs/sdk-contributors-guide) that provides a detailed explanation of how our SDKs work.
 
 About LaunchDarkly
------------
+------------------
 
 * LaunchDarkly is a continuous delivery platform that provides feature flags as a service and allows developers to iterate quickly and safely. We allow you to easily flag your features and manage them from the LaunchDarkly dashboard.  With LaunchDarkly, you can:
     * Roll out a new feature to a subset of your users (like a group of users who opt-in to a beta tester group), gathering feedback and bug reports from real-world use cases.
