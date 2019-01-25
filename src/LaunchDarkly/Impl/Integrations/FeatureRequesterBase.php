@@ -69,7 +69,7 @@ class FeatureRequesterBase implements \LaunchDarkly\FeatureRequester
     protected function createCache($options)
     {
         $expiration = isset($options['apc_expiration']) ? (int)$options['apc_expiration'] : 0;
-        return (expiration > 0) ? new ApcuFeatureRequesterCache($expiration) : null;
+        return ($expiration > 0) ? new ApcuFeatureRequesterCache($expiration) : null;
     }
 
     /**
