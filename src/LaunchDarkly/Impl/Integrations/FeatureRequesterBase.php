@@ -72,7 +72,7 @@ class FeatureRequesterBase implements \LaunchDarkly\FeatureRequester
     protected function getCachedString($namespace, $key)
     {
         if ($this->_apcExpiration) {
-            $value = \apc_fetch($this->makeCacheKey($namespace, $key));
+            $value = \apcu_fetch($this->makeCacheKey($namespace, $key));
             return $value === false ? null : $value;
         }
         return null;
@@ -81,7 +81,7 @@ class FeatureRequesterBase implements \LaunchDarkly\FeatureRequester
     protected function putCachedString($namespace, $key, $data)
     {
         if ($this->_apcExpiration) {
-            \apc_add($this->makeCacheKey($namespace, $key), $data, $this->_apcExpiration);
+            \apcu_store($this->makeCacheKey($namespace, $key), $data, $this->_apcExpiration);
         }
     }
 
