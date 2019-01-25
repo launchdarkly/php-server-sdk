@@ -25,6 +25,9 @@ class Files
      * that in this example, `send_events` is also set to false so that it will not connect to
      * LaunchDarkly to send analytics events either.)
      *
+     * For more information about using this component, and the format of data files, see
+     * the SDK reference guide on ["Reading flags from a file"](https://docs.launchdarkly.com/docs/reading-flags-from-a-file).
+     *
      * @param array $filePaths relative or absolute paths to the data files
      * @return object  an object to be stored in the `feature_requester` configuration property
      */

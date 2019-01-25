@@ -87,7 +87,7 @@ The LaunchDarkly Relay Proxy ([ld-relay](https://github.com/launchdarkly/ld-rela
     For Redis:
 
         $client = new LaunchDarkly\LDClient("your_sdk_key", [
-            'feature_requester' => 'LaunchDarkly\LDDFeatureRequester',
+            'feature_requester' => \LaunchDarkly\Integrations\Redis::newFeatureRequester(),
             'redis_host' => 'your.redis.host',  // defaults to "localhost" if not specified
             'redis_port' => 6379,               // defaults to 6379 if not specified
             'redis_timeout' => 5,               // connection timeout in seconds; defaults to 5
@@ -98,7 +98,7 @@ The LaunchDarkly Relay Proxy ([ld-relay](https://github.com/launchdarkly/ld-rela
     For Consul:
 
         $client = new LaunchDarkly\LDClient("your_sdk_key", [
-            'feature_requester' => 'LaunchDarkly\ConsulFeatureRequester',
+            'feature_requester' => \LaunchDarkly\Integrations\Consul::newFeatureRequester(),
             'consul_uri' => 'http://localhost:8500',  // this is the default
             'consul_prefix' => 'env1',                // corresponds to the prefix setting in ld-relay
             'consul_options' => array(),              // you may pass any options supported by the Guzzle client
@@ -108,7 +108,7 @@ The LaunchDarkly Relay Proxy ([ld-relay](https://github.com/launchdarkly/ld-rela
     For DynamoDB:
 
         $client = new LaunchDarkly\LDClient("your_sdk_key", [
-            'feature_requester' => 'LaunchDarkly\DynamoDbFeatureRequester',
+            'feature_requester' => \LaunchDarkly\Integrations\DynamoDb::newFeatureRequester(),
             'dynamodb_table' => 'your.table.name',  // required
             'dynamodb_prefix' => 'env1',            // corresponds to the prefix setting in ld-relay
             'dynamodb_options' => array(),          // you may pass any options supported by the AWS SDK
@@ -127,7 +127,7 @@ The LaunchDarkly Relay Proxy ([ld-relay](https://github.com/launchdarkly/ld-rela
 Using flag data from a file
 ---------------------------
 
-For testing purposes, the SDK can be made to read feature flag state from a file or files instead of connecting to LaunchDarkly. See [`FileDataFeatureRequester`](https://github.com/launchdarkly/php-client/blob/master/FileDataFeatureRequester.php) and ["Reading flags from a file"](https://docs.launchdarkly.com/docs/reading-flags-from-a-file).
+For testing purposes, the SDK can be made to read feature flag state from a file or files instead of connecting to LaunchDarkly. See [`LaunchDarkly\Integrations\Files`](https://github.com/launchdarkly/php-client/blob/master/src/LaunchDarkly/Integrations/Files.php) and ["Reading flags from a file"](https://docs.launchdarkly.com/docs/reading-flags-from-a-file).
 
 Testing
 -------
