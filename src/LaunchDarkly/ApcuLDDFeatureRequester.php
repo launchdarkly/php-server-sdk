@@ -29,6 +29,6 @@ class ApcuLDDFeatureRequester extends ApcLDDFeatureRequester
      */
     protected function add($key, $var, $ttl = 0)
     {
-        return \apcu_add($key, $var, $ttl);
+        return \apcu_store($key, $var, $ttl);
     }
 }

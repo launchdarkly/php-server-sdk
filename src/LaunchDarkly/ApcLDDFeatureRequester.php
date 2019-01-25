@@ -51,7 +51,7 @@ class ApcLDDFeatureRequester extends LDDFeatureRequester
      */
     protected function add($key, $var, $ttl = 0)
     {
-        return \apc_add($key, $var, $ttl);
+        return \apc_store($key, $var, $ttl);
     }
 
     protected function store_in_cache($namespace, $key, $val)
