@@ -24,45 +24,19 @@ class ApcLDDFeatureRequester extends LDDFeatureRequester
         }
     }
 
-    /**
-     * @param $key
-     * @param $success
-     * @return mixed
-     */
-    protected function fetch($key, &$success = null)
+    protected function getCachedString($cacheKey)
     {
-        return \apc_fetch($key, $success);
-    }
-
-    protected function get_from_cache($namespace, $key)
-    {
-        $key = self::make_cache_key($namespace, $key);
-        $enabled = $this->fetch($key);
-        if ($enabled === false) {
-            return null;
-        } else {
-            return $enabled;
+        if ($this->_expiration) {
+            $value = \apc_fetch($cacheKey);
+            return $value === false ? null : $value;
         }
+        return null;
     }
 
-    /**
-     * @param $key
-     * @param $var
-     * @param int $ttl
-     * @return mixed
-     */
-    protected function add($key, $var, $ttl = 0)
+    protected function putCachedString($cacheKey, $data)
     {
-        return \apc_store($key, $var, $ttl);
-    }
-
-    protected function store_in_cache($namespace, $key, $val)
-    {
-        $this->add($this->make_cache_key($namespace, $key), $val, $this->_expiration);
-    }
-
-    private function make_cache_key($namespace, $name)
-    {
-        return $namespace.'.'.$name;
+        if ($this->_expiration) {
+            \apc_store($cacheKey, $data, $this->_expiration);
+        }
     }
 }

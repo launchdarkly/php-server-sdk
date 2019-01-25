@@ -69,25 +69,20 @@ class FeatureRequesterBase implements \LaunchDarkly\FeatureRequester
         return array();
     }
 
-    protected function getCachedString($namespace, $key)
+    protected function getCachedString($cacheKey)
     {
         if ($this->_apcExpiration) {
-            $value = \apcu_fetch($this->makeCacheKey($namespace, $key));
+            $value = \apcu_fetch($cacheKey);
             return $value === false ? null : $value;
         }
         return null;
     }
 
-    protected function putCachedString($namespace, $key, $data)
+    protected function putCachedString($cacheKey, $data)
     {
         if ($this->_apcExpiration) {
-            \apcu_store($this->makeCacheKey($namespace, $key), $data, $this->_apcExpiration);
+            \apcu_store($cacheKey, $data, $this->_apcExpiration);
         }
-    }
-
-    protected function makeCacheKey($namespace, $key)
-    {
-        return self::CACHE_PREFIX . $namespace . ':' . $key;
     }
 
     /**
@@ -154,17 +149,19 @@ class FeatureRequesterBase implements \LaunchDarkly\FeatureRequester
 
     protected function getJsonItem($namespace, $key)
     {
-        $raw = $this->getCachedString($namespace, $key);
+        $cacheKey = $this->makeCacheKey($namespace, $key);
+        $raw = $this->getCachedString($cacheKey);
         if ($raw === null) {
             $raw = $this->readItemString($namespace, $key);
-            $this->putCachedString($namespace, $key, $raw);
+            $this->putCachedString($cacheKey, $raw);
         }
         return ($raw === null) ? null : json_decode($raw, true);
     }
 
     protected function getJsonItemList($namespace)
     {
-        $raw = $this->getCachedString($namespace, self::ALL_ITEMS_KEY);
+        $cacheKey = $this->makeCacheKey($namespace, self::ALL_ITEMS_KEY);
+        $raw = $this->getCachedString($cacheKey);
         if ($raw) {
             $values = json_decode($raw, true);
         } else {
@@ -172,11 +169,16 @@ class FeatureRequesterBase implements \LaunchDarkly\FeatureRequester
             if (!$values) {
                 $values = array();
             }
-            $this->putCachedString($namespace, self::ALL_ITEMS_KEY, json_encode($values));
+            $this->putCachedString($cacheKey, json_encode($values));
         }
         foreach ($values as $i => $s) {
             $values[$i] = json_decode($s, true);
         }
         return $values;
+    }
+
+    private function makeCacheKey($namespace, $key)
+    {
+        return self::CACHE_PREFIX . $namespace . ':' . $key;
     }
 }

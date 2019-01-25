@@ -14,26 +14,13 @@ namespace LaunchDarkly;
  *
  * @package LaunchDarkly
  */
-class ApcuLDDFeatureRequester extends ApcLDDFeatureRequester
+class ApcuLDDFeatureRequester extends LDDFeatureRequester
 {
-    /**
-     * @param $key
-     * @param null $success
-     * @return mixed
-     */
-    protected function fetch($key, &$success = null)
+    public function __construct($baseUri, $sdkKey, $options)
     {
-        return \apcu_fetch($key, $success);
-    }
-
-    /**
-     * @param $key
-     * @param $var
-     * @param int $ttl
-     * @return bool
-     */
-    protected function add($key, $var, $ttl = 0)
-    {
-        return \apcu_store($key, $var, $ttl);
+        if (!isset($options['apc_expiration'])) {
+            $options['apc_expiration'] = 30;
+        }
+        parent::__construct($baseUri, $sdkKey, $options);
     }
 }
