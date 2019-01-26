@@ -2,11 +2,12 @@
 namespace LaunchDarkly\Impl\Integrations;
 
 use LaunchDarkly\FeatureFlag;
+use LaunchDarkly\FeatureRequester;
 use LaunchDarkly\Segment;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
-class FeatureRequesterBase implements \LaunchDarkly\FeatureRequester
+class FeatureRequesterBase implements FeatureRequester
 {
     const FEATURES_NAMESPACE = 'features';
     const SEGMENTS_NAMESPACE = 'segments';

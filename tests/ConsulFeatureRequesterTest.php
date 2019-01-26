@@ -2,7 +2,7 @@
 
 namespace LaunchDarkly\Tests;
 
-use \LaunchDarkly\Integrations\Consul;
+use LaunchDarkly\Integrations\Consul;
 use SensioLabs\Consul\Exception\ClientException;
 use SensioLabs\Consul\ServiceFactory;
 
