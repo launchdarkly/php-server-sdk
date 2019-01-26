@@ -30,5 +30,6 @@ class RedisFeatureRequesterTest extends FeatureRequesterTestBase
 
     protected function deleteExistingData()
     {
+        self::$predisClient->flushdb();
     }
 }
