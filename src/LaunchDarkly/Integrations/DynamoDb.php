@@ -14,7 +14,7 @@ class DynamoDb
      * To use this method, you must have installed the package `aws/aws-sdk-php`. After calling this
      * method, store its return value in the `feature_requester` property of your client configuration:
      *
-     *     $fr = LaunchDarkly\Integrations\DynamoDb::newFeatureRequester([ "dynamodb_table" => "my-table" ]);
+     *     $fr = LaunchDarkly\Integrations\DynamoDb::featureRequester([ "dynamodb_table" => "my-table" ]);
      *     $config = [ "feature_requester" => $fr ];
      *     $client = new LDClient("sdk_key", $config);
      *
@@ -29,7 +29,7 @@ class DynamoDb
      *   - `apc_expiration`: expiration time in seconds for local caching, if `APCu` is installed
      * @return object  an object to be stored in the `feature_requester` configuration property
      */
-    public static function newFeatureRequester($options = array())
+    public static function featureRequester($options = array())
     {
         return function ($baseUri, $sdkKey, $baseOptions) use ($options) {
             return new \LaunchDarkly\Impl\Integrations\DynamoDbFeatureRequester($baseUri, $sdkKey,

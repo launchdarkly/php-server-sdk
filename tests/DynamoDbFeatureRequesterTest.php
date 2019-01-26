@@ -37,7 +37,7 @@ class DynamoDbFeatureRequesterTest extends FeatureRequesterTestBase
             'dynamodb_prefix' => self::PREFIX,
             'logger' => new NullLogger()
         );
-        $factory = DynamoDb::newFeatureRequester();
+        $factory = DynamoDb::featureRequester();
         return $factory('', '', $options);
     }
 

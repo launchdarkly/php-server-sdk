@@ -1,6 +1,7 @@
 <?php
 namespace LaunchDarkly;
 
+use LaunchDarkly\Integrations\Guzzle;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
@@ -46,11 +47,13 @@ class LDClient
      *     - send_events: An optional bool that can disable the sending of events to LaunchDarkly. Defaults to true.
      *     - logger: An optional Psr\Log\LoggerInterface. Defaults to a Monolog\Logger sending all messages to the php error_log.
      *     - offline: An optional boolean which will disable all network calls and always return the default value. Defaults to false.
-     *     - feature_requester: An optional LaunchDarkly\FeatureRequester instance, or a class that implements LaunchDarkly\FeatureRequester. Defaults to GuzzleFeatureRequester.
-     *     - event_publisher: An optional LaunchDarkly\EventPublisher instance.
-     *     - event_publisher_class: An optional class implementing LaunchDarkly\EventPublisher, if `event_publisher` is not specified. Defaults to CurlEventPublisher.
+     *     - feature_requester: An optional LaunchDarkly\FeatureRequester instance, or a class or factory for one. Defaults to {@link \LaunchDarkly\Integrations\Guzzle::featureRequester()}.
+     *     - event_publisher: An optional LaunchDarkly\EventPublisher instance, or a class or factory for one. Defaults to {@link \LaunchDarkly\Integrations\Curl::eventPublisher()}.
      *     - all_attributes_private: True if no user attributes (other than the key) should be sent back to LaunchDarkly. By default, this is false.
      *     - private_attribute_names: An optional array of user attribute names to be marked private. Any users sent to LaunchDarkly with this configuration active will have attributes with these names removed. You can also set private attributes on a per-user basis in LDUserBuilder.
+     *     - Other options may be available depending on which features you are using from {@link \LaunchDarkly\Integrations}.
+     * By default, those are {@link \LaunchDarkly\Integrations\Guzzle::featureRequester()} and
+     * {@link \LaunchDarkly\Integrations\Curl::eventPublisher()}.
      */
     public function __construct($sdkKey, $options = array())
     {
@@ -111,7 +114,7 @@ class LDClient
         } elseif (isset($options['feature_requester_class']) && $options['feature_requester_class']) {
             $fr = $options['feature_requester_class'];
         } else {
-            $fr = GuzzleFeatureRequester::class;
+            $fr = Guzzle::featureRequester();
         }
         if ($fr instanceof FeatureRequester) {
             return $fr;

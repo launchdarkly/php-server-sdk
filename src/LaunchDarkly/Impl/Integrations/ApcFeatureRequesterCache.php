@@ -3,9 +3,6 @@ namespace LaunchDarkly\Impl\Integrations;
 
 /**
  * Deprecated caching implementation based on the APC extension.
- *
- * @deprecated Per the docs (http://php.net/manual/en/intro.apc.php):
- * "This extension (APC) is considered unmaintained and dead".
  */
 class ApcFeatureRequesterCache implements FeatureRequesterCache
 {

@@ -19,7 +19,7 @@ class RedisFeatureRequesterTest extends FeatureRequesterTestBase
     
     protected function makeRequester()
     {
-        $factory = Redis::newFeatureRequester();
+        $factory = Redis::featureRequester();
         return $factory('', '', array('redis_prefix' => self::PREFIX));
     }
 

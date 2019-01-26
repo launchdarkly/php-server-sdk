@@ -8,7 +8,7 @@ class FileDataFeatureRequesterTest extends \PHPUnit_Framework_TestCase
 {
     public function testLoadsFile()
     {
-        $fr = Files::newFeatureRequester("./tests/filedata/all-properties.json");
+        $fr = Files::featureRequester("./tests/filedata/all-properties.json");
         $flag1 = $fr->getFeature("flag1");
         $this->assertEquals("flag1", $flag1->getKey());
         $flag2 = $fr->getFeature("flag2");
@@ -19,7 +19,7 @@ class FileDataFeatureRequesterTest extends \PHPUnit_Framework_TestCase
 
     public function testLoadsMultipleFiles()
     {
-        $fr = Files::newFeatureRequester(array("./tests/filedata/flag-only.json",
+        $fr = Files::featureRequester(array("./tests/filedata/flag-only.json",
             "./tests/filedata/segment-only.json"));
         $flag1 = $fr->getFeature("flag1");
         $this->assertEquals("flag1", $flag1->getKey());
@@ -29,7 +29,7 @@ class FileDataFeatureRequesterTest extends \PHPUnit_Framework_TestCase
 
     public function testShortcutFlagCanBeEvaluated()
     {
-        $fr = Files::newFeatureRequester("./tests/filedata/all-properties.json");
+        $fr = Files::featureRequester("./tests/filedata/all-properties.json");
         $flag2 = $fr->getFeature("flag2");
         $this->assertEquals("flag2", $flag2->getKey());
         $result = $flag2->evaluate(new LDUser("user"), null);

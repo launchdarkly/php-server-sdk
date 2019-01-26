@@ -5,9 +5,9 @@ use LaunchDarkly\Impl\Integrations\RedisFeatureRequester;
 
 /**
  * Deprecated implementation class for Redis integration.
- * Replaced by {@link \LaunchDarkly\Integrations\Redis::newFeatureRequester()}.
+ * Replaced by {@link \LaunchDarkly\Integrations\Redis::featureRequester()}.
  *
- * @deprecated Use {@link \LaunchDarkly\Integrations\Redis::newFeatureRequester()}
+ * @deprecated Use {@link \LaunchDarkly\Integrations\Redis::featureRequester()}
  */
 class LDDFeatureRequester extends RedisFeatureRequester
 {

@@ -14,7 +14,7 @@ class Redis
      * To use this method, you must have installed the package `predis/predis`. After calling this
      * method, store its return value in the `feature_requester` property of your client configuration:
      *
-     *     $fr = LaunchDarkly\Integrations\Redis::newFeatureRequester([ "redis_prefix" => "env1" ]);
+     *     $fr = LaunchDarkly\Integrations\Redis::featureRequester([ "redis_prefix" => "env1" ]);
      *     $config = [ "feature_requester" => $fr ];
      *     $client = new LDClient("sdk_key", $config);
      *
@@ -31,7 +31,7 @@ class Redis
      *   - `apc_expiration`: expiration time in seconds for local caching, if `APCu` is installed
      * @return object  an object to be stored in the `feature_requester` configuration property
      */
-    public static function newFeatureRequester($options = array())
+    public static function featureRequester($options = array())
     {
         return function ($baseUri, $sdkKey, $baseOptions) use ($options) {
             return new \LaunchDarkly\Impl\Integrations\RedisFeatureRequester($baseUri, $sdkKey,

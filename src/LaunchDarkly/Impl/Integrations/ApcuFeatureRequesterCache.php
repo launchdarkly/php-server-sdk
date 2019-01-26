@@ -4,9 +4,6 @@ namespace LaunchDarkly\Impl\Integrations;
 /**
  * Caching implementation based on the APCu extension. This is used by default by all database feature
  * requester implementations if the 'apc_expiration' property is set.
- *
- * @deprecated Per the docs (http://php.net/manual/en/intro.apc.php):
- * "This extension (APC) is considered unmaintained and dead".
  */
 class ApcuFeatureRequesterCache implements FeatureRequesterCache
 {

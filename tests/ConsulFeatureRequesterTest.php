@@ -24,7 +24,7 @@ class ConsulFeatureRequesterTest extends FeatureRequesterTestBase
         $options = array(
             'consul_prefix' => self::PREFIX
         );
-        $factory = Consul::newFeatureRequester();
+        $factory = Consul::featureRequester();
         return $factory('', '', $options);
     }
 

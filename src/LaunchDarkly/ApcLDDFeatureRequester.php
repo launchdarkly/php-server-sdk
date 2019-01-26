@@ -10,7 +10,7 @@ use LaunchDarkly\Impl\Integrations\RedisFeatureRequester;
  * @deprecated Per the docs (http://php.net/manual/en/intro.apc.php):
  * "This extension (APC) is considered unmaintained and dead".
  *
- * Install APCu and use {@link \LaunchDarkly\Integrations\Redis::newFeatureRequester()} instead!
+ * Install APCu and use {@link \LaunchDarkly\Integrations\Redis::featureRequester()} instead!
  *
  * @package LaunchDarkly
  */

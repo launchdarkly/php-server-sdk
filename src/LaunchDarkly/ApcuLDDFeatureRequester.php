@@ -10,10 +10,10 @@ use LaunchDarkly\Impl\Integrations\RedisFeatureRequester;
  *
  * Unlike APC, APCu is actively maintained and is available from php53 to php7.
  *
- * This class is deprecated. Use {@link \LaunchDarkly\Integrations\Redis::newFeatureRequester()}
+ * This class is deprecated. Use {@link \LaunchDarkly\Integrations\Redis::featureRequester()}
  * and set the `apc_expiration` option.
  *
- * @deprecated Use {@link \LaunchDarkly\Integrations\Redis::newFeatureRequester()} and set the `apc_expiration` option.
+ * @deprecated Use {@link \LaunchDarkly\Integrations\Redis::featureRequester()} and set the `apc_expiration` option.
  *
  * @package LaunchDarkly
  */
