@@ -1,6 +1,7 @@
 <?php
 namespace LaunchDarkly;
 
+use LaunchDarkly\Integrations\Guzzle;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
@@ -12,7 +13,7 @@ class LDClient
 {
     const DEFAULT_BASE_URI = 'https://app.launchdarkly.com';
     const DEFAULT_EVENTS_URI = 'https://events.launchdarkly.com';
-    const VERSION = '3.4.1';
+    const VERSION = '3.5.0';
 
     /** @var string */
     protected $_sdkKey;
@@ -43,15 +44,18 @@ class LDClient
      *     - timeout: Float describing the maximum length of a request in seconds. Defaults to 3
      *     - connect_timeout: Float describing the number of seconds to wait while trying to connect to a server. Defaults to 3
      *     - cache: An optional Kevinrob\GuzzleCache\Storage\CacheStorageInterface. Defaults to an in-memory cache.
-     *     - send_events: An optional bool that can disable the sending of events to LaunchDarkly. Defaults to false.
+     *     - send_events: An optional bool that can disable the sending of events to LaunchDarkly. Defaults to true.
      *     - logger: An optional Psr\Log\LoggerInterface. Defaults to a Monolog\Logger sending all messages to the php error_log.
      *     - offline: An optional boolean which will disable all network calls and always return the default value. Defaults to false.
-     *     - feature_requester: An optional LaunchDarkly\FeatureRequester instance.
-     *     - feature_requester_class: An optional class implementing LaunchDarkly\FeatureRequester, if `feature_requester` is not specified. Defaults to GuzzleFeatureRequester.
-     *     - event_publisher: An optional LaunchDarkly\EventPublisher instance.
-     *     - event_publisher_class: An optional class implementing LaunchDarkly\EventPublisher, if `event_publisher` is not specified. Defaults to CurlEventPublisher.
+     *     - feature_requester: An optional LaunchDarkly\FeatureRequester instance, or a class or factory for one. Defaults to {@link \LaunchDarkly\Integrations\Guzzle::featureRequester()}.
+     *     - feature_requester_class: Deprecated, equivalent to `feature_requester`.
+     *     - event_publisher: An optional LaunchDarkly\EventPublisher instance, or a class or factory for one. Defaults to {@link \LaunchDarkly\Integrations\Curl::eventPublisher()}.
+     *     - event_publisher_class: Deprecated, equivalent to `event_publisher`.
      *     - all_attributes_private: True if no user attributes (other than the key) should be sent back to LaunchDarkly. By default, this is false.
      *     - private_attribute_names: An optional array of user attribute names to be marked private. Any users sent to LaunchDarkly with this configuration active will have attributes with these names removed. You can also set private attributes on a per-user basis in LDUserBuilder.
+     *     - Other options may be available depending on which features you are using from {@link \LaunchDarkly\Integrations}.
+     * By default, those are {@link \LaunchDarkly\Integrations\Guzzle::featureRequester()} and
+     * {@link \LaunchDarkly\Integrations\Curl::eventPublisher()}.
      */
     public function __construct($sdkKey, $options = array())
     {
@@ -107,20 +111,23 @@ class LDClient
      */
     private function getFeatureRequester($sdkKey, array $options)
     {
-        if (isset($options['feature_requester']) && $options['feature_requester'] instanceof FeatureRequester) {
-            return $options['feature_requester'];
-        }
-
-        if (isset($options['feature_requester_class'])) {
-            $featureRequesterClass = $options['feature_requester_class'];
+        if (isset($options['feature_requester']) && $options['feature_requester']) {
+            $fr = $options['feature_requester'];
+        } elseif (isset($options['feature_requester_class']) && $options['feature_requester_class']) {
+            $fr = $options['feature_requester_class'];
         } else {
-            $featureRequesterClass = GuzzleFeatureRequester::class;
+            $fr = Guzzle::featureRequester();
         }
-
-        if (!is_a($featureRequesterClass, FeatureRequester::class, true)) {
-            throw new \InvalidArgumentException;
+        if ($fr instanceof FeatureRequester) {
+            return $fr;
         }
-        return new $featureRequesterClass($this->_baseUri, $sdkKey, $options);
+        if (is_callable($fr)) {
+            return $fr($this->_baseUri, $sdkKey, $options);
+        }
+        if (is_a($fr, FeatureRequester::class, true)) {
+            return new $fr($this->_baseUri, $sdkKey, $options);
+        }
+        throw new \InvalidArgumentException('invalid feature_requester');
     }
 
     /**
@@ -356,12 +363,13 @@ class LDClient
         $state = new FeatureFlagsState(true);
         $clientOnly = isset($options['clientSideOnly']) && $options['clientSideOnly'];
         $withReasons = isset($options['withReasons']) && $options['withReasons'];
+        $detailsOnlyIfTracked = isset($options['detailsOnlyForTrackedFlags']) && $options['detailsOnlyForTrackedFlags'];
         foreach ($flags as $key => $flag) {
             if ($clientOnly && !$flag->isClientSide()) {
                 continue;
             }
             $result = $flag->evaluate($user, $preloadedRequester);
-            $state->addFlag($flag, $result->getDetail(), $withReasons);
+            $state->addFlag($flag, $result->getDetail(), $withReasons, $detailsOnlyIfTracked);
         }
         return $state;
     }
