@@ -48,7 +48,9 @@ class LDClient
      *     - logger: An optional Psr\Log\LoggerInterface. Defaults to a Monolog\Logger sending all messages to the php error_log.
      *     - offline: An optional boolean which will disable all network calls and always return the default value. Defaults to false.
      *     - feature_requester: An optional LaunchDarkly\FeatureRequester instance, or a class or factory for one. Defaults to {@link \LaunchDarkly\Integrations\Guzzle::featureRequester()}.
+     *     - feature_requester_class: Deprecated, equivalent to `feature_requester`.
      *     - event_publisher: An optional LaunchDarkly\EventPublisher instance, or a class or factory for one. Defaults to {@link \LaunchDarkly\Integrations\Curl::eventPublisher()}.
+     *     - event_publisher_class: Deprecated, equivalent to `event_publisher`.
      *     - all_attributes_private: True if no user attributes (other than the key) should be sent back to LaunchDarkly. By default, this is false.
      *     - private_attribute_names: An optional array of user attribute names to be marked private. Any users sent to LaunchDarkly with this configuration active will have attributes with these names removed. You can also set private attributes on a per-user basis in LDUserBuilder.
      *     - Other options may be available depending on which features you are using from {@link \LaunchDarkly\Integrations}.
