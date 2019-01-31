@@ -2,6 +2,20 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [3.5.0] - 2019-01-30
+### Added:
+- It is now possible to use Consul or DynamoDB as a data store with `ld-relay`, similar to the existing Redis integration. See `LaunchDarkly\Integrations\Consul` and `LaunchDarkly\Integrations\DynamoDb`, and the reference guide [Using a persistent feature store](https://docs.launchdarkly.com/v2.0/docs/using-a-persistent-feature-store).
+- When using the Redis integration, you can specify a Redis connection timeout different from the default of 5 seconds by setting the option `redis_timeout` to the desired number of seconds. (Thanks, [jjozefowicz](https://github.com/launchdarkly/php-client/pull/113)!)
+- It is now possible to inject feature flags into the client from local JSON files, replacing the normal LaunchDarkly connection. This would typically be for testing purposes. See `LaunchDarkly\Integrations\Files`.
+- The `allFlagsState` method now accepts a new option, `detailsOnlyForTrackedFlags`, which reduces the size of the JSON representation of the flag state by omitting some metadata. Specifically, it omits any data that is normally used for generating detailed evaluation events if a flag does not have event tracking or debugging turned on.
+
+### Changed:
+- The `feature_requester` and `event_publisher` configuration options now work differently: you can still set them to an instance of an implementation object, but you can also set them to a class or a class name (i.e. the same as the `feature_requester_class` option), or a factory function. Therefore, the `_class` versions of these options are no longer necessary. However, the old semantics still work, so you can for instance set `event_publisher_class` to `"LaunchDarkly\GuzzleEventPublisher"`, even though the new preferred way is to set `event_publisher` to `LaunchDarkly\Integrations\Guzzle::featureRequester()`.
+
+### Fixed:
+- JSON data from `allFlagsState` is now slightly smaller even if you do not use the new option described above, because it omits the flag property for event tracking unless that property is true.
+- The `$_anonymous` property of the `LDUser` class was showing up as public rather than protected. (Thanks, [dstockto](https://github.com/launchdarkly/php-client/pull/114)!)
+
 ## [3.4.1] - 2018-09-25
 ### Fixed:
 - Improved the performance of `allFlags`/`allFlagsState` by not making redundant individual requests for prerequisite flags, when a flag is being evaluated that has prerequisites. Instead it will reuse the same flag data that it already obtained from LaunchDarkly in the "get all the flags" request.
