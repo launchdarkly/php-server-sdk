@@ -1,5 +1,5 @@
 <?php
-namespace LaunchDarkly;
+namespace LaunchDarkly\Impl\Integrations;
 
 use SensioLabs\Consul\Exception\ClientException;
 use SensioLabs\Consul\ServiceFactory;

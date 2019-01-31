@@ -3,7 +3,7 @@
 namespace LaunchDarkly\Tests;
 
 use Aws\DynamoDb\DynamoDbClient;
-use LaunchDarkly\DynamoDbFeatureRequester;
+use LaunchDarkly\Integrations\DynamoDb;
 use Psr\Log\NullLogger;
 
 class DynamoDbFeatureRequesterTest extends FeatureRequesterTestBase
@@ -37,7 +37,8 @@ class DynamoDbFeatureRequesterTest extends FeatureRequesterTestBase
             'dynamodb_prefix' => self::PREFIX,
             'logger' => new NullLogger()
         );
-        return new DynamoDbFeatureRequester('', '', $options);
+        $factory = DynamoDb::featureRequester();
+        return $factory('', '', $options);
     }
 
     protected function putItem($namespace, $key, $version, $json)

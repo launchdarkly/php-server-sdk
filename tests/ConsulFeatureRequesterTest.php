@@ -2,7 +2,7 @@
 
 namespace LaunchDarkly\Tests;
 
-use LaunchDarkly\ConsulFeatureRequester;
+use LaunchDarkly\Integrations\Consul;
 use SensioLabs\Consul\Exception\ClientException;
 use SensioLabs\Consul\ServiceFactory;
 
@@ -24,7 +24,8 @@ class ConsulFeatureRequesterTest extends FeatureRequesterTestBase
         $options = array(
             'consul_prefix' => self::PREFIX
         );
-        return new ConsulFeatureRequester('', '', $options);
+        $factory = Consul::featureRequester();
+        return $factory('', '', $options);
     }
 
     protected function putItem($namespace, $key, $version, $json)

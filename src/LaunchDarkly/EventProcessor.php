@@ -1,6 +1,8 @@
 <?php
 namespace LaunchDarkly;
 
+use LaunchDarkly\Integrations\Curl;
+
 /**
  * @internal
  */
@@ -69,19 +71,22 @@ class EventProcessor
      */
     private function getEventPublisher($sdkKey, array $options)
     {
-        if (isset($options['event_publisher']) && $options['event_publisher'] instanceof EventPublisher) {
-            return $options['event_publisher'];
+        $ep = isset($options['event_publisher']) ? $options['event_publisher'] : null;
+        if (!$ep && isset($options['event_publisher_class'])) {
+            $ep = $options['event_publisher_class'];
         }
-
-        if (isset($options['event_publisher_class'])) {
-            $eventPublisherClass = $options['event_publisher_class'];
-        } else {
-            $eventPublisherClass = CurlEventPublisher::class;
+        if (!$ep) {
+            $ep = Curl::eventPublisher();
         }
-
-        if (!is_a($eventPublisherClass, EventPublisher::class, true)) {
+        if ($ep instanceof EventPublisher) {
+            return $ep;
+        }
+        if (is_callable($ep)) {
+            return $ep($sdkKey, $options);
+        }
+        if (!is_a($ep, EventPublisher::class, true)) {
             throw new \InvalidArgumentException;
         }
-        return new $eventPublisherClass($sdkKey, $options);
+        return new $ep($sdkKey, $options);
     }
 }

@@ -84,6 +84,13 @@ class FeatureRequesterTestBase extends \PHPUnit_Framework_TestCase
         $this->assertEquals($flagVersion, $flag2->getVersion());
     }
 
+    public function testAllFeaturesWithEmptyStore()
+    {
+        $fr = $this->makeRequester();
+        $flags = $fr->getAllFeatures();
+        $this->assertEquals(array(), $flags);
+    }
+
     public function testGetSegment()
     {
         $segKey = 'foo';
