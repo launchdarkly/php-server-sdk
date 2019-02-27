@@ -314,7 +314,7 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('flagkey', $event['key']);
         $this->assertFalse(isset($event['version']));
         $this->assertEquals('default', $event['value']);
-        $this->assertNull($event['variation']);
+        $this->assertFalse(isset($event['variation']));
         $this->assertEquals($user, $event['user']);
         $this->assertEquals('default', $event['default']);
         $this->assertFalse(isset($event['reason']));
@@ -336,9 +336,9 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
         $event = $queue[0];
         $this->assertEquals('feature', $event['kind']);
         $this->assertEquals('flagkey', $event['key']);
-        $this->assertNull($event['version']);
-        $this->assertEquals('default', $event['value']);
         $this->assertFalse(isset($event['version']));
+        $this->assertEquals('default', $event['value']);
+        $this->assertFalse(isset($event['variation']));
         $this->assertEquals($user, $event['user']);
         $this->assertEquals('default', $event['default']);
         $this->assertEquals(array('kind' => 'ERROR', 'errorKind' => 'FLAG_NOT_FOUND'), $event['reason']);
