@@ -176,21 +176,21 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
 
     public function testVariationDetailSendsEvent()
     {
-        $flag = $this->makeOffFlagWithValue('FUCKINGWEIRDflagkey', 'flagvalue');
-        MockFeatureRequester::$flags = array('FUCKINGWEIRDflagkey' => $flag);
+        $flag = $this->makeOffFlagWithValue('flagkey', 'flagvalue');
+        MockFeatureRequester::$flags = array('flagkey' => $flag);
         $client = new LDClient("someKey", array(
             'feature_requester_class' => MockFeatureRequester::class,
             'events' => true
         ));
 
         $user = new LDUser('userkey');
-        $client->variationDetail('FUCKINGWEIRDflagkey', $user, 'default');
+        $client->variationDetail('flagkey', $user, 'default');
         $proc = $this->getPrivateField($client, '_eventProcessor');
         $queue = $this->getPrivateField($proc, '_queue');
         $this->assertEquals(1, sizeof($queue));
         $event = $queue[0];
         $this->assertEquals('feature', $event['kind']);
-        $this->assertEquals('FUCKINGWEIRDflagkey', $event['key']);
+        $this->assertEquals('flagkey', $event['key']);
         $this->assertEquals($flag->getVersion(), $event['version']);
         $this->assertEquals('flagvalue', $event['value']);
         $this->assertEquals(1, $event['variation']);
