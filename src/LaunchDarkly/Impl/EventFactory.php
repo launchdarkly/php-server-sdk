@@ -3,15 +3,18 @@ namespace LaunchDarkly\Impl;
 
 use LaunchDarkly\Util;
 
-class EventFactory {
+class EventFactory
+{
     /** @var boolean */
     private $_withReasons;
 
-    public function __construct($withReasons) {
+    public function __construct($withReasons)
+    {
         $this->_withReasons = $withReasons;
     }
 
-    public function newEvalEvent($flag, $user, $detail, $default, $prereqOfFlag = null) {
+    public function newEvalEvent($flag, $user, $detail, $default, $prereqOfFlag = null)
+    {
         $addExperimentData = static::isExperiment($flag, $detail->getReason());
         $e = array(
             'kind' => 'feature',
@@ -39,7 +42,8 @@ class EventFactory {
         return $e;
     }
 
-    public function newDefaultEvent($flag, $user, $detail) {
+    public function newDefaultEvent($flag, $user, $detail)
+    {
         $e = array(
             'kind' => 'feature',
             'creationDate' => Util::currentTimeUnixMillis(),
@@ -62,7 +66,8 @@ class EventFactory {
         return $e;
     }
 
-    public function newUnknownFlagEvent($key, $user, $detail) {
+    public function newUnknownFlagEvent($key, $user, $detail)
+    {
         $e = array(
             'kind' => 'feature',
             'creationDate' => Util::currentTimeUnixMillis(),
@@ -78,7 +83,8 @@ class EventFactory {
         return $e;
     }
 
-    public function newIdentifyEvent($user) {
+    public function newIdentifyEvent($user)
+    {
         return array(
             'kind' => 'identify',
             'creationDate' => Util::currentTimeUnixMillis(),
@@ -87,7 +93,8 @@ class EventFactory {
         );
     }
     
-    public function newCustomEvent($eventName, $user, $data) {
+    public function newCustomEvent($eventName, $user, $data)
+    {
         $e = array(
             'kind' => 'custom',
             'creationDate' => Util::currentTimeUnixMillis(),
@@ -100,7 +107,8 @@ class EventFactory {
         return $e;
     }
 
-    private static function isExperiment($flag, $reason) {
+    private static function isExperiment($flag, $reason)
+    {
         if ($reason) {
             switch ($reason->getKind()) {
                 case 'RULE_MATCH':

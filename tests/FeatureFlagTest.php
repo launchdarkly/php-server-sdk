@@ -144,7 +144,8 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
 
     private static $eventFactory;
 
-    public static function setUpBeforeClass() {
+    public static function setUpBeforeClass()
+    {
         static::$eventFactory = new EventFactory(false);
     }
 
