@@ -4,6 +4,7 @@ namespace LaunchDarkly\Tests;
 use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
 use LaunchDarkly\FeatureFlag;
+use LaunchDarkly\Impl\EventFactory;
 use LaunchDarkly\LDUser;
 use LaunchDarkly\LDUserBuilder;
 use LaunchDarkly\Segment;
@@ -141,6 +142,12 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
     \"deleted\": false
   }";
 
+    private static $eventFactory;
+
+    public static function setUpBeforeClass() {
+        static::$eventFactory = new EventFactory(false);
+    }
+
     public function testDecode()
     {
         $this->assertInstanceOf(FeatureFlag::class, FeatureFlag::decode(\GuzzleHttp\json_decode(FeatureFlagTest::$json1, true)));
@@ -211,7 +218,7 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         );
         $flag = FeatureFlag::decode($flagJson);
 
-        $result = $flag->evaluate(new LDUser('user'), null);
+        $result = $flag->evaluate(new LDUser('user'), null, static::$eventFactory);
         $detail = new EvaluationDetail('off', 1, EvaluationReason::off());
         self::assertEquals($detail, $result->getDetail());
         self::assertEquals(array(), $result->getPrerequisiteEvents());
@@ -234,7 +241,7 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         );
         $flag = FeatureFlag::decode($flagJson);
 
-        $result = $flag->evaluate(new LDUser('user'), null);
+        $result = $flag->evaluate(new LDUser('user'), null, static::$eventFactory);
         $detail = new EvaluationDetail(null, null, EvaluationReason::off());
         self::assertEquals($detail, $result->getDetail());
         self::assertEquals(array(), $result->getPrerequisiteEvents());
@@ -257,7 +264,7 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         );
         $flag = FeatureFlag::decode($flagJson);
 
-        $result = $flag->evaluate(new LDUser('user'), null);
+        $result = $flag->evaluate(new LDUser('user'), null, static::$eventFactory);
         $detail = new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR));
         self::assertEquals($detail, $result->getDetail());
         self::assertEquals(array(), $result->getPrerequisiteEvents());
@@ -280,7 +287,7 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         );
         $flag = FeatureFlag::decode($flagJson);
 
-        $result = $flag->evaluate(new LDUser('user'), null);
+        $result = $flag->evaluate(new LDUser('user'), null, static::$eventFactory);
         $detail = new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR));
         self::assertEquals($detail, $result->getDetail());
         self::assertEquals(array(), $result->getPrerequisiteEvents());
@@ -308,7 +315,7 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         $user = $ub->build();
         $requester = new MockFeatureRequesterForFeature();
 
-        $result = $flag->evaluate($user, $requester);
+        $result = $flag->evaluate($user, $requester, static::$eventFactory);
         $detail = new EvaluationDetail('off', 1, EvaluationReason::prerequisiteFailed('feature1'));
         self::assertEquals($detail, $result->getDetail());
         self::assertEquals(array(), $result->getPrerequisiteEvents());
@@ -353,7 +360,7 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         $requester->key = $flag1->getKey();
         $requester->val = $flag1;
 
-        $result = $flag0->evaluate($user, $requester);
+        $result = $flag0->evaluate($user, $requester, static::$eventFactory);
         $detail = new EvaluationDetail('off', 1, EvaluationReason::prerequisiteFailed('feature1'));
         self::assertEquals($detail, $result->getDetail());
 
@@ -405,7 +412,7 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         $requester->key = $flag1->getKey();
         $requester->val = $flag1;
 
-        $result = $flag0->evaluate($user, $requester);
+        $result = $flag0->evaluate($user, $requester, static::$eventFactory);
         $detail = new EvaluationDetail('off', 1, EvaluationReason::prerequisiteFailed('feature1'));
         self::assertEquals($detail, $result->getDetail());
 
@@ -457,7 +464,7 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         $requester->key = $flag1->getKey();
         $requester->val = $flag1;
 
-        $result = $flag0->evaluate($user, $requester);
+        $result = $flag0->evaluate($user, $requester, static::$eventFactory);
         $detail = new EvaluationDetail('fall', 0, EvaluationReason::fallthrough());
         self::assertEquals($detail, $result->getDetail());
 
@@ -492,7 +499,7 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         $ub = new LDUserBuilder('userkey');
         $user = $ub->build();
 
-        $result = $flag->evaluate($user, null);
+        $result = $flag->evaluate($user, null, static::$eventFactory);
         $detail = new EvaluationDetail('on', 2, EvaluationReason::targetMatch());
         self::assertEquals($detail, $result->getDetail());
         self::assertEquals(array(), $result->getPrerequisiteEvents());
@@ -530,7 +537,7 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         $ub = new LDUserBuilder('userkey');
         $user = $ub->build();
 
-        $result = $flag->evaluate($user, null);
+        $result = $flag->evaluate($user, null, static::$eventFactory);
         $detail = new EvaluationDetail(true, 1, EvaluationReason::ruleMatch(0, 'ruleid'));
         self::assertEquals($detail, $result->getDetail());
         self::assertEquals(array(), $result->getPrerequisiteEvents());
@@ -550,7 +557,7 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         $ub = new LDUserBuilder('userkey');
         $user = $ub->build();
 
-        $result = $flag->evaluate($user, null);
+        $result = $flag->evaluate($user, null, static::$eventFactory);
         $detail = new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR));
         self::assertEquals($detail, $result->getDetail());
         self::assertEquals(array(), $result->getPrerequisiteEvents());
@@ -570,7 +577,7 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         $ub = new LDUserBuilder('userkey');
         $user = $ub->build();
 
-        $result = $flag->evaluate($user, null);
+        $result = $flag->evaluate($user, null, static::$eventFactory);
         $detail = new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR));
         self::assertEquals($detail, $result->getDetail());
         self::assertEquals(array(), $result->getPrerequisiteEvents());
@@ -589,7 +596,7 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         $ub = new LDUserBuilder('userkey');
         $user = $ub->build();
 
-        $result = $flag->evaluate($user, null);
+        $result = $flag->evaluate($user, null, static::$eventFactory);
         $detail = new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR));
         self::assertEquals($detail, $result->getDetail());
         self::assertEquals(array(), $result->getPrerequisiteEvents());
@@ -609,7 +616,7 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         $ub = new LDUserBuilder('userkey');
         $user = $ub->build();
 
-        $result = $flag->evaluate($user, null);
+        $result = $flag->evaluate($user, null, static::$eventFactory);
         $detail = new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR));
         self::assertEquals($detail, $result->getDetail());
         self::assertEquals(array(), $result->getPrerequisiteEvents());
@@ -622,7 +629,7 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         $ub = new LDUserBuilder('userkey');
         $user = $ub->build();
 
-        $result = $flag->evaluate($user, null);
+        $result = $flag->evaluate($user, null, static::$eventFactory);
         self::assertEquals(true, $result->getValue());
     }
 
@@ -634,7 +641,7 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         $ub->customAttribute('legs', 4);
         $user = $ub->build();
 
-        $result = $flag->evaluate($user, null);
+        $result = $flag->evaluate($user, null, static::$eventFactory);
         self::assertEquals(true, $result->getValue());
     }
 
@@ -645,7 +652,7 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         $ub = new LDUserBuilder('userkey');
         $user = $ub->build();
 
-        $result = $flag->evaluate($user, null);
+        $result = $flag->evaluate($user, null, static::$eventFactory);
         self::assertEquals(false, $result->getValue());
     }
 
@@ -656,7 +663,7 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         $ub = new LDUserBuilder('userkey');
         $user = $ub->build();
 
-        $result = $flag->evaluate($user, null);
+        $result = $flag->evaluate($user, null, static::$eventFactory);
         self::assertEquals(false, $result->getValue());
     }
 
@@ -667,7 +674,7 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         $ub = new LDUserBuilder('userkey');
         $user = $ub->build();
 
-        $result = $flag->evaluate($user, null);
+        $result = $flag->evaluate($user, null, static::$eventFactory);
         self::assertEquals(false, $result->getValue());
     }
 
@@ -693,7 +700,7 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         $ub = new LDUserBuilder('foo');
         $user = $ub->build();
 
-        $result = $feature->evaluate($user, $requester);
+        $result = $feature->evaluate($user, $requester, static::$eventFactory);
 
         self::assertTrue($result->getDetail()->getValue());
     }
@@ -707,7 +714,7 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         $ub = new LDUserBuilder('foo');
         $user = $ub->build();
 
-        $result = $feature->evaluate($user, $requester);
+        $result = $feature->evaluate($user, $requester, static::$eventFactory);
 
         self::assertFalse($result->getDetail()->getValue());
     }
