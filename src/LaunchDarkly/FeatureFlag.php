@@ -177,7 +177,7 @@ class FeatureFlag
                     if ($prereqFeatureFlag == null) {
                         $prereqOk = false;
                     } else {
-                        $prereqEvalResult = $prereqFeatureFlag->evaluateInternal($user, $featureRequester, $events, $includeReasonsInEvents);
+                        $prereqEvalResult = $prereqFeatureFlag->evaluateInternal($user, $featureRequester, $events, $eventFactory);
                         $variation = $prereq->getVariation();
                         if (!$prereqFeatureFlag->isOn() || $prereqEvalResult->getVariationIndex() !== $variation) {
                             $prereqOk = false;
