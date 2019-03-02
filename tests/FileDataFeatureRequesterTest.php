@@ -32,7 +32,7 @@ class FileDataFeatureRequesterTest extends \PHPUnit_Framework_TestCase
         $fr = Files::featureRequester("./tests/filedata/all-properties.json");
         $flag2 = $fr->getFeature("flag2");
         $this->assertEquals("flag2", $flag2->getKey());
-        $result = $flag2->evaluate(new LDUser("user"), null);
+        $result = $flag2->evaluate(new LDUser("user"), null, null);
         $this->assertEquals("value2", $result->getDetail()->getValue());
     }
 }

@@ -171,6 +171,7 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, $event['variation']);
         $this->assertEquals($user, $event['user']);
         $this->assertEquals('default', $event['default']);
+        $this->assertFalse(isset($event['trackEvents']));
         $this->assertFalse(isset($event['reason']));
     }
 
@@ -196,7 +197,103 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, $event['variation']);
         $this->assertEquals($user, $event['user']);
         $this->assertEquals('default', $event['default']);
+        $this->assertFalse(isset($event['trackEvents']));
         $this->assertEquals(array('kind' => 'OFF'), $event['reason']);
+    }
+
+    public function testVariationForcesTrackingWhenMatchedRuleHasTrackEventsSet()
+    {
+        $flagJson = array(
+            'key' => 'flagkey',
+            'version' => 100,
+            'deleted' => false,
+            'on' => true,
+            'targets' => array(),
+            'prerequisites' => array(),
+            'rules' => array(
+                array(
+                    'clauses' => array(
+                        array(
+                            'attribute' => 'key',
+                            'op' => 'in',
+                            'values' => array('userkey'),
+                            'negate' => false
+                        )
+                    ),
+                    'id' => 'rule-id',
+                    'variation' => 1,
+                    'trackEvents' => true
+                )
+            ),
+            'offVariation' => 1,
+            'fallthrough' => array('variation' => 0),
+            'variations' => array('fellthrough', 'flagvalue'),
+            'salt' => ''
+        );
+        $flag = FeatureFlag::decode($flagJson);
+
+        MockFeatureRequester::$flags = array('flagkey' => $flag);
+        $client = new LDClient("someKey", array(
+            'feature_requester_class' => MockFeatureRequester::class,
+            'events' => true
+        ));
+
+        $user = new LDUser('userkey');
+        $client->variation('flagkey', new LDUser('userkey'), 'default');
+        $proc = $this->getPrivateField($client, '_eventProcessor');
+        $queue = $this->getPrivateField($proc, '_queue');
+        $this->assertEquals(1, sizeof($queue));
+        $event = $queue[0];
+        $this->assertEquals('feature', $event['kind']);
+        $this->assertEquals('flagkey', $event['key']);
+        $this->assertEquals($flag->getVersion(), $event['version']);
+        $this->assertEquals('flagvalue', $event['value']);
+        $this->assertEquals(1, $event['variation']);
+        $this->assertEquals($user, $event['user']);
+        $this->assertEquals('default', $event['default']);
+        $this->assertTrue($event['trackEvents']);
+        $this->assertEquals(array('kind' => 'RULE_MATCH', 'ruleIndex' => 0, 'ruleId' => 'rule-id'), $event['reason']);
+    }
+
+    public function testVariationForcesTrackingForFallthroughWhenTrackEventsFallthroughIsSet()
+    {
+        $flagJson = array(
+            'key' => 'flagkey',
+            'version' => 100,
+            'deleted' => false,
+            'on' => true,
+            'targets' => array(),
+            'prerequisites' => array(),
+            'rules' => array(),
+            'offVariation' => 1,
+            'fallthrough' => array('variation' => 0),
+            'variations' => array('fellthrough', 'flagvalue'),
+            'salt' => '',
+            'trackEventsFallthrough' => true
+        );
+        $flag = FeatureFlag::decode($flagJson);
+
+        MockFeatureRequester::$flags = array('flagkey' => $flag);
+        $client = new LDClient("someKey", array(
+            'feature_requester_class' => MockFeatureRequester::class,
+            'events' => true
+        ));
+
+        $user = new LDUser('userkey');
+        $client->variation('flagkey', new LDUser('userkey'), 'default');
+        $proc = $this->getPrivateField($client, '_eventProcessor');
+        $queue = $this->getPrivateField($proc, '_queue');
+        $this->assertEquals(1, sizeof($queue));
+        $event = $queue[0];
+        $this->assertEquals('feature', $event['kind']);
+        $this->assertEquals('flagkey', $event['key']);
+        $this->assertEquals($flag->getVersion(), $event['version']);
+        $this->assertEquals('fellthrough', $event['value']);
+        $this->assertEquals(0, $event['variation']);
+        $this->assertEquals($user, $event['user']);
+        $this->assertEquals('default', $event['default']);
+        $this->assertTrue($event['trackEvents']);
+        $this->assertEquals(array('kind' => 'FALLTHROUGH'), $event['reason']);
     }
 
     public function testVariationSendsEventForUnknownFlag()
@@ -215,9 +312,9 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
         $event = $queue[0];
         $this->assertEquals('feature', $event['kind']);
         $this->assertEquals('flagkey', $event['key']);
-        $this->assertNull($event['version']);
+        $this->assertFalse(isset($event['version']));
         $this->assertEquals('default', $event['value']);
-        $this->assertNull($event['variation']);
+        $this->assertFalse(isset($event['variation']));
         $this->assertEquals($user, $event['user']);
         $this->assertEquals('default', $event['default']);
         $this->assertFalse(isset($event['reason']));
@@ -239,9 +336,9 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
         $event = $queue[0];
         $this->assertEquals('feature', $event['kind']);
         $this->assertEquals('flagkey', $event['key']);
-        $this->assertNull($event['version']);
+        $this->assertFalse(isset($event['version']));
         $this->assertEquals('default', $event['value']);
-        $this->assertNull($event['variation']);
+        $this->assertFalse(isset($event['variation']));
         $this->assertEquals($user, $event['user']);
         $this->assertEquals('default', $event['default']);
         $this->assertEquals(array('kind' => 'ERROR', 'errorKind' => 'FLAG_NOT_FOUND'), $event['reason']);
