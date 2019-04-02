@@ -37,7 +37,7 @@ class EventSerializer
         return $ret;
     }
 
-    private function filterAttrs($attrs, &$json, $userPrivateAttrs, &$allPrivateAttrs)
+    private function filterAttrs($attrs, &$json, $userPrivateAttrs, &$allPrivateAttrs, $stringify)
     {
         foreach ($attrs as $key => $value) {
             if ($value != null) {
@@ -46,7 +46,7 @@ class EventSerializer
                     array_search($key, $this->_privateAttrNames) !== false) {
                     $allPrivateAttrs[$key] = true;
                 } else {
-                    $json[$key] = $value;
+                    $json[$key] = $stringify ? strval($value) : $value;
                 }
             }
         }
@@ -54,7 +54,7 @@ class EventSerializer
 
     private function serializeUser($user)
     {
-        $json = array("key" => $user->getKey());
+        $json = array("key" => strval($user->getKey()));
         $userPrivateAttrs = $user->getPrivateAttributeNames();
         $allPrivateAttrs = array();
 
@@ -66,13 +66,15 @@ class EventSerializer
             'name' => $user->getName(),
             'avatar' => $user->getAvatar(),
             'firstName' => $user->getFirstName(),
-            'lastName' => $user->getLastName(),
-            'anonymous' => $user->getAnonymous()
+            'lastName' => $user->getLastName()
         );
-        $this->filterAttrs($attrs, $json, $userPrivateAttrs, $allPrivateAttrs);
+        $this->filterAttrs($attrs, $json, $userPrivateAttrs, $allPrivateAttrs, true);
+        if ($user->getAnonymous()) {
+            $json['anonymous'] = true;
+        }
         if (!empty($user->getCustom())) {
             $customs = array();
-            $this->filterAttrs($user->getCustom(), $customs, $userPrivateAttrs, $allPrivateAttrs);
+            $this->filterAttrs($user->getCustom(), $customs, $userPrivateAttrs, $allPrivateAttrs, false);
             if ($customs) { // if this is empty, we will return a json array for 'custom' instead of an object
                 $json['custom'] = $customs;
             }

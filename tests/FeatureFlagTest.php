@@ -615,6 +615,37 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         self::assertEquals(array(), $result->getPrerequisiteEvents());
     }
 
+    public function testSecondaryKeyIsCoercedToStringForRolloutCalculation()
+    {
+        // We can't really verify that the rollout calculation works correctly, but we can at least
+        // make sure it doesn't error out if there's a non-string secondary value (ch35189)
+        $flag = $this->makeBooleanFlagWithRules(array(
+            array(
+                'id' => 'ruleid',
+                'clauses' => array(
+                    array('attribute' => 'key', 'op' => 'in', 'values' => array('userkey'), 'negate' => false)
+                ),
+                'rollout' => array(
+                    'salt' => '',
+                    'variations' => array(
+                        array(
+                            'weight' => 100000,
+                            'variation' => 1
+                        )
+                    )
+                )
+            )
+        ));
+        $ub = new LDUserBuilder('userkey');
+        $ub->secondary(999);
+        $user = $ub->build();
+
+        $result = $flag->evaluate($user, null);
+        $detail = new EvaluationDetail(true, 1, EvaluationReason::ruleMatch(0, 'ruleid'));
+        self::assertEquals($detail, $result->getDetail());
+        self::assertEquals(array(), $result->getPrerequisiteEvents());
+    }
+
     public function clauseCanMatchBuiltInAttribute()
     {
         $clause = array('attribute' => 'name', 'op' => 'in', 'values' => array('Bob'), 'negate' => false);
