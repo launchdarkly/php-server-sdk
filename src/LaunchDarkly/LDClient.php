@@ -270,6 +270,7 @@ class LDClient
         }
         if (is_null($user) || $user->isKeyBlank()) {
             $this->_logger->warning("Track called with null user or null/empty user key!");
+            return;
         }
 
         $event = array();
@@ -293,13 +294,14 @@ class LDClient
         }
         if (is_null($user) || $user->isKeyBlank()) {
             $this->_logger->warning("Track called with null user or null/empty user key!");
+            return;
         }
 
         $event = array();
         $event['user'] = $user;
         $event['kind'] = "identify";
         $event['creationDate'] = Util::currentTimeUnixMillis();
-        $event['key'] = $user->getKey();
+        $event['key'] = strval($user->getKey());
         $this->_eventProcessor->enqueue($event);
     }
 
