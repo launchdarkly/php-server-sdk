@@ -249,7 +249,7 @@ class EventSerializerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('7', $json['avatar']);
         $this->assertSame('8', $json['firstName']);
         $this->assertSame('9', $json['lastName']);
-        $this->assertSame(true, $json['anonymous']);
-        $this->assertSame(10, $json['custom']['foo']);
+        $this->assertSame(true, $json['anonymous']); // We do NOT want "anonymous" to be stringified
+        $this->assertSame(10, $json['custom']['foo']); // We do NOT want custom attribute values to be stringified
     }
 }
