@@ -84,7 +84,7 @@ class VariationOrRollout
             if (is_string($userValue)) {
                 $idHash = $userValue;
                 if ($user->getSecondary() !== null) {
-                    $idHash = $idHash . "." . $user->getSecondary();
+                    $idHash = $idHash . "." . strval($user->getSecondary());
                 }
                 $hash = substr(sha1($_key . "." . $_salt . "." . $idHash), 0, 15);
                 $longVal = base_convert($hash, 16, 10);
