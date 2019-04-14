@@ -14,7 +14,7 @@ class LDClient
 {
     const DEFAULT_BASE_URI = 'https://app.launchdarkly.com';
     const DEFAULT_EVENTS_URI = 'https://events.launchdarkly.com';
-    const VERSION = '3.5.0';
+    const VERSION = '3.5.2';
 
     /** @var string */
     protected $_sdkKey;
@@ -280,6 +280,7 @@ class LDClient
         }
         if (is_null($user) || $user->isKeyBlank()) {
             $this->_logger->warning("Track called with null user or null/empty user key!");
+            return;
         }
         $this->_eventProcessor->enqueue($this->_eventFactoryDefault->newCustomEvent($eventName, $user, $data));
     }
@@ -294,6 +295,7 @@ class LDClient
         }
         if (is_null($user) || $user->isKeyBlank()) {
             $this->_logger->warning("Track called with null user or null/empty user key!");
+            return;
         }
         $this->_eventProcessor->enqueue($this->_eventFactoryDefault->newIdentifyEvent($user));
     }

@@ -126,7 +126,7 @@ class EventSerializerTest extends \PHPUnit_Framework_TestCase
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->build();
         $json = $this->getJsonForUserBySerializingEvent($user);
-        $this->assertEquals("foo@bar.com", $json['key']);
+        $this->assertSame("foo@bar.com", $json['key']);
     }
     
     public function testEmptyCustom()
@@ -150,7 +150,7 @@ class EventSerializerTest extends \PHPUnit_Framework_TestCase
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->secondary("secondary")->build();
         $json = $this->getJsonForUserBySerializingEvent($user);
-        $this->assertEquals("secondary", $json['secondary']);
+        $this->assertSame("secondary", $json['secondary']);
     }
     
     public function testUserIP()
@@ -158,7 +158,7 @@ class EventSerializerTest extends \PHPUnit_Framework_TestCase
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->ip("127.0.0.1")->build();
         $json = $this->getJsonForUserBySerializingEvent($user);
-        $this->assertEquals("127.0.0.1", $json['ip']);
+        $this->assertSame("127.0.0.1", $json['ip']);
     }
     
     public function testUserCountry()
@@ -166,7 +166,7 @@ class EventSerializerTest extends \PHPUnit_Framework_TestCase
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->country("US")->build();
         $json = $this->getJsonForUserBySerializingEvent($user);
-        $this->assertEquals("US", $json['country']);
+        $this->assertSame("US", $json['country']);
     }
     
     public function testUserEmail()
@@ -174,7 +174,7 @@ class EventSerializerTest extends \PHPUnit_Framework_TestCase
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->email("foo+test@bar.com")->build();
         $json = $this->getJsonForUserBySerializingEvent($user);
-        $this->assertEquals("foo+test@bar.com", $json['email']);
+        $this->assertSame("foo+test@bar.com", $json['email']);
     }
     
     public function testUserName()
@@ -182,7 +182,7 @@ class EventSerializerTest extends \PHPUnit_Framework_TestCase
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->name("Foo Bar")->build();
         $json = $this->getJsonForUserBySerializingEvent($user);
-        $this->assertEquals("Foo Bar", $json['name']);
+        $this->assertSame("Foo Bar", $json['name']);
     }
     
     public function testUserAvatar()
@@ -190,7 +190,7 @@ class EventSerializerTest extends \PHPUnit_Framework_TestCase
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->avatar("http://www.gravatar.com/avatar/1")->build();
         $json = $this->getJsonForUserBySerializingEvent($user);
-        $this->assertEquals("http://www.gravatar.com/avatar/1", $json['avatar']);
+        $this->assertSame("http://www.gravatar.com/avatar/1", $json['avatar']);
     }
     
     public function testUserFirstName()
@@ -198,7 +198,7 @@ class EventSerializerTest extends \PHPUnit_Framework_TestCase
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->firstName("Foo")->build();
         $json = $this->getJsonForUserBySerializingEvent($user);
-        $this->assertEquals("Foo", $json['firstName']);
+        $this->assertSame("Foo", $json['firstName']);
     }
     
     public function testUserLastName()
@@ -206,7 +206,7 @@ class EventSerializerTest extends \PHPUnit_Framework_TestCase
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->lastName("Bar")->build();
         $json = $this->getJsonForUserBySerializingEvent($user);
-        $this->assertEquals("Bar", $json['lastName']);
+        $this->assertSame("Bar", $json['lastName']);
     }
     
     public function testUserAnonymous()
@@ -214,6 +214,42 @@ class EventSerializerTest extends \PHPUnit_Framework_TestCase
         $builder = new LDUserBuilder("foo@bar.com");
         $user = $builder->anonymous(true)->build();
         $json = $this->getJsonForUserBySerializingEvent($user);
-        $this->assertEquals(true, $json['anonymous']);
+        $this->assertSame(true, $json['anonymous']);
+    }
+
+    public function testUserNotAnonymous()
+    {
+        $builder = new LDUserBuilder("foo@bar.com");
+        $user = $builder->anonymous(false)->build();
+        $json = $this->getJsonForUserBySerializingEvent($user);
+        $this->assertFalse(isset($json['anonymous'])); // omitted rather than set to false, for efficiency
+    }
+
+    public function testNonStringAttributes()
+    {
+        $builder = new LDUserBuilder(1);
+        $user = $builder->secondary(2)
+            ->ip(3)
+            ->country(4)
+            ->email(5)
+            ->name(6)
+            ->avatar(7)
+            ->firstName(8)
+            ->lastName(9)
+            ->anonymous(true)
+            ->customAttribute('foo', 10)
+            ->build();
+        $json = $this->getJsonForUserBySerializingEvent($user);
+        $this->assertSame('1', $json['key']);
+        $this->assertSame('2', $json['secondary']);
+        $this->assertSame('3', $json['ip']);
+        $this->assertSame('4', $json['country']);
+        $this->assertSame('5', $json['email']);
+        $this->assertSame('6', $json['name']);
+        $this->assertSame('7', $json['avatar']);
+        $this->assertSame('8', $json['firstName']);
+        $this->assertSame('9', $json['lastName']);
+        $this->assertSame(true, $json['anonymous']); // We do NOT want "anonymous" to be stringified
+        $this->assertSame(10, $json['custom']['foo']); // We do NOT want custom attribute values to be stringified
     }
 }

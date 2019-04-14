@@ -2,6 +2,16 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [3.5.2] - 2019-04-11
+### Fixed:
+- In the 3.5.1 release, the `VERSION` constant was incorrectly still reporting the version as "3.5.0". The constant is now correct. There are no other changes in this release.
+
+
+## [3.5.1] - 2019-04-03
+### Fixed:
+- Setting user attributes to non-string values when a string was expected would cause analytics events not to be processed. The SDK will now convert attribute values to strings as needed.
+- If `track` or `identify` is called without a user, the SDK now logs a warning, and does not send an analytics event to LaunchDarkly (since it would not be processed without a user).
+
 ## [3.5.0] - 2019-01-30
 ### Added:
 - It is now possible to use Consul or DynamoDB as a data store with `ld-relay`, similar to the existing Redis integration. See `LaunchDarkly\Integrations\Consul` and `LaunchDarkly\Integrations\DynamoDb`, and the reference guide [Using a persistent feature store](https://docs.launchdarkly.com/v2.0/docs/using-a-persistent-feature-store).

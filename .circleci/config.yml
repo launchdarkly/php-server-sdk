@@ -84,7 +84,7 @@ jobs:
             sudo apt-get -q update &&
             sudo apt-cache policy docker-ce &&
             sudo apt-get -qy install docker-ce
-      - run: sudo apt-get -qy install redis-server
+      - run: sudo apt-get -qy install redis-server curl
       - checkout
       - run:
           name: validate composer.json
@@ -109,6 +109,13 @@ jobs:
           name: start Consul
           command: ./consul agent -dev
           background: true
+      - run:
+          name: wait on Consul
+          command: |
+            until $(curl --output /dev/null --silent --fail --request PUT --data 'test' http://localhost:8500/v1/kv/initchecker); do
+                echo 'still waiting on Consul...'; sleep 2;
+            done
+          timeout: 50
       - run:
           name: run tests
           command: vendor/bin/phpunit --log-junit ~/phpunit/junit.xml --coverage-text tests

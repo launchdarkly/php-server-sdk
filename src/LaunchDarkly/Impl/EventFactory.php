@@ -88,7 +88,7 @@ class EventFactory
         return array(
             'kind' => 'identify',
             'creationDate' => Util::currentTimeUnixMillis(),
-            'key' => $user->getKey(),
+            'key' => strval($user->getKey()),
             'user' => $user
         );
     }
