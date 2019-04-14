@@ -93,7 +93,7 @@ class EventFactory
         );
     }
     
-    public function newCustomEvent($eventName, $user, $data)
+    public function newCustomEvent($eventName, $user, $data, $metricValue)
     {
         $e = array(
             'kind' => 'custom',
@@ -103,6 +103,9 @@ class EventFactory
         );
         if (isset($data)) {
             $e['data'] = $data;
+        }
+        if (isset($metricValue)) {
+            $e['metricValue'] = $metricValue;
         }
         return $e;
     }
