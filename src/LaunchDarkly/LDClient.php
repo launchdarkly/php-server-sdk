@@ -114,7 +114,7 @@ class LDClient
                 $ep = $ep($sdkKey, $options);
             }
             $this->_eventProcessor = $ep;
-        } else if ($this->_offline || !$this->_send_events) {
+        } elseif ($this->_offline || !$this->_send_events) {
             $this->_eventProcessor = new EventProcessor($sdkKey, $options);
         } else {
             $this->_eventProcessor = new EventProcessor($sdkKey, $options);
