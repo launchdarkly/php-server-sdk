@@ -278,7 +278,9 @@ class LDClient
      * @param $eventName string The name of the event
      * @param $user LDUser The user that performed the event
      * @param $data mixed Optional additional information to associate with the event
-     * @param $metricValue number An optional numeric value that can be used in analytics
+     * @param $metricValue number A numeric value used by the LaunchDarkly experimentation feature in
+     *   numeric custom metrics. Can be omitted if this event is used by only non-numeric metrics. This
+     *   field will also be returned as part of the custom event for Data Export.
      */
     public function track($eventName, $user, $data = null, $metricValue = null)
     {
