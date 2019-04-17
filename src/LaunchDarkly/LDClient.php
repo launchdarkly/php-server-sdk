@@ -2,6 +2,7 @@
 namespace LaunchDarkly;
 
 use LaunchDarkly\Impl\EventFactory;
+use LaunchDarkly\Impl\NullEventPublisher;
 use LaunchDarkly\Integrations\Guzzle;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
@@ -107,7 +108,17 @@ class LDClient
         $this->_eventFactoryDefault = new EventFactory(false);
         $this->_eventFactoryWithReasons = new EventFactory(true);
 
-        $this->_eventProcessor = new EventProcessor($sdkKey, $options);
+        if (isset($options['event_processor'])) {
+            $ep = $options['event_processor'];
+            if (is_callable($ep)) {
+                $ep = $ep($sdkKey, $options);
+            }
+            $this->_eventProcessor = $ep;
+        } elseif ($this->_offline || !$this->_send_events) {
+            $this->_eventProcessor = new EventProcessor($sdkKey, $options);
+        } else {
+            $this->_eventProcessor = new EventProcessor($sdkKey, $options);
+        }
 
         $this->_featureRequester = $this->getFeatureRequester($sdkKey, $options);
     }
@@ -184,9 +195,6 @@ class LDClient
             return new EvaluationDetail($default, null, EvaluationReason::error($errorKind));
         };
         $sendEvent = function ($detail, $flag) use ($key, $user, $default, $eventFactory) {
-            if ($this->isOffline() || !$this->_send_events) {
-                return;
-            }
             if ($flag) {
                 $event = $eventFactory->newEvalEvent($flag, $user, $detail, $default);
             } else {
@@ -222,10 +230,8 @@ class LDClient
                 return $result;
             }
             $evalResult = $flag->evaluate($user, $this->_featureRequester, $eventFactory);
-            if (!$this->isOffline() && $this->_send_events) {
-                foreach ($evalResult->getPrerequisiteEvents() as $e) {
-                    $this->_eventProcessor->enqueue($e);
-                }
+            foreach ($evalResult->getPrerequisiteEvents() as $e) {
+                $this->_eventProcessor->enqueue($e);
             }
             $detail = $evalResult->getDetail();
             if ($detail->isDefaultValue()) {
@@ -271,18 +277,18 @@ class LDClient
      *
      * @param $eventName string The name of the event
      * @param $user LDUser The user that performed the event
-     * @param $data mixed
+     * @param $data mixed Optional additional information to associate with the event
+     * @param $metricValue number A numeric value used by the LaunchDarkly experimentation feature in
+     *   numeric custom metrics. Can be omitted if this event is used by only non-numeric metrics. This
+     *   field will also be returned as part of the custom event for Data Export.
      */
-    public function track($eventName, $user, $data)
+    public function track($eventName, $user, $data = null, $metricValue = null)
     {
-        if ($this->isOffline()) {
-            return;
-        }
         if (is_null($user) || $user->isKeyBlank()) {
             $this->_logger->warning("Track called with null user or null/empty user key!");
             return;
         }
-        $this->_eventProcessor->enqueue($this->_eventFactoryDefault->newCustomEvent($eventName, $user, $data));
+        $this->_eventProcessor->enqueue($this->_eventFactoryDefault->newCustomEvent($eventName, $user, $data, $metricValue));
     }
 
     /**
@@ -290,9 +296,6 @@ class LDClient
      */
     public function identify($user)
     {
-        if ($this->isOffline()) {
-            return;
-        }
         if (is_null($user) || $user->isKeyBlank()) {
             $this->_logger->warning("Track called with null user or null/empty user key!");
             return;

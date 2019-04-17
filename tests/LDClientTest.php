@@ -53,14 +53,20 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
         return FeatureFlag::decode($flagJson);
     }
 
+    private function makeClient($overrideOptions = array())
+    {
+        $options = array(
+            'feature_requester_class' => MockFeatureRequester::class,
+            'event_processor' => new MockEventProcessor()
+        );
+        return new LDClient("someKey", array_merge($options, $overrideOptions));
+    }
+    
     public function testVariationReturnsFlagValue()
     {
         $flag = $this->makeOffFlagWithValue('feature', 'value');
         MockFeatureRequester::$flags = array('feature' => $flag);
-        $client = new LDClient("someKey", array(
-            'feature_requester_class' => MockFeatureRequester::class,
-            'events' => false
-            ));
+        $client = $this->makeClient();
 
         $value = $client->variation('feature', new LDUser('userkey'), 'default');
         $this->assertEquals('value', $value);
@@ -70,10 +76,7 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
     {
         $flag = $this->makeOffFlagWithValue('feature', 'value');
         MockFeatureRequester::$flags = array('feature' => $flag);
-        $client = new LDClient("someKey", array(
-            'feature_requester_class' => MockFeatureRequester::class,
-            'events' => false
-            ));
+        $client = $this->makeClient();
 
         $detail = $client->variationDetail('feature', new LDUser('userkey'), 'default');
         $this->assertEquals('value', $detail->getValue());
@@ -86,10 +89,7 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
     {
         $flag = $this->makeFlagThatEvaluatesToNull('feature');
         MockFeatureRequester::$flags = array('feature' => $flag);
-        $client = new LDClient("someKey", array(
-            'feature_requester_class' => MockFeatureRequester::class,
-            'events' => false
-            ));
+        $client = $this->makeClient();
 
         $value = $client->variation('feature', new LDUser('userkey'), 'default');
         $this->assertEquals('default', $value);
@@ -99,10 +99,7 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
     {
         $flag = $this->makeFlagThatEvaluatesToNull('feature');
         MockFeatureRequester::$flags = array('feature' => $flag);
-        $client = new LDClient("someKey", array(
-            'feature_requester_class' => MockFeatureRequester::class,
-            'events' => false
-            ));
+        $client = $this->makeClient();
 
         $detail = $client->variationDetail('feature', new LDUser('userkey'), 'default');
         $this->assertEquals('default', $detail->getValue());
@@ -114,10 +111,7 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
     public function testVariationReturnsDefaultForUnknownFlag()
     {
         MockFeatureRequester::$flags = array();
-        $client = new LDClient("someKey", array(
-            'feature_requester_class' => MockFeatureRequester::class,
-            'events' => false
-            ));
+        $client = $this->makeClient();
 
         $this->assertEquals('argdef', $client->variation('foo', new LDUser('userkey'), 'argdef'));
     }
@@ -125,10 +119,7 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
     public function testVariationDetailReturnsDefaultForUnknownFlag()
     {
         MockFeatureRequester::$flags = array();
-        $client = new LDClient("someKey", array(
-            'feature_requester_class' => MockFeatureRequester::class,
-            'events' => false
-            ));
+        $client = $this->makeClient();
 
         $detail = $client->variationDetail('foo', new LDUser('userkey'), 'default');
         $this->assertEquals('default', $detail->getValue());
@@ -140,11 +131,7 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
     public function testVariationReturnsDefaultFromConfigurationForUnknownFlag()
     {
         MockFeatureRequester::$flags = array();
-        $client = new LDClient("someKey", array(
-            'feature_requester_class' => MockFeatureRequester::class,
-            'events' => false,
-            'defaults' => array('foo' => 'fromarray')
-        ));
+        $client = $this->makeClient(array('defaults' => array('foo' => 'fromarray')));
 
         $this->assertEquals('fromarray', $client->variation('foo', new LDUser('userkey'), 'argdef'));
     }
@@ -153,15 +140,12 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
     {
         $flag = $this->makeOffFlagWithValue('flagkey', 'flagvalue');
         MockFeatureRequester::$flags = array('flagkey' => $flag);
-        $client = new LDClient("someKey", array(
-            'feature_requester_class' => MockFeatureRequester::class,
-            'events' => true
-        ));
+        $ep = new MockEventProcessor();
+        $client = $this->makeClient(array('event_processor' => $ep));
 
         $user = new LDUser('userkey');
         $client->variation('flagkey', new LDUser('userkey'), 'default');
-        $proc = $this->getPrivateField($client, '_eventProcessor');
-        $queue = $this->getPrivateField($proc, '_queue');
+        $queue = $ep->getEvents();
         $this->assertEquals(1, sizeof($queue));
         $event = $queue[0];
         $this->assertEquals('feature', $event['kind']);
@@ -179,15 +163,12 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
     {
         $flag = $this->makeOffFlagWithValue('flagkey', 'flagvalue');
         MockFeatureRequester::$flags = array('flagkey' => $flag);
-        $client = new LDClient("someKey", array(
-            'feature_requester_class' => MockFeatureRequester::class,
-            'events' => true
-        ));
+        $ep = new MockEventProcessor();
+        $client = $this->makeClient(array('event_processor' => $ep));
 
         $user = new LDUser('userkey');
         $client->variationDetail('flagkey', $user, 'default');
-        $proc = $this->getPrivateField($client, '_eventProcessor');
-        $queue = $this->getPrivateField($proc, '_queue');
+        $queue = $ep->getEvents();
         $this->assertEquals(1, sizeof($queue));
         $event = $queue[0];
         $this->assertEquals('feature', $event['kind']);
@@ -233,15 +214,12 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
         $flag = FeatureFlag::decode($flagJson);
 
         MockFeatureRequester::$flags = array('flagkey' => $flag);
-        $client = new LDClient("someKey", array(
-            'feature_requester_class' => MockFeatureRequester::class,
-            'events' => true
-        ));
+        $ep = new MockEventProcessor();
+        $client = $this->makeClient(array('event_processor' => $ep));
 
         $user = new LDUser('userkey');
         $client->variation('flagkey', new LDUser('userkey'), 'default');
-        $proc = $this->getPrivateField($client, '_eventProcessor');
-        $queue = $this->getPrivateField($proc, '_queue');
+        $queue = $ep->getEvents();
         $this->assertEquals(1, sizeof($queue));
         $event = $queue[0];
         $this->assertEquals('feature', $event['kind']);
@@ -274,15 +252,12 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
         $flag = FeatureFlag::decode($flagJson);
 
         MockFeatureRequester::$flags = array('flagkey' => $flag);
-        $client = new LDClient("someKey", array(
-            'feature_requester_class' => MockFeatureRequester::class,
-            'events' => true
-        ));
+        $ep = new MockEventProcessor();
+        $client = $this->makeClient(array('event_processor' => $ep));
 
         $user = new LDUser('userkey');
         $client->variation('flagkey', new LDUser('userkey'), 'default');
-        $proc = $this->getPrivateField($client, '_eventProcessor');
-        $queue = $this->getPrivateField($proc, '_queue');
+        $queue = $ep->getEvents();
         $this->assertEquals(1, sizeof($queue));
         $event = $queue[0];
         $this->assertEquals('feature', $event['kind']);
@@ -299,15 +274,12 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
     public function testVariationSendsEventForUnknownFlag()
     {
         MockFeatureRequester::$flags = array();
-        $client = new LDClient("someKey", array(
-            'feature_requester_class' => MockFeatureRequester::class,
-            'events' => true
-        ));
+        $ep = new MockEventProcessor();
+        $client = $this->makeClient(array('event_processor' => $ep));
 
         $user = new LDUser('userkey');
         $client->variation('flagkey', new LDUser('userkey'), 'default');
-        $proc = $this->getPrivateField($client, '_eventProcessor');
-        $queue = $this->getPrivateField($proc, '_queue');
+        $queue = $ep->getEvents();
         $this->assertEquals(1, sizeof($queue));
         $event = $queue[0];
         $this->assertEquals('feature', $event['kind']);
@@ -323,15 +295,12 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
     public function testVariationDetailSendsEventForUnknownFlag()
     {
         MockFeatureRequester::$flags = array();
-        $client = new LDClient("someKey", array(
-            'feature_requester_class' => MockFeatureRequester::class,
-            'events' => true
-        ));
+        $ep = new MockEventProcessor();
+        $client = $this->makeClient(array('event_processor' => $ep));
 
         $user = new LDUser('userkey');
         $client->variationDetail('flagkey', new LDUser('userkey'), 'default');
-        $proc = $this->getPrivateField($client, '_eventProcessor');
-        $queue = $this->getPrivateField($proc, '_queue');
+        $queue = $ep->getEvents();
         $this->assertEquals(1, sizeof($queue));
         $event = $queue[0];
         $this->assertEquals('feature', $event['kind']);
@@ -362,10 +331,7 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
         $flag = FeatureFlag::decode($flagJson);
 
         MockFeatureRequester::$flags = array('feature' => $flag);
-        $client = new LDClient("someKey", array(
-            'feature_requester_class' => MockFeatureRequester::class,
-            'events' => false
-            ));
+        $client = $this->makeClient();
 
         $builder = new LDUserBuilder(3);
         $user = $builder->build();
@@ -394,10 +360,7 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
         $flag = FeatureFlag::decode($flagJson);
 
         MockFeatureRequester::$flags = array('feature' => $flag);
-        $client = new LDClient("someKey", array(
-            'feature_requester_class' => MockFeatureRequester::class,
-            'events' => false
-            ));
+        $client = $this->makeClient();
 
         $builder = new LDUserBuilder(3);
         $user = $builder->build();
@@ -440,10 +403,7 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
         $flag = FeatureFlag::decode($flagJson);
 
         MockFeatureRequester::$flags = array('feature' => $flag);
-        $client = new LDClient("someKey", array(
-            'feature_requester_class' => MockFeatureRequester::class,
-            'events' => false
-            ));
+        $client = $this->makeClient();
 
         $builder = new LDUserBuilder(3);
         $user = $builder->build();
@@ -485,10 +445,7 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
         MockFeatureRequester::$flags = array(
             $flag1->getKey() => $flag1, $flag2->getKey() => $flag2, $flag3->getKey() => $flag3, $flag4->getKey() => $flag4
         );
-        $client = new LDClient("someKey", array(
-            'feature_requester_class' => MockFeatureRequester::class,
-            'events' => false
-            ));
+        $client = $this->makeClient();
 
         $builder = new LDUserBuilder(3);
         $user = $builder->build();
@@ -548,10 +505,7 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
         $flag3 = FeatureFlag::decode($flag3Json);
 
         MockFeatureRequester::$flags = array('flag1' => $flag1, 'flag2' => $flag2, 'flag3' => $flag3);
-        $client = new LDClient("someKey", array(
-            'feature_requester_class' => MockFeatureRequester::class,
-            'events' => false
-            ));
+        $client = $this->makeClient();
 
         $builder = new LDUserBuilder(3);
         $user = $builder->build();
@@ -583,6 +537,60 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
             '$valid' => true
         );
         $this->assertEquals($expectedState, $state->jsonSerialize());
+    }
+
+    public function testTrackSendsEvent()
+    {
+        $ep = new MockEventProcessor();
+        $client = $this->makeClient(array('event_processor' => $ep));
+
+        $user = new LDUser('userkey');
+        $client->track('eventkey', $user);
+        $queue = $ep->getEvents();
+        $this->assertEquals(1, sizeof($queue));
+        $event = $queue[0];
+        $this->assertEquals('custom', $event['kind']);
+        $this->assertEquals('eventkey', $event['key']);
+        $this->assertEquals($user, $event['user']);
+        $this->assertFalse(isset($event['data']));
+        $this->assertFalse(isset($event['metricValue']));
+    }
+
+    public function testTrackSendsEventWithData()
+    {
+        $ep = new MockEventProcessor();
+        $client = $this->makeClient(array('event_processor' => $ep));
+        $data = array('thing' => 'stuff');
+
+        $user = new LDUser('userkey');
+        $client->track('eventkey', $user, $data);
+        $queue = $ep->getEvents();
+        $this->assertEquals(1, sizeof($queue));
+        $event = $queue[0];
+        $this->assertEquals('custom', $event['kind']);
+        $this->assertEquals('eventkey', $event['key']);
+        $this->assertEquals($user, $event['user']);
+        $this->assertEquals($data, $event['data']);
+        $this->assertFalse(isset($event['metricValue']));
+    }
+
+    public function testTrackSendsEventWithDataAndMetricValue()
+    {
+        $ep = new MockEventProcessor();
+        $client = $this->makeClient(array('event_processor' => $ep));
+        $data = array('thing' => 'stuff');
+        $metricValue = 1.5;
+
+        $user = new LDUser('userkey');
+        $client->track('eventkey', $user, $data, $metricValue);
+        $queue = $ep->getEvents();
+        $this->assertEquals(1, sizeof($queue));
+        $event = $queue[0];
+        $this->assertEquals('custom', $event['kind']);
+        $this->assertEquals('eventkey', $event['key']);
+        $this->assertEquals($user, $event['user']);
+        $this->assertEquals($data, $event['data']);
+        $this->assertEquals($metricValue, $event['metricValue']);
     }
 
     public function testOnlyValidFeatureRequester()
