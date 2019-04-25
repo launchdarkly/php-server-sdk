@@ -14,7 +14,7 @@ class RedisFeatureRequesterTest extends FeatureRequesterTestBase
     
     public static function setUpBeforeClass()
     {
-        if (!static::isDatabaseTest()) {
+        if (!static::isSkipDatabaseTests()) {
             self::$predisClient = new Client(array());
         }
     }
