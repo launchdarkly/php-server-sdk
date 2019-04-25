@@ -1,7 +1,7 @@
 LaunchDarkly SDK for PHP
 ===========================
 
-[![Circle CI](https://circleci.com/gh/launchdarkly/php-client.svg?style=svg)](https://circleci.com/gh/launchdarkly/php-client)
+[![Circle CI](https://circleci.com/gh/launchdarkly/php-server-sdk.svg?style=svg)](https://circleci.com/gh/launchdarkly/php-server-sdk)
 
 Requirements
 ------------
@@ -56,7 +56,7 @@ Require Guzzle as a dependency:
 
 It will then be used as the default way of fetching flags.
 
-With Guzzle, you could persist your cache somewhere other than the default in-memory store, like Memcached or Redis.  You could then specify your cache when initializing the client with the [cache option](https://github.com/launchdarkly/php-client/blob/master/src/LaunchDarkly/LDClient.php#L44).
+With Guzzle, you could persist your cache somewhere other than the default in-memory store, like Memcached or Redis.  You could then specify your cache when initializing the client with the [cache option](https://github.com/launchdarkly/php-server-sdk/blob/master/src/LaunchDarkly/LDClient.php#L44).
 
     $client = new LaunchDarkly\LDClient("YOUR_SDK_KEY", array("cache" => $cacheStorage));
 
@@ -127,7 +127,7 @@ The LaunchDarkly Relay Proxy ([ld-relay](https://github.com/launchdarkly/ld-rela
 Using flag data from a file
 ---------------------------
 
-For testing purposes, the SDK can be made to read feature flag state from a file or files instead of connecting to LaunchDarkly. See [`LaunchDarkly\Integrations\Files`](https://github.com/launchdarkly/php-client/blob/master/src/LaunchDarkly/Integrations/Files.php) and ["Reading flags from a file"](https://docs.launchdarkly.com/docs/reading-flags-from-a-file).
+For testing purposes, the SDK can be made to read feature flag state from a file or files instead of connecting to LaunchDarkly. See [`LaunchDarkly\Integrations\Files`](https://github.com/launchdarkly/php-server-sdk/blob/master/src/LaunchDarkly/Integrations/Files.php) and ["Reading flags from a file"](https://docs.launchdarkly.com/docs/reading-flags-from-a-file).
 
 Testing
 -------
@@ -142,7 +142,7 @@ Check out our [documentation](http://docs.launchdarkly.com) for in-depth instruc
 Contributing
 ------------
 
-We encourage pull-requests and other contributions from the community. We've also published an [SDK contributor's guide](http://docs.launchdarkly.com/docs/sdk-contributors-guide) that provides a detailed explanation of how our SDKs work.
+We encourage pull-requests and other contributions from the community. We've also published an [SDK contributor's guide](http://docs.launchdarkly.com/docs/sdk-contributors-guide) that provides a detailed explanation of how our SDKs work. See [CONTRIBUTING](CONTRIBUTING.md) for more developer information about this project.
 
 About LaunchDarkly
 ------------------

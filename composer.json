@@ -5,7 +5,7 @@
         "launchdarkly",
         "launchdarkly php"
     ],
-    "homepage": "https://github.com/launchdarkly/php-client",
+    "homepage": "https://github.com/launchdarkly/php-server-sdk",
     "license": "Apache-2.0",
     "authors": [
         {

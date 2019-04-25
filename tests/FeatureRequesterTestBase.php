@@ -9,7 +9,21 @@ class FeatureRequesterTestBase extends \PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->deleteExistingData();
+        if ($this->isDatabaseTest() && static::isSkipDatabaseTests()) {
+            $this->markTestSkipped('skipping database tests');
+        } else {
+            $this->deleteExistingData();
+        }
+    }
+
+    protected static function isSkipDatabaseTests()
+    {
+        return isset($_ENV['LD_SKIP_DATABASE_TESTS']) && $_ENV['LD_SKIP_DATABASE_TESTS'];
+    }
+
+    protected function isDatabaseTest()
+    {
+        return false;
     }
 
     protected function deleteExistingData()
