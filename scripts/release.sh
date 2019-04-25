@@ -10,7 +10,7 @@
 # When done you should commit and push the changes made.
 
 set -uxe
-echo "Starting php-client release (version update only)"
+echo "Starting php-server-sdk release (version update only)"
 
 VERSION=$1
 
@@ -22,4 +22,4 @@ LDCLIENT_PHP_TEMP=./LDClient.php.tmp
 sed "s/const VERSION = '.*'/const VERSION = '${VERSION}'/g" $LDCLIENT_PHP > $LDCLIENT_PHP_TEMP
 mv $LDCLIENT_PHP_TEMP $LDCLIENT_PHP
 
-echo "Done with php-client release (version update only)"
+echo "Done with php-server-sdk release (version update only)"
