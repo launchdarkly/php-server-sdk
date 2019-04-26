@@ -2,6 +2,17 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [3.5.3] - 2019-04-26
+### Fixed:
+- Segment rollout calculations did not work correctly if the rollout was based on a user attribute other than `key`; all users would end up in the same bucket. (Thanks, [m6w6](https://github.com/launchdarkly/php-server-sdk/pull/121)!)
+- Running the SDK unit tests is now simpler, as the database integrations can be skipped. See `CONTRIBUTING.md`.
+
+# Note on future releases
+
+The LaunchDarkly SDK repositories are being renamed for consistency. This repository is now `php-server-sdk` rather than `php-client`.
+
+The package name will also change. In the 3.5.3 release, it is still `launchdarkly/launchdarkly-php`; in all future releases, it will be `launchdarkly/server-sdk`. No further updates to the `launchdarkly/launchdarkly-php` package will be published after this release.
+
 ## [3.5.2] - 2019-04-11
 ### Fixed:
 - In the 3.5.1 release, the `VERSION` constant was incorrectly still reporting the version as "3.5.0". The constant is now correct. There are no other changes in this release.

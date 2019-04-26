@@ -9,6 +9,54 @@ use LaunchDarkly\LDUser;
 use LaunchDarkly\LDUserBuilder;
 use LaunchDarkly\Segment;
 
+const RULE_ID = 'ruleid';
+
+$defaultUser = (new LDUserBuilder('foo'))->build();
+
+function makeBooleanFlagWithRules(array $rules)
+{
+    $flagJson = array(
+        'key' => 'feature',
+        'version' => 1,
+        'deleted' => false,
+        'on' => true,
+        'targets' => array(),
+        'prerequisites' => array(),
+        'rules' => $rules,
+        'offVariation' => 0,
+        'fallthrough' => array('variation' => 0),
+        'variations' => array(false, true),
+        'salt' => ''
+    );
+    return FeatureFlag::decode($flagJson);
+}
+
+function makeBooleanFlagWithClauses($clauses)
+{
+    return makeBooleanFlagWithRules(array(array('clauses' => $clauses, 'variation' => 1)));
+}
+
+function makeRuleMatchingUser($user, $ruleAttrs = array())
+{
+    $clause = array('attribute' => 'key', 'op' => 'in', 'values' => array($user->getKey()), 'negate' => false);
+    return array_merge(array('id' => RULE_ID, 'clauses' => array($clause)), $ruleAttrs);
+}
+
+function makeSegmentMatchClause($segmentKey)
+{
+    return array('attribute' => '', 'op' => 'segmentMatch', 'values' => array($segmentKey), 'negate' => false);
+}
+
+// This is our way of verifying that the bucket value for a rollout is within 1.0 of the expected value.
+function makeRolloutVariations($targetValue, $targetVariation, $otherVariation)
+{
+    return array(
+        array('weight' => $targetValue, 'variation' => $otherVariation),
+        array('weight' => 1, 'variation' => $targetVariation),
+        array('weight' => 100000 - ($targetValue + 1), 'variation' => $otherVariation)
+    );
+}
+
 class FeatureFlagTest extends \PHPUnit_Framework_TestCase
 {
     private static $json1 = "{
@@ -506,59 +554,23 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         self::assertEquals(array(), $result->getPrerequisiteEvents());
     }
 
-    private function makeBooleanFlagWithRules(array $rules)
-    {
-        $flagJson = array(
-            'key' => 'feature',
-            'version' => 1,
-            'deleted' => false,
-            'on' => true,
-            'targets' => array(),
-            'prerequisites' => array(),
-            'rules' => $rules,
-            'offVariation' => 0,
-            'fallthrough' => array('variation' => 0),
-            'variations' => array(false, true),
-            'salt' => ''
-        );
-        return FeatureFlag::decode($flagJson);
-    }
-
     public function testFlagMatchesUserFromRules()
     {
-        $flag = $this->makeBooleanFlagWithRules(array(
-            array(
-                'id' => 'ruleid',
-                'clauses' => array(
-                    array('attribute' => 'key', 'op' => 'in', 'values' => array('userkey'), 'negate' => false)
-                ),
-                'variation' => 1
-            )
-        ));
-        $ub = new LDUserBuilder('userkey');
-        $user = $ub->build();
+        global $defaultUser;
+        $flag = makeBooleanFlagWithRules(array(makeRuleMatchingUser($defaultUser, array('variation' => 1))));
 
-        $result = $flag->evaluate($user, null, static::$eventFactory);
-        $detail = new EvaluationDetail(true, 1, EvaluationReason::ruleMatch(0, 'ruleid'));
+        $result = $flag->evaluate($defaultUser, null, static::$eventFactory);
+        $detail = new EvaluationDetail(true, 1, EvaluationReason::ruleMatch(0, RULE_ID));
         self::assertEquals($detail, $result->getDetail());
         self::assertEquals(array(), $result->getPrerequisiteEvents());
     }
 
     public function testFlagReturnsErrorIfRuleVariationIsTooHigh()
     {
-        $flag = $this->makeBooleanFlagWithRules(array(
-            array(
-                'id' => 'ruleid',
-                'clauses' => array(
-                    array('attribute' => 'key', 'op' => 'in', 'values' => array('userkey'), 'negate' => false)
-                ),
-                'variation' => 999
-            )
-        ));
-        $ub = new LDUserBuilder('userkey');
-        $user = $ub->build();
+        global $defaultUser;
+        $flag = makeBooleanFlagWithRules(array(makeRuleMatchingUser($defaultUser, array('variation' => 999))));
 
-        $result = $flag->evaluate($user, null, static::$eventFactory);
+        $result = $flag->evaluate($defaultUser, null, static::$eventFactory);
         $detail = new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR));
         self::assertEquals($detail, $result->getDetail());
         self::assertEquals(array(), $result->getPrerequisiteEvents());
@@ -566,19 +578,10 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
 
     public function testFlagReturnsErrorIfRuleVariationIsNegative()
     {
-        $flag = $this->makeBooleanFlagWithRules(array(
-            array(
-                'id' => 'ruleid',
-                'clauses' => array(
-                    array('attribute' => 'key', 'op' => 'in', 'values' => array('userkey'), 'negate' => false)
-                ),
-                'variation' => -1
-            )
-        ));
-        $ub = new LDUserBuilder('userkey');
-        $user = $ub->build();
+        global $defaultUser;
+        $flag = makeBooleanFlagWithRules(array(makeRuleMatchingUser($defaultUser, array('variation' => -1))));
 
-        $result = $flag->evaluate($user, null, static::$eventFactory);
+        $result = $flag->evaluate($defaultUser, null, static::$eventFactory);
         $detail = new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR));
         self::assertEquals($detail, $result->getDetail());
         self::assertEquals(array(), $result->getPrerequisiteEvents());
@@ -586,18 +589,10 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
 
     public function testFlagReturnsErrorIfRuleHasNoVariationOrRollout()
     {
-        $flag = $this->makeBooleanFlagWithRules(array(
-            array(
-                'id' => 'ruleid',
-                'clauses' => array(
-                    array('attribute' => 'key', 'op' => 'in', 'values' => array('userkey'), 'negate' => false)
-                )
-            )
-        ));
-        $ub = new LDUserBuilder('userkey');
-        $user = $ub->build();
+        global $defaultUser;
+        $flag = makeBooleanFlagWithRules(array(makeRuleMatchingUser($defaultUser, array())));
 
-        $result = $flag->evaluate($user, null, static::$eventFactory);
+        $result = $flag->evaluate($defaultUser, null, static::$eventFactory);
         $detail = new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR));
         self::assertEquals($detail, $result->getDetail());
         self::assertEquals(array(), $result->getPrerequisiteEvents());
@@ -605,118 +600,154 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
 
     public function testFlagReturnsErrorIfRuleHasRolloutWithNoVariations()
     {
-        $flag = $this->makeBooleanFlagWithRules(array(
-            array(
-                'id' => 'ruleid',
-                'clauses' => array(
-                    array('attribute' => 'key', 'op' => 'in', 'values' => array('userkey'), 'negate' => false)
-                ),
-                'rollout' => array('variations' => array())
-            )
-        ));
-        $ub = new LDUserBuilder('userkey');
-        $user = $ub->build();
+        global $defaultUser;
+        $rollout = array('variations' => array());
+        $flag = makeBooleanFlagWithRules(array(makeRuleMatchingUser($defaultUser, array('rollout' => $rollout))));
 
-        $result = $flag->evaluate($user, null, static::$eventFactory);
+        $result = $flag->evaluate($defaultUser, null, static::$eventFactory);
         $detail = new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR));
         self::assertEquals($detail, $result->getDetail());
         self::assertEquals(array(), $result->getPrerequisiteEvents());
     }
 
-    public function testSecondaryKeyIsCoercedToStringForRolloutCalculation()
+    public function testRolloutCalculationBucketsByUserKeyByDefault()
     {
-        // We can't really verify that the rollout calculation works correctly, but we can at least
-        // make sure it doesn't error out if there's a non-string secondary value (ch35189)
-        $flag = $this->makeBooleanFlagWithRules(array(
-            array(
-                'id' => 'ruleid',
-                'clauses' => array(
-                    array('attribute' => 'key', 'op' => 'in', 'values' => array('userkey'), 'negate' => false)
-                ),
-                'rollout' => array(
-                    'salt' => '',
-                    'variations' => array(
-                        array(
-                            'weight' => 100000,
-                            'variation' => 1
-                        )
-                    )
-                )
-            )
-        ));
         $ub = new LDUserBuilder('userkey');
-        $ub->secondary(999);
         $user = $ub->build();
+        $expectedBucketValue = 22464;
+        $rollout = array(
+            'salt' => '',
+            'variations' => makeRolloutVariations($expectedBucketValue, 1, 0)
+        );
+        $flag = makeBooleanFlagWithRules(array(makeRuleMatchingUser($user, array('rollout' => $rollout))));
 
         $result = $flag->evaluate($user, null, static::$eventFactory);
-        $detail = new EvaluationDetail(true, 1, EvaluationReason::ruleMatch(0, 'ruleid'));
+        $detail = new EvaluationDetail(true, 1, EvaluationReason::ruleMatch(0, RULE_ID));
+        self::assertEquals($detail, $result->getDetail());
+    }
+
+    public function testRolloutCalculationCanBucketBySpecificAttribute()
+    {
+        $ub = new LDUserBuilder('userkey');
+        $ub->name('Bob');
+        $user = $ub->build();
+        $expectedBucketValue = 95913;
+        $rollout = array(
+            'salt' => '',
+            'bucketBy' => 'name',
+            'variations' => makeRolloutVariations($expectedBucketValue, 1, 0)
+        );
+        $flag = makeBooleanFlagWithRules(array(makeRuleMatchingUser($user, array('rollout' => $rollout))));
+
+        $result = $flag->evaluate($user, null, static::$eventFactory);
+        $detail = new EvaluationDetail(true, 1, EvaluationReason::ruleMatch(0, RULE_ID));
+        self::assertEquals($detail, $result->getDetail());
+    }
+
+    public function testRolloutCalculationIncludesSecondaryKey()
+    {
+        $ub = new LDUserBuilder('userkey');
+        $ub->secondary('999');
+        $user = $ub->build();
+        $expectedBucketValue = 31179;
+        $rollout = array(
+            'salt' => '',
+            'variations' => makeRolloutVariations($expectedBucketValue, 1, 0)
+        );
+        $flag = makeBooleanFlagWithRules(array(makeRuleMatchingUser($user, array('rollout' => $rollout))));
+
+        $result = $flag->evaluate($user, null, static::$eventFactory);
+        $detail = new EvaluationDetail(true, 1, EvaluationReason::ruleMatch(0, RULE_ID));
         self::assertEquals($detail, $result->getDetail());
         self::assertEquals(array(), $result->getPrerequisiteEvents());
     }
 
-    public function clauseCanMatchBuiltInAttribute()
+    public function testRolloutCalculationCoercesSecondaryKeyToString()
+    {
+        // This should produce the same result as the previous test, and should not cause an error (ch35189).
+        $ub = new LDUserBuilder('userkey');
+        $ub->secondary(999);
+        $user = $ub->build();
+        $expectedBucketValue = 31179;
+        $rollout = array(
+            'salt' => '',
+            'variations' => makeRolloutVariations($expectedBucketValue, 1, 0)
+        );
+        $flag = makeBooleanFlagWithRules(array(makeRuleMatchingUser($user, array('rollout' => $rollout))));
+
+        $result = $flag->evaluate($user, null, static::$eventFactory);
+        $detail = new EvaluationDetail(true, 1, EvaluationReason::ruleMatch(0, RULE_ID));
+        self::assertEquals($detail, $result->getDetail());
+        self::assertEquals(array(), $result->getPrerequisiteEvents());
+    }
+
+    public function testClauseCanMatchBuiltInAttribute()
     {
         $clause = array('attribute' => 'name', 'op' => 'in', 'values' => array('Bob'), 'negate' => false);
-        $flag = $this->booleanFlagWithClauses(array($clause));
+        $flag = makeBooleanFlagWithClauses(array($clause));
         $ub = new LDUserBuilder('userkey');
+        $ub->name('Bob');
         $user = $ub->build();
 
         $result = $flag->evaluate($user, null, static::$eventFactory);
-        self::assertEquals(true, $result->getValue());
+        self::assertEquals(true, $result->getDetail()->getValue());
     }
 
-    public function clauseCanMatchCustomAttribute()
+    public function testClauseCanMatchCustomAttribute()
     {
         $clause = array('attribute' => 'legs', 'op' => 'in', 'values' => array('4'), 'negate' => false);
-        $flag = $this->booleanFlagWithClauses(array($clause));
+        $flag = makeBooleanFlagWithClauses(array($clause));
         $ub = new LDUserBuilder('userkey');
         $ub->customAttribute('legs', 4);
         $user = $ub->build();
 
         $result = $flag->evaluate($user, null, static::$eventFactory);
-        self::assertEquals(true, $result->getValue());
+        self::assertEquals(true, $result->getDetail()->getValue());
     }
 
-    public function clauseReturnsFalseForMissingAttribute()
+    public function testClauseReturnsFalseForMissingAttribute()
     {
         $clause = array('attribute' => 'legs', 'op' => 'in', 'values' => array('4'), 'negate' => false);
-        $flag = $this->booleanFlagWithClauses(array($clause));
+        $flag = makeBooleanFlagWithClauses(array($clause));
         $ub = new LDUserBuilder('userkey');
         $user = $ub->build();
 
         $result = $flag->evaluate($user, null, static::$eventFactory);
-        self::assertEquals(false, $result->getValue());
+        self::assertEquals(false, $result->getDetail()->getValue());
     }
 
-    public function clauseCanBeNegated()
+    public function testClauseCanBeNegated()
     {
         $clause = array('attribute' => 'name', 'op' => 'in', 'values' => array('Bob'), 'negate' => true);
-        $flag = $this->booleanFlagWithClauses(array($clause));
+        $flag = makeBooleanFlagWithClauses(array($clause));
         $ub = new LDUserBuilder('userkey');
+        $ub->name('Bob');
         $user = $ub->build();
 
         $result = $flag->evaluate($user, null, static::$eventFactory);
-        self::assertEquals(false, $result->getValue());
+        self::assertEquals(false, $result->getDetail()->getValue());
     }
 
-    public function clauseWithUnknownOperatorDoesNotMatch()
+    public function testClauseWithUnknownOperatorDoesNotMatch()
     {
         $clause = array('attribute' => 'name', 'op' => 'doesSomethingUnsupported', 'values' => array('Bob'), 'negate' => false);
-        $flag = $this->booleanFlagWithClauses(array($clause));
+        $flag = makeBooleanFlagWithClauses(array($clause));
         $ub = new LDUserBuilder('userkey');
+        $ub->name('Bob');
         $user = $ub->build();
 
         $result = $flag->evaluate($user, null, static::$eventFactory);
-        self::assertEquals(false, $result->getValue());
+        self::assertEquals(false, $result->getDetail()->getValue());
     }
 
     public function testSegmentMatchClauseRetrievesSegmentFromStore()
     {
+        global $defaultUser;
         $segmentJson = array(
             'key' => 'segkey',
             'version' => 1,
             'deleted' => false,
-            'included' => array('foo'),
+            'included' => array($defaultUser->getKey()),
             'excluded' => array(),
             'rules' => array(),
             'salt' => ''
@@ -727,58 +758,22 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         $requester->key = 'segkey';
         $requester->val = $segment;
 
-        $feature = $this->makeBooleanFeatureWithSegmentMatch('segkey');
+        $feature = makeBooleanFlagWithClauses(array(makeSegmentMatchClause('segkey')));
 
-        $ub = new LDUserBuilder('foo');
-        $user = $ub->build();
-
-        $result = $feature->evaluate($user, $requester, static::$eventFactory);
+        $result = $feature->evaluate($defaultUser, $requester, static::$eventFactory);
 
         self::assertTrue($result->getDetail()->getValue());
     }
 
     public function testSegmentMatchClauseFallsThroughWithNoErrorsIfSegmentNotFound()
     {
+        global $defaultUser;
         $requester = new MockFeatureRequesterForSegment();
         
-        $feature = $this->makeBooleanFeatureWithSegmentMatch('segkey');
+        $feature = makeBooleanFlagWithClauses(array(makeSegmentMatchClause('segkey')));
 
-        $ub = new LDUserBuilder('foo');
-        $user = $ub->build();
-
-        $result = $feature->evaluate($user, $requester, static::$eventFactory);
+        $result = $feature->evaluate($defaultUser, $requester, static::$eventFactory);
 
         self::assertFalse($result->getDetail()->getValue());
-    }
-
-    private function booleanFlagWithClauses($clauses)
-    {
-        $featureJson = array(
-            'key' => 'test',
-            'version' => 1,
-            'deleted' => false,
-            'on' => true,
-            'variations' => array(false, true),
-            'fallthrough' => array('variation' => 0),
-            'rules' => array(
-                array('clauses' => $clauses, 'variation' => 1)
-            ),
-            'offVariation' => 0,
-            'prerequisites' => array(),
-            'targets' => array(),
-            'salt' => ''
-        );
-        return FeatureFlag::decode($featureJson);
-    }
-
-    private function makeBooleanFeatureWithSegmentMatch($segmentKey)
-    {
-        $clause = array(
-            'attribute' => '',
-            'op' => 'segmentMatch',
-            'values' => array($segmentKey),
-            'negate' => false
-        );
-        return $this->booleanFlagWithClauses(array($clause));
     }
 }
