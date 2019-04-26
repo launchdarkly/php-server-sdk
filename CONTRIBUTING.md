@@ -1,10 +1,10 @@
-# Contributing to the LaunchDarkly SDK FOR PHP
+# Contributing to the LaunchDarkly Server-Side SDK for PHP
 
 LaunchDarkly has published an [SDK contributor's guide](https://docs.launchdarkly.com/docs/sdk-contributors-guide) that provides a detailed explanation of how our SDKs work. See below for additional information on how to contribute to this SDK.
 
 ## Submitting bug reports and feature requests
  
-The LaunchDarkly SDK team monitors the issue tracker associated with the `launchdarkly/php-server-sdk` SDK repository. Bug reports and feature requests specific to this SDK should be filed in this issue tracker. The SDK team will respond to all newly filed issues within two business days.
+The LaunchDarkly SDK team monitors the [issue tracker](https://github.com/launchdarkly/php-server-sdk/issues) in the SDK repository. Bug reports and feature requests specific to this SDK should be filed in this issue tracker. The SDK team will respond to all newly filed issues within two business days.
 
 ## Submitting pull requests
  
