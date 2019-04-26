@@ -4,7 +4,7 @@ LaunchDarkly has published an [SDK contributor's guide](https://docs.launchdarkl
 
 ## Submitting bug reports and feature requests
  
-The LaunchDarkly SDK team monitors the issue tracker associated with in the `launchdarkly/php-server-sdk` SDK repository. Bug reports and feature requests specific to this SDK should be filed in this issue tracker. The SDK team will respond to all newly filed issues within two business days.
+The LaunchDarkly SDK team monitors the issue tracker associated with the `launchdarkly/php-server-sdk` SDK repository. Bug reports and feature requests specific to this SDK should be filed in this issue tracker. The SDK team will respond to all newly filed issues within two business days.
 
 ## Submitting pull requests
  
@@ -15,8 +15,6 @@ We encourage pull requests and other contributions from the community. Before su
 ### Prerequisites
 
 The project uses [Composer](https://getcomposer.org/).
-
-If you will be running the full test suite that includes the database integrations, you will need to have instances of Consul, DynamoDB, and Redis running locally. See below for how to skip these tests.
 
 ### Installing dependencies
 
@@ -34,6 +32,6 @@ To run all unit tests:
 phpunit
 ```
 
-By default, the full unit test suite includes live tests of the integrations for Consul, DynamoDB, and Redis. To skip these, set the environment variable `LD_SKIP_DATABASE_TESTS=1` before running the tests.
+By default, the full unit test suite includes live tests of the integrations for Consul, DynamoDB, and Redis. Those tests expect you to have instances of all of those databases running locally. To skip them, set the environment variable `LD_SKIP_DATABASE_TESTS=1` before running the tests.
 
 It is preferable to run tests against all supported minor versions of PHP (as described in `README.md` under Requirements), or at least the lowest and highest versions, prior to submitting a pull request. However, LaunchDarkly's CI tests will run automatically against all supported versions.

@@ -1,151 +1,34 @@
-LaunchDarkly SDK for PHP
-===========================
+# LaunchDarkly Server-side SDK for PHP
 
-[![Circle CI](https://circleci.com/gh/launchdarkly/php-server-sdk.svg?style=svg)](https://circleci.com/gh/launchdarkly/php-server-sdk)
+[![Circle CI](https://img.shields.io/circleci/project/launchdarkly/php-server-sdk.png)](https://circleci.com/gh/launchdarkly/php-server-sdk)
 
-Requirements
-------------
-1. PHP 5.5 or higher. 
+## LaunchDarkly overview
 
-Quick setup
------------
+[LaunchDarkly](https://www.launchdarkly.com) is a feature management platform that serves over 100 billion feature flags daily to help teams build better software, faster. [Get started](https://docs.launchdarkly.com/docs/getting-started) using LaunchDarkly today!
+ 
+[![Twitter Follow](https://img.shields.io/twitter/follow/launchdarkly.svg?style=social&label=Follow&maxAge=2592000)](https://twitter.com/intent/follow?screen_name=launchdarkly)
 
-1. Install the PHP SDK and monolog for logging with [Composer](https://getcomposer.org/)
+## Supported PHP versions
 
-        php composer.phar require launchdarkly/launchdarkly-php
+This version of the LaunchDarkly SDK is compatible with PHP 5.5 and higher.
 
-1. After installing, require Composer's autoloader:
+## Getting started
 
-		require 'vendor/autoload.php';
+Refer to the [SDK reference guide](https://docs.launchdarkly.com/docs/php-sdk-reference) for instructions on getting started with using the SDK.
 
-1. Create a new LDClient with your SDK key:
-
-        $client = new LaunchDarkly\LDClient("your_sdk_key");
-
-Your first feature flag
------------------------
-
-1. Create a new feature flag on your [dashboard](https://app.launchdarkly.com)
-
-2. In your application code, use the feature's key to check whether the flag is on for each user:
-
-        $user = new LaunchDarkly\LDUser("user@test.com");
-        if ($client->variation("your.flag.key", $user)) {
-            # application code to show the feature
-        } else {
-            # the code to run if the feature is off
-        }
-
-Fetching flags
---------------
-
-There are two distinct methods of integrating LaunchDarkly in a PHP environment.  
-
-* [Guzzle Cache Middleware](https://github.com/Kevinrob/guzzle-cache-middleware) to request and cache HTTP responses in an in-memory array (default)
-* [ld-relay](https://github.com/launchdarkly/ld-relay) to retrieve and store flags in Redis (recommended)
-
-We strongly recommend using the ld-relay.  Per-flag caching (Guzzle method) is only intended for low-throughput environments.
-
-Using Guzzle
-============
-
-Require Guzzle as a dependency:
-
-    php composer.phar require "guzzlehttp/guzzle:6.2.1"
-    php composer.phar require "kevinrob/guzzle-cache-middleware:1.4.1"
-
-It will then be used as the default way of fetching flags.
-
-With Guzzle, you could persist your cache somewhere other than the default in-memory store, like Memcached or Redis.  You could then specify your cache when initializing the client with the [cache option](https://github.com/launchdarkly/php-server-sdk/blob/master/src/LaunchDarkly/LDClient.php#L44).
-
-    $client = new LaunchDarkly\LDClient("YOUR_SDK_KEY", array("cache" => $cacheStorage));
-
-
-Using LD-Relay
-==============
-
-The LaunchDarkly Relay Proxy ([ld-relay](https://github.com/launchdarkly/ld-relay)) consumes the LaunchDarkly streaming API and can update a database cache operating in your production environment. The ld-relay offers many benefits such as performance and feature flag consistency. With PHP applications, we strongly recommend setting up ld-relay with a database store. The database can be Redis, Consul, or DynamoDB. (For more about using LaunchDarkly with databases, see the [SDK reference guide](https://docs.launchdarkly.com/v2.0/docs/using-a-persistent-feature-store).)
-
-1. Set up ld-relay in [daemon-mode](https://github.com/launchdarkly/ld-relay#redis-storage-and-daemon-mode) with Redis
-
-2. Add the necessary dependency for the chosen database.
-
-    For Redis:
-
-        php composer.phar require "predis/predis:1.0.*"
-
-    For Consul:
-
-        php composer.phar require "sensiolabs/consul-php-sdk:2.*"
-
-    For DynamoDB:
-
-        php composer.phar require "aws/aws-sdk-php:3.*"
-
-3. Create the LDClient with the appropriate parameters for the chosen database. These examples show all of the available options.
-
-    For Redis:
-
-        $client = new LaunchDarkly\LDClient("your_sdk_key", [
-            'feature_requester' => LaunchDarkly\Integrations\Redis::featureRequester(),
-            'redis_host' => 'your.redis.host',  // defaults to "localhost" if not specified
-            'redis_port' => 6379,               // defaults to 6379 if not specified
-            'redis_timeout' => 5,               // connection timeout in seconds; defaults to 5
-            'redis_prefix' => 'env1'            // corresponds to the prefix setting in ld-relay
-            'predis_client' => $myClient        // use this if you have already configured a Predis client instance
-        ]);
-
-    For Consul:
-
-        $client = new LaunchDarkly\LDClient("your_sdk_key", [
-            'feature_requester' => LaunchDarkly\Integrations\Consul::featureRequester(),
-            'consul_uri' => 'http://localhost:8500',  // this is the default
-            'consul_prefix' => 'env1',                // corresponds to the prefix setting in ld-relay
-            'consul_options' => array(),              // you may pass any options supported by the Guzzle client
-            'apc_expiration' => 30                    // expiration time for local caching, if you have apcu installed
-        ]);
-
-    For DynamoDB:
-
-        $client = new LaunchDarkly\LDClient("your_sdk_key", [
-            'feature_requester' => LaunchDarkly\Integrations\DynamoDb::featureRequester(),
-            'dynamodb_table' => 'your.table.name',  // required
-            'dynamodb_prefix' => 'env1',            // corresponds to the prefix setting in ld-relay
-            'dynamodb_options' => array(),          // you may pass any options supported by the AWS SDK
-            'apc_expiration' => 30                  // expiration time for local caching, if you have apcu installed
-        ]);
-
-4. If you are using DynamoDB, you must create your table manually. It must have a partition key called "namespace", and a sort key called "key" (both strings). Note that by default the AWS SDK will attempt to get your AWS credentials and region from environment variables and/or local configuration files, but you may also specify them in `dynamodb_options`.
-
-5. If ld-relay is configured for [event forwarding](https://github.com/launchdarkly/ld-relay#event-forwarding), you can configure the LDClient to publish events to ld-relay instead of directly to `events.launchdarkly.com`. Using the `Guzzle` implementation of event publishing with ld-relay event forwarding can be an efficient alternative to the default `curl`-based event publishing.
-
-    To forward events, add the following configuration properties to the configuration shown above:
-
-            'event_publisher' => LaunchDarkly\Integrations\Guzzle::eventPublisher(),
-            'events_uri' => 'http://your-ldrelay-host:8030'
-
-Using flag data from a file
----------------------------
-
-For testing purposes, the SDK can be made to read feature flag state from a file or files instead of connecting to LaunchDarkly. See [`LaunchDarkly\Integrations\Files`](https://github.com/launchdarkly/php-server-sdk/blob/master/src/LaunchDarkly/Integrations/Files.php) and ["Reading flags from a file"](https://docs.launchdarkly.com/docs/reading-flags-from-a-file).
-
-Testing
--------
-
-We run integration tests for all our SDKs using a centralized test harness. This approach gives us the ability to test for consistency across SDKs, as well as test networking behavior in a long-running application. These tests cover each method in the SDK, and verify that event sending, flag evaluation, stream reconnection, and other aspects of the SDK all behave correctly.
-
-Learn more
------------
+## Learn more
 
 Check out our [documentation](http://docs.launchdarkly.com) for in-depth instructions on configuring and using LaunchDarkly. You can also head straight to the [complete reference guide for this SDK](http://docs.launchdarkly.com/docs/php-sdk-reference).
 
-Contributing
-------------
+## Testing
 
-We encourage pull-requests and other contributions from the community. We've also published an [SDK contributor's guide](http://docs.launchdarkly.com/docs/sdk-contributors-guide) that provides a detailed explanation of how our SDKs work. See [CONTRIBUTING](CONTRIBUTING.md) for more developer information about this project.
+We run integration tests for all our SDKs using a centralized test harness. This approach gives us the ability to test for consistency across SDKs, as well as test networking behavior in a long-running application. These tests cover each method in the SDK, and verify that event sending, flag evaluation, stream reconnection, and other aspects of the SDK all behave correctly.
 
-About LaunchDarkly
-------------------
+## Contributing
+
+We encourage pull requests and other contributions from the community. Check out our [contributing guidelines](CONTRIBUTING.md) for instructions on how to contribute to this SDK.
+
+## About LaunchDarkly
 
 * LaunchDarkly is a continuous delivery platform that provides feature flags as a service and allows developers to iterate quickly and safely. We allow you to easily flag your features and manage them from the LaunchDarkly dashboard.  With LaunchDarkly, you can:
     * Roll out a new feature to a subset of your users (like a group of users who opt-in to a beta tester group), gathering feedback and bug reports from real-world use cases.
