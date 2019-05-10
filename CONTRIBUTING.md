@@ -14,7 +14,7 @@ We encourage pull requests and other contributions from the community. Before su
 
 ### Prerequisites
 
-The project uses [Composer](https://getcomposer.org/).
+The project uses [Composer](https://getcomposer.org/) for managing dependencies.
 
 ### Installing dependencies
 
@@ -29,7 +29,7 @@ composer install
 To run all unit tests:
 
 ```
-phpunit
+./vendor/bin/phpunit
 ```
 
 By default, the full unit test suite includes live tests of the integrations for Consul, DynamoDB, and Redis. Those tests expect you to have instances of all of those databases running locally. To skip them, set the environment variable `LD_SKIP_DATABASE_TESTS=1` before running the tests.
