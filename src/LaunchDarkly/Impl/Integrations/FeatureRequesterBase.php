@@ -160,7 +160,7 @@ class FeatureRequesterBase implements FeatureRequester
                 $values = array();
             }
             if ($this->_cache) {
-                $this->_cache->putCachedString($cacheKey, json_encode(values));
+                $this->_cache->putCachedString($cacheKey, json_encode($values));
             }
         }
         foreach ($values as $i => $s) {
