@@ -5,6 +5,7 @@ use LaunchDarkly\LDClient;
 use LaunchDarkly\LDUser;
 use LaunchDarkly\LDUserBuilder;
 use LaunchDarkly\LDDFeatureRequester;
+use LaunchDarkly\Integrations\Redis;
 use LaunchDarkly\ApcLDDFeatureRequester;
 use Predis\Client;
 use LaunchDarkly\ApcuLDDFeatureRequester;
@@ -110,16 +111,52 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase
         $featureKey = 'foo';
         $featureValue = 'bar';
 
-        $redis = new \Predis\Client([
+        $redis = new Client([
             'scheme' => 'tcp',
             'host' => 'localhost',
             'port' => 6379,
         ]);
-        $client = new LDClient(static::API_KEY, ['feature_requester_class' => LDDFeatureRequester::class]);
+        $client = new LDClient(static::API_KEY, ['feature_requester' => Redis::featureRequester()]);
         $redis->hset('launchdarkly:features', $featureKey, $this->gen_feature($featureKey, $featureValue));
         $user = new LDUser(static::API_KEY);
         $allFlags = $client->allFlags($user);
 
+        $this->assertInternalType('array', $allFlags);
+        $this->assertArrayHasKey($featureKey, $allFlags);
+        $this->assertEquals($featureValue, $allFlags[$featureKey]);
+    }
+
+    public function testGetAllApcu()
+    {
+        if (!extension_loaded('apcu')) {
+            self::markTestSkipped('Install `apcu` extension to run this test.');
+        }
+
+        $featureKey = 'foo';
+        $featureValue = 'bar';
+        $otherFeatureValue  = 'no';
+
+        $redis = new Client([
+            'scheme' => 'tcp',
+            'host' => 'localhost',
+            'port' => 6379
+        ]);
+
+        $fr = Redis::featureRequester([ 'apc_expiration' => 60 ]);
+        $client = new LDClient(static::API_KEY, ['feature_requester' => $fr]);
+
+        $redis->hset('launchdarkly:features', $featureKey, $this->gen_feature($featureKey, $featureValue));
+
+        $user = new LDUser(static::API_KEY);
+        $allFlags = $client->allFlags($user);
+        $this->assertInternalType('array', $allFlags);
+        $this->assertArrayHasKey($featureKey, $allFlags);
+        $this->assertEquals($featureValue, $allFlags[$featureKey]);
+
+        $redis->hset('launchdarkly:features', $featureKey, $this->gen_feature($featureKey, $otherFeatureValue);
+        
+        # should still return cached value
+        $allFlags = $client->allFlags($user);
         $this->assertInternalType('array', $allFlags);
         $this->assertArrayHasKey($featureKey, $allFlags);
         $this->assertEquals($featureValue, $allFlags[$featureKey]);
