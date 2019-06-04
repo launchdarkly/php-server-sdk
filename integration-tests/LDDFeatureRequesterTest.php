@@ -153,7 +153,7 @@ class LDDFeatureRetrieverTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey($featureKey, $allFlags);
         $this->assertEquals($featureValue, $allFlags[$featureKey]);
 
-        $redis->hset('launchdarkly:features', $featureKey, $this->gen_feature($featureKey, $otherFeatureValue);
+        $redis->hset('launchdarkly:features', $featureKey, $this->gen_feature($featureKey, $otherFeatureValue));
         
         # should still return cached value
         $allFlags = $client->allFlags($user);
