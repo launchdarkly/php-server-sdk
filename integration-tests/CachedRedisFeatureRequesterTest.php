@@ -45,7 +45,7 @@ class CachedRedisFeatureRequesterTest extends \PHPUnit_Framework_TestCase
                 // Redis::featureRequester() will always use APCu for caching, rather than APC. The only
                 // way to specify APC is to use the deprecated ApcLDDFeatureRequester class.
                 'feature_requester_class' => ApcLDDFeatureRequester::class,
-                'apc_expiration' => 60
+                'apc_expiration' => static::CACHE_SECONDS
             ],
             function ($cacheKey) {
                 apc_delete($cacheKey);
@@ -60,7 +60,7 @@ class CachedRedisFeatureRequesterTest extends \PHPUnit_Framework_TestCase
 
         $this->doCachedGetTest(
             [
-                'feature_requester' => Redis::featureRequester([ 'apc_expiration' => CACHE_SECONDS ])
+                'feature_requester' => Redis::featureRequester([ 'apc_expiration' => static::CACHE_SECONDS ])
             ],
             function ($cacheKey) {
                 apcu_delete($cacheKey);
@@ -70,9 +70,9 @@ class CachedRedisFeatureRequesterTest extends \PHPUnit_Framework_TestCase
     private function doCachedGetTest($options, $clearFn)
     {
         $featureKey = 'fiz';
-        $firstValue = 'buz';
-        $secondValue = 'bob';
-        $defaultValue = 'alice';
+        $firstValue = 'first';
+        $secondValue = 'second';
+        $defaultValue = 'default';
 
         $redis = self::makeRedisClient();
 
@@ -80,7 +80,7 @@ class CachedRedisFeatureRequesterTest extends \PHPUnit_Framework_TestCase
         $user = self::makeUser();
 
         $redis->del('launchdarkly:features');
-        $this->assertEquals('alice', $client->variation($featureKey, $user, $defaultValue));
+        $this->assertEquals($defaultValue, $client->variation($featureKey, $user, $defaultValue));
         $redis->hset('launchdarkly:features', $featureKey, self::genFeature($featureKey, $firstValue));
         $this->assertEquals($firstValue, $client->variation($featureKey, $user, $defaultValue));
 
@@ -134,7 +134,7 @@ class CachedRedisFeatureRequesterTest extends \PHPUnit_Framework_TestCase
         $this->doCachedGetAllTest(
             [
                 'feature_requester_class' => ApcLDDFeatureRequester::class,
-                'apc_expiration' => CACHE_SECONDS
+                'apc_expiration' => static::CACHE_SECONDS
             ],
             function ($cacheKey) {
                 apc_delete($cacheKey);
@@ -149,7 +149,7 @@ class CachedRedisFeatureRequesterTest extends \PHPUnit_Framework_TestCase
 
         $this->doCachedGetAllTest(
             [
-                'feature_requester' => Redis::featureRequester([ 'apc_expiration' => CACHE_SECONDS ])
+                'feature_requester' => Redis::featureRequester([ 'apc_expiration' => static::CACHE_SECONDS ])
             ],
             function  ($cacheKey) {
                 apcu_delete($cacheKey);
@@ -159,8 +159,8 @@ class CachedRedisFeatureRequesterTest extends \PHPUnit_Framework_TestCase
     private function doCachedGetAllTest($options, $clearFn)
     {
         $featureKey = 'foo';
-        $firstValue = 'bar';
-        $secondValue  = 'no';
+        $firstValue = 'first';
+        $secondValue  = 'second';
 
         $redis = self::makeRedisClient();
 
