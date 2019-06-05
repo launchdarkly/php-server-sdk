@@ -47,7 +47,7 @@ class CachedRedisFeatureRequesterTest extends \PHPUnit_Framework_TestCase
                 'feature_requester_class' => ApcLDDFeatureRequester::class,
                 'apc_expiration' => 60
             ],
-            function($cacheKey) {
+            function ($cacheKey) {
                 apc_delete($cacheKey);
             });
     }
@@ -62,7 +62,7 @@ class CachedRedisFeatureRequesterTest extends \PHPUnit_Framework_TestCase
             [
                 'feature_requester' => Redis::featureRequester([ 'apc_expiration' => CACHE_SECONDS ])
             ],
-            function($cacheKey) {
+            function ($cacheKey) {
                 apcu_delete($cacheKey);
             });
     }
@@ -136,7 +136,7 @@ class CachedRedisFeatureRequesterTest extends \PHPUnit_Framework_TestCase
                 'feature_requester_class' => ApcLDDFeatureRequester::class,
                 'apc_expiration' => CACHE_SECONDS
             ],
-            function($cacheKey) {
+            function ($cacheKey) {
                 apc_delete($cacheKey);
             });
     }
@@ -151,7 +151,7 @@ class CachedRedisFeatureRequesterTest extends \PHPUnit_Framework_TestCase
             [
                 'feature_requester' => Redis::featureRequester([ 'apc_expiration' => CACHE_SECONDS ])
             ],
-            function($cacheKey) {
+            function  ($cacheKey) {
                 apcu_delete($cacheKey);
             });
     }
@@ -186,7 +186,7 @@ class CachedRedisFeatureRequesterTest extends \PHPUnit_Framework_TestCase
         # cache has been cleared, should get new value from Redis
         $allFlags = $client->allFlags($user);
         $this->assertArrayHasKey($featureKey, $allFlags);
-        $this->assertEquals($secondValue, $allFlags[$featureKey]);        
+        $this->assertEquals($secondValue, $allFlags[$featureKey]);
     }
 
     private static function makeLDClient($options)
