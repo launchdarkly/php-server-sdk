@@ -80,6 +80,8 @@ class CachedRedisFeatureRequesterTest extends \PHPUnit_Framework_TestCase
         $user = self::makeUser();
 
         $redis->del('launchdarkly:features');
+        $clearFn("launchdarkly:features:{$featureKey}");
+
         $this->assertEquals($defaultValue, $client->variation($featureKey, $user, $defaultValue));
         $redis->hset('launchdarkly:features', $featureKey, self::genFeature($featureKey, $firstValue));
         $this->assertEquals($firstValue, $client->variation($featureKey, $user, $defaultValue));
@@ -168,6 +170,7 @@ class CachedRedisFeatureRequesterTest extends \PHPUnit_Framework_TestCase
         $user = self::makeUser();
 
         $redis->hset('launchdarkly:features', $featureKey, self::genFeature($featureKey, $firstValue));
+        $clearFn('launchdarkly:features:$all');
 
         $allFlags = $client->allFlags($user);
         $this->assertInternalType('array', $allFlags);
