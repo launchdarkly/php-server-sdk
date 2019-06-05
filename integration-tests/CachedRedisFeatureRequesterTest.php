@@ -69,24 +69,29 @@ class CachedRedisFeatureRequesterTest extends \PHPUnit_Framework_TestCase
 
     private function doCachedGetTest($options, $clearFn)
     {
+        $featureKey = 'fiz';
+        $firstValue = 'buz';
+        $secondValue = 'bob';
+        $defaultValue = 'alice';
+
         $redis = self::makeRedisClient();
 
         $client = self::makeLDClient($options);
         $user = self::makeUser();
 
         $redis->del('launchdarkly:features');
-        $this->assertEquals('alice', $client->variation('fiz', $user, 'alice'));
-        $redis->hset('launchdarkly:features', 'fiz', self::genFeature('fiz', 'buz'));
-        $this->assertEquals('buz', $client->variation('fiz', $user, 'alice'));
+        $this->assertEquals('alice', $client->variation($featureKey, $user, $defaultValue));
+        $redis->hset('launchdarkly:features', $featureKey, self::genFeature($featureKey, $firstValue));
+        $this->assertEquals($firstValue, $client->variation($featureKey, $user, $defaultValue));
 
         # cached value so not updated
-        $redis->hset('launchdarkly:features', 'fiz', self::genFeature('fiz', 'bob'));
-        $this->assertEquals('buz', $client->variation('fiz', $user, 'alice'));
+        $redis->hset('launchdarkly:features', $featureKey, self::genFeature($featureKey, $secondValue));
+        $this->assertEquals($firstValue, $client->variation($featureKey, $user, $defaultValue));
 
-        $clearFn('launchdarkly:features:fiz');
+        $clearFn("launchdarkly:features:{$featureKey}");
 
         # cache has been cleared, should get new value from Redis
-        $this->assertEquals('bob', $client->variation('fiz', $user, 'alice'));
+        $this->assertEquals($secondValue, $client->variation($featureKey, $user, $defaultValue));
     }
 
     public function testGetAllWithoutFeatures()
@@ -154,34 +159,34 @@ class CachedRedisFeatureRequesterTest extends \PHPUnit_Framework_TestCase
     private function doCachedGetAllTest($options, $clearFn)
     {
         $featureKey = 'foo';
-        $featureValue = 'bar';
-        $otherFeatureValue  = 'no';
+        $firstValue = 'bar';
+        $secondValue  = 'no';
 
         $redis = self::makeRedisClient();
 
         $client = self::makeLDClient($options);
         $user = self::makeUser();
 
-        $redis->hset('launchdarkly:features', $featureKey, self::genFeature($featureKey, $featureValue));
+        $redis->hset('launchdarkly:features', $featureKey, self::genFeature($featureKey, $firstValue));
 
         $allFlags = $client->allFlags($user);
         $this->assertInternalType('array', $allFlags);
         $this->assertArrayHasKey($featureKey, $allFlags);
-        $this->assertEquals($featureValue, $allFlags[$featureKey]);
+        $this->assertEquals($firstValue, $allFlags[$featureKey]);
 
-        $redis->hset('launchdarkly:features', $featureKey, self::genFeature($featureKey, $otherFeatureValue));
+        $redis->hset('launchdarkly:features', $featureKey, self::genFeature($featureKey, $secondValue));
         
         # should still return cached value
         $allFlags = $client->allFlags($user);
         $this->assertArrayHasKey($featureKey, $allFlags);
-        $this->assertEquals($featureValue, $allFlags[$featureKey]);
+        $this->assertEquals($firstValue, $allFlags[$featureKey]);
 
         $clearFn('launchdarkly:features:$all');
 
         # cache has been cleared, should get new value from Redis
         $allFlags = $client->allFlags($user);
         $this->assertArrayHasKey($featureKey, $allFlags);
-        $this->assertEquals($otherFeatureValue, $allFlags[$featureKey]);        
+        $this->assertEquals($secondValue, $allFlags[$featureKey]);        
     }
 
     private static function makeLDClient($options)
