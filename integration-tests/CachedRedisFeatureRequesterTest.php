@@ -153,7 +153,7 @@ class CachedRedisFeatureRequesterTest extends \PHPUnit_Framework_TestCase
             [
                 'feature_requester' => Redis::featureRequester([ 'apc_expiration' => static::CACHE_SECONDS ])
             ],
-            function  ($cacheKey) {
+            function ($cacheKey) {
                 apcu_delete($cacheKey);
             });
     }
