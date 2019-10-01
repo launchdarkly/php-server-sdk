@@ -2,6 +2,11 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [3.6.0] - 2019-10-01
+### Added:
+- Added support for upcoming LaunchDarkly experimentation features. See `LDClient.track`.
+
+
 ## [3.5.5] - 2019-06-05
 ### Fixed:
 - The SDK could throw an exception when calling `allFlagsState()` if APC/APCu caching was enabled. This bug was introduced in the 3.5.0 release. (Thanks, [omnicolor](https://github.com/launchdarkly/php-server-sdk/pull/124)!)
