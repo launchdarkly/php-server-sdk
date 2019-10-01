@@ -29,6 +29,8 @@ class FeatureFlag
     protected $_deleted = false;
     /** @var bool */
     protected $_trackEvents = false;
+    /** @var bool */
+    protected $_trackEventsFallthrough = false;
     /** @var int | null */
     protected $_debugEventsUntilDate = null;
     /** @var bool */
@@ -50,6 +52,7 @@ class FeatureFlag
                                    array $variations,
                                    $deleted,
                                    $trackEvents,
+                                   $trackEventsFallthrough,
                                    $debugEventsUntilDate,
                                    $clientSide)
     {
@@ -65,6 +68,7 @@ class FeatureFlag
         $this->_variations = $variations;
         $this->_deleted = $deleted;
         $this->_trackEvents = $trackEvents;
+        $this->_trackEventsFallthrough = $trackEventsFallthrough;
         $this->_debugEventsUntilDate = $debugEventsUntilDate;
         $this->_clientSide = $clientSide;
     }
@@ -85,6 +89,7 @@ class FeatureFlag
                 $v['variations'] ?: [],
                 $v['deleted'],
                 isset($v['trackEvents']) && $v['trackEvents'],
+                isset($v['trackEventsFallthrough']) && $v['trackEventsFallthrough'],
                 isset($v['debugEventsUntilDate']) ? $v['debugEventsUntilDate'] : null,
                 isset($v['clientSide']) && $v['clientSide']
             );
@@ -104,13 +109,13 @@ class FeatureFlag
     /**
      * @param LDUser $user
      * @param FeatureRequester $featureRequester
-     * @param bool $includeReasonsInEvents
+     * @param Impl\EventFactory $eventFactory
      * @return EvalResult
      */
-    public function evaluate($user, $featureRequester, $includeReasonsInEvents = false)
+    public function evaluate($user, $featureRequester, $eventFactory)
     {
         $prereqEvents = array();
-        $detail = $this->evaluateInternal($user, $featureRequester, $prereqEvents, $includeReasonsInEvents);
+        $detail = $this->evaluateInternal($user, $featureRequester, $prereqEvents, $eventFactory);
         return new EvalResult($detail, $prereqEvents);
     }
 
@@ -118,16 +123,16 @@ class FeatureFlag
      * @param LDUser $user
      * @param FeatureRequester $featureRequester
      * @param array $events
-     * @param bool $includeReasonsInEvents
+     * @param Impl\EventFactory $eventFactory
      * @return EvaluationDetail
      */
-    private function evaluateInternal($user, $featureRequester, &$events, $includeReasonsInEvents)
+    private function evaluateInternal($user, $featureRequester, &$events, $eventFactory)
     {
         if (!$this->isOn()) {
             return $this->getOffValue(EvaluationReason::off());
         }
 
-        $prereqFailureReason = $this->checkPrerequisites($user, $featureRequester, $events, $includeReasonsInEvents);
+        $prereqFailureReason = $this->checkPrerequisites($user, $featureRequester, $events, $eventFactory);
         if ($prereqFailureReason !== null) {
             return $this->getOffValue($prereqFailureReason);
         }
@@ -158,10 +163,10 @@ class FeatureFlag
      * @param LDUser $user
      * @param FeatureRequester $featureRequester
      * @param array $events
-     * @param bool $includeReasonsInEvents
+     * @param Impl\EventFactory $eventFactory
      * @return EvaluationReason|null
      */
-    private function checkPrerequisites($user, $featureRequester, &$events, $includeReasonsInEvents)
+    private function checkPrerequisites($user, $featureRequester, &$events, $eventFactory)
     {
         if ($this->_prerequisites != null) {
             foreach ($this->_prerequisites as $prereq) {
@@ -172,16 +177,12 @@ class FeatureFlag
                     if ($prereqFeatureFlag == null) {
                         $prereqOk = false;
                     } else {
-                        $prereqEvalResult = $prereqFeatureFlag->evaluateInternal($user, $featureRequester, $events, $includeReasonsInEvents);
+                        $prereqEvalResult = $prereqFeatureFlag->evaluateInternal($user, $featureRequester, $events, $eventFactory);
                         $variation = $prereq->getVariation();
                         if (!$prereqFeatureFlag->isOn() || $prereqEvalResult->getVariationIndex() !== $variation) {
                             $prereqOk = false;
                         }
-                        array_push($events, Util::newFeatureRequestEvent($prereq->getKey(), $user,
-                            $prereqEvalResult->getVariationIndex(), $prereqEvalResult->getValue(),
-                            null, $prereqFeatureFlag->getVersion(), $this->_key,
-                            ($includeReasonsInEvents && $prereqEvalResult) ? $prereqEvalResult->getReason() : null
-                        ));
+                        array_push($events, $eventFactory->newEvalEvent($prereqFeatureFlag, $user, $prereqEvalResult, null, $this));
                     }
                 } catch (EvaluationException $e) {
                     $prereqOk = false;
@@ -259,11 +260,27 @@ class FeatureFlag
     }
 
     /**
+     * @return array
+     */
+    public function getRules()
+    {
+        return $this->_rules;
+    }
+    
+    /**
      * @return boolean
      */
     public function isTrackEvents()
     {
         return $this->_trackEvents;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isTrackEventsFallthrough()
+    {
+        return $this->_trackEventsFallthrough;
     }
 
     /**
