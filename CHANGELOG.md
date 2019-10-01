@@ -2,6 +2,17 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [3.5.5] - 2019-06-05
+### Fixed:
+- The SDK could throw an exception when calling `allFlagsState()` if APC/APCu caching was enabled. This bug was introduced in the 3.5.0 release. (Thanks, [omnicolor](https://github.com/launchdarkly/php-server-sdk/pull/124)!)
+- Improved unit test coverage for the caching logic.
+
+## [3.5.4] - 2019-05-10
+### Changed:
+- Changed the package name from `launchdarkly/launchdarkly-php` to `launchdarkly/server-sdk`
+
+There are no other changes in this release. Substituting `launchdarkly/launchdarkly-php` version 3.5.3 with `launchdarkly/server-sdk` version 3.5.4 will not affect functionality.
+
 ## [3.5.3] - 2019-04-26
 ### Fixed:
 - Segment rollout calculations did not work correctly if the rollout was based on a user attribute other than `key`; all users would end up in the same bucket. (Thanks, [m6w6](https://github.com/launchdarkly/php-server-sdk/pull/121)!)

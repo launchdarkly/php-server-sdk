@@ -1,0 +1,10 @@
+repo:
+  public: php-server-sdk
+  private: php-server-sdk-private
+
+publications:
+  - url: https://packagist.org/packages/launchdarkly/server-sdk
+    description: Packagist
+
+sdk:
+  displayName: "PHP"
