@@ -7,7 +7,6 @@ use DateTimeZone;
 
 class Util
 {
-
     /**
      * @param $dateTime DateTime
      * @return int
@@ -25,34 +24,6 @@ class Util
     public static function currentTimeUnixMillis()
     {
         return Util::dateTimeToUnixMillis(new DateTime('now', new DateTimeZone("UTC")));
-    }
-
-
-    /**
-     * @param $key string
-     * @param $user LDUser
-     * @param $value
-     * @param $default
-     * @param null $version int | null
-     * @param null $prereqOf string | null
-     * @return array
-     */
-    public static function newFeatureRequestEvent($key, $user, $variation, $value, $default, $version = null, $prereqOf = null, $reason = null)
-    {
-        $event = array();
-        $event['user'] = $user;
-        $event['variation'] = $variation;
-        $event['value'] = $value;
-        $event['kind'] = "feature";
-        $event['creationDate'] = Util::currentTimeUnixMillis();
-        $event['key'] = $key;
-        $event['default'] = $default;
-        $event['version'] = $version;
-        $event['prereqOf'] = $prereqOf;
-        if ($reason !== null) {
-            $event['reason'] = $reason->jsonSerialize();
-        }
-        return $event;
     }
 
     /**

@@ -8,12 +8,15 @@ class Rule extends VariationOrRollout
     private $_id = null;
     /** @var Clause[] */
     private $_clauses = array();
+    /** @var boolean */
+    private $_trackEvents;
 
-    protected function __construct($variation, $rollout, $id, array $clauses)
+    protected function __construct($variation, $rollout, $id, array $clauses, $trackEvents)
     {
         parent::__construct($variation, $rollout);
         $this->_id = $id;
         $this->_clauses = $clauses;
+        $this->_trackEvents = $trackEvents;
     }
 
     public static function getDecoder()
@@ -23,7 +26,8 @@ class Rule extends VariationOrRollout
                 isset($v['variation']) ? $v['variation'] : null,
                 isset($v['rollout']) ? call_user_func(Rollout::getDecoder(), $v['rollout']) : null,
                 isset($v['id']) ? $v['id'] : null,
-                array_map(Clause::getDecoder(), $v['clauses']));
+                array_map(Clause::getDecoder(), $v['clauses']),
+                isset($v['trackEvents']) ? $v['trackEvents'] : false);
         };
     }
 
@@ -55,5 +59,13 @@ class Rule extends VariationOrRollout
     public function getClauses()
     {
         return $this->_clauses;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isTrackEvents()
+    {
+        return $this->_trackEvents;
     }
 }

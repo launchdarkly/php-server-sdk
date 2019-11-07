@@ -1,6 +1,8 @@
 <?php
 namespace LaunchDarkly;
 
+use LaunchDarkly\Impl\EventFactory;
+use LaunchDarkly\Impl\NullEventPublisher;
 use LaunchDarkly\Integrations\Guzzle;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
@@ -13,7 +15,7 @@ class LDClient
 {
     const DEFAULT_BASE_URI = 'https://app.launchdarkly.com';
     const DEFAULT_EVENTS_URI = 'https://events.launchdarkly.com';
-    const VERSION = '3.5.4';
+    const VERSION = '3.6.0';
 
     /** @var string */
     protected $_sdkKey;
@@ -33,6 +35,10 @@ class LDClient
     protected $_logger;
     /** @var FeatureRequester */
     protected $_featureRequester;
+    /** @var EventFactory */
+    protected $_eventFactoryDefault;
+    /** @var EventFactory */
+    protected $_eventFactoryWithReasons;
 
     /**
      * Creates a new client instance that connects to LaunchDarkly.
@@ -99,7 +105,20 @@ class LDClient
         }
         $this->_logger = $options['logger'];
 
-        $this->_eventProcessor = new EventProcessor($sdkKey, $options);
+        $this->_eventFactoryDefault = new EventFactory(false);
+        $this->_eventFactoryWithReasons = new EventFactory(true);
+
+        if (isset($options['event_processor'])) {
+            $ep = $options['event_processor'];
+            if (is_callable($ep)) {
+                $ep = $ep($sdkKey, $options);
+            }
+            $this->_eventProcessor = $ep;
+        } elseif ($this->_offline || !$this->_send_events) {
+            $this->_eventProcessor = new EventProcessor($sdkKey, $options);
+        } else {
+            $this->_eventProcessor = new EventProcessor($sdkKey, $options);
+        }
 
         $this->_featureRequester = $this->getFeatureRequester($sdkKey, $options);
     }
@@ -141,7 +160,7 @@ class LDClient
      */
     public function variation($key, $user, $default = false)
     {
-        $detail = $this->variationDetailInternal($key, $user, $default, false);
+        $detail = $this->variationDetailInternal($key, $user, $default, $this->_eventFactoryDefault);
         return $detail->getValue();
     }
 
@@ -159,29 +178,28 @@ class LDClient
      */
     public function variationDetail($key, $user, $default = false)
     {
-        return $this->variationDetailInternal($key, $user, $default, true);
+        return $this->variationDetailInternal($key, $user, $default, $this->_eventFactoryWithReasons);
     }
 
     /**
      * @param string $key
      * @param LDUser $user
      * @param mixed $default
-     * @param bool $includeReasonsInEvents
+     * @param EventFactory $eventFactory
      */
-    private function variationDetailInternal($key, $user, $default, $includeReasonsInEvents)
+    private function variationDetailInternal($key, $user, $default, $eventFactory)
     {
         $default = $this->_get_default($key, $default);
 
         $errorResult = function ($errorKind) use ($key, $default) {
             return new EvaluationDetail($default, null, EvaluationReason::error($errorKind));
         };
-        $sendEvent = function ($detail, $flag) use ($key, $user, $default, $includeReasonsInEvents) {
-            if ($this->isOffline() || !$this->_send_events) {
-                return;
+        $sendEvent = function ($detail, $flag) use ($key, $user, $default, $eventFactory) {
+            if ($flag) {
+                $event = $eventFactory->newEvalEvent($flag, $user, $detail, $default);
+            } else {
+                $event = $eventFactory->newUnknownFlagEvent($key, $user, $detail);
             }
-            $event = Util::newFeatureRequestEvent($key, $user, $detail->getVariationIndex(), $detail->getValue(),
-                $default, $flag ? $flag->getVersion() : null, null,
-                $includeReasonsInEvents ? $detail->getReason() : null);
             $this->_eventProcessor->enqueue($event);
         };
 
@@ -211,11 +229,9 @@ class LDClient
                 $this->_logger->warning("Variation called with null user or null user key! Returning default value");
                 return $result;
             }
-            $evalResult = $flag->evaluate($user, $this->_featureRequester, $includeReasonsInEvents);
-            if (!$this->isOffline() && $this->_send_events) {
-                foreach ($evalResult->getPrerequisiteEvents() as $e) {
-                    $this->_eventProcessor->enqueue($e);
-                }
+            $evalResult = $flag->evaluate($user, $this->_featureRequester, $eventFactory);
+            foreach ($evalResult->getPrerequisiteEvents() as $e) {
+                $this->_eventProcessor->enqueue($e);
             }
             $detail = $evalResult->getDetail();
             if ($detail->isDefaultValue()) {
@@ -261,27 +277,18 @@ class LDClient
      *
      * @param $eventName string The name of the event
      * @param $user LDUser The user that performed the event
-     * @param $data mixed
+     * @param $data mixed Optional additional information to associate with the event
+     * @param $metricValue number A numeric value used by the LaunchDarkly experimentation feature in
+     *   numeric custom metrics. Can be omitted if this event is used by only non-numeric metrics. This
+     *   field will also be returned as part of the custom event for Data Export.
      */
-    public function track($eventName, $user, $data)
+    public function track($eventName, $user, $data = null, $metricValue = null)
     {
-        if ($this->isOffline()) {
-            return;
-        }
         if (is_null($user) || $user->isKeyBlank()) {
             $this->_logger->warning("Track called with null user or null/empty user key!");
             return;
         }
-
-        $event = array();
-        $event['user'] = $user;
-        $event['kind'] = "custom";
-        $event['creationDate'] = Util::currentTimeUnixMillis();
-        $event['key'] = $eventName;
-        if (isset($data)) {
-            $event['data'] = $data;
-        }
-        $this->_eventProcessor->enqueue($event);
+        $this->_eventProcessor->enqueue($this->_eventFactoryDefault->newCustomEvent($eventName, $user, $data, $metricValue));
     }
 
     /**
@@ -289,20 +296,11 @@ class LDClient
      */
     public function identify($user)
     {
-        if ($this->isOffline()) {
-            return;
-        }
         if (is_null($user) || $user->isKeyBlank()) {
             $this->_logger->warning("Track called with null user or null/empty user key!");
             return;
         }
-
-        $event = array();
-        $event['user'] = $user;
-        $event['kind'] = "identify";
-        $event['creationDate'] = Util::currentTimeUnixMillis();
-        $event['key'] = strval($user->getKey());
-        $this->_eventProcessor->enqueue($event);
+        $this->_eventProcessor->enqueue($this->_eventFactoryDefault->newIdentifyEvent($user));
     }
 
     /** Returns an array mapping Feature Flag keys to their evaluated results for a given user.
@@ -370,7 +368,7 @@ class LDClient
             if ($clientOnly && !$flag->isClientSide()) {
                 continue;
             }
-            $result = $flag->evaluate($user, $preloadedRequester);
+            $result = $flag->evaluate($user, $preloadedRequester, $this->_eventFactoryDefault);
             $state->addFlag($flag, $result->getDetail(), $withReasons, $detailsOnlyIfTracked);
         }
         return $state;
