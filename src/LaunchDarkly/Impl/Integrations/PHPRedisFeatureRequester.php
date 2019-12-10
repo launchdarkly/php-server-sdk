@@ -58,7 +58,7 @@ class PHPRedisFeatureRequester extends FeatureRequesterBase
             $this->_redisOptions["timeout"],
             'x'
         );
-        $redis->setOption(Redis::OPT_PREFIX, "$this->_prefix:");	// use custom prefix on all keys
+        $redis->setOption(\Redis::OPT_PREFIX, "$this->_prefix:");	// use custom prefix on all keys
         return $this->_redisInstance = $redis;
     }
 }
