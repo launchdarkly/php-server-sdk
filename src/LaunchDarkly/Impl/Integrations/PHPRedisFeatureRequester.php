@@ -7,7 +7,7 @@ class PHPRedisFeatureRequester extends FeatureRequesterBase
 {
     /** @var array */
     private $_redisOptions;
-    /** @var Redis */
+    /** @var \Redis */
     private $_redisInstance;
     /** @var string */
     private $_prefix;
@@ -43,7 +43,7 @@ class PHPRedisFeatureRequester extends FeatureRequesterBase
     }
 
     /**
-     * @return ClientInterface
+     * @return \Redis
      */
     protected function getConnection()
     {
@@ -51,7 +51,7 @@ class PHPRedisFeatureRequester extends FeatureRequesterBase
             return $this->_redisInstance;
         }
 
-        $redis = new Redis();
+        $redis = new \Redis();
         $redis->pconnect(
             $this->_redisOptions["host"],
             $this->_redisOptions["post"],
