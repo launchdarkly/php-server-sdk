@@ -2,7 +2,7 @@
 
 namespace LaunchDarkly\Tests;
 
-use LaunchDarkly\Integrations\Redis;
+use LaunchDarkly\Integrations\PHPRedis;
 
 class PHPRedisFeatureRequesterTest extends FeatureRequesterTestBase
 {
