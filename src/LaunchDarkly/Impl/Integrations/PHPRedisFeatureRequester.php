@@ -32,13 +32,13 @@ class PHPRedisFeatureRequester extends FeatureRequesterBase
     protected function readItemString($namespace, $key)
     {
         $redis = $this->getConnection();
-        return $redis->hget("$this->_prefix:$namespace", $key);
+        return $redis->hget($namespace, $key);
     }
 
     protected function readItemStringList($namespace)
     {
         $redis = $this->getConnection();
-        $raw = $redis->hgetall("$this->_prefix:$namespace");
+        $raw = $redis->hgetall($namespace);
         return $raw ? array_values($raw) : null;
     }
 
@@ -58,6 +58,7 @@ class PHPRedisFeatureRequester extends FeatureRequesterBase
             $this->_redisOptions["timeout"],
             'x'
         );
+        $redis->setOption(Redis::OPT_PREFIX, "$this->_prefix:");	// use custom prefix on all keys
         return $this->_redisInstance = $redis;
     }
 }
