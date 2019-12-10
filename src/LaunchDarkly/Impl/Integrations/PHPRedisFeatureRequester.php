@@ -52,7 +52,12 @@ class PHPRedisFeatureRequester extends FeatureRequesterBase
         }
 
         $redis = new Redis();
-        $redis->pconnect($this->_redisOptions["host"],$this->_redisOptions["post"]);
+        $redis->pconnect(
+            $this->_redisOptions["host"],
+            $this->_redisOptions["post"],
+            $this->_redisOptions["timeout"],
+            'x'
+        );
         return $this->_redisInstance = $redis;
     }
 }
