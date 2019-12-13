@@ -21,6 +21,12 @@ php-docker-template: &php-docker-template
         name: install dependencies
         command: composer install --no-progress
     - run:
+        name: setup phpredis
+        command: |
+          pecl config-set php_ini /usr/local/etc/php/php.ini
+          yes '' | sudo pecl install -f redis || true;
+          echo "extension=redis.so" | sudo tee -a /usr/local/etc/php/conf.d/redis.ini;
+    - run:
         name: run tests with highest compatible dependency versions
         command: vendor/bin/phpunit --log-junit ~/phpunit/junit.xml --coverage-text tests
     - store_test_results:
