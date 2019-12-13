@@ -5,8 +5,8 @@ namespace LaunchDarkly\Tests;
 use LaunchDarkly\Integrations\PHPRedis;
 
 /**
-* @requires PHP >= 7.0
-*/
+ * @requires extension redis
+ */
 class PHPRedisFeatureRequesterTest extends FeatureRequesterTestBase
 {
     const PREFIX = 'test';
