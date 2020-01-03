@@ -15,7 +15,7 @@ class LDClient
 {
     const DEFAULT_BASE_URI = 'https://app.launchdarkly.com';
     const DEFAULT_EVENTS_URI = 'https://events.launchdarkly.com';
-    const VERSION = '3.7.0';
+    const VERSION = '3.7.1';
 
     /** @var string */
     protected $_sdkKey;

@@ -2,6 +2,11 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [3.7.1] - 2020-01-03
+### Fixed:
+- Loosened the Monolog dependency constraint so that it will accept either a 1.x or a 2.x version. This should be compatible with all currently supported PHP versions; the SDK's use of Monolog does not rely on any features that are specific to 1.x. (Thanks, [mrtus](https://github.com/launchdarkly/php-server-sdk/pull/132)!)
+- In rare circumstances (depending on the exact data in the flag configuration, the flag's salt value, and the user properties), a percentage rollout could fail and return a default value, logging the error "Data inconsistency in feature flag ... variation/rollout object with no variation or rollout". This would happen if the user's hashed value fell exactly at the end of the last "bucket" (the last variation defined in the rollout). This has been fixed so that the user will get the last variation.
+
 ## [3.7.0] - 2019-12-13
 ### Added:
 - Added integration with the [`phpredis`](https://github.com/phpredis/phpredis) extension, which supports persistent Redis connections unlike the existing `predis` integration. See `LaunchDarkly::Integrations::PHPRedis`. (Thanks, [nicofff](https://github.com/launchdarkly/php-server-sdk/pull/128)!)
