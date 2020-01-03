@@ -54,11 +54,11 @@ class VariationOrRollout
             return $this->_variation;
         }
         $rollout = $this->_rollout;
-        if ($rollout == null) {
+        if ($rollout === null) {
             return null;
         }
         $variations = $rollout->getVariations();
-        if ($variations != null && count($variations) > 0) {
+        if ($variations) {
             $bucketBy = $this->_rollout->getBucketBy() === null ? "key" : $this->_rollout->getBucketBy();
             $bucket = self::bucketUser($user, $_key, $bucketBy, $_salt);
             $sum = 0.0;
