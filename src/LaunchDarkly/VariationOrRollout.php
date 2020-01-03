@@ -52,16 +52,23 @@ class VariationOrRollout
     {
         if ($this->_variation !== null) {
             return $this->_variation;
-        } elseif ($this->_rollout !== null) {
+        }
+        $rollout = $this->_rollout;
+        if ($rollout === null) {
+            return null;
+        }
+        $variations = $rollout->getVariations();
+        if ($variations) {
             $bucketBy = $this->_rollout->getBucketBy() === null ? "key" : $this->_rollout->getBucketBy();
             $bucket = self::bucketUser($user, $_key, $bucketBy, $_salt);
             $sum = 0.0;
-            foreach ($this->_rollout->getVariations() as $wv) {
+            foreach ($variations as $wv) {
                 $sum += $wv->getWeight() / 100000.0;
                 if ($bucket < $sum) {
                     return $wv->getVariation();
                 }
             }
+            return $variations[count($variations) - 1]->getVariation();
         }
         return null;
     }

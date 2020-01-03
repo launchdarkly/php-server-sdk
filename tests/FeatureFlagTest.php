@@ -8,6 +8,7 @@ use LaunchDarkly\Impl\EventFactory;
 use LaunchDarkly\LDUser;
 use LaunchDarkly\LDUserBuilder;
 use LaunchDarkly\Segment;
+use LaunchDarkly\VariationOrRollout;
 
 const RULE_ID = 'ruleid';
 
@@ -608,6 +609,80 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         $detail = new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR));
         self::assertEquals($detail, $result->getDetail());
         self::assertEquals(array(), $result->getPrerequisiteEvents());
+    }
+
+    public function testRolloutSelectsBucket()
+    {
+        $ub = new LDUserBuilder('userkey');
+        $user = $ub->build();
+        $flagKey = 'flagkey';
+        $salt = 'salt';
+        
+        // First verify that with our test inputs, the bucket value will be greater than zero and less than 100000,
+        // so we can construct a rollout whose second bucket just barely contains that value
+        $bucketValue = floor(VariationOrRollout::bucketUser($user, $flagKey, "key", $salt) * 100000);
+        self::assertGreaterThan(0, $bucketValue);
+        self::assertLessThan(100000, $bucketValue);
+
+        $badVariationA = 0;
+        $matchedVariation = 1;
+        $badVariationB = 2;
+        $rollout = array(
+            'variations' => array(
+                array('variation' => $badVariationA, 'weight' => $bucketValue), // end of bucket range is not inclusive, so it will *not* match the target value
+                array('variation' => $matchedVariation, 'weight' => 1), // size of this bucket is 1, so it only matches that specific value
+                array('variation' => $badVariationB, 'weight' => 100000 - ($bucketValue + 1))
+            )
+        );
+        $flag = FeatureFlag::decode(array(
+            'key' => $flagKey,
+            'version' => 1,
+            'deleted' => false,
+            'on' => true,
+            'offVariation' => null,
+            'targets' => array(),
+            'prerequisites' => array(),
+            'rules' => array(),
+            'fallthrough' => array('rollout' => $rollout),
+            'variations' => array('', '', ''),
+            'salt' => $salt
+        ));
+
+        $result = $flag->evaluate($user, null, static::$eventFactory);
+        self::assertSame($matchedVariation, $result->getDetail()->getVariationIndex());
+    }
+
+    public function testRolloutSelectsLastBucketIfBucketValueEqualsTotalWeight()
+    {
+        $ub = new LDUserBuilder('userkey');
+        $user = $ub->build();
+        $flagKey = 'flagkey';
+        $salt = 'salt';
+        
+        $bucketValue = floor(VariationOrRollout::bucketUser($user, $flagKey, "key", $salt) * 100000);
+
+        // We'll construct a list of variations that stops right at the target bucket value
+        $rollout = array(
+            'variations' => array(
+                array('variation' => 0, 'weight' => $bucketValue)
+            )
+        );
+        $flag = FeatureFlag::decode(array(
+            'key' => $flagKey,
+            'version' => 1,
+            'deleted' => false,
+            'on' => true,
+            'offVariation' => null,
+            'targets' => array(),
+            'prerequisites' => array(),
+            'rules' => array(),
+            'fallthrough' => array('rollout' => $rollout),
+            'variations' => array(''),
+            'salt' => $salt
+        ));
+
+        $result = $flag->evaluate($user, null, static::$eventFactory);
+        self::assertSame(0, $result->getDetail()->getVariationIndex());
     }
 
     public function testRolloutCalculationBucketsByUserKeyByDefault()
