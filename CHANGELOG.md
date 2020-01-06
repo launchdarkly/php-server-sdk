@@ -9,7 +9,7 @@ All notable changes to the LaunchDarkly PHP SDK will be documented in this file.
 
 ## [3.7.0] - 2019-12-13
 ### Added:
-- Added integration with the [`phpredis`](https://github.com/phpredis/phpredis) extension, which supports persistent Redis connections unlike the existing `predis` integration. See `LaunchDarkly::Integrations::PHPRedis`. (Thanks, [nicofff](https://github.com/launchdarkly/php-server-sdk/pull/128)!)
+- Added integration with the [`phpredis`](https://github.com/phpredis/phpredis) extension, which has similar functionality to the already-supported `predis` but may have better performance (since `predis` is written in pure PHP, whereas `phpredis` uses a C extension). See `LaunchDarkly::Integrations::PHPRedis`. (Thanks, [nicofff](https://github.com/launchdarkly/php-server-sdk/pull/128)!)
 
 ## [3.6.0] - 2019-10-01
 ### Added:
