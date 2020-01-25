@@ -20,10 +20,9 @@
     },
     "require-dev": {
         "aws/aws-sdk-php": "^3.86",
-        "friendsofphp/php-cs-fixer": "~2.2.19",
+        "friendsofphp/php-cs-fixer": "~2.16.1",
         "guzzlehttp/guzzle": "^6.2.1",
         "kevinrob/guzzle-cache-middleware": "^1.4.1",
-        "phpdocumentor/phpdocumentor": "^2.0",
         "phpunit/phpunit": ">=4.8.26 <5.4",
         "predis/predis": "^1.0",
         "sensiolabs/consul-php-sdk": ">=2.1 <3.0",

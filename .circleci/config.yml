@@ -20,6 +20,12 @@ workflows:
           docker-image: circleci/php:7.2.3-cli-stretch
           include-lowest-compatible-versions-test: false 
           # lowest "compatible" version of phpunit in 7.2 has a bug - https://github.com/sebastianbergmann/comparator/pull/30
+      - test-with-preinstalled-php:
+          name: PHP 7.3
+          docker-image: circleci/php:7.3.9-cli-stretch
+      - test-with-preinstalled-php:
+          name: PHP 7.4
+          docker-image: circleci/php:7.4.1-cli-buster
       - integration-test
 
 jobs:
