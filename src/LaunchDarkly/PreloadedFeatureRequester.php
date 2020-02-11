@@ -1,6 +1,12 @@
 <?php
 namespace LaunchDarkly;
 
+/**
+ * Internal class used in LDClient.
+ *
+ * @ignore
+ * @internal
+ */
 class PreloadedFeatureRequester implements FeatureRequester
 {
     /** @var FeatureRequester */
@@ -43,7 +49,7 @@ class PreloadedFeatureRequester implements FeatureRequester
     /**
      * Gets all features from cached values
      *
-     * @return array()|null The decoded FeatureFlags, or null if missing
+     * @return array|null The decoded FeatureFlags, or null if missing
      */
     public function getAllFeatures()
     {

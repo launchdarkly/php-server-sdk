@@ -2,6 +2,12 @@
 
 namespace LaunchDarkly;
 
+/**
+ * Internal class that holds intermediate flag evaluation results.
+ *
+ * @ignore
+ * @internal
+ */
 class EvalResult
 {
     /** @var EvaluationDetail */

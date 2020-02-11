@@ -2,6 +2,14 @@
 
 namespace LaunchDarkly;
 
+/**
+ * Internal data model class that describes a fixed variation or percentage rollout.
+ *
+ * Application code should never need to reference the data model directly.
+ *
+ * @ignore
+ * @internal
+ */
 class VariationOrRollout
 {
     private static $LONG_SCALE = 0xFFFFFFFFFFFFFFF;

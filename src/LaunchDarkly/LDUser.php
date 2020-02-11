@@ -2,9 +2,12 @@
 namespace LaunchDarkly;
 
 /**
- * Contains specific attributes of a user browsing your site. The only mandatory property property is the key,
- * which must uniquely identify each user. For authenticated users, this may be a username or e-mail address. For anonymous users,
- * this could be an IP address or session ID.
+ * Contains specific attributes of a user browsing your site.
+ *
+ * The only mandatory property property is the key, which must uniquely identify each user. For authenticated users,
+ * this may be a username or e-mail address. For anonymous users, it could be an IP address or session ID.
+ *
+ * Use {@link \LaunchDarkly\LDUserBuilder} to construct instances of this class.
  */
 class LDUser
 {
@@ -22,6 +25,8 @@ class LDUser
     protected $_privateAttributeNames = array();
 
     /**
+     * Constructor for directly creating an instance; it is preferable to use LDUserBuilder.
+     *
      * @param string $key Unique key for the user. For authenticated users, this may be a username or e-mail address. For anonymous users, this could be an IP address or session ID.
      * @param string|null $secondary An optional secondary identifier
      * @param string|null $ip The user's IP address (optional)
@@ -33,6 +38,7 @@ class LDUser
      * @param string|null $lastName The user's last name (optional)
      * @param boolean|null $anonymous Whether this is an anonymous user
      * @param array|null $custom Other custom attributes that can be used to create custom rules
+     * @return LDUser
      */
     public function __construct($key, $secondary = null, $ip = null, $country = null, $email = null, $name = null, $avatar = null, $firstName = null, $lastName = null, $anonymous = null, $custom = array(), $privateAttributeNames = array())
     {
@@ -52,6 +58,10 @@ class LDUser
         $this->_privateAttributeNames = $privateAttributeNames;
     }
 
+    /**
+     * Used internally in flag evaluation.
+     * @ignore
+     */
     public function getValueForEvaluation($attr)
     {
         switch ($attr) {
@@ -87,69 +97,81 @@ class LDUser
         }
     }
 
+    /** @return string|null */
     public function getCountry()
     {
         return $this->_country;
     }
 
+    /** @return array|null */
     public function getCustom()
     {
         return $this->_custom;
     }
 
+    /** @return string|null */
     public function getIP()
     {
         return $this->_ip;
     }
 
     /**
-     * @return null|string
+     * @return string
      */
     public function getKey()
     {
         return $this->_key;
     }
 
+    /** @return string|null */
     public function getSecondary()
     {
         return $this->_secondary;
     }
 
+    /** @return string|null */
     public function getEmail()
     {
         return $this->_email;
     }
 
+    /** @return string|null */
     public function getName()
     {
         return $this->_name;
     }
 
+    /** @return string|null */
     public function getAvatar()
     {
         return $this->_avatar;
     }
 
+    /** @return string|null */
     public function getFirstName()
     {
         return $this->_firstName;
     }
 
+    /** @return string|null */
     public function getLastName()
     {
         return $this->_lastName;
     }
 
+    /** @return bool|null */
     public function getAnonymous()
     {
         return $this->_anonymous;
     }
 
+    /** @return array|null */
     public function getPrivateAttributeNames()
     {
         return $this->_privateAttributeNames;
     }
     
+    /** @return bool */
     public function isKeyBlank()
     {
         return isset($this->_key) && empty($this->_key);

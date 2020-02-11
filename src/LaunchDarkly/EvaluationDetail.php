@@ -3,8 +3,9 @@
 namespace LaunchDarkly;
 
 /**
- * An object returned by LDClient.variationDetail(), combining the result of a flag evaluation with
- * an explanation of how it was calculated.
+ * An object that combines the result of a flag evaluation with an explanation of how it was calculated.
+ *
+ * This is returned by {@link \LaunchDarkly\LDClient::variationDetail()}.
  */
 class EvaluationDetail
 {

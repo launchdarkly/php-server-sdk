@@ -28,7 +28,7 @@ class Consul
      *   - `consul_prefix`: a string to be prepended to all database keys; corresponds to the prefix
      * setting in ld-relay
      *   - `apc_expiration`: expiration time in seconds for local caching, if `APCu` is installed
-     * @return object  an object to be stored in the `feature_requester` configuration property
+     * @return mixed  an object to be stored in the `feature_requester` configuration property
      */
     public static function featureRequester($options = array())
     {

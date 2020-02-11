@@ -29,7 +29,7 @@ class Redis
      * setting in ld-relay
      *   - `predis_client`: an already-configured Predis client instance if you wish to reuse one
      *   - `apc_expiration`: expiration time in seconds for local caching, if `APCu` is installed
-     * @return object  an object to be stored in the `feature_requester` configuration property
+     * @return mixed  an object to be stored in the `feature_requester` configuration property
      */
     public static function featureRequester($options = array())
     {

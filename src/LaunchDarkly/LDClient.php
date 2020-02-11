@@ -13,8 +13,14 @@ use Psr\Log\LoggerInterface;
  */
 class LDClient
 {
+    /** @var string */
     const DEFAULT_BASE_URI = 'https://app.launchdarkly.com';
+    /** @var string */
     const DEFAULT_EVENTS_URI = 'https://events.launchdarkly.com';
+    /**
+     * The current SDK version.
+     * @var string
+     */
     const VERSION = '3.7.1';
 
     /** @var string */
@@ -45,23 +51,31 @@ class LDClient
      *
      * @param string $sdkKey The SDK key for your account
      * @param array $options Client configuration settings
-     *     - base_uri: Base URI of the LaunchDarkly API. Defaults to `https://app.launchdarkly.com`.
-     *     - events_uri: Base URI for sending events to LaunchDarkly. Defaults to 'https://events.launchdarkly.com'
-     *     - timeout: Float describing the maximum length of a request in seconds. Defaults to 3
-     *     - connect_timeout: Float describing the number of seconds to wait while trying to connect to a server. Defaults to 3
-     *     - cache: An optional Kevinrob\GuzzleCache\Storage\CacheStorageInterface. Defaults to an in-memory cache.
-     *     - send_events: An optional bool that can disable the sending of events to LaunchDarkly. Defaults to true.
-     *     - logger: An optional Psr\Log\LoggerInterface. Defaults to a Monolog\Logger sending all messages to the php error_log.
-     *     - offline: An optional boolean which will disable all network calls and always return the default value. Defaults to false.
-     *     - feature_requester: An optional LaunchDarkly\FeatureRequester instance, or a class or factory for one. Defaults to {@link \LaunchDarkly\Integrations\Guzzle::featureRequester()}.
-     *     - feature_requester_class: Deprecated, equivalent to `feature_requester`.
-     *     - event_publisher: An optional LaunchDarkly\EventPublisher instance, or a class or factory for one. Defaults to {@link \LaunchDarkly\Integrations\Curl::eventPublisher()}.
-     *     - event_publisher_class: Deprecated, equivalent to `event_publisher`.
-     *     - all_attributes_private: True if no user attributes (other than the key) should be sent back to LaunchDarkly. By default, this is false.
-     *     - private_attribute_names: An optional array of user attribute names to be marked private. Any users sent to LaunchDarkly with this configuration active will have attributes with these names removed. You can also set private attributes on a per-user basis in LDUserBuilder.
-     *     - Other options may be available depending on which features you are using from {@link \LaunchDarkly\Integrations}.
-     * By default, those are {@link \LaunchDarkly\Integrations\Guzzle::featureRequester()} and
-     * {@link \LaunchDarkly\Integrations\Curl::eventPublisher()}.
+     *     - `base_uri`: Base URI of the LaunchDarkly service. Change this if you are connecting to a Relay Proxy instance instead of
+     * directly to LaunchDarkly.
+     *     - `events_uri`: Base URI for sending events to LaunchDarkly. Change this if you are forwarding events through a Relay Proxy instance.
+     *     - `timeout`: The maximum length of an HTTP request in seconds. Defaults to 3.
+     *     - `connect_timeout`: The maximum number of seconds to wait while trying to connect to a server. Defaults to 3.
+     *     - `cache`: An optional implementation of Guzzle's [CacheStorageInterface](https://github.com/Kevinrob/guzzle-cache-middleware/blob/master/src/Storage/CacheStorageInterface.php).
+     * Defaults to an in-memory cache.
+     *     - `send_events`: If set to false, disables the sending of events to LaunchDarkly. Defaults to true.
+     *     - `logger`: An optional implementation of [Psr\Log\LoggerInterface](https://www.php-fig.org/psr/psr-3/). Defaults to a
+     * Monolog\Logger sending all messages to the PHP error_log.
+     *     - `offline`: If set to true, disables all network calls and always returns the default value for flags. Defaults to false.
+     *     - `feature_requester`: An optional {@link \LaunchDarkly\FeatureRequester} implementation, or a class or factory for one.
+     * Defaults to {@link \LaunchDarkly\Integrations\Guzzle::featureRequester()}.
+     *     - `feature_requester_class`: Deprecated, equivalent to feature_requester.
+     *     - `event_publisher`: An optional {@link \LaunchDarkly\EventPublisher} implementation, or a class or factory for one.
+     * Defaults to {@link \LaunchDarkly\Integrations\Curl::eventPublisher()}.
+     *     - `event_publisher_class`: Deprecated, equivalent to event_publisher.
+     *     - `all_attributes_private`: If set to true, no user attributes (other than the key) will be sent back to LaunchDarkly.
+     * Defaults to false.
+     *     - `private_attribute_names`: An optional array of user attribute names to be marked private. Any users sent to LaunchDarkly
+     * with this configuration active will have attributes with these names removed. You can also set private attributes on a
+     * per-user basis in LDUserBuilder.
+     *     - Other options may be available depending on any features you are using from the LaunchDarkly\Integrations namespace.
+     *
+     * @return LDClient
      */
     public function __construct($sdkKey, $options = array())
     {
@@ -166,8 +180,10 @@ class LDClient
 
     /**
      * Calculates the value of a feature flag, and returns an object that describes the way the
-     * value was determined. The "reason" property in the result will also be included in
-     * analytics events, if you are capturing detailed event data for this flag.
+     * value was determined.
+     *
+     * The "reason" property in the result will also be included in analytics events, if you are capturing
+     * detailed event data for this flag.
      *
      * @param string $key The unique key for the feature flag
      * @param LDUser $user The end user requesting the flag
@@ -251,10 +267,13 @@ class LDClient
         }
     }
 
-    /** @deprecated Use variation() instead.
-     * @param $key
-     * @param $user
-     * @param bool $default
+    /**
+     * Deprecated name for variation().
+     *
+     * @deprecated Use variation() instead.
+     * @param string $key The unique key for the feature flag
+     * @param LDUser $user The end user requesting the flag
+     * @param bool $default The default value of the flag
      * @return mixed
      */
     public function toggle($key, $user, $default = false)
@@ -265,7 +284,7 @@ class LDClient
 
     /**
      * Returns whether the LaunchDarkly client is in offline mode.
-     *
+     * @return bool
      */
     public function isOffline()
     {
@@ -275,12 +294,13 @@ class LDClient
     /**
      * Tracks that a user performed an event.
      *
-     * @param $eventName string The name of the event
-     * @param $user LDUser The user that performed the event
-     * @param $data mixed Optional additional information to associate with the event
-     * @param $metricValue number A numeric value used by the LaunchDarkly experimentation feature in
+     * @param string $eventName The name of the event
+     * @param LDUser $user The user that performed the event
+     * @param mixed $data Optional additional information to associate with the event
+     * @param number $metricValue A numeric value used by the LaunchDarkly experimentation feature in
      *   numeric custom metrics. Can be omitted if this event is used by only non-numeric metrics. This
      *   field will also be returned as part of the custom event for Data Export.
+     * @return void
      */
     public function track($eventName, $user, $data = null, $metricValue = null)
     {
@@ -292,7 +312,13 @@ class LDClient
     }
 
     /**
-     * @param $user LDUser
+     * Reports details about a user.
+     *
+     * This simply registers the given user properties with LaunchDarkly without evaluating a feature flag.
+     * This also happens automatically when you evaluate a flag.
+     *
+     * @param LDUser $user The user properties
+     * @return void
      */
     public function identify($user)
     {
@@ -303,17 +329,23 @@ class LDClient
         $this->_eventProcessor->enqueue($this->_eventFactoryDefault->newIdentifyEvent($user));
     }
 
-    /** Returns an array mapping Feature Flag keys to their evaluated results for a given user.
+    /**
+     * Deprecated alternative to allFlagsState().
+     *
+     * This returns an array mapping feature flag keys to their evaluated results for a given user.
      *
      * If the result of a flag's evaluation would have returned the default variation, it will have a null entry.
      * If the client is offline, has not been initialized, or a null user or user with null/empty user key, null will be returned.
      * This method will not send analytics events back to LaunchDarkly.
-     * <p>
-     * The most common use case for this method is to bootstrap a set of client-side feature flags from a back-end service.
+     *
+     * The most common use case for this method is to bootstrap a set of client-side feature flags from a back-end
+     * service. Current versions of the JavaScript SDK require somewhat different data; for best compatibility,
+     * use {@link allFlagsState()} instead.
+     *
      * @deprecated Use allFlagsState() instead. Current versions of the client-side SDK will not
      * generate analytics events correctly if you pass the result of allFlags().
-     * @param $user LDUser the end user requesting the feature flags
-     * @return array()|null Mapping of feature flag keys to their evaluated results for $user
+     * @param LDUser $user The end user requesting the feature flags
+     * @return array|null Mapping of feature flag keys to their evaluated results for $user
      */
     public function allFlags($user)
     {
@@ -325,18 +357,20 @@ class LDClient
     }
 
     /**
-     * Returns an object that encapsulates the state of all feature flags for a given user, including the flag
-     * values and also metadata that can be used on the front end. This method does not send analytics events
-     * back to LaunchDarkly.
-     * <p>
-     * The most common use case for this method is to bootstrap a set of client-side feature flags from a back-end service.
-     * To convert the state object into a JSON data structure, call its toJson() method.
-     * @param $user LDUser the end user requesting the feature flags
-     * @param $options array optional properties affecting how the state is computed; set
-     *   <code>'clientSideOnly' => true</code> to specify that only flags marked for client-side use
-     *   should be included (by default, all flags are included); set <code>'withReasons' => true</code>
-     *   to include evaluation reasons (see <code>variationDetail</code>)
-     * @return FeatureFlagsState a FeatureFlagsState object (will never be null; see FeatureFlagsState.isValid())
+     * Returns an object that encapsulates the state of all feature flags for a given user.
+     *
+     * This includes the flag values as well as other flag metadata that may be needed by front-end code,
+     * since the most common use case for this method is [bootstrapping](https://docs.launchdarkly.com/docs/js-sdk-reference#section-bootstrapping)
+     * in conjunction with the JavaScript browser SDK.
+     *
+     * This method does not send analytics events back to LaunchDarkly.
+     *
+     * @param LDUser $user The end user requesting the feature flags
+     * @param array $options Optional properties affecting how the state is computed:
+     *     - `clientSideOnly`: Set this to true to specify that only flags marked for client-side use
+     * should be included; by default, all flags are included
+     *     - `withReasons`: Set this to true to include evaluation reasons (see {@link variationDetail()})
+     * @return FeatureFlagsState a FeatureFlagsState object (will never be null)
      */
     public function allFlagsState($user, $options = array())
     {
@@ -374,8 +408,12 @@ class LDClient
         return $state;
     }
 
-    /** Generates an HMAC sha256 hash for use in Secure mode: https://github.com/launchdarkly/js-client#secure-mode
-     * @param $user LDUser
+    /**
+     * Generates an HMAC sha256 hash for use in Secure mode.
+     *
+     * See: https://docs.launchdarkly.com/docs/js-sdk-reference#section-secure-mode
+     *
+     * @param LDUser $user
      * @return string
      */
     public function secureModeHash($user)
@@ -387,7 +425,9 @@ class LDClient
     }
 
     /**
-     * Publish events to LaunchDarkly
+     * Publishes any pending analytics events to LaunchDarkly.
+     *
+     * This is normally done automatically by the SDK.
      * @return bool Whether the events were successfully published
      */
     public function flush()

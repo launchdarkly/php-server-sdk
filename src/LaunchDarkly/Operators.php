@@ -5,6 +5,12 @@ use DateTime;
 use DateTimeZone;
 use Exception;
 
+/**
+ * Internal class used in feature flag evaluations.
+ *
+ * @ignore
+ * @internal
+ */
 class Operators
 {
     const RFC3339 = 'Y-m-d\TH:i:s.uP';

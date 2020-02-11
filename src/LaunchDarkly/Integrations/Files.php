@@ -9,8 +9,9 @@ namespace LaunchDarkly\Integrations;
 class Files
 {
     /**
-     * This component allows you to use local files as a source of feature flag state. This would
-     * typically be used in a test environment, to operate using a predetermined feature flag state
+     * This component allows you to use local files as a source of feature flag state.
+     *
+     * This would typically be used in a test environment, to operate using a predetermined feature flag state
      * without an actual LaunchDarkly connection.
      *
      * To use this component, create an instance of this class, passing the path(s) of your data
@@ -29,7 +30,7 @@ class Files
      * the SDK reference guide on ["Reading flags from a file"](https://docs.launchdarkly.com/docs/reading-flags-from-a-file).
      *
      * @param array $filePaths relative or absolute paths to the data files
-     * @return object  an object to be stored in the `feature_requester` configuration property
+     * @return mixed  an object to be stored in the `feature_requester` configuration property
      */
     public static function featureRequester($filePaths)
     {

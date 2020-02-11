@@ -3,6 +3,9 @@ namespace LaunchDarkly;
 
 /**
  * Used internally.
+ *
+ * @ignore
+ * @internal
  */
 class UnrecoverableHTTPStatusException extends \Exception
 {

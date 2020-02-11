@@ -2,12 +2,12 @@
 namespace LaunchDarkly;
 
 /**
- * A <a href="http://en.wikipedia.org/wiki/Builder_pattern">builder</a> that helps construct LDUser objects.
+ * A builder for constructing LDUser objects.
  *
- * Note that all user attributes, except for <code>key</code> and <code>anonymous</code>, can be designated as
- * private so that they will not be sent back to LaunchDarkly. You can do this either on a per-user basis in
- * LDUserBuilder, or globally via the <code>private_attribute_names</code> and <code>all_attributes_private</code>
- * options in the client configuration.
+ * Note that all user attributes, except for `key` and `anonymous`, can be designated as private so that
+ * they will not be sent back to LaunchDarkly. You can do this either on a per-user basis in LDUserBuilder,
+ * or globally via the `private_attribute_names` and `all_attributes_private` options in the client
+ * configuration.
  */
 class LDUserBuilder
 {
@@ -26,18 +26,30 @@ class LDUserBuilder
     
     /**
      * Creates a builder with the specified key.
+     * @param string $key The user key
+     * @return LDUserBuilder
      */
     public function __construct($key)
     {
         $this->_key = $key;
     }
 
+    /**
+     * Sets the user's secondary key attribute.
+     * @param string $secondary The secondary key
+     * @return LDUserBuilder the same builder
+     */
     public function secondary($secondary)
     {
         $this->_secondary = $secondary;
         return $this;
     }
 
+    /**
+     * Sets the user's secondary key attribute, and marks it as private.
+     * @param string $secondary The secondary key
+     * @return LDUserBuilder the same builder
+     */
     public function privateSecondary($secondary)
     {
         array_push($this->_privateAttributeNames, 'secondary');
@@ -45,7 +57,9 @@ class LDUserBuilder
     }
 
     /**
-     * Sets the IP for a user.
+     * Sets the user's IP address attribute.
+     * @param string $ip The IP address
+     * @return LDUserBuilder the same builder
      */
     public function ip($ip)
     {
@@ -54,7 +68,9 @@ class LDUserBuilder
     }
 
     /**
-     * Sets the IP for a user, and ensures that the IP attribute will not be sent back to LaunchDarkly.
+     * Sets the user's IP address attribute, and marks it as private.
+     * @param string $ip The IP address
+     * @return LDUserBuilder the same builder
      */
     public function privateIp($ip)
     {
@@ -63,9 +79,11 @@ class LDUserBuilder
     }
 
     /**
-     * Sets the country for a user. The country should be a valid <a href="http://en.wikipedia.org/wiki/ISO_3166-1">ISO 3166-1</a>
-     * alpha-2 or alpha-3 code. If it is not a valid ISO-3166-1 code, an attempt will be made to look up the country by its name.
-     * If that fails, a warning will be logged, and the country will not be set.
+     * Sets the user's country attribute.
+     *
+     * This may be an ISO 3166-1 country code, or any other value you wish; it is not validated.
+     * @param string $country The country
+     * @return LDUserBuilder the same builder
      */
     public function country($country)
     {
@@ -74,10 +92,11 @@ class LDUserBuilder
     }
 
     /**
-     * Sets the country for a user, and ensures that the country attribute will not be sent back to LaunchDarkly.
-     * The country should be a valid <a href="http://en.wikipedia.org/wiki/ISO_3166-1">ISO 3166-1</a>
-     * alpha-2 or alpha-3 code. If it is not a valid ISO-3166-1 code, an attempt will be made to look up the country by its name.
-     * If that fails, a warning will be logged, and the country will not be set.
+     * Sets the user's country attribute, and marks it as private.
+     *
+     * This may be an ISO 3166-1 country code, or any other value you wish; it is not validated.
+     * @param string $country The country
+     * @return LDUserBuilder the same builder
      */
     public function privateCountry($country)
     {
@@ -86,7 +105,9 @@ class LDUserBuilder
     }
 
     /**
-     * Sets the user's email address.
+     * Sets the user's email address attribute.
+     * @param string $email The email address
+     * @return LDUserBuilder the same builder
      */
     public function email($email)
     {
@@ -95,7 +116,9 @@ class LDUserBuilder
     }
 
     /**
-     * Sets the user's email address, and ensures that the email attribute will not be sent back to LaunchDarkly.
+     * Sets the user's email address attribute, and marks it as private.
+     * @param string $email The email address
+     * @return LDUserBuilder the same builder
      */
     public function privateEmail($email)
     {
@@ -104,7 +127,9 @@ class LDUserBuilder
     }
 
     /**
-     * Sets the user's full name.
+     * Sets the user's full name attribute.
+     * @param string $name The full name
+     * @return LDUserBuilder the same builder
      */
     public function name($name)
     {
@@ -113,7 +138,9 @@ class LDUserBuilder
     }
 
     /**
-     * Sets the user's full name, and ensures that the name attribute will not be sent back to LaunchDarkly.
+     * Sets the user's full name attribute, and marks it as private.
+     * @param string $name The full name
+     * @return LDUserBuilder the same builder
      */
     public function privateName($name)
     {
@@ -122,7 +149,9 @@ class LDUserBuilder
     }
 
     /**
-     * Sets the user's avatar.
+     * Sets the user's avatar URL attribute.
+     * @param string $avatar The avatar URL
+     * @return LDUserBuilder the same builder
      */
     public function avatar($avatar)
     {
@@ -131,7 +160,9 @@ class LDUserBuilder
     }
 
     /**
-     * Sets the user's avatar, and ensures that the avatar attribute will not be sent back to LaunchDarkly.
+     * Sets the user's avatar URL attribute, and marks it as private.
+     * @param string $avatar The avatar URL
+     * @return LDUserBuilder the same builder
      */
     public function privateAvatar($avatar)
     {
@@ -140,7 +171,9 @@ class LDUserBuilder
     }
 
     /**
-     * Sets the user's first name.
+     * Sets the user's first name attribute.
+     * @param string $firstName The first name
+     * @return LDUserBuilder the same builder
      */
     public function firstName($firstName)
     {
@@ -149,7 +182,9 @@ class LDUserBuilder
     }
 
     /**
-     * Sets the user's first name, and ensures that the first name attribute will not be sent back to LaunchDarkly.
+     * Sets the user's first name attribute, and marks it as private.
+     * @param string $firstName The first name
+     * @return LDUserBuilder the same builder
      */
     public function privateFirstName($firstName)
     {
@@ -158,7 +193,9 @@ class LDUserBuilder
     }
 
     /**
-     * Sets the user's last name.
+     * Sets the user's last name attribute.
+     * @param string $lastName The last name
+     * @return LDUserBuilder the same builder
      */
     public function lastName($lastName)
     {
@@ -167,7 +204,9 @@ class LDUserBuilder
     }
 
     /**
-     * Sets the user's last name, and ensures that the last name attribute will not be sent back to LaunchDarkly.
+     * Sets the user's last name attribute, and marks it as private.
+     * @param string $lastName The last name
+     * @return LDUserBuilder the same builder
      */
     public function privateLastName($lastName)
     {
@@ -176,7 +215,11 @@ class LDUserBuilder
     }
 
     /**
-     * Sets whether this user is anonymous. The default is false.
+     * Sets whether this user is anonymous.
+     *
+     * The default is false.
+     * @param bool $anonymous True if the user should not appear on the LaunchDarkly dashboard
+     * @return LDUserBuilder the same builder
      */
     public function anonymous($anonymous)
     {
@@ -186,7 +229,9 @@ class LDUserBuilder
 
     /**
      * Sets any number of custom attributes for the user.
+     *
      * @param array $custom An associative array of custom attribute names and values.
+     * @return LDUserBuilder the same builder
      */
     public function custom($custom)
     {
@@ -196,6 +241,10 @@ class LDUserBuilder
 
     /**
      * Sets a single custom attribute for the user.
+     *
+     * @param string $customKey The attribute name
+     * @param mixed $customValue The attribute value
+     * @return LDUserBuilder the same builder
      */
     public function customAttribute($customKey, $customValue)
     {
@@ -204,7 +253,11 @@ class LDUserBuilder
     }
 
     /**
-     * Sets a single custom attribute for the user, and ensures that the attribute will not be sent back to LaunchDarkly.
+     * Sets a single custom attribute for the user, and marks it as private.
+     *
+     * @param string $customKey The attribute name
+     * @param mixed $customValue The attribute value
+     * @return LDUserBuilder the same builder
      */
     public function privateCustomAttribute($customKey, $customValue)
     {
@@ -212,6 +265,11 @@ class LDUserBuilder
         return $this->customAttribute($customKey, $customValue);
     }
 
+    /**
+     * Creates the LDUser instance based on the builder's current properties.
+     *
+     * @return LDUser
+     */
     public function build()
     {
         return new LDUser($this->_key, $this->_secondary, $this->_ip, $this->_country, $this->_email, $this->_name, $this->_avatar, $this->_firstName, $this->_lastName, $this->_anonymous, $this->_custom, $this->_privateAttributeNames);

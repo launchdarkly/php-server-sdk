@@ -2,6 +2,9 @@
 namespace LaunchDarkly;
 
 /**
+ * Internal class that translates analytics events into the format used for sending them to LaunchDarkly.
+ *
+ * @ignore
  * @internal
  */
 class EventSerializer

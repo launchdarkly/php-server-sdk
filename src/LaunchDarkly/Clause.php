@@ -2,6 +2,14 @@
 
 namespace LaunchDarkly;
 
+/**
+ * Internal data model class that describes a clause within a feature flag rule or segment rule.
+ *
+ * Application code should never need to reference the data model directly.
+ *
+ * @ignore
+ * @internal
+ */
 class Clause
 {
     /** @var string */
