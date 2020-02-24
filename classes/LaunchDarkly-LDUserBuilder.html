@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>LaunchDarkly PHP SDK 3.7.1</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro">
+    <link rel="stylesheet" href="../css/normalize.css">
+    <link rel="stylesheet" href="../css/template.css">
+    <link rel="icon" href="../images/favicon.ico"/>
+        <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.4.6/fuse.min.js"></script>
+    <script src="../js/search.js"></script>
+    <script defer src="../js/searchIndex.js"></script>
+    </head>
+<body>
+<header class="phpdocumentor-top-header"></header>
+<header class="phpdocumentor-header">
+    <section class="phpdocumentor-section">
+        <h1 class="phpdocumentor-title">LaunchDarkly PHP SDK 3.7.1</h1>
+    </section>
+</header>
+<main class="phpdocumentor">
+    <div class="phpdocumentor-section">
+        <aside class="three phpdocumentor-columns phpdocumentor-sidebar">
+    <section data-search-form class="phpdocumentor-search">
+        <h1 class="phpdocumentor-sidebar__category-header">Search</h1>
+        <label class="phpdocumentor-label">
+            <span class="visually-hidden">Search for</span>
+            <input type="search" class="phpdocumentor-field phpdocumentor-search__field" placeholder="Loading .." disabled />
+        </label>
+    </section>
+
+    
+    <h1 class="phpdocumentor-sidebar__category-header">Namespaces</h1>
+            <h2 class="phpdocumentor-sidebar__root-namespace"><a href="../namespaces/default.html"><abbr title="\">Global</abbr></a></h2>
+                    <h3 class="phpdocumentor-sidebar__root-namespace"><a href="../namespaces/launchdarkly.html"><abbr title="\LaunchDarkly">LaunchDarkly</abbr></a></h3>
+            <ul class="phpdocumentor-list">
+                                    <li><a href="../namespaces/launchdarkly-integrations.html"><abbr title="\LaunchDarkly\Integrations">Integrations</abbr></a></li>
+                            </ul>
+            
+    
+    <h1 class="phpdocumentor-sidebar__category-header">Reports</h1>
+        <h2 class="phpdocumentor-sidebar__root-package"><a href="../reports/deprecated.html">Deprecated</a></h2>
+    <h2 class="phpdocumentor-sidebar__root-package"><a href="../reports/errors.html">Errors</a></h2>
+    <h2 class="phpdocumentor-sidebar__root-package"><a href="../reports/markers.html">Markers</a></h2>
+</aside>
+
+        <div class="nine phpdocumentor-columns phpdocumentor-content">
+            <ul class="phpdocumentor-breadcrumbs">
+    <li><a href="../index.html">Home</a></li>
+                        <li><a href="../namespaces/launchdarkly.html">LaunchDarkly</a></li>
+            </ul>
+
+    <article class="phpdocumentor-element phpdocumentor-class">
+        <h2 class="phpdocumentor-content__title">
+            LDUserBuilder
+                                                        </h2>
+        <aside class="phpdocumentor-element-found-in">
+            <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDUserBuilder.php"><a href="../files/src-launchdarkly-lduserbuilder.html"><abbr title="src/LaunchDarkly/LDUserBuilder.php">LDUserBuilder.php</abbr></a></abbr>
+            :
+            <span class="phpdocumentor-element-found-in__line">12</span>
+        </aside>
+
+        <p class="phpdocumentor-class__summary">A builder for constructing LDUser objects.</p>
+        <section class="phpdocumentor-class__description"><p>Note that all user attributes, except for <code class="prettyprint">key</code> and <code class="prettyprint">anonymous</code>, can be designated as private so that
+they will not be sent back to LaunchDarkly. You can do this either on a per-user basis in LDUserBuilder,
+or globally via the <code class="prettyprint">private_attribute_names</code> and <code class="prettyprint">all_attributes_private</code> options in the client
+configuration.</p></section>
+
+        <h3>Table of Contents</h3>
+        <table class="phpdocumentor-table_of_contents">
+                                                                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDUserBuilder.html#method___construct">__construct()</a></th>
+                    <td class="phpdocumentor-cell">Creates a builder with the specified key.</td>
+                    <td class="phpdocumentor-cell"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDUserBuilder.html#method_secondary">secondary()</a></th>
+                    <td class="phpdocumentor-cell">Sets the user&#039;s secondary key attribute.</td>
+                    <td class="phpdocumentor-cell"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDUserBuilder.html#method_privateSecondary">privateSecondary()</a></th>
+                    <td class="phpdocumentor-cell">Sets the user&#039;s secondary key attribute, and marks it as private.</td>
+                    <td class="phpdocumentor-cell"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDUserBuilder.html#method_ip">ip()</a></th>
+                    <td class="phpdocumentor-cell">Sets the user&#039;s IP address attribute.</td>
+                    <td class="phpdocumentor-cell"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDUserBuilder.html#method_privateIp">privateIp()</a></th>
+                    <td class="phpdocumentor-cell">Sets the user&#039;s IP address attribute, and marks it as private.</td>
+                    <td class="phpdocumentor-cell"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDUserBuilder.html#method_country">country()</a></th>
+                    <td class="phpdocumentor-cell">Sets the user&#039;s country attribute.</td>
+                    <td class="phpdocumentor-cell"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDUserBuilder.html#method_privateCountry">privateCountry()</a></th>
+                    <td class="phpdocumentor-cell">Sets the user&#039;s country attribute, and marks it as private.</td>
+                    <td class="phpdocumentor-cell"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDUserBuilder.html#method_email">email()</a></th>
+                    <td class="phpdocumentor-cell">Sets the user&#039;s email address attribute.</td>
+                    <td class="phpdocumentor-cell"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDUserBuilder.html#method_privateEmail">privateEmail()</a></th>
+                    <td class="phpdocumentor-cell">Sets the user&#039;s email address attribute, and marks it as private.</td>
+                    <td class="phpdocumentor-cell"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDUserBuilder.html#method_name">name()</a></th>
+                    <td class="phpdocumentor-cell">Sets the user&#039;s full name attribute.</td>
+                    <td class="phpdocumentor-cell"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDUserBuilder.html#method_privateName">privateName()</a></th>
+                    <td class="phpdocumentor-cell">Sets the user&#039;s full name attribute, and marks it as private.</td>
+                    <td class="phpdocumentor-cell"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDUserBuilder.html#method_avatar">avatar()</a></th>
+                    <td class="phpdocumentor-cell">Sets the user&#039;s avatar URL attribute.</td>
+                    <td class="phpdocumentor-cell"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDUserBuilder.html#method_privateAvatar">privateAvatar()</a></th>
+                    <td class="phpdocumentor-cell">Sets the user&#039;s avatar URL attribute, and marks it as private.</td>
+                    <td class="phpdocumentor-cell"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDUserBuilder.html#method_firstName">firstName()</a></th>
+                    <td class="phpdocumentor-cell">Sets the user&#039;s first name attribute.</td>
+                    <td class="phpdocumentor-cell"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDUserBuilder.html#method_privateFirstName">privateFirstName()</a></th>
+                    <td class="phpdocumentor-cell">Sets the user&#039;s first name attribute, and marks it as private.</td>
+                    <td class="phpdocumentor-cell"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDUserBuilder.html#method_lastName">lastName()</a></th>
+                    <td class="phpdocumentor-cell">Sets the user&#039;s last name attribute.</td>
+                    <td class="phpdocumentor-cell"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDUserBuilder.html#method_privateLastName">privateLastName()</a></th>
+                    <td class="phpdocumentor-cell">Sets the user&#039;s last name attribute, and marks it as private.</td>
+                    <td class="phpdocumentor-cell"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDUserBuilder.html#method_anonymous">anonymous()</a></th>
+                    <td class="phpdocumentor-cell">Sets whether this user is anonymous.</td>
+                    <td class="phpdocumentor-cell"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDUserBuilder.html#method_custom">custom()</a></th>
+                    <td class="phpdocumentor-cell">Sets any number of custom attributes for the user.</td>
+                    <td class="phpdocumentor-cell"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDUserBuilder.html#method_customAttribute">customAttribute()</a></th>
+                    <td class="phpdocumentor-cell">Sets a single custom attribute for the user.</td>
+                    <td class="phpdocumentor-cell"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDUserBuilder.html#method_privateCustomAttribute">privateCustomAttribute()</a></th>
+                    <td class="phpdocumentor-cell">Sets a single custom attribute for the user, and marks it as private.</td>
+                    <td class="phpdocumentor-cell"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDUserBuilder.html#method_build">build()</a></th>
+                    <td class="phpdocumentor-cell">Creates the LDUser instance based on the builder&#039;s current properties.</td>
+                    <td class="phpdocumentor-cell"><a href="../classes/LaunchDarkly-LDUser.html"><abbr title="\LaunchDarkly\LDUser">LDUser</abbr></a></td>
+                </tr>
+                                            </table>
+
+        
+        
+                    <section>
+                <h3 class="phpdocumentor-methods__header">Methods</h3>
+                                    <a id="method___construct"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">__construct()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDUserBuilder.php"><a href="../files/src-launchdarkly-lduserbuilder.html"><abbr title="src/LaunchDarkly/LDUserBuilder.php">LDUserBuilder.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">32</span>
+    </aside>
+        <p class="phpdocumentor-summary">Creates a builder with the specified key.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">__construct</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$key</span> :
+                <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+    </code>
+
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$key</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The user key</p></section></dd>
+                    </dl>
+    
+        
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+            
+</article>
+                                    <a id="method_secondary"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">secondary()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDUserBuilder.php"><a href="../files/src-launchdarkly-lduserbuilder.html"><abbr title="src/LaunchDarkly/LDUserBuilder.php">LDUserBuilder.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">42</span>
+    </aside>
+        <p class="phpdocumentor-summary">Sets the user&#039;s secondary key attribute.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">secondary</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$secondary</span> :
+                <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+    </code>
+
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$secondary</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The secondary key</p></section></dd>
+                    </dl>
+    
+        
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+                    &mdash; <span class="phpdocumentor-description"><p>the same builder</p></span>
+            
+</article>
+                                    <a id="method_privateSecondary"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">privateSecondary()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDUserBuilder.php"><a href="../files/src-launchdarkly-lduserbuilder.html"><abbr title="src/LaunchDarkly/LDUserBuilder.php">LDUserBuilder.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">53</span>
+    </aside>
+        <p class="phpdocumentor-summary">Sets the user&#039;s secondary key attribute, and marks it as private.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">privateSecondary</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$secondary</span> :
+                <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+    </code>
+
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$secondary</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The secondary key</p></section></dd>
+                    </dl>
+    
+        
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+                    &mdash; <span class="phpdocumentor-description"><p>the same builder</p></span>
+            
+</article>
+                                    <a id="method_ip"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">ip()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDUserBuilder.php"><a href="../files/src-launchdarkly-lduserbuilder.html"><abbr title="src/LaunchDarkly/LDUserBuilder.php">LDUserBuilder.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">64</span>
+    </aside>
+        <p class="phpdocumentor-summary">Sets the user&#039;s IP address attribute.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">ip</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$ip</span> :
+                <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+    </code>
+
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$ip</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The IP address</p></section></dd>
+                    </dl>
+    
+        
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+                    &mdash; <span class="phpdocumentor-description"><p>the same builder</p></span>
+            
+</article>
+                                    <a id="method_privateIp"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">privateIp()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDUserBuilder.php"><a href="../files/src-launchdarkly-lduserbuilder.html"><abbr title="src/LaunchDarkly/LDUserBuilder.php">LDUserBuilder.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">75</span>
+    </aside>
+        <p class="phpdocumentor-summary">Sets the user&#039;s IP address attribute, and marks it as private.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">privateIp</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$ip</span> :
+                <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+    </code>
+
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$ip</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The IP address</p></section></dd>
+                    </dl>
+    
+        
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+                    &mdash; <span class="phpdocumentor-description"><p>the same builder</p></span>
+            
+</article>
+                                    <a id="method_country"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">country()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDUserBuilder.php"><a href="../files/src-launchdarkly-lduserbuilder.html"><abbr title="src/LaunchDarkly/LDUserBuilder.php">LDUserBuilder.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">88</span>
+    </aside>
+        <p class="phpdocumentor-summary">Sets the user&#039;s country attribute.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">country</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$country</span> :
+                <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+    </code>
+
+        <section class="phpdocumentor-description"><p>This may be an ISO 3166-1 country code, or any other value you wish; it is not validated.</p></section>
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$country</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The country</p></section></dd>
+                    </dl>
+    
+        
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+                    &mdash; <span class="phpdocumentor-description"><p>the same builder</p></span>
+            
+</article>
+                                    <a id="method_privateCountry"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">privateCountry()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDUserBuilder.php"><a href="../files/src-launchdarkly-lduserbuilder.html"><abbr title="src/LaunchDarkly/LDUserBuilder.php">LDUserBuilder.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">101</span>
+    </aside>
+        <p class="phpdocumentor-summary">Sets the user&#039;s country attribute, and marks it as private.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">privateCountry</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$country</span> :
+                <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+    </code>
+
+        <section class="phpdocumentor-description"><p>This may be an ISO 3166-1 country code, or any other value you wish; it is not validated.</p></section>
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$country</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The country</p></section></dd>
+                    </dl>
+    
+        
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+                    &mdash; <span class="phpdocumentor-description"><p>the same builder</p></span>
+            
+</article>
+                                    <a id="method_email"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">email()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDUserBuilder.php"><a href="../files/src-launchdarkly-lduserbuilder.html"><abbr title="src/LaunchDarkly/LDUserBuilder.php">LDUserBuilder.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">112</span>
+    </aside>
+        <p class="phpdocumentor-summary">Sets the user&#039;s email address attribute.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">email</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$email</span> :
+                <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+    </code>
+
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$email</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The email address</p></section></dd>
+                    </dl>
+    
+        
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+                    &mdash; <span class="phpdocumentor-description"><p>the same builder</p></span>
+            
+</article>
+                                    <a id="method_privateEmail"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">privateEmail()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDUserBuilder.php"><a href="../files/src-launchdarkly-lduserbuilder.html"><abbr title="src/LaunchDarkly/LDUserBuilder.php">LDUserBuilder.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">123</span>
+    </aside>
+        <p class="phpdocumentor-summary">Sets the user&#039;s email address attribute, and marks it as private.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">privateEmail</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$email</span> :
+                <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+    </code>
+
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$email</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The email address</p></section></dd>
+                    </dl>
+    
+        
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+                    &mdash; <span class="phpdocumentor-description"><p>the same builder</p></span>
+            
+</article>
+                                    <a id="method_name"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">name()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDUserBuilder.php"><a href="../files/src-launchdarkly-lduserbuilder.html"><abbr title="src/LaunchDarkly/LDUserBuilder.php">LDUserBuilder.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">134</span>
+    </aside>
+        <p class="phpdocumentor-summary">Sets the user&#039;s full name attribute.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">name</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$name</span> :
+                <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+    </code>
+
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$name</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The full name</p></section></dd>
+                    </dl>
+    
+        
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+                    &mdash; <span class="phpdocumentor-description"><p>the same builder</p></span>
+            
+</article>
+                                    <a id="method_privateName"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">privateName()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDUserBuilder.php"><a href="../files/src-launchdarkly-lduserbuilder.html"><abbr title="src/LaunchDarkly/LDUserBuilder.php">LDUserBuilder.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">145</span>
+    </aside>
+        <p class="phpdocumentor-summary">Sets the user&#039;s full name attribute, and marks it as private.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">privateName</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$name</span> :
+                <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+    </code>
+
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$name</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The full name</p></section></dd>
+                    </dl>
+    
+        
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+                    &mdash; <span class="phpdocumentor-description"><p>the same builder</p></span>
+            
+</article>
+                                    <a id="method_avatar"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">avatar()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDUserBuilder.php"><a href="../files/src-launchdarkly-lduserbuilder.html"><abbr title="src/LaunchDarkly/LDUserBuilder.php">LDUserBuilder.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">156</span>
+    </aside>
+        <p class="phpdocumentor-summary">Sets the user&#039;s avatar URL attribute.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">avatar</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$avatar</span> :
+                <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+    </code>
+
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$avatar</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The avatar URL</p></section></dd>
+                    </dl>
+    
+        
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+                    &mdash; <span class="phpdocumentor-description"><p>the same builder</p></span>
+            
+</article>
+                                    <a id="method_privateAvatar"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">privateAvatar()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDUserBuilder.php"><a href="../files/src-launchdarkly-lduserbuilder.html"><abbr title="src/LaunchDarkly/LDUserBuilder.php">LDUserBuilder.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">167</span>
+    </aside>
+        <p class="phpdocumentor-summary">Sets the user&#039;s avatar URL attribute, and marks it as private.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">privateAvatar</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$avatar</span> :
+                <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+    </code>
+
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$avatar</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The avatar URL</p></section></dd>
+                    </dl>
+    
+        
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+                    &mdash; <span class="phpdocumentor-description"><p>the same builder</p></span>
+            
+</article>
+                                    <a id="method_firstName"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">firstName()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDUserBuilder.php"><a href="../files/src-launchdarkly-lduserbuilder.html"><abbr title="src/LaunchDarkly/LDUserBuilder.php">LDUserBuilder.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">178</span>
+    </aside>
+        <p class="phpdocumentor-summary">Sets the user&#039;s first name attribute.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">firstName</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$firstName</span> :
+                <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+    </code>
+
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$firstName</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The first name</p></section></dd>
+                    </dl>
+    
+        
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+                    &mdash; <span class="phpdocumentor-description"><p>the same builder</p></span>
+            
+</article>
+                                    <a id="method_privateFirstName"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">privateFirstName()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDUserBuilder.php"><a href="../files/src-launchdarkly-lduserbuilder.html"><abbr title="src/LaunchDarkly/LDUserBuilder.php">LDUserBuilder.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">189</span>
+    </aside>
+        <p class="phpdocumentor-summary">Sets the user&#039;s first name attribute, and marks it as private.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">privateFirstName</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$firstName</span> :
+                <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+    </code>
+
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$firstName</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The first name</p></section></dd>
+                    </dl>
+    
+        
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+                    &mdash; <span class="phpdocumentor-description"><p>the same builder</p></span>
+            
+</article>
+                                    <a id="method_lastName"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">lastName()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDUserBuilder.php"><a href="../files/src-launchdarkly-lduserbuilder.html"><abbr title="src/LaunchDarkly/LDUserBuilder.php">LDUserBuilder.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">200</span>
+    </aside>
+        <p class="phpdocumentor-summary">Sets the user&#039;s last name attribute.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">lastName</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$lastName</span> :
+                <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+    </code>
+
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$lastName</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The last name</p></section></dd>
+                    </dl>
+    
+        
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+                    &mdash; <span class="phpdocumentor-description"><p>the same builder</p></span>
+            
+</article>
+                                    <a id="method_privateLastName"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">privateLastName()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDUserBuilder.php"><a href="../files/src-launchdarkly-lduserbuilder.html"><abbr title="src/LaunchDarkly/LDUserBuilder.php">LDUserBuilder.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">211</span>
+    </aside>
+        <p class="phpdocumentor-summary">Sets the user&#039;s last name attribute, and marks it as private.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">privateLastName</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$lastName</span> :
+                <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+    </code>
+
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$lastName</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The last name</p></section></dd>
+                    </dl>
+    
+        
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+                    &mdash; <span class="phpdocumentor-description"><p>the same builder</p></span>
+            
+</article>
+                                    <a id="method_anonymous"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">anonymous()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDUserBuilder.php"><a href="../files/src-launchdarkly-lduserbuilder.html"><abbr title="src/LaunchDarkly/LDUserBuilder.php">LDUserBuilder.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">224</span>
+    </aside>
+        <p class="phpdocumentor-summary">Sets whether this user is anonymous.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">anonymous</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$anonymous</span> :
+                <span class="phpdocumentor-signature__argument__return-type">bool</span>
+                            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+    </code>
+
+        <section class="phpdocumentor-description"><p>The default is false.</p></section>
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$anonymous</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">bool</span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>True if the user should not appear on the LaunchDarkly dashboard</p></section></dd>
+                    </dl>
+    
+        
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+                    &mdash; <span class="phpdocumentor-description"><p>the same builder</p></span>
+            
+</article>
+                                    <a id="method_custom"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">custom()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDUserBuilder.php"><a href="../files/src-launchdarkly-lduserbuilder.html"><abbr title="src/LaunchDarkly/LDUserBuilder.php">LDUserBuilder.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">236</span>
+    </aside>
+        <p class="phpdocumentor-summary">Sets any number of custom attributes for the user.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">custom</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$custom</span> :
+                <span class="phpdocumentor-signature__argument__return-type">array</span>
+                            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+    </code>
+
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$custom</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">array</span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>An associative array of custom attribute names and values.</p></section></dd>
+                    </dl>
+    
+        
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+                    &mdash; <span class="phpdocumentor-description"><p>the same builder</p></span>
+            
+</article>
+                                    <a id="method_customAttribute"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">customAttribute()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDUserBuilder.php"><a href="../files/src-launchdarkly-lduserbuilder.html"><abbr title="src/LaunchDarkly/LDUserBuilder.php">LDUserBuilder.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">249</span>
+    </aside>
+        <p class="phpdocumentor-summary">Sets a single custom attribute for the user.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">customAttribute</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$customKey</span> :
+                <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </span>
+                    <span class="phpdocumentor-signature__argument">
+            ,                 <span class="phpdocumentor-signature__argument__name">$customValue</span> :
+                <span class="phpdocumentor-signature__argument__return-type">mixed</span>
+                            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+    </code>
+
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$customKey</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The attribute name</p></section></dd>
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$customValue</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">mixed</span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The attribute value</p></section></dd>
+                    </dl>
+    
+        
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+                    &mdash; <span class="phpdocumentor-description"><p>the same builder</p></span>
+            
+</article>
+                                    <a id="method_privateCustomAttribute"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">privateCustomAttribute()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDUserBuilder.php"><a href="../files/src-launchdarkly-lduserbuilder.html"><abbr title="src/LaunchDarkly/LDUserBuilder.php">LDUserBuilder.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">262</span>
+    </aside>
+        <p class="phpdocumentor-summary">Sets a single custom attribute for the user, and marks it as private.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">privateCustomAttribute</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$customKey</span> :
+                <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </span>
+                    <span class="phpdocumentor-signature__argument">
+            ,                 <span class="phpdocumentor-signature__argument__name">$customValue</span> :
+                <span class="phpdocumentor-signature__argument__return-type">mixed</span>
+                            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+    </code>
+
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$customKey</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The attribute name</p></section></dd>
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$customValue</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">mixed</span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The attribute value</p></section></dd>
+                    </dl>
+    
+        
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></span>
+                    &mdash; <span class="phpdocumentor-description"><p>the same builder</p></span>
+            
+</article>
+                                    <a id="method_build"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">build()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDUserBuilder.php"><a href="../files/src-launchdarkly-lduserbuilder.html"><abbr title="src/LaunchDarkly/LDUserBuilder.php">LDUserBuilder.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">273</span>
+    </aside>
+        <p class="phpdocumentor-summary">Creates the LDUser instance based on the builder&#039;s current properties.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">build</span>(
+                )
+        : <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUser.html"><abbr title="\LaunchDarkly\LDUser">LDUser</abbr></a></span>
+    </code>
+
+    
+    
+        
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDUser.html"><abbr title="\LaunchDarkly\LDUser">LDUser</abbr></a></span>
+            
+</article>
+                                                            </section>
+            </article>
+            <div data-search-results class="phpdocumentor-search-results phpdocumentor-search-results--hidden">
+
+                <h2>Search results</h2>
+                <ul class="phpdocumentor-search-results__entries">
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>

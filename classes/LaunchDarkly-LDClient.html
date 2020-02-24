@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>LaunchDarkly PHP SDK 3.7.1</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro">
+    <link rel="stylesheet" href="../css/normalize.css">
+    <link rel="stylesheet" href="../css/template.css">
+    <link rel="icon" href="../images/favicon.ico"/>
+        <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.4.6/fuse.min.js"></script>
+    <script src="../js/search.js"></script>
+    <script defer src="../js/searchIndex.js"></script>
+    </head>
+<body>
+<header class="phpdocumentor-top-header"></header>
+<header class="phpdocumentor-header">
+    <section class="phpdocumentor-section">
+        <h1 class="phpdocumentor-title">LaunchDarkly PHP SDK 3.7.1</h1>
+    </section>
+</header>
+<main class="phpdocumentor">
+    <div class="phpdocumentor-section">
+        <aside class="three phpdocumentor-columns phpdocumentor-sidebar">
+    <section data-search-form class="phpdocumentor-search">
+        <h1 class="phpdocumentor-sidebar__category-header">Search</h1>
+        <label class="phpdocumentor-label">
+            <span class="visually-hidden">Search for</span>
+            <input type="search" class="phpdocumentor-field phpdocumentor-search__field" placeholder="Loading .." disabled />
+        </label>
+    </section>
+
+    
+    <h1 class="phpdocumentor-sidebar__category-header">Namespaces</h1>
+            <h2 class="phpdocumentor-sidebar__root-namespace"><a href="../namespaces/default.html"><abbr title="\">Global</abbr></a></h2>
+                    <h3 class="phpdocumentor-sidebar__root-namespace"><a href="../namespaces/launchdarkly.html"><abbr title="\LaunchDarkly">LaunchDarkly</abbr></a></h3>
+            <ul class="phpdocumentor-list">
+                                    <li><a href="../namespaces/launchdarkly-integrations.html"><abbr title="\LaunchDarkly\Integrations">Integrations</abbr></a></li>
+                            </ul>
+            
+    
+    <h1 class="phpdocumentor-sidebar__category-header">Reports</h1>
+        <h2 class="phpdocumentor-sidebar__root-package"><a href="../reports/deprecated.html">Deprecated</a></h2>
+    <h2 class="phpdocumentor-sidebar__root-package"><a href="../reports/errors.html">Errors</a></h2>
+    <h2 class="phpdocumentor-sidebar__root-package"><a href="../reports/markers.html">Markers</a></h2>
+</aside>
+
+        <div class="nine phpdocumentor-columns phpdocumentor-content">
+            <ul class="phpdocumentor-breadcrumbs">
+    <li><a href="../index.html">Home</a></li>
+                        <li><a href="../namespaces/launchdarkly.html">LaunchDarkly</a></li>
+            </ul>
+
+    <article class="phpdocumentor-element phpdocumentor-class">
+        <h2 class="phpdocumentor-content__title">
+            LDClient
+                                                        </h2>
+        <aside class="phpdocumentor-element-found-in">
+            <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDClient.php"><a href="../files/src-launchdarkly-ldclient.html"><abbr title="src/LaunchDarkly/LDClient.php">LDClient.php</abbr></a></abbr>
+            :
+            <span class="phpdocumentor-element-found-in__line">14</span>
+        </aside>
+
+        <p class="phpdocumentor-class__summary">A client for the LaunchDarkly API.</p>
+        <section class="phpdocumentor-class__description"></section>
+
+        <h3>Table of Contents</h3>
+        <table class="phpdocumentor-table_of_contents">
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDClient.html#constant_DEFAULT_BASE_URI">DEFAULT_BASE_URI</a></th>
+                    <td class="phpdocumentor-cell"></td>
+                    <td class="phpdocumentor-cell">&#039;https://app.launchdarkly.com&#039;</td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDClient.html#constant_DEFAULT_EVENTS_URI">DEFAULT_EVENTS_URI</a></th>
+                    <td class="phpdocumentor-cell"></td>
+                    <td class="phpdocumentor-cell">&#039;https://events.launchdarkly.com&#039;</td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDClient.html#constant_VERSION">VERSION</a></th>
+                    <td class="phpdocumentor-cell">The current SDK version.</td>
+                    <td class="phpdocumentor-cell">&#039;3.7.1&#039;</td>
+                </tr>
+                                                                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDClient.html#method___construct">__construct()</a></th>
+                    <td class="phpdocumentor-cell">Creates a new client instance that connects to LaunchDarkly.</td>
+                    <td class="phpdocumentor-cell"><a href="../classes/LaunchDarkly-LDClient.html"><abbr title="\LaunchDarkly\LDClient">LDClient</abbr></a></td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDClient.html#method_variation">variation()</a></th>
+                    <td class="phpdocumentor-cell">Calculates the value of a feature flag for a given user.</td>
+                    <td class="phpdocumentor-cell">mixed</td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDClient.html#method_variationDetail">variationDetail()</a></th>
+                    <td class="phpdocumentor-cell">Calculates the value of a feature flag, and returns an object that describes the way the
+value was determined.</td>
+                    <td class="phpdocumentor-cell"><a href="../classes/LaunchDarkly-EvaluationDetail.html"><abbr title="\LaunchDarkly\EvaluationDetail">EvaluationDetail</abbr></a></td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDClient.html#method_toggle">toggle()</a></th>
+                    <td class="phpdocumentor-cell">Deprecated name for variation().</td>
+                    <td class="phpdocumentor-cell">mixed</td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDClient.html#method_isOffline">isOffline()</a></th>
+                    <td class="phpdocumentor-cell">Returns whether the LaunchDarkly client is in offline mode.</td>
+                    <td class="phpdocumentor-cell">bool</td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDClient.html#method_track">track()</a></th>
+                    <td class="phpdocumentor-cell">Tracks that a user performed an event.</td>
+                    <td class="phpdocumentor-cell">void</td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDClient.html#method_identify">identify()</a></th>
+                    <td class="phpdocumentor-cell">Reports details about a user.</td>
+                    <td class="phpdocumentor-cell">void</td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDClient.html#method_allFlags">allFlags()</a></th>
+                    <td class="phpdocumentor-cell">Deprecated alternative to allFlagsState().</td>
+                    <td class="phpdocumentor-cell">array|null</td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDClient.html#method_allFlagsState">allFlagsState()</a></th>
+                    <td class="phpdocumentor-cell">Returns an object that encapsulates the state of all feature flags for a given user.</td>
+                    <td class="phpdocumentor-cell"><a href="../classes/LaunchDarkly-FeatureFlagsState.html"><abbr title="\LaunchDarkly\FeatureFlagsState">FeatureFlagsState</abbr></a></td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDClient.html#method_secureModeHash">secureModeHash()</a></th>
+                    <td class="phpdocumentor-cell">Generates an HMAC sha256 hash for use in Secure mode.</td>
+                    <td class="phpdocumentor-cell">string</td>
+                </tr>
+                            <tr>
+                    <th class="phpdocumentor-heading"><a href="../classes/LaunchDarkly-LDClient.html#method_flush">flush()</a></th>
+                    <td class="phpdocumentor-cell">Publishes any pending analytics events to LaunchDarkly.</td>
+                    <td class="phpdocumentor-cell">bool</td>
+                </tr>
+                                            </table>
+
+                    <section>
+                <h3 class="phpdocumentor-constants__header">Constants</h3>
+                                    <a id="constant_DEFAULT_BASE_URI"></a>
+<article
+        class="
+            phpdocumentor-element
+            phpdocumentor-constant
+            phpdocumentor-constant--
+                    "
+>
+    <h4 class="phpdocumentor-constant__name">DEFAULT_BASE_URI</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDClient.php"><a href="../files/src-launchdarkly-ldclient.html"><abbr title="src/LaunchDarkly/LDClient.php">LDClient.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">17</span>
+    </aside>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility"></span>
+        <span class="phpdocumentor-signature__type">string</span>
+        <span class="phpdocumentor-signature__name">$DEFAULT_BASE_URI</span>
+        = <span class="phpdocumentor-signature__default-value">&#039;https://app.launchdarkly.com&#039;</span>
+    </code>
+    </article>
+                                    <a id="constant_DEFAULT_EVENTS_URI"></a>
+<article
+        class="
+            phpdocumentor-element
+            phpdocumentor-constant
+            phpdocumentor-constant--
+                    "
+>
+    <h4 class="phpdocumentor-constant__name">DEFAULT_EVENTS_URI</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDClient.php"><a href="../files/src-launchdarkly-ldclient.html"><abbr title="src/LaunchDarkly/LDClient.php">LDClient.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">19</span>
+    </aside>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility"></span>
+        <span class="phpdocumentor-signature__type">string</span>
+        <span class="phpdocumentor-signature__name">$DEFAULT_EVENTS_URI</span>
+        = <span class="phpdocumentor-signature__default-value">&#039;https://events.launchdarkly.com&#039;</span>
+    </code>
+    </article>
+                                    <a id="constant_VERSION"></a>
+<article
+        class="
+            phpdocumentor-element
+            phpdocumentor-constant
+            phpdocumentor-constant--
+                    "
+>
+    <h4 class="phpdocumentor-constant__name">VERSION</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDClient.php"><a href="../files/src-launchdarkly-ldclient.html"><abbr title="src/LaunchDarkly/LDClient.php">LDClient.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">24</span>
+    </aside>
+            <p class="phpdocumentor-summary">The current SDK version.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility"></span>
+        <span class="phpdocumentor-signature__type">string</span>
+        <span class="phpdocumentor-signature__name">$VERSION</span>
+        = <span class="phpdocumentor-signature__default-value">&#039;3.7.1&#039;</span>
+    </code>
+    </article>
+                                            </section>
+        
+        
+                    <section>
+                <h3 class="phpdocumentor-methods__header">Methods</h3>
+                                    <a id="method___construct"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">__construct()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDClient.php"><a href="../files/src-launchdarkly-ldclient.html"><abbr title="src/LaunchDarkly/LDClient.php">LDClient.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">80</span>
+    </aside>
+        <p class="phpdocumentor-summary">Creates a new client instance that connects to LaunchDarkly.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">__construct</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$sdkKey</span> :
+                <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </span>
+                    <span class="phpdocumentor-signature__argument">
+            [,                 <span class="phpdocumentor-signature__argument__name">$options</span> :
+                <span class="phpdocumentor-signature__argument__return-type">array</span>
+                 = <span class="phpdocumentor-signature__argument__default-value">array()</span> ]            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDClient.html"><abbr title="\LaunchDarkly\LDClient">LDClient</abbr></a></span>
+    </code>
+
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$sdkKey</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The SDK key for your account</p></section></dd>
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$options</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">array</span>
+                     = <span class="phpdocumentor-signature__argument__default-value">array()</span>                </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>Client configuration settings</p>
+<ul>
+<li><code class="prettyprint">base_uri</code>: Base URI of the LaunchDarkly service. Change this if you are connecting to a Relay Proxy instance instead of
+directly to LaunchDarkly.</li>
+<li><code class="prettyprint">events_uri</code>: Base URI for sending events to LaunchDarkly. Change this if you are forwarding events through a Relay Proxy instance.</li>
+<li><code class="prettyprint">timeout</code>: The maximum length of an HTTP request in seconds. Defaults to 3.</li>
+<li><code class="prettyprint">connect_timeout</code>: The maximum number of seconds to wait while trying to connect to a server. Defaults to 3.</li>
+<li><code class="prettyprint">cache</code>: An optional implementation of Guzzle's <a href="https://github.com/Kevinrob/guzzle-cache-middleware/blob/master/src/Storage/CacheStorageInterface.php">CacheStorageInterface</a>.
+Defaults to an in-memory cache.</li>
+<li><code class="prettyprint">send_events</code>: If set to false, disables the sending of events to LaunchDarkly. Defaults to true.</li>
+<li><code class="prettyprint">logger</code>: An optional implementation of <a href="https://www.php-fig.org/psr/psr-3/">Psr\Log\LoggerInterface</a>. Defaults to a
+Monolog\Logger sending all messages to the PHP error_log.</li>
+<li><code class="prettyprint">offline</code>: If set to true, disables all network calls and always returns the default value for flags. Defaults to false.</li>
+<li><code class="prettyprint">feature_requester</code>: An optional {@link \LaunchDarkly\FeatureRequester} implementation, or a class or factory for one.
+Defaults to {@link \LaunchDarkly\Integrations\Guzzle::featureRequester()}.</li>
+<li><code class="prettyprint">feature_requester_class</code>: Deprecated, equivalent to feature_requester.</li>
+<li><code class="prettyprint">event_publisher</code>: An optional {@link \LaunchDarkly\EventPublisher} implementation, or a class or factory for one.
+Defaults to {@link \LaunchDarkly\Integrations\Curl::eventPublisher()}.</li>
+<li><code class="prettyprint">event_publisher_class</code>: Deprecated, equivalent to event_publisher.</li>
+<li><code class="prettyprint">all_attributes_private</code>: If set to true, no user attributes (other than the key) will be sent back to LaunchDarkly.
+Defaults to false.</li>
+<li><code class="prettyprint">private_attribute_names</code>: An optional array of user attribute names to be marked private. Any users sent to LaunchDarkly
+with this configuration active will have attributes with these names removed. You can also set private attributes on a
+per-user basis in LDUserBuilder.</li>
+<li>Other options may be available depending on any features you are using from the LaunchDarkly\Integrations namespace.</li>
+</ul></section></dd>
+                    </dl>
+    
+        
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-LDClient.html"><abbr title="\LaunchDarkly\LDClient">LDClient</abbr></a></span>
+            
+</article>
+                                    <a id="method_variation"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">variation()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDClient.php"><a href="../files/src-launchdarkly-ldclient.html"><abbr title="src/LaunchDarkly/LDClient.php">LDClient.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">175</span>
+    </aside>
+        <p class="phpdocumentor-summary">Calculates the value of a feature flag for a given user.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">variation</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$key</span> :
+                <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </span>
+                    <span class="phpdocumentor-signature__argument">
+            ,                 <span class="phpdocumentor-signature__argument__name">$user</span> :
+                <span class="phpdocumentor-signature__argument__return-type"><a href="../classes/LaunchDarkly-LDUser.html"><abbr title="\LaunchDarkly\LDUser">LDUser</abbr></a></span>
+                            </span>
+                    <span class="phpdocumentor-signature__argument">
+            [,                 <span class="phpdocumentor-signature__argument__name">$default</span> :
+                <span class="phpdocumentor-signature__argument__return-type">mixed</span>
+                 = <span class="phpdocumentor-signature__argument__default-value">false</span> ]            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type">mixed</span>
+    </code>
+
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$key</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The unique key for the feature flag</p></section></dd>
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$user</span>
+                    : <span class="phpdocumentor-signature__argument__return-type"><a href="../classes/LaunchDarkly-LDUser.html"><abbr title="\LaunchDarkly\LDUser">LDUser</abbr></a></span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The end user requesting the flag</p></section></dd>
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$default</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">mixed</span>
+                     = <span class="phpdocumentor-signature__argument__default-value">false</span>                </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The default value of the flag</p></section></dd>
+                    </dl>
+    
+        
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">mixed</span>
+                    &mdash; <span class="phpdocumentor-description"><p>The result of the Feature Flag evaluation, or $default if any errors occurred.</p></span>
+            
+</article>
+                                    <a id="method_variationDetail"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">variationDetail()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDClient.php"><a href="../files/src-launchdarkly-ldclient.html"><abbr title="src/LaunchDarkly/LDClient.php">LDClient.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">195</span>
+    </aside>
+        <p class="phpdocumentor-summary">Calculates the value of a feature flag, and returns an object that describes the way the
+value was determined.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">variationDetail</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$key</span> :
+                <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </span>
+                    <span class="phpdocumentor-signature__argument">
+            ,                 <span class="phpdocumentor-signature__argument__name">$user</span> :
+                <span class="phpdocumentor-signature__argument__return-type"><a href="../classes/LaunchDarkly-LDUser.html"><abbr title="\LaunchDarkly\LDUser">LDUser</abbr></a></span>
+                            </span>
+                    <span class="phpdocumentor-signature__argument">
+            [,                 <span class="phpdocumentor-signature__argument__name">$default</span> :
+                <span class="phpdocumentor-signature__argument__return-type">mixed</span>
+                 = <span class="phpdocumentor-signature__argument__default-value">false</span> ]            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-EvaluationDetail.html"><abbr title="\LaunchDarkly\EvaluationDetail">EvaluationDetail</abbr></a></span>
+    </code>
+
+        <section class="phpdocumentor-description"><p>The &quot;reason&quot; property in the result will also be included in analytics events, if you are capturing
+detailed event data for this flag.</p></section>
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$key</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The unique key for the feature flag</p></section></dd>
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$user</span>
+                    : <span class="phpdocumentor-signature__argument__return-type"><a href="../classes/LaunchDarkly-LDUser.html"><abbr title="\LaunchDarkly\LDUser">LDUser</abbr></a></span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The end user requesting the flag</p></section></dd>
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$default</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">mixed</span>
+                     = <span class="phpdocumentor-signature__argument__default-value">false</span>                </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The default value of the flag</p></section></dd>
+                    </dl>
+    
+        
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-EvaluationDetail.html"><abbr title="\LaunchDarkly\EvaluationDetail">EvaluationDetail</abbr></a></span>
+                    &mdash; <span class="phpdocumentor-description"><p>An EvaluationDetail object that includes the feature flag value
+and evaluation reason.</p></span>
+            
+</article>
+                                    <a id="method_toggle"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+            phpdocumentor-element--deprecated                                            "
+>
+    <h4 class="phpdocumentor-method__name">toggle()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDClient.php"><a href="../files/src-launchdarkly-ldclient.html"><abbr title="src/LaunchDarkly/LDClient.php">LDClient.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">279</span>
+    </aside>
+        <p class="phpdocumentor-summary">Deprecated name for variation().</p>
+        <code class="phpdocumentor-signature phpdocumentor-code phpdocumentor-signature--deprecated">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">toggle</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$key</span> :
+                <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </span>
+                    <span class="phpdocumentor-signature__argument">
+            ,                 <span class="phpdocumentor-signature__argument__name">$user</span> :
+                <span class="phpdocumentor-signature__argument__return-type"><a href="../classes/LaunchDarkly-LDUser.html"><abbr title="\LaunchDarkly\LDUser">LDUser</abbr></a></span>
+                            </span>
+                    <span class="phpdocumentor-signature__argument">
+            [,                 <span class="phpdocumentor-signature__argument__name">$default</span> :
+                <span class="phpdocumentor-signature__argument__return-type">bool</span>
+                 = <span class="phpdocumentor-signature__argument__default-value">false</span> ]            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type">mixed</span>
+    </code>
+
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$key</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The unique key for the feature flag</p></section></dd>
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$user</span>
+                    : <span class="phpdocumentor-signature__argument__return-type"><a href="../classes/LaunchDarkly-LDUser.html"><abbr title="\LaunchDarkly\LDUser">LDUser</abbr></a></span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The end user requesting the flag</p></section></dd>
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$default</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">bool</span>
+                     = <span class="phpdocumentor-signature__argument__default-value">false</span>                </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The default value of the flag</p></section></dd>
+                    </dl>
+    
+                <h5 class="phpdocumentor-tag-list__heading">Tags</h5>
+        <dl class="phpdocumentor-tag-list">
+                                                <dt class="phpdocumentor-tag-list__entry">
+                        <span class="phpdocumentor-tag__name">deprecated</span>
+                    </dt>
+                    <dd class="phpdocumentor-tag-list__definition"><section class="phpdocumentor-description"><p>Use variation() instead.</p></section></dd>
+                                    </dl>
+    
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">mixed</span>
+            
+</article>
+                                    <a id="method_isOffline"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">isOffline()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDClient.php"><a href="../files/src-launchdarkly-ldclient.html"><abbr title="src/LaunchDarkly/LDClient.php">LDClient.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">289</span>
+    </aside>
+        <p class="phpdocumentor-summary">Returns whether the LaunchDarkly client is in offline mode.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">isOffline</span>(
+                )
+        : <span class="phpdocumentor-signature__response_type">bool</span>
+    </code>
+
+    
+    
+        
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">bool</span>
+            
+</article>
+                                    <a id="method_track"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">track()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDClient.php"><a href="../files/src-launchdarkly-ldclient.html"><abbr title="src/LaunchDarkly/LDClient.php">LDClient.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">305</span>
+    </aside>
+        <p class="phpdocumentor-summary">Tracks that a user performed an event.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">track</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$eventName</span> :
+                <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </span>
+                    <span class="phpdocumentor-signature__argument">
+            ,                 <span class="phpdocumentor-signature__argument__name">$user</span> :
+                <span class="phpdocumentor-signature__argument__return-type"><a href="../classes/LaunchDarkly-LDUser.html"><abbr title="\LaunchDarkly\LDUser">LDUser</abbr></a></span>
+                            </span>
+                    <span class="phpdocumentor-signature__argument">
+            [,                 <span class="phpdocumentor-signature__argument__name">$data</span> :
+                <span class="phpdocumentor-signature__argument__return-type">mixed</span>
+                 = <span class="phpdocumentor-signature__argument__default-value">null</span> ]            </span>
+                    <span class="phpdocumentor-signature__argument">
+            [,                 <span class="phpdocumentor-signature__argument__name">$metricValue</span> :
+                <span class="phpdocumentor-signature__argument__return-type"><abbr title="\LaunchDarkly\number">number</abbr></span>
+                 = <span class="phpdocumentor-signature__argument__default-value">null</span> ]            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type">void</span>
+    </code>
+
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$eventName</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The name of the event</p></section></dd>
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$user</span>
+                    : <span class="phpdocumentor-signature__argument__return-type"><a href="../classes/LaunchDarkly-LDUser.html"><abbr title="\LaunchDarkly\LDUser">LDUser</abbr></a></span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The user that performed the event</p></section></dd>
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$data</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">mixed</span>
+                     = <span class="phpdocumentor-signature__argument__default-value">null</span>                </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>Optional additional information to associate with the event</p></section></dd>
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$metricValue</span>
+                    : <span class="phpdocumentor-signature__argument__return-type"><abbr title="\LaunchDarkly\number">number</abbr></span>
+                     = <span class="phpdocumentor-signature__argument__default-value">null</span>                </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>A numeric value used by the LaunchDarkly experimentation feature in
+numeric custom metrics. Can be omitted if this event is used by only non-numeric metrics. This
+field will also be returned as part of the custom event for Data Export.</p></section></dd>
+                    </dl>
+    
+        
+    
+</article>
+                                    <a id="method_identify"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">identify()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDClient.php"><a href="../files/src-launchdarkly-ldclient.html"><abbr title="src/LaunchDarkly/LDClient.php">LDClient.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">323</span>
+    </aside>
+        <p class="phpdocumentor-summary">Reports details about a user.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">identify</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$user</span> :
+                <span class="phpdocumentor-signature__argument__return-type"><a href="../classes/LaunchDarkly-LDUser.html"><abbr title="\LaunchDarkly\LDUser">LDUser</abbr></a></span>
+                            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type">void</span>
+    </code>
+
+        <section class="phpdocumentor-description"><p>This simply registers the given user properties with LaunchDarkly without evaluating a feature flag.
+This also happens automatically when you evaluate a flag.</p></section>
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$user</span>
+                    : <span class="phpdocumentor-signature__argument__return-type"><a href="../classes/LaunchDarkly-LDUser.html"><abbr title="\LaunchDarkly\LDUser">LDUser</abbr></a></span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The user properties</p></section></dd>
+                    </dl>
+    
+        
+    
+</article>
+                                    <a id="method_allFlags"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+            phpdocumentor-element--deprecated                                            "
+>
+    <h4 class="phpdocumentor-method__name">allFlags()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDClient.php"><a href="../files/src-launchdarkly-ldclient.html"><abbr title="src/LaunchDarkly/LDClient.php">LDClient.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">350</span>
+    </aside>
+        <p class="phpdocumentor-summary">Deprecated alternative to allFlagsState().</p>
+        <code class="phpdocumentor-signature phpdocumentor-code phpdocumentor-signature--deprecated">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">allFlags</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$user</span> :
+                <span class="phpdocumentor-signature__argument__return-type"><a href="../classes/LaunchDarkly-LDUser.html"><abbr title="\LaunchDarkly\LDUser">LDUser</abbr></a></span>
+                            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type">array|null</span>
+    </code>
+
+        <section class="phpdocumentor-description"><p>This returns an array mapping feature flag keys to their evaluated results for a given user.</p>
+<p>If the result of a flag's evaluation would have returned the default variation, it will have a null entry.
+If the client is offline, has not been initialized, or a null user or user with null/empty user key, null will be returned.
+This method will not send analytics events back to LaunchDarkly.</p>
+<p>The most common use case for this method is to bootstrap a set of client-side feature flags from a back-end
+service. Current versions of the JavaScript SDK require somewhat different data; for best compatibility,
+use allFlagsState() instead.</p></section>
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$user</span>
+                    : <span class="phpdocumentor-signature__argument__return-type"><a href="../classes/LaunchDarkly-LDUser.html"><abbr title="\LaunchDarkly\LDUser">LDUser</abbr></a></span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The end user requesting the feature flags</p></section></dd>
+                    </dl>
+    
+                <h5 class="phpdocumentor-tag-list__heading">Tags</h5>
+        <dl class="phpdocumentor-tag-list">
+                                                <dt class="phpdocumentor-tag-list__entry">
+                        <span class="phpdocumentor-tag__name">deprecated</span>
+                    </dt>
+                    <dd class="phpdocumentor-tag-list__definition"><section class="phpdocumentor-description"><p>Use allFlagsState() instead. Current versions of the client-side SDK will not
+generate analytics events correctly if you pass the result of allFlags().</p></section></dd>
+                                    </dl>
+    
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">array|null</span>
+                    &mdash; <span class="phpdocumentor-description"><p>Mapping of feature flag keys to their evaluated results for $user</p></span>
+            
+</article>
+                                    <a id="method_allFlagsState"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">allFlagsState()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDClient.php"><a href="../files/src-launchdarkly-ldclient.html"><abbr title="src/LaunchDarkly/LDClient.php">LDClient.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">375</span>
+    </aside>
+        <p class="phpdocumentor-summary">Returns an object that encapsulates the state of all feature flags for a given user.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">allFlagsState</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$user</span> :
+                <span class="phpdocumentor-signature__argument__return-type"><a href="../classes/LaunchDarkly-LDUser.html"><abbr title="\LaunchDarkly\LDUser">LDUser</abbr></a></span>
+                            </span>
+                    <span class="phpdocumentor-signature__argument">
+            [,                 <span class="phpdocumentor-signature__argument__name">$options</span> :
+                <span class="phpdocumentor-signature__argument__return-type">array</span>
+                 = <span class="phpdocumentor-signature__argument__default-value">array()</span> ]            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-FeatureFlagsState.html"><abbr title="\LaunchDarkly\FeatureFlagsState">FeatureFlagsState</abbr></a></span>
+    </code>
+
+        <section class="phpdocumentor-description"><p>This includes the flag values as well as other flag metadata that may be needed by front-end code,
+since the most common use case for this method is <a href="https://docs.launchdarkly.com/docs/js-sdk-reference#section-bootstrapping">bootstrapping</a>
+in conjunction with the JavaScript browser SDK.</p>
+<p>This method does not send analytics events back to LaunchDarkly.</p></section>
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$user</span>
+                    : <span class="phpdocumentor-signature__argument__return-type"><a href="../classes/LaunchDarkly-LDUser.html"><abbr title="\LaunchDarkly\LDUser">LDUser</abbr></a></span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>The end user requesting the feature flags</p></section></dd>
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$options</span>
+                    : <span class="phpdocumentor-signature__argument__return-type">array</span>
+                     = <span class="phpdocumentor-signature__argument__default-value">array()</span>                </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"><p>Optional properties affecting how the state is computed:</p>
+<ul>
+<li><code class="prettyprint">clientSideOnly</code>: Set this to true to specify that only flags marked for client-side use
+should be included; by default, all flags are included</li>
+<li><code class="prettyprint">withReasons</code>: Set this to true to include evaluation reasons (see {@link variationDetail()})</li>
+</ul></section></dd>
+                    </dl>
+    
+        
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><a href="../classes/LaunchDarkly-FeatureFlagsState.html"><abbr title="\LaunchDarkly\FeatureFlagsState">FeatureFlagsState</abbr></a></span>
+                    &mdash; <span class="phpdocumentor-description"><p>a FeatureFlagsState object (will never be null)</p></span>
+            
+</article>
+                                    <a id="method_secureModeHash"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">secureModeHash()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDClient.php"><a href="../files/src-launchdarkly-ldclient.html"><abbr title="src/LaunchDarkly/LDClient.php">LDClient.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">419</span>
+    </aside>
+        <p class="phpdocumentor-summary">Generates an HMAC sha256 hash for use in Secure mode.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">secureModeHash</span>(
+                    <span class="phpdocumentor-signature__argument">
+                            <span class="phpdocumentor-signature__argument__name">$user</span> :
+                <span class="phpdocumentor-signature__argument__return-type"><a href="../classes/LaunchDarkly-LDUser.html"><abbr title="\LaunchDarkly\LDUser">LDUser</abbr></a></span>
+                            </span>
+                )
+        : <span class="phpdocumentor-signature__response_type">string</span>
+    </code>
+
+        <section class="phpdocumentor-description"><p>See: <a href="https://docs.launchdarkly.com/docs/js-sdk-reference#section-secure-mode">https://docs.launchdarkly.com/docs/js-sdk-reference#section-secure-mode</a></p></section>
+    
+            <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+        <dl class="phpdocumentor-argument-list">
+                            <dt class="phpdocumentor-argument-list__entry">
+                    <span class="phpdocumentor-signature__argument__name">$user</span>
+                    : <span class="phpdocumentor-signature__argument__return-type"><a href="../classes/LaunchDarkly-LDUser.html"><abbr title="\LaunchDarkly\LDUser">LDUser</abbr></a></span>
+                                    </dt>
+                <dd class="phpdocumentor-argument-list__definition"><section class="phpdocumentor-description"></section></dd>
+                    </dl>
+    
+        
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">string</span>
+            
+</article>
+                                    <a id="method_flush"></a>
+<article
+        class="
+            phpdocumentor-method
+            phpdocumentor-method--public
+                                                        "
+>
+    <h4 class="phpdocumentor-method__name">flush()</h4>
+    <aside class="phpdocumentor-element-found-in">
+        <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/LDClient.php"><a href="../files/src-launchdarkly-ldclient.html"><abbr title="src/LaunchDarkly/LDClient.php">LDClient.php</abbr></a></abbr>
+        :
+        <span class="phpdocumentor-element-found-in__line">433</span>
+    </aside>
+        <p class="phpdocumentor-summary">Publishes any pending analytics events to LaunchDarkly.</p>
+        <code class="phpdocumentor-signature phpdocumentor-code ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+                                <span class="phpdocumentor-signature__name">flush</span>(
+                )
+        : <span class="phpdocumentor-signature__response_type">bool</span>
+    </code>
+
+        <section class="phpdocumentor-description"><p>This is normally done automatically by the SDK.</p></section>
+    
+    
+        
+            <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">bool</span>
+                    &mdash; <span class="phpdocumentor-description"><p>Whether the events were successfully published</p></span>
+            
+</article>
+                                                            </section>
+            </article>
+            <div data-search-results class="phpdocumentor-search-results phpdocumentor-search-results--hidden">
+
+                <h2>Search results</h2>
+                <ul class="phpdocumentor-search-results__entries">
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>
