@@ -1,5 +1,5 @@
 <?php
-namespace LaunchDarkly;
+namespace LaunchDarkly\Impl;
 
 class NullEventProcessor
 {
