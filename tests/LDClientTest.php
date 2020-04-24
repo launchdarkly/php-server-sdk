@@ -595,6 +595,10 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
 
     public function testEventsAreNotPublishedIfSendEventsIsFalse()
     {
+        // In order to do this test, we cannot provide a mock object for Event_Processor_,
+        // because if we do that, it won't bother even looking at the send_events flag.
+        // Instead, we need to just put in a mock Event_Publisher_, so that the default
+        // EventProcessor would forward events to it if send_events were not disabled.
         $mockPublisher = new MockEventPublisher("", array());
         $options = array(
             'feature_requester_class' => MockFeatureRequester::class,
