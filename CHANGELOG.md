@@ -2,6 +2,12 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [3.7.2] - 2020-04-24
+### Fixed:
+- The SDK could try to send analytics events even if `send_events` had been set to false. This bug was introduced in the 3.6.0 release.
+- A `use` statement with the wrong namespace was causing Composer to print a deprecation warning. (Thanks, [bfenton-smugmug](https://github.com/launchdarkly/php-server-sdk/pull/134)!)
+
+
 ## [3.7.1] - 2020-01-03
 ### Fixed:
 - Loosened the Monolog dependency constraint so that it will accept either a 1.x or a 2.x version. This should be compatible with all currently supported PHP versions; the SDK's use of Monolog does not rely on any features that are specific to 1.x. (Thanks, [mrtus](https://github.com/launchdarkly/php-server-sdk/pull/132)!)
