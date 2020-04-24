@@ -593,6 +593,18 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($metricValue, $event['metricValue']);
     }
 
+    public function testEventsAreNotPublishedIfSendEventsIsFalse()
+    {
+        $mockPublisher = new MockEventPublisher("", array());
+        $options = array(
+            'feature_requester_class' => MockFeatureRequester::class,
+            'event_publisher' => $mockPublisher
+        );
+        $client = new LDClient("someKey", $options);
+        $client->track('eventkey', new LDUser('userkey'));
+        $this->assertEquals(array(), $mockPublisher->payloads);
+    }
+
     public function testOnlyValidFeatureRequester()
     {
         $this->setExpectedException(InvalidArgumentException::class);

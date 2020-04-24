@@ -2,7 +2,7 @@
 namespace LaunchDarkly;
 
 use LaunchDarkly\Impl\EventFactory;
-use LaunchDarkly\Impl\NullEventPublisher;
+use LaunchDarkly\Impl\NullEventProcessor;
 use LaunchDarkly\Integrations\Guzzle;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
@@ -129,7 +129,7 @@ class LDClient
             }
             $this->_eventProcessor = $ep;
         } elseif ($this->_offline || !$this->_send_events) {
-            $this->_eventProcessor = new EventProcessor($sdkKey, $options);
+            $this->_eventProcessor = new NullEventProcessor($sdkKey, $options);
         } else {
             $this->_eventProcessor = new EventProcessor($sdkKey, $options);
         }
