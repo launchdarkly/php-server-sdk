@@ -6,5 +6,12 @@ publications:
   - url: https://packagist.org/packages/launchdarkly/server-sdk
     description: Packagist
 
+circleCI:
+  linux:
+    image: ldcircleci/ld-php-sdk-release:1  # built in sdks-ci-docker project, contains PHP 7.2 + phpDocumentor
+
+documentation:
+  githubPages: true
+
 sdk:
   displayName: "PHP"

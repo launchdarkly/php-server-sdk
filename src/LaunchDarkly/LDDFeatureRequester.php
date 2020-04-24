@@ -4,7 +4,8 @@ namespace LaunchDarkly;
 use LaunchDarkly\Impl\Integrations\RedisFeatureRequester;
 
 /**
- * Deprecated implementation class for Redis integration.
+ * Deprecated integration class that reads feature flags from Redis.
+ *
  * Replaced by {@link \LaunchDarkly\Integrations\Redis::featureRequester()}.
  *
  * @deprecated Use {@link \LaunchDarkly\Integrations\Redis::featureRequester()}

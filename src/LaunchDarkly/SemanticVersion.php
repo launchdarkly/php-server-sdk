@@ -3,10 +3,15 @@
 namespace LaunchDarkly;
 
 /**
+ * Used internally in feature flag evaluation.
+ *
  * A minimal implementation of the Semantic Versioning 2.0.0 standard (http://semver.org).
  * Supports only string parsing and precedence comparison.  The one departure from the
  * standard is that in "loose" mode, the minor and patch versions can be omitted
  * (defaulting to zero).
+ *
+ * @ignore
+ * @internal
  */
 class SemanticVersion
 {

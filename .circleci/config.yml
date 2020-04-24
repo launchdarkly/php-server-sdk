@@ -7,19 +7,27 @@ workflows:
           name: PHP 5.5
       - test-with-preinstalled-php:
           name: PHP 5.6
-          docker-image: circleci/php:5.6.34-cli-jessie
+          docker-image: circleci/php:5.6
           use-phpredis: false
       - test-with-preinstalled-php:
           name: PHP 7.0
-          docker-image: circleci/php:7.0.28-cli-jessie
+          docker-image: circleci/php:7.0
       - test-with-preinstalled-php:
           name: PHP 7.1
-          docker-image: circleci/php:7.1.15-cli-jessie
+          docker-image: circleci/php:7.1
       - test-with-preinstalled-php:
           name: PHP 7.2
-          docker-image: circleci/php:7.2.3-cli-stretch
+          docker-image: circleci/php:7.2
           include-lowest-compatible-versions-test: false 
           # lowest "compatible" version of phpunit in 7.2 has a bug - https://github.com/sebastianbergmann/comparator/pull/30
+      - test-with-preinstalled-php:
+          name: PHP 7.3
+          docker-image: circleci/php:7.3
+          include-lowest-compatible-versions-test: false 
+      - test-with-preinstalled-php:
+          name: PHP 7.4
+          docker-image: circleci/php:7.4
+          include-lowest-compatible-versions-test: false 
       - integration-test
 
 jobs:

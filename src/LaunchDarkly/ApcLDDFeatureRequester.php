@@ -5,14 +5,13 @@ use LaunchDarkly\Impl\Integrations\ApcFeatureRequesterCache;
 use LaunchDarkly\Impl\Integrations\RedisFeatureRequester;
 
 /**
- * Deprecated feature requester from an LDD-populated Redis, with APC caching.
+ * Deprecated integration class for reading flags from a Redis database, with APC caching.
  *
- * @deprecated Per the docs (http://php.net/manual/en/intro.apc.php):
- * "This extension (APC) is considered unmaintained and dead".
+ * The APC extension (http://php.net/manual/en/intro.apc.php) is no longer maintained and has been
+ * replaced by APCu. The new Redis integration which uses APCu caching is
+ * {@link \LaunchDarkly\Integrations\Redis::featureRequester()}.
  *
- * Install APCu and use {@link \LaunchDarkly\Integrations\Redis::featureRequester()} instead!
- *
- * @package LaunchDarkly
+ * @deprecated use Redis::featureRequester()
  */
 class ApcLDDFeatureRequester extends RedisFeatureRequester
 {

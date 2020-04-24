@@ -5,6 +5,12 @@ namespace LaunchDarkly;
 use DateTime;
 use DateTimeZone;
 
+/**
+ * Internal class containing helper methods.
+ *
+ * @ignore
+ * @internal
+ */
 class Util
 {
     /**

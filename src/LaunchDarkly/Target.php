@@ -1,6 +1,14 @@
 <?php
 namespace LaunchDarkly;
 
+/**
+ * Internal data model class that describes a feature flag user targeting list.
+ *
+ * Application code should never need to reference the data model directly.
+ *
+ * @ignore
+ * @internal
+ */
 class Target
 {
     /** @var string[] */

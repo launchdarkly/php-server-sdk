@@ -4,6 +4,9 @@ namespace LaunchDarkly;
 use LaunchDarkly\Integrations\Curl;
 
 /**
+ * Internal class that processes analytics event data.
+ *
+ * @ignore
  * @internal
  */
 class EventProcessor

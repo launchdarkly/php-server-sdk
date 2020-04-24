@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Update version in LDClient class
 LDCLIENT_PHP=src/LaunchDarkly/LDClient.php
 LDCLIENT_PHP_TEMP=${LDCLIENT_PHP}.tmp

@@ -1,6 +1,14 @@
 <?php
 namespace LaunchDarkly;
 
+/**
+ * Internal data model class that describes a percentage rollout.
+ *
+ * Application code should never need to reference the data model directly.
+ *
+ * @ignore
+ * @internal
+ */
 class Rollout
 {
     /** @var WeightedVariation[] */

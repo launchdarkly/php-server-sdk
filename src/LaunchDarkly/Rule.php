@@ -2,6 +2,14 @@
 
 namespace LaunchDarkly;
 
+/**
+ * Internal data model class that describes a feature flag rule.
+ *
+ * Application code should never need to reference the data model directly.
+ *
+ * @ignore
+ * @internal
+ */
 class Rule extends VariationOrRollout
 {
     /** @var string */

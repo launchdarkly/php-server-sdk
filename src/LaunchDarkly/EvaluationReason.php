@@ -3,50 +3,59 @@
 namespace LaunchDarkly;
 
 /**
- * Describes the reason that a flag evaluation produced a particular value. This is part of
- * the EvaluationDetail object returned by LDClient.variationDetail().
+ * Describes the reason that a flag evaluation produced a particular value.
+ *
+ * This is part of the {@link \LaunchDarkly\EvaluationDetail} object returned by {@link \LaunchDarkly\LDClient::variationDetail()}.
  */
 class EvaluationReason implements \JsonSerializable
 {
     /**
      * A possible value for getKind(): indicates that the flag was off and therefore returned
      * its configured off value.
+     * @var string
      */
     const OFF = 'OFF';
     /**
      * A possible value for getKind(): indicates that the flag was on but the user did not
      * match any targets or rules.
+     * @var string
      */
     const FALLTHROUGH = 'FALLTHROUGH';
     /**
      * A possible value for getKind(): indicates that the user key was specifically targeted
      * for this flag.
+     * @var string
      */
     const TARGET_MATCH = 'TARGET_MATCH';
     /**
      * A possible value for getKind(): indicates that the user matched one of the flag's rules.
+     * @var string
      */
     const RULE_MATCH = 'RULE_MATCH';
     /**
      * A possible value for getKind(): indicates that the flag was considered off because it
      * had at least one prerequisite flag that either was off or did not return the desired variation.
+     * @var string
      */
     const PREREQUISITE_FAILED = 'PREREQUISITE_FAILED';
     /**
      * A possible value for getKind(): indicates that the flag could not be evaluated, e.g.
      * because it does not exist or due to an unexpected error.
+     * @var string
      */
     const ERROR = 'ERROR';
 
     /**
      * A possible value for getErrorKind(): indicates that the caller tried to evaluate a flag
      * before the client had successfully initialized.
+     * @var string
      */
     const CLIENT_NOT_READY_ERROR = 'CLIENT_NOT_READY';
 
     /**
      * A possible value for getErrorKind(): indicates that the caller provided a flag key that
      * did not match any known flag.
+     * @var string
      */
     const FLAG_NOT_FOUND_ERROR = 'FLAG_NOT_FOUND';
 
@@ -54,18 +63,21 @@ class EvaluationReason implements \JsonSerializable
      * A possible value for getErrorKind(): indicates that there was an internal inconsistency
      * in the flag data, e.g. a rule specified a nonexistent variation. An error message will
      * always be logged in this case.
+     * @var string
      */
     const MALFORMED_FLAG_ERROR = 'MALFORMED_FLAG';
 
     /**
      * A possible value for getErrorKind(): indicates that the caller passed null for the user
      * parameter, or the user lacked a key.
+     * @var string
      */
     const USER_NOT_SPECIFIED_ERROR = 'USER_NOT_SPECIFIED';
 
     /**
      * A possible value for getErrorKind(): indicates that an unexpected exception stopped flag
      * evaluation.
+     * @var string
      */
     const EXCEPTION_ERROR = 'EXCEPTION';
 
@@ -77,6 +89,7 @@ class EvaluationReason implements \JsonSerializable
 
     /**
      * Creates a new instance of the OFF reason.
+     * @return EvaluationReason
      */
     public static function off()
     {
@@ -85,6 +98,7 @@ class EvaluationReason implements \JsonSerializable
 
     /**
      * Creates a new instance of the FALLTHROUGH reason.
+     * @return EvaluationReason
      */
     public static function fallthrough()
     {
@@ -93,6 +107,7 @@ class EvaluationReason implements \JsonSerializable
 
     /**
      * Creates a new instance of the TARGET_MATCH reason.
+     * @return EvaluationReason
      */
     public static function targetMatch()
     {
@@ -101,6 +116,7 @@ class EvaluationReason implements \JsonSerializable
 
     /**
      * Creates a new instance of the RULE_MATCH reason.
+     * @return EvaluationReason
      */
     public static function ruleMatch($ruleIndex, $ruleId)
     {
@@ -109,6 +125,7 @@ class EvaluationReason implements \JsonSerializable
 
     /**
      * Creates a new instance of the PREREQUISITE_FAILED reason.
+     * @return EvaluationReason
      */
     public static function prerequisiteFailed($prerequisiteKey)
     {
@@ -117,6 +134,7 @@ class EvaluationReason implements \JsonSerializable
 
     /**
      * Creates a new instance of the ERROR reason.
+     * @return EvaluationReason
      */
     public static function error($errorKind)
     {

@@ -20,7 +20,7 @@ class Guzzle
      *   - `cache`: an optional object that implements `Kevinrob\GuzzleCache\Storage\CacheStorageInterface`
      *   - `connect_timeout`: connection timeout in seconds; defaults to 3
      *   - `timeout`: read timeout in seconds; defaults to 3
-     * @return object  an object to be stored in the `feature_requester` configuration property
+     * @return mixed  an object to be stored in the `feature_requester` configuration property
      */
     public static function featureRequester($options = array())
     {
@@ -50,7 +50,7 @@ class Guzzle
      *   - `events_uri`: URI of the server that will receive events, if it is `ld-relay` instead of LaunchDarkly
      *   - `connect_timeout`: connection timeout in seconds; defaults to 3
      *   - `timeout`: read timeout in seconds; defaults to 3
-     * @return object  an object to be stored in the `event_publisher` configuration property
+     * @return mixed  an object to be stored in the `event_publisher` configuration property
      */
     public static function eventPublisher($options = array())
     {

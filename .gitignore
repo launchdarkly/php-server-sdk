@@ -6,3 +6,4 @@ composer.phar
 .vagrant
 integration-tests/vendor
 composer.lock
+docs/build
