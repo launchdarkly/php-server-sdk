@@ -53,7 +53,7 @@ class DynamoDbFeatureRequesterTest extends FeatureRequesterTestBase
         self::$dynamoDbClient->putItem(array(
             'TableName' => self::TABLE_NAME,
             'Item' => array(
-                'namespace' => array('S' => self::PREFIX . '/' . $namespace),
+                'namespace' => array('S' => self::PREFIX . ':' . $namespace),
                 'key' => array('S' => $key),
                 'version' => array('N' => strval($version)),
                 'item' => array('S' =>  $json)
