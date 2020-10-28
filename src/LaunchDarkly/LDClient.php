@@ -21,7 +21,7 @@ class LDClient
      * The current SDK version.
      * @var string
      */
-    const VERSION = '3.7.2';
+    const VERSION = '3.7.3';
 
     /** @var string */
     protected $_sdkKey;
