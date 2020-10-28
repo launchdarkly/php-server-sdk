@@ -89,7 +89,8 @@ jobs:
             sudo apt-get update &&
             sudo apt-get install circleci-php-5.5.36 &&
             php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');" &&
-            sudo php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
+            sudo php /tmp/composer-setup.php --install-dir=/usr/local/bin --version 1.10.16 --filename=composer
+            # Composer 2.0 doesn't work with the older versions of php-cs-fixer that support PHP 5.5
       - run:
           name: install Docker
           command: |
