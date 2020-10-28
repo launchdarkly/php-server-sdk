@@ -26,7 +26,7 @@ class DynamoDbFeatureRequester extends FeatureRequesterBase
         $this->_client = new DynamoDbClient($dynamoDbOptions);
 
         $prefix = isset($options['dynamodb_prefix']) ? $options['dynamodb_prefix'] : '';
-        $this->_prefix = ($prefix != null && $prefix != '') ? ($prefix . '/') : '';
+        $this->_prefix = ($prefix != null && $prefix != '') ? ($prefix . ':') : '';
     }
 
     protected function readItemString($namespace, $key)
