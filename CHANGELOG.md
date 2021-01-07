@@ -2,6 +2,10 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [3.7.4] - 2021-01-07
+### Fixed:
+- Fixed a warning message which erroneously referred to the wrong method.
+
 ## [3.7.3] - 2020-10-28
 ### Fixed:
 - When using the DynamoDB data store integration with a prefix string, the prefix was being prepended to keys with a slash separator (example: `my-prefix/features:my-flag-key`). This was inconsistent with the colon separator that is used in the other server-side SDKs (example: `my-prefix:features:my-flag-key`), making the PHP SDK unable to read flags that were put into the database by other SDKs or by the Relay Proxy, if a prefix was used. This has been fixed to be consistent with the other SDKs. ([#138](https://github.com/launchdarkly/php-server-sdk/issues/138))
