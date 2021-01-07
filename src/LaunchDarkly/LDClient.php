@@ -323,7 +323,7 @@ class LDClient
     public function identify($user)
     {
         if (is_null($user) || $user->isKeyBlank()) {
-            $this->_logger->warning("Track called with null user or null/empty user key!");
+            $this->_logger->warning("Identify called with null user or null/empty user key!");
             return;
         }
         $this->_eventProcessor->enqueue($this->_eventFactoryDefault->newIdentifyEvent($user));
