@@ -19,7 +19,7 @@ class PHPRedisFeatureRequester extends FeatureRequesterBase
         $this->_prefix = isset($options['redis_prefix']) ? $options['redis_prefix'] : 'launchdarkly';
 
         if (isset($this->_options['phpredis_client']) && $this->_options['phpredis_client'] instanceof Redis) {
-            $this->_connection = $this->_options['phpredis_client'];
+            $this->_redisInstance = $this->_options['phpredis_client'];
         } else {
             $this->_redisOptions = array(
                 "timeout" => isset($options['redis_timeout']) ? $options['redis_timeout'] : 5,
