@@ -39,9 +39,6 @@ class EventFactory
         if (($addExperimentData || $this->_withReasons) && $detail->getReason()) {
             $e['reason'] = $detail->getReason()->jsonSerialize();
         }
-        if ($user->getAnonymous()) {
-            $e['contextKind'] = 'anonymousUser';
-        }
         return $e;
     }
 
@@ -66,9 +63,6 @@ class EventFactory
         if ($this->_withReasons && $detail->getReason()) {
             $e['reason'] = $detail->getReason()->jsonSerialize();
         }
-        if ($user->getAnonymous()) {
-            $e['contextKind'] = 'anonymousUser';
-        }
         return $e;
     }
 
@@ -85,9 +79,6 @@ class EventFactory
         // the following properties are handled separately so we don't waste bandwidth on unused keys
         if ($this->_withReasons && $detail->getReason()) {
             $e['reason'] = $detail->getReason()->jsonSerialize();
-        }
-        if ($user->getAnonymous()) {
-            $e['contextKind'] = 'anonymousUser';
         }
         return $e;
     }
@@ -116,33 +107,7 @@ class EventFactory
         if (isset($metricValue)) {
             $e['metricValue'] = $metricValue;
         }
-        if ($user->getAnonymous()) {
-            $e['contextKind'] = 'anonymousUser';
-        }
         return $e;
-    }
-
-    public function newAliasEvent($user, $previousUser) 
-    {
-        $e = array(
-            'kind' => 'alias',
-            'key' => strval($user->getKey()),
-            'contextKind' => static::contextKind($user),
-            'previousKey' => strval($previousUser->getKey()),
-            'previousContextKind' => static::contextKind($previousUser),
-            'creationDate' => Util::currentTimeUnixMillis()
-        );
-
-        return $e;
-    }
-
-    private static function contextKind($user)
-    {
-        if ($user->getAnonymous()) {
-            return 'anonymousUser';
-        } else {
-            return 'user';
-        }
     }
 
     private static function isExperiment($flag, $reason)

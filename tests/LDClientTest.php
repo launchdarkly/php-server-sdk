@@ -593,67 +593,6 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($metricValue, $event['metricValue']);
     }
 
-    public function testAliasEventsAreCorrect()
-    {
-        $ep = new MockEventProcessor();
-        $client = $this->makeClient(array('event_processor' => $ep));
-        
-        $user_builder = new LDUserBuilder("user@email.com");
-        $user = $user_builder->anonymous(false)->build();
-        $anon_builder = new LDUserBuilder("anon@email.com");
-        $anon = $anon_builder->anonymous(true)->build();
-
-        $client->alias($user, $anon);
-
-        $queue = $ep->getEvents();
-        $this->assertEquals(1, sizeof($queue));
-
-        $event = $queue[0];
-
-        $this->assertEquals('alias', $event['kind']);
-        $this->assertEquals($user->getKey(), $event['key']);
-        $this->assertEquals('user', $event['contextKind']);
-        $this->assertEquals($anon->getKey(), $event['previousKey']);
-        $this->assertEquals('anonymousUser', $event['previousContextKind']);
-    }
-
-    public function testAnonymousVariationHasContextKind()
-    {
-        $ep = new MockEventProcessor();
-        $client = $this->makeClient(array('event_processor' => $ep));
-
-        $flag = $this->makeOffFlagWithValue('feature', 'value');
-
-        $anon_builder = new LDUserBuilder("anon@email.com");
-        $anon = $anon_builder->anonymous(true)->build();
-
-        $client->variation('feature', $anon, 'default');
-
-        $queue = $ep->getEvents();
-        $this->assertEquals(1, sizeof($queue));
-
-        $event = $queue[0];
-
-        $this->assertEquals('anonymousUser', $event['contextKind']);
-    }
-
-    public function testCustomEventHasContextKind()
-    {
-        $ep = new MockEventProcessor();
-        $client = $this->makeClient(array('event_processor' => $ep));
-
-        
-        $anon_builder = new LDUserBuilder("anon@email.com");
-        $anon = $anon_builder->anonymous(true)->build();
-
-        $client->track('eventkey', $anon);
-        $queue = $ep->getEvents();
-        $this->assertEquals(1, sizeof($queue));
-        $event = $queue[0];
-        $this->assertEquals('custom', $event['kind']);
-        $this->assertEquals('anonymousUser', $event['contextKind']);
-    }
-
     public function testEventsAreNotPublishedIfSendEventsIsFalse()
     {
         // In order to do this test, we cannot provide a mock object for Event_Processor_,
