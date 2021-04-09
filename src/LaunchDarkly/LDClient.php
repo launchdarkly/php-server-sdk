@@ -408,6 +408,12 @@ class LDClient
         return $state;
     }
 
+    public function alias($user, $previousUser) 
+    {
+        $event = $this->_eventFactoryDefault->newAliasEvent($user, $previousUser);
+        $this->_eventProcessor->enqueue($event);
+    }
+
     /**
      * Generates an HMAC sha256 hash for use in Secure mode.
      *
