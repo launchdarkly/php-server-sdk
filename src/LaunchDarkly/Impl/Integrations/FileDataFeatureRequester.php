@@ -70,7 +70,7 @@ class FileDataFeatureRequester implements FeatureRequester
         $content = file_get_contents($filePath);
         $data = json_decode($content, true);
         if ($data == null) {
-            throw new \InvalidArgumentException("File is not valid JSON: " + $filePath);
+            throw new \InvalidArgumentException("File is not valid JSON: " . $filePath);
         }
         if (isset($data['flags'])) {
             foreach ($data['flags'] as $key => $value) {
