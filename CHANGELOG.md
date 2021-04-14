@@ -2,6 +2,10 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [3.7.6] - 2021-04-14
+### Fixed:
+- When using `Files.featureRequester`, if a data file did not contain valid JSON, the SDK would throw a PHP syntax error instead of the expected &#34;File is not valid JSON&#34; error. (Thanks, [GuiEloiSantos](https://github.com/launchdarkly/php-server-sdk/pull/145)!)
+
 ## [3.7.5] - 2021-03-01
 ### Fixed:
 - `PHPRedis::featureRequester` was not recognizing the `phpredis_client` option. (Thanks, [riekelt](https://github.com/launchdarkly/php-server-sdk/pull/143)!)
