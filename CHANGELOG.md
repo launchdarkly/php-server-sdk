@@ -2,6 +2,10 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [3.7.5] - 2021-03-01
+### Fixed:
+- `PHPRedis::featureRequester` was not recognizing the `phpredis_client` option. (Thanks, [riekelt](https://github.com/launchdarkly/php-server-sdk/pull/143)!)
+
 ## [3.7.4] - 2021-01-07
 ### Fixed:
 - Fixed a warning message which erroneously referred to the wrong method.
