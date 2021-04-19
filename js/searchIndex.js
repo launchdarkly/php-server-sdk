@@ -376,6 +376,11 @@ Search.appendIndex(
             "summary": "Returns\u0020an\u0020object\u0020that\u0020encapsulates\u0020the\u0020state\u0020of\u0020all\u0020feature\u0020flags\u0020for\u0020a\u0020given\u0020user.",
             "url": "../classes/LaunchDarkly-LDClient.html#method_allFlagsState"
         },                {
+            "fqsen": "\\LaunchDarkly\\LDClient\u003A\u003Aalias\u0028\u0029",
+            "name": "alias",
+            "summary": "Associates\u0020two\u0020users\u0020for\u0020analytics\u0020purposes.",
+            "url": "../classes/LaunchDarkly-LDClient.html#method_alias"
+        },                {
             "fqsen": "\\LaunchDarkly\\LDClient\u003A\u003AsecureModeHash\u0028\u0029",
             "name": "secureModeHash",
             "summary": "Generates\u0020an\u0020HMAC\u0020sha256\u0020hash\u0020for\u0020use\u0020in\u0020Secure\u0020mode.",
