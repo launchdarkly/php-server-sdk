@@ -375,7 +375,7 @@ class LDClient
     public function allFlagsState($user, $options = array())
     {
         if (is_null($user) || is_null($user->getKey())) {
-            $this->_logger->warn("allFlagsState called with null user or null/empty user key! Returning empty state");
+            $this->_logger->warning("allFlagsState called with null user or null/empty user key! Returning empty state");
             return new FeatureFlagsState(false);
         }
         if ($this->isOffline()) {
@@ -406,6 +406,34 @@ class LDClient
             $state->addFlag($flag, $result->getDetail(), $withReasons, $detailsOnlyIfTracked);
         }
         return $state;
+    }
+
+    /**
+     * Associates two users for analytics purposes.
+     *
+     * This can be helpful in the situation where a person is represented by multiple
+     * LaunchDarkly users. This may happen, for example, when a person initially logs into
+     * an application-- the person might be represented by an anonymous user prior to logging
+     * in and a different user after logging in, as denoted by a different user key.
+     *
+     * @param LDUser $user the newly identified user.
+     * @param LDUser $previousUser the previously identified user.
+     * @return void
+     */
+    public function alias($user, $previousUser)
+    {
+        if (is_null($user) || is_null($user->getKey())) {
+            $this->_logger->warning("Alias called with null user or null/empty user!");
+            return;
+        }
+
+        if (is_null($previousUser) || is_null($previousUser->getKey())) {
+            $this->_logger->warning("Alias called with null user or null/empty previousUser!");
+            return;
+        }
+
+        $event = $this->_eventFactoryDefault->newAliasEvent($user, $previousUser);
+        $this->_eventProcessor->enqueue($event);
     }
 
     /**
