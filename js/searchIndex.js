@@ -106,6 +106,11 @@ Search.appendIndex(
             "summary": "Returns\u0020the\u0020key\u0020of\u0020the\u0020prerequisite\u0020feature\u0020flag\u0020that\u0020failed,\u0020if\u0020getKind\u0028\u0029\u0020is\nPREREQUISITE_FAILED.\u0020Otherwise\u0020returns\u0020null.",
             "url": "../classes/LaunchDarkly-EvaluationReason.html#method_getPrerequisiteKey"
         },                {
+            "fqsen": "\\LaunchDarkly\\EvaluationReason\u003A\u003AisInExperiment\u0028\u0029",
+            "name": "isInExperiment",
+            "summary": "Returns\u0020true\u0020if\u0020the\u0020evaluation\u0020resulted\u0020in\u0020an\u0020experiment\u0020rollout\u0020\u002Aand\u002A\u0020served\none\u0020of\u0020the\u0020variations\u0020in\u0020the\u0020experiment.\u0020\u0020Otherwise\u0020it\u0020returns\u0020false.",
+            "url": "../classes/LaunchDarkly-EvaluationReason.html#method_isInExperiment"
+        },                {
             "fqsen": "\\LaunchDarkly\\EvaluationReason\u003A\u003A__toString\u0028\u0029",
             "name": "__toString",
             "summary": "Returns\u0020a\u0020simple\u0020string\u0020representation\u0020of\u0020this\u0020object.",
