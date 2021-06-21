@@ -620,7 +620,7 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         
         // First verify that with our test inputs, the bucket value will be greater than zero and less than 100000,
         // so we can construct a rollout whose second bucket just barely contains that value
-        $bucketValue = floor(VariationOrRollout::bucketUser($user, $flagKey, "key", $salt) * 100000);
+        $bucketValue = floor(VariationOrRollout::bucketUser($user, $flagKey, "key", $salt, null) * 100000);
         self::assertGreaterThan(0, $bucketValue);
         self::assertLessThan(100000, $bucketValue);
 
@@ -659,7 +659,7 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
         $flagKey = 'flagkey';
         $salt = 'salt';
         
-        $bucketValue = floor(VariationOrRollout::bucketUser($user, $flagKey, "key", $salt) * 100000);
+        $bucketValue = floor(VariationOrRollout::bucketUser($user, $flagKey, "key", $salt, null) * 100000);
 
         // We'll construct a list of variations that stops right at the target bucket value
         $rollout = array(

@@ -48,7 +48,7 @@ class SegmentRule
         }
         // All of the clauses are met. See if the user buckets in
         $bucketBy = ($this->_bucketBy === null) ? "key" : $this->_bucketBy;
-        $bucket = VariationOrRollout::bucketUser($user, $segmentKey, $bucketBy, $segmentSalt);
+        $bucket = VariationOrRollout::bucketUser($user, $segmentKey, $bucketBy, $segmentSalt, null);
         $weight = $this->_weight / 100000.0;
         return $bucket < $weight;
     }

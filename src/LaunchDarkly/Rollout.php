@@ -11,15 +11,23 @@ namespace LaunchDarkly;
  */
 class Rollout
 {
+    const KIND_EXPERIMENT = 'experiment';
+
     /** @var WeightedVariation[] */
     private $_variations = array();
     /** @var string */
     private $_bucketBy = null;
+    /** @var string */
+    private $_kind = null;
+    /** @var int|null */
+    private $_seed = null;
 
-    protected function __construct(array $variations, $bucketBy)
+    protected function __construct(array $variations, $bucketBy, $kind = null, $seed = null)
     {
         $this->_variations = $variations;
         $this->_bucketBy = $bucketBy;
+        $this->_kind = $kind;
+        $this->_seed = $seed;
     }
 
     public static function getDecoder()
@@ -27,7 +35,10 @@ class Rollout
         return function ($v) {
             return new Rollout(
                 array_map(WeightedVariation::getDecoder(), $v['variations']),
-                isset($v['bucketBy']) ? $v['bucketBy'] : null);
+                isset($v['bucketBy']) ? $v['bucketBy'] : null,
+                isset($v['kind']) ? $v['kind'] : null,
+                isset($v['seed']) ? $v['seed'] : null
+            );
         };
     }
 
@@ -45,5 +56,21 @@ class Rollout
     public function getBucketBy()
     {
         return $this->_bucketBy;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getSeed()
+    {
+        return $this->_seed;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isExperiment()
+    {
+        return $this->_kind === self::KIND_EXPERIMENT;
     }
 }
