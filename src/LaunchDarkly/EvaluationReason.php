@@ -100,9 +100,9 @@ class EvaluationReason implements \JsonSerializable
      * Creates a new instance of the FALLTHROUGH reason.
      * @return EvaluationReason
      */
-    public static function fallthrough()
+    public static function fallthrough($inExperiment = false)
     {
-        return new EvaluationReason(self::FALLTHROUGH);
+        return new EvaluationReason(self::FALLTHROUGH, null, null, null, null, $inExperiment);
     }
 
     /**
@@ -118,9 +118,9 @@ class EvaluationReason implements \JsonSerializable
      * Creates a new instance of the RULE_MATCH reason.
      * @return EvaluationReason
      */
-    public static function ruleMatch($ruleIndex, $ruleId)
+    public static function ruleMatch($ruleIndex, $ruleId, $inExperiment = false)
     {
-        return new EvaluationReason(self::RULE_MATCH, null, $ruleIndex, $ruleId);
+        return new EvaluationReason(self::RULE_MATCH, null, $ruleIndex, $ruleId, null, $inExperiment);
     }
 
     /**
@@ -141,13 +141,14 @@ class EvaluationReason implements \JsonSerializable
         return new EvaluationReason(self::ERROR, $errorKind);
     }
 
-    private function __construct($kind, $errorKind = null, $ruleIndex = null, $ruleId = null, $prerequisiteKey = null)
+    private function __construct($kind, $errorKind = null, $ruleIndex = null, $ruleId = null, $prerequisiteKey = null, $inExperiment = null)
     {
         $this->_kind = $kind;
         $this->_errorKind = $errorKind;
         $this->_ruleIndex = $ruleIndex;
         $this->_ruleId = $ruleId;
         $this->_prerequisiteKey = $prerequisiteKey;
+        $this->_inExperiment = $inExperiment;
     }
 
     /**
@@ -200,6 +201,16 @@ class EvaluationReason implements \JsonSerializable
     }
 
     /**
+     * Returns true if the evaluation resulted in an experiment rollout *and* served
+     * one of the variations in the experiment.  Otherwise it returns false.
+     * @return boolean
+     */
+    public function isInExperiment()
+    {
+        return !is_null($this->_inExperiment) && $this->_inExperiment;
+    }
+
+    /**
      * Returns a simple string representation of this object.
      */
     public function __toString()
@@ -234,6 +245,9 @@ class EvaluationReason implements \JsonSerializable
         }
         if ($this->_prerequisiteKey !== null) {
             $ret['prerequisiteKey'] = $this->_prerequisiteKey;
+        }
+        if ($this->_inExperiment !== null && $this->_inExperiment) {
+            $ret['inExperiment'] = $this->_inExperiment;
         }
         return $ret;
     }

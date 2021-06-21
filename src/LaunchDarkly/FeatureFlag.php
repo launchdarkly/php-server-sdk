@@ -236,9 +236,17 @@ class FeatureFlag
      */
     private function getValueForVariationOrRollout($r, $user, $reason)
     {
-        $index = $r->variationIndexForUser($user, $this->_key, $this->_salt);
+        $seed = $r->getRollout() ? $r->getRollout()->getSeed() : null;
+        list($index, $inExperiment) = $r->variationIndexForUser($user, $this->_key, $this->_salt, $seed);
         if ($index === null) {
             return new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR));
+        }
+        if ($inExperiment) {
+            if ($reason->getKind() === EvaluationReason::FALLTHROUGH) {
+                $reason = EvaluationReason::fallthrough(true);
+            } elseif ($reason->getKind() === EvaluationReason::RULE_MATCH) {
+                $reason = EvaluationReason::ruleMatch($reason->getRuleIndex(), $reason->getRuleId(), true);
+            }
         }
         return $this->getVariation($index, $reason);
     }

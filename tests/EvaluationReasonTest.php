@@ -21,6 +21,22 @@ class EvaluationReasonTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('FALLTHROUGH', (string)$reason);
     }
 
+    public function testFallthroughReasonNotInExperimentSerialization()
+    {
+        $reason = EvaluationReason::fallthrough(false);
+        $json = json_encode($reason);
+        $this->assertEquals(array('kind' => 'FALLTHROUGH'), json_decode($json, true));
+        $this->assertEquals('FALLTHROUGH', (string)$reason);
+    }
+
+    public function testFallthroughReasonInExperimentSerialization()
+    {
+        $reason = EvaluationReason::fallthrough(true);
+        $json = json_encode($reason);
+        $this->assertEquals(array('kind' => 'FALLTHROUGH', 'inExperiment' => true), json_decode($json, true));
+        $this->assertEquals('FALLTHROUGH', (string)$reason);
+    }
+
     public function testTargetMatchReasonSerialization()
     {
         $reason = EvaluationReason::targetMatch();
@@ -33,8 +49,32 @@ class EvaluationReasonTest extends \PHPUnit_Framework_TestCase
     {
         $reason = EvaluationReason::ruleMatch(0, 'id');
         $json = json_encode($reason);
-        $this->assertEquals(array('kind' => 'RULE_MATCH', 'ruleIndex' => 0, 'ruleId' => 'id'),
-            json_decode($json, true));
+        $this->assertEquals(
+            array('kind' => 'RULE_MATCH', 'ruleIndex' => 0, 'ruleId' => 'id'),
+            json_decode($json, true)
+        );
+        $this->assertEquals('RULE_MATCH(0,id)', (string)$reason);
+    }
+
+    public function testRuleMatchReasonNotInExperimentSerialization()
+    {
+        $reason = EvaluationReason::ruleMatch(0, 'id', false);
+        $json = json_encode($reason);
+        $this->assertEquals(
+            array('kind' => 'RULE_MATCH', 'ruleIndex' => 0, 'ruleId' => 'id'),
+            json_decode($json, true)
+        );
+        $this->assertEquals('RULE_MATCH(0,id)', (string)$reason);
+    }
+
+    public function testRuleMatchReasonInExperimentSerialization()
+    {
+        $reason = EvaluationReason::ruleMatch(0, 'id', true);
+        $json = json_encode($reason);
+        $this->assertEquals(
+            array('kind' => 'RULE_MATCH', 'ruleIndex' => 0, 'ruleId' => 'id', 'inExperiment' => true),
+            json_decode($json, true)
+        );
         $this->assertEquals('RULE_MATCH(0,id)', (string)$reason);
     }
 
@@ -42,8 +82,10 @@ class EvaluationReasonTest extends \PHPUnit_Framework_TestCase
     {
         $reason = EvaluationReason::prerequisiteFailed('key');
         $json = json_encode($reason);
-        $this->assertEquals(array('kind' => 'PREREQUISITE_FAILED', 'prerequisiteKey' => 'key'),
-            json_decode($json, true));
+        $this->assertEquals(
+            array('kind' => 'PREREQUISITE_FAILED', 'prerequisiteKey' => 'key'),
+            json_decode($json, true)
+        );
         $this->assertEquals('PREREQUISITE_FAILED(key)', (string)$reason);
     }
 

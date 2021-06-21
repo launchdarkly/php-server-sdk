@@ -54,31 +54,32 @@ class VariationOrRollout
      * @param $user LDUser
      * @param $_key string
      * @param $_salt string
-     * @return int|null
+     * @return array(int|null, boolean)
      */
     public function variationIndexForUser($user, $_key, $_salt)
     {
         if ($this->_variation !== null) {
-            return $this->_variation;
+            return array($this->_variation, false);
         }
         $rollout = $this->_rollout;
         if ($rollout === null) {
-            return null;
+            return array(null, false);
         }
         $variations = $rollout->getVariations();
         if ($variations) {
             $bucketBy = $this->_rollout->getBucketBy() === null ? "key" : $this->_rollout->getBucketBy();
-            $bucket = self::bucketUser($user, $_key, $bucketBy, $_salt);
+            $bucket = self::bucketUser($user, $_key, $bucketBy, $_salt, $rollout->getSeed());
             $sum = 0.0;
             foreach ($variations as $wv) {
                 $sum += $wv->getWeight() / 100000.0;
                 if ($bucket < $sum) {
-                    return $wv->getVariation();
+                    return array($wv->getVariation(), $this->_rollout->isExperiment() && !$wv->isUntracked());
                 }
             }
-            return $variations[count($variations) - 1]->getVariation();
+            $lastVariation = $variations[count($variations) - 1];
+            return array($lastVariation->getVariation(), $this->_rollout->isExperiment() && !$lastVariation->isUntracked());
         }
-        return null;
+        return array(null, false);
     }
 
     /**
@@ -86,9 +87,10 @@ class VariationOrRollout
      * @param $_key string
      * @param $attr string
      * @param $_salt string
+     * @param $seed int|null
      * @return float
      */
-    public static function bucketUser($user, $_key, $attr, $_salt)
+    public static function bucketUser($user, $_key, $attr, $_salt, $seed)
     {
         $userValue = $user->getValueForEvaluation($attr);
         $idHash = null;
@@ -98,10 +100,15 @@ class VariationOrRollout
             }
             if (is_string($userValue)) {
                 $idHash = $userValue;
+                if (isset($seed)) {
+                    $prefix = (string) $seed;
+                } else {
+                    $prefix = $_key . "." . $_salt;
+                }
                 if ($user->getSecondary() !== null) {
                     $idHash = $idHash . "." . strval($user->getSecondary());
                 }
-                $hash = substr(sha1($_key . "." . $_salt . "." . $idHash), 0, 15);
+                $hash = substr(sha1($prefix . "." . $idHash), 0, 15);
                 $longVal = base_convert($hash, 16, 10);
                 $result = $longVal / self::$LONG_SCALE;
 

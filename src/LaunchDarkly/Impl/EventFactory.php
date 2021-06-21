@@ -148,6 +148,9 @@ class EventFactory
     private static function isExperiment($flag, $reason)
     {
         if ($reason) {
+            if ($reason->isInExperiment()) {
+                return true;
+            }
             switch ($reason->getKind()) {
                 case 'RULE_MATCH':
                     $i = $reason->getRuleIndex();
