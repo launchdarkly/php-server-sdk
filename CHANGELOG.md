@@ -2,6 +2,11 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [3.9.0] - 2021-06-21
+### Added:
+- The SDK now supports the ability to control the proportion of traffic allocation to an experiment. This works in conjunction with a new platform feature now available to early access customers.
+
+
 ## [3.8.0] - 2021-04-19
 ### Added:
 - Added the `alias` method to `LDClient`. This can be used to associate two user objects for analytics purposes with an alias event.
