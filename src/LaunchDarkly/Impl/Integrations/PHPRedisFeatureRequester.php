@@ -18,7 +18,7 @@ class PHPRedisFeatureRequester extends FeatureRequesterBase
 
         $this->_prefix = isset($options['redis_prefix']) ? $options['redis_prefix'] : 'launchdarkly';
 
-        if (isset($this->_options['phpredis_client']) && $this->_options['phpredis_client'] instanceof Redis) {
+        if (isset($this->_options['phpredis_client']) && $this->_options['phpredis_client'] instanceof \Redis) {
             $this->_redisInstance = $this->_options['phpredis_client'];
         } else {
             $this->_redisOptions = array(
@@ -47,7 +47,7 @@ class PHPRedisFeatureRequester extends FeatureRequesterBase
      */
     protected function getConnection()
     {
-        if ($this->_redisInstance instanceof Redis) {
+        if ($this->_redisInstance instanceof \Redis) {
             return $this->_redisInstance;
         }
 
