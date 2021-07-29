@@ -46,7 +46,7 @@ class FeatureRequesterBase implements FeatureRequester
      * @param $key flag or segment key
      * @return string|null the stored JSON data, or null if not found
      */
-    protected function readItemString($namespace, $key)
+    protected function readItemString(string $namespace, string $key): ?string
     {
         return null;
     }
@@ -57,7 +57,7 @@ class FeatureRequesterBase implements FeatureRequester
      * @param $namespace "features" or "segments"
      * @return array|null array of stored JSON strings
      */
-    protected function readItemStringList($namespace)
+    protected function readItemStringList(string $namespace): ?array
     {
         return array();
     }
