@@ -58,7 +58,7 @@ function makeRolloutVariations($targetValue, $targetVariation, $otherVariation)
     );
 }
 
-class FeatureFlagTest extends \PHPUnit_Framework_TestCase
+class FeatureFlagTest extends \PHPUnit\Framework\TestCase
 {
     private static $json1 = "{
   \"key\": \"integration.feature.0\",
@@ -193,7 +193,7 @@ class FeatureFlagTest extends \PHPUnit_Framework_TestCase
 
     private static $eventFactory;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         static::$eventFactory = new EventFactory(false);
     }

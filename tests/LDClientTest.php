@@ -9,8 +9,9 @@ use LaunchDarkly\LDClient;
 use LaunchDarkly\LDUser;
 use LaunchDarkly\LDUserBuilder;
 use Psr\Log\LoggerInterface;
+use PHPUnit\Framework\TestCase;
 
-class LDClientTest extends \PHPUnit_Framework_TestCase
+class LDClientTest extends \PHPUnit\Framework\TestCase
 {
     public function testDefaultCtor()
     {
@@ -672,7 +673,7 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
 
     public function testOnlyValidFeatureRequester()
     {
-        $this->setExpectedException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         new LDClient("BOGUS_SDK_KEY", ['feature_requester_class' => \stdClass::class]);
     }
 

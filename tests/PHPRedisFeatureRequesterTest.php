@@ -14,7 +14,7 @@ class PHPRedisFeatureRequesterTest extends FeatureRequesterTestBase
     /** @var \Redis */
     private static $redisClient;
     
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         if (!static::isSkipDatabaseTests()) {
             $redis = new \Redis();

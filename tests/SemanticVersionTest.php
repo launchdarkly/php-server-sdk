@@ -3,8 +3,9 @@
 namespace LaunchDarkly\Tests;
 
 use LaunchDarkly\SemanticVersion;
+use PHPUnit\Framework\TestCase;
 
-class SemanticVersionTest extends \PHPUnit_Framework_TestCase
+class SemanticVersionTest extends \PHPUnit\Framework\TestCase
 {
     public function testCanParseSimpleCompleteVersion()
     {
@@ -46,30 +47,24 @@ class SemanticVersionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('build2.4', $sv->build);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage not a valid semantic version
-     */
     public function testLeadingZeroNotAllowedInMajor()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('not a valid semantic version');
         SemanticVersion::parse('02.3.4');
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage not a valid semantic version
-     */
     public function testLeadingZeroNotAllowedInMinor()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('not a valid semantic version');
         SemanticVersion::parse('2.03.4');
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage not a valid semantic version
-     */
     public function testLeadingZeroNotAllowedInPatch()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('not a valid semantic version');
         SemanticVersion::parse('2.3.04');
     }
 
@@ -145,21 +140,17 @@ class SemanticVersionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('build1', $sv->build);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage not a valid semantic version
-     */
     public function testCannotParseVersionWithMajorOnlyByDefault()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('not a valid semantic version');
         SemanticVersion::parse('2');
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage not a valid semantic version
-     */
     public function testCannotParseVersionWithMajorAndMinorOnlyByDefault()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('not a valid semantic version');
         SemanticVersion::parse('2.3');
     }
 

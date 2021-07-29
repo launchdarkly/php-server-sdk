@@ -3,8 +3,9 @@ namespace LaunchDarkly\Tests;
 
 use LaunchDarkly\Integrations\Files;
 use LaunchDarkly\LDUser;
+use PHPUnit\Framework\TestCase;
 
-class FileDataFeatureRequesterTest extends \PHPUnit_Framework_TestCase
+class FileDataFeatureRequesterTest extends \PHPUnit\Framework\TestCase
 {
     public function testLoadsFile()
     {

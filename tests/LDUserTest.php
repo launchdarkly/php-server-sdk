@@ -3,8 +3,9 @@ namespace LaunchDarkly\Tests;
 
 use LaunchDarkly\LDUser;
 use LaunchDarkly\LDUserBuilder;
+use PHPUnit\Framework\TestCase;
 
-class LDUserTest extends \PHPUnit_Framework_TestCase
+class LDUserTest extends \PHPUnit\Framework\TestCase
 {
     public function testLDUserKey()
     {

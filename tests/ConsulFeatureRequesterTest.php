@@ -13,7 +13,7 @@ class ConsulFeatureRequesterTest extends FeatureRequesterTestBase
 
     private static $kvClient;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         if (!static::isSkipDatabaseTests()) {
             $sf = new ServiceFactory();

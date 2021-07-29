@@ -4,10 +4,11 @@ namespace LaunchDarkly\Tests;
 
 use LaunchDarkly\FeatureFlag;
 use LaunchDarkly\Segment;
+use PHPUnit\Framework\TestCase;
 
-class FeatureRequesterTestBase extends \PHPUnit_Framework_TestCase
+class FeatureRequesterTestBase extends \PHPUnit\Framework\TestCase
 {
-    public function setUp()
+    protected function setUp(): void
     {
         if ($this->isDatabaseTest() && static::isSkipDatabaseTests()) {
             $this->markTestSkipped('skipping database tests');

@@ -13,7 +13,7 @@ class DynamoDbFeatureRequesterTest extends FeatureRequesterTestBase
 
     private static $dynamoDbClient;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         if (!static::isSkipDatabaseTests()) {
             self::$dynamoDbClient = new DynamoDbClient(self::makeDynamoDbOptions());

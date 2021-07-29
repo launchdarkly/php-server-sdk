@@ -3,8 +3,9 @@ namespace LaunchDarkly\Tests;
 
 use LaunchDarkly\EventSerializer;
 use LaunchDarkly\LDUserBuilder;
+use PHPUnit\Framework\TestCase;
 
-class EventSerializerTest extends \PHPUnit_Framework_TestCase
+class EventSerializerTest extends \PHPUnit\Framework\TestCase
 {
     private function getUser()
     {

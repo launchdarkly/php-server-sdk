@@ -6,8 +6,9 @@ use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
 use LaunchDarkly\FeatureFlag;
 use LaunchDarkly\FeatureFlagsState;
+use PHPUnit\Framework\TestCase;
 
-class FeatureFlagsStateTest extends \PHPUnit_Framework_TestCase
+class FeatureFlagsStateTest extends \PHPUnit\Framework\TestCase
 {
     private static $flag1Json = array(
         'key' => 'key1',

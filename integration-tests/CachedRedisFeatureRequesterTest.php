@@ -9,13 +9,14 @@ use LaunchDarkly\Integrations\Redis;
 use LaunchDarkly\ApcLDDFeatureRequester;
 use Predis\Client;
 use LaunchDarkly\ApcuLDDFeatureRequester;
+use PHPUnit\Framework\TestCase;
 
 /**
  * These tests use the LaunchDarkly Redis integration along with the optional caching behavior.
  * They are meant to be run in a PHP environment that has APCu installed. They will also test the
  * deprecated APC caching mode.
  */
-class CachedRedisFeatureRequesterTest extends \PHPUnit_Framework_TestCase
+class CachedRedisFeatureRequesterTest extends \PHPUnit\Framework\TestCase
 {
     const CACHE_SECONDS = 60;
 
@@ -122,7 +123,7 @@ class CachedRedisFeatureRequesterTest extends \PHPUnit_Framework_TestCase
         
         $allFlags = $client->allFlags($user);
 
-        $this->assertInternalType('array', $allFlags);
+        $this->assertIsArray($allFlags);
         $this->assertArrayHasKey($featureKey, $allFlags);
         $this->assertEquals($featureValue, $allFlags[$featureKey]);
     }
@@ -173,7 +174,7 @@ class CachedRedisFeatureRequesterTest extends \PHPUnit_Framework_TestCase
         $clearFn('launchdarkly:features:$all');
 
         $allFlags = $client->allFlags($user);
-        $this->assertInternalType('array', $allFlags);
+        $this->assertIsArray($allFlags);
         $this->assertArrayHasKey($featureKey, $allFlags);
         $this->assertEquals($firstValue, $allFlags[$featureKey]);
 
