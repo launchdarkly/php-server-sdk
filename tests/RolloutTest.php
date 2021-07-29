@@ -3,7 +3,7 @@ namespace LaunchDarkly\Tests;
 
 use LaunchDarkly\Rollout;
 
-class RolloutTest extends \PHPUnit_Framework_TestCase
+class RolloutTest extends \PHPUnit\Framework\TestCase
 {
     public function testRolloutPropertiesAreSet()
     {

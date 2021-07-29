@@ -4,7 +4,7 @@ namespace LaunchDarkly\Tests;
 use LaunchDarkly\LDUserBuilder;
 use LaunchDarkly\VariationOrRollout;
 
-class VariationOrRolloutTest extends \PHPUnit_Framework_TestCase
+class VariationOrRolloutTest extends \PHPUnit\Framework\TestCase
 {
     public function testUsingSeedIsDifferentThanSalt()
     {

@@ -3,7 +3,7 @@ namespace LaunchDarkly\Tests;
 
 use LaunchDarkly\WeightedVariation;
 
-class WeightedVariationTest extends \PHPUnit_Framework_TestCase
+class WeightedVariationTest extends \PHPUnit\Framework\TestCase
 {
     public function testWeightedVariationPropertiesAreSet()
     {

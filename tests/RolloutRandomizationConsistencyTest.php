@@ -17,7 +17,7 @@ use LaunchDarkly\Impl\EventFactory;
   * is identical across SDKs.
   */
 
-class RolloutRandomizationConsistencyTest extends \PHPUnit_Framework_TestCase
+class RolloutRandomizationConsistencyTest extends \PHPUnit\Framework\TestCase
 {
     public function buildFlag()
     {

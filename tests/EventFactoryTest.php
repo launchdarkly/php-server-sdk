@@ -7,7 +7,7 @@ use LaunchDarkly\FeatureFlag;
 use LaunchDarkly\LDUserBuilder;
 use LaunchDarkly\Impl\EventFactory;
 
-class EventFactoryTest extends \PHPUnit_Framework_TestCase
+class EventFactoryTest extends \PHPUnit\Framework\TestCase
 {
     private function buildFlag($trackEvents)
     {
