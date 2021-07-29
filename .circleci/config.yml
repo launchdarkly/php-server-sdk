@@ -14,7 +14,6 @@ workflows:
       #- test-with-preinstalled-php:
       #    name: PHP 8.0
       #    docker-image: cimg/php:8.1
-      - integration-test
 
 jobs:
   test-with-preinstalled-php:
@@ -24,9 +23,6 @@ jobs:
 
     docker:
       - image: <<parameters.docker-image>>
-      - image: amazon/dynamodb-local
-      - image: consul
-      - image: redis
 
     steps:
       - checkout
@@ -42,27 +38,6 @@ jobs:
           command: php -d xdebug.mode=coverage vendor/bin/phpunit
           enviroment:
             XDEBUG_MODE: coverage
-      - store_test_results:
-          path: ~/phpunit
-      - store_artifacts:
-          path: ~/phpunit
-
-  integration-test:
-    docker:
-      - image: circleci/php:7.3-cli-stretch
-      - image: redis
-    steps:
-      - checkout
-      - run:
-          name: setup apcu
-          command: |
-            pecl config-set php_ini /usr/local/etc/php/php.ini
-            yes '' | sudo pecl install -f apcu-4.0.10 || true;
-            echo "extension=apcu.so" | sudo tee -a /usr/local/etc/php/conf.d/apcu.ini;
-            echo "apc.enable_cli = 1" | sudo tee -a /usr/local/etc/php/conf.d/apcu.ini
-      - run: composer update --no-progress
-      - run: mkdir -p ~/phpunit
-      - run: vendor/bin/phpunit integration-tests/CachedRedisFeatureRequesterTest.php
       - store_test_results:
           path: ~/phpunit
       - store_artifacts:
