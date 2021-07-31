@@ -16,7 +16,10 @@ class PHPRedisFeatureRequester extends FeatureRequesterBase
     {
         parent::__construct($baseUri, $sdkKey, $options);
 
-        $this->_prefix = isset($options['redis_prefix']) ? $options['redis_prefix'] : 'launchdarkly';
+        $this->_prefix = isset($options['redis_prefix']) ? $options['redis_prefix'] : null;
+        if ($this->_prefix === null || $this->_prefix === '') {
+            $this->_prefix = 'launchdarkly';
+        }
 
         if (isset($this->_options['phpredis_client']) && $this->_options['phpredis_client'] instanceof \Redis) {
             $this->_redisInstance = $this->_options['phpredis_client'];
@@ -32,13 +35,13 @@ class PHPRedisFeatureRequester extends FeatureRequesterBase
     protected function readItemString($namespace, $key)
     {
         $redis = $this->getConnection();
-        return $redis->hget($namespace, $key);
+        return $redis->hget("$this->_prefix:$namespace", $key);
     }
 
     protected function readItemStringList($namespace)
     {
         $redis = $this->getConnection();
-        $raw = $redis->hgetall($namespace);
+        $raw = $redis->hgetall("$this->_prefix:$namespace");
         return $raw ? array_values($raw) : null;
     }
 
@@ -56,9 +59,8 @@ class PHPRedisFeatureRequester extends FeatureRequesterBase
             $this->_redisOptions["host"],
             $this->_redisOptions["port"],
             $this->_redisOptions["timeout"],
-            'x'
+            'LaunchDarkly'
         );
-        $redis->setOption(\Redis::OPT_PREFIX, "$this->_prefix:");	// use custom prefix on all keys
         return $this->_redisInstance = $redis;
     }
 }
