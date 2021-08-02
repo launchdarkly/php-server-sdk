@@ -2,6 +2,10 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [3.9.1] - 2021-08-02
+### Fixed:
+- The `phpredis` integration was ignoring the `phpredis_client` option for passing in a preconfigured Redis client. (Thanks, [CameronHall](https://github.com/launchdarkly/php-server-sdk/pull/151)!)
+
 ## [3.9.0] - 2021-06-21
 ### Added:
 - The SDK now supports the ability to control the proportion of traffic allocation to an experiment. This works in conjunction with a new platform feature now available to early access customers.
