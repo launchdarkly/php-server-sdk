@@ -1,6 +1,8 @@
 <?php
 namespace LaunchDarkly;
 
+use LaunchDarkly\Impl\EventFactory;
+
 /**
  * Internal data model class that describes a feature flag configuration.
  *
@@ -11,24 +13,25 @@ namespace LaunchDarkly;
  */
 class FeatureFlag
 {
+    /** @var int */
     protected static $LONG_SCALE = 0xFFFFFFFFFFFFFFF;
 
     /** @var string */
-    protected $_key = null;
+    protected $_key;
     /** @var int */
-    protected $_version = null;
+    protected $_version;
     /** @var bool */
     protected $_on = false;
     /** @var Prerequisite[] */
     protected $_prerequisites = array();
-    /** @var string */
+    /** @var string|null */
     protected $_salt = null;
     /** @var Target[] */
     protected $_targets = array();
     /** @var Rule[] */
     protected $_rules = array();
     /** @var VariationOrRollout */
-    protected $_fallthrough = null;
+    protected $_fallthrough;
     /** @var int | null */
     protected $_offVariation = null;
     /** @var array */
@@ -48,21 +51,21 @@ class FeatureFlag
     // the PHP client doesn't do summary events. However, we need to capture them in case
     // they want to pass the flag data to the front end with allFlagsState().
 
-    protected function __construct($key,
-                                   $version,
-                                   $on,
+    protected function __construct(string $key,
+                                   int $version,
+                                   bool $on,
                                    array $prerequisites,
-                                   $salt,
+                                   ?string $salt,
                                    array $targets,
                                    array $rules,
-                                   $fallthrough,
-                                   $offVariation,
+                                   VariationOrRollout $fallthrough,
+                                   ?int $offVariation,
                                    array $variations,
-                                   $deleted,
-                                   $trackEvents,
-                                   $trackEventsFallthrough,
-                                   $debugEventsUntilDate,
-                                   $clientSide)
+                                   bool $deleted,
+                                   bool $trackEvents,
+                                   bool $trackEventsFallthrough,
+                                   ?int $debugEventsUntilDate,
+                                   bool $clientSide)
     {
         $this->_key = $key;
         $this->_version = $version;
@@ -81,7 +84,12 @@ class FeatureFlag
         $this->_clientSide = $clientSide;
     }
 
-    public static function getDecoder()
+    /**
+     * @return \Closure
+     *
+     * @psalm-return \Closure(mixed):self
+     */
+    public static function getDecoder(): \Closure
     {
         return function ($v) {
             return new FeatureFlag(
@@ -104,37 +112,29 @@ class FeatureFlag
         };
     }
 
-    public static function decode($v)
+    public static function decode(array $v): self
     {
-        return call_user_func(FeatureFlag::getDecoder(), $v);
+        $decoder = FeatureFlag::getDecoder();
+        return $decoder($v);
     }
 
-    public function isOn()
+    public function isOn(): bool
     {
         return $this->_on;
     }
 
-    /**
-     * @param LDUser $user
-     * @param FeatureRequester $featureRequester
-     * @param Impl\EventFactory $eventFactory
-     * @return EvalResult
-     */
-    public function evaluate($user, $featureRequester, $eventFactory)
+    public function evaluate(LDUser $user, FeatureRequester $featureRequester, EventFactory $eventFactory): EvalResult
     {
         $prereqEvents = array();
         $detail = $this->evaluateInternal($user, $featureRequester, $prereqEvents, $eventFactory);
         return new EvalResult($detail, $prereqEvents);
     }
 
-    /**
-     * @param LDUser $user
-     * @param FeatureRequester $featureRequester
-     * @param array $events
-     * @param Impl\EventFactory $eventFactory
-     * @return EvaluationDetail
-     */
-    private function evaluateInternal($user, $featureRequester, &$events, $eventFactory)
+    private function evaluateInternal(
+        LDUser $user,
+        FeatureRequester $featureRequester,
+        array &$events,
+        EventFactory $eventFactory): EvaluationDetail
     {
         if (!$this->isOn()) {
             return $this->getOffValue(EvaluationReason::off());
@@ -167,14 +167,7 @@ class FeatureFlag
         return $this->getValueForVariationOrRollout($this->_fallthrough, $user, EvaluationReason::fallthrough());
     }
 
-    /**
-     * @param LDUser $user
-     * @param FeatureRequester $featureRequester
-     * @param array $events
-     * @param Impl\EventFactory $eventFactory
-     * @return EvaluationReason|null
-     */
-    private function checkPrerequisites($user, $featureRequester, &$events, $eventFactory)
+    private function checkPrerequisites(LDUser $user, FeatureRequester $featureRequester, array &$events, EventFactory $eventFactory): ?EvaluationReason
     {
         if ($this->_prerequisites != null) {
             foreach ($this->_prerequisites as $prereq) {
@@ -203,12 +196,7 @@ class FeatureFlag
         return null;
     }
 
-    /**
-     * @param int $index
-     * @param EvaluationReason $reason
-     * @return EvaluationDetail
-     */
-    private function getVariation($index, $reason)
+    private function getVariation(int $index, EvaluationReason $reason): EvaluationDetail
     {
         if ($index < 0 || $index >= count($this->_variations)) {
             return new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR));
@@ -216,11 +204,7 @@ class FeatureFlag
         return new EvaluationDetail($this->_variations[$index], $index, $reason);
     }
 
-    /**
-     * @param EvaluationReason reason
-     * @return EvaluationDetail
-     */
-    private function getOffValue($reason)
+    private function getOffValue(EvaluationReason $reason): EvaluationDetail
     {
         if ($this->_offVariation === null) {
             return new EvaluationDetail(null, null, $reason);
@@ -228,16 +212,11 @@ class FeatureFlag
         return $this->getVariation($this->_offVariation, $reason);
     }
     
-    /**
-     * @param VariationOrRollout $r
-     * @param LDUser $user
-     * @param EvaluationReason $reason
-     * @return EvaluationDetail
-     */
-    private function getValueForVariationOrRollout($r, $user, $reason)
+    private function getValueForVariationOrRollout(VariationOrRollout $r, LDUser $user, EvaluationReason $reason): EvaluationDetail
     {
-        $seed = $r->getRollout() ? $r->getRollout()->getSeed() : null;
-        list($index, $inExperiment) = $r->variationIndexForUser($user, $this->_key, $this->_salt, $seed);
+        $rollout = $r->getRollout();
+        $seed = is_null($rollout) ? null : $rollout->getSeed();
+        list($index, $inExperiment) = $r->variationIndexForUser($user, $this->_key, $this->_salt);
         if ($index === null) {
             return new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR));
         }
@@ -251,66 +230,42 @@ class FeatureFlag
         return $this->getVariation($index, $reason);
     }
 
-    /**
-     * @return int
-     */
-    public function getVersion()
+    public function getVersion(): int
     {
         return $this->_version;
     }
 
-    /**
-     * @return string
-     */
-    public function getKey()
+    public function getKey(): string
     {
         return $this->_key;
     }
 
-    /**
-     * @return boolean
-     */
-    public function isDeleted()
+    public function isDeleted(): bool
     {
         return $this->_deleted;
     }
 
-    /**
-     * @return array
-     */
-    public function getRules()
+    public function getRules(): array
     {
         return $this->_rules;
     }
     
-    /**
-     * @return boolean
-     */
-    public function isTrackEvents()
+    public function isTrackEvents(): bool
     {
         return $this->_trackEvents;
     }
 
-    /**
-     * @return boolean
-     */
-    public function isTrackEventsFallthrough()
+    public function isTrackEventsFallthrough(): bool
     {
         return $this->_trackEventsFallthrough;
     }
 
-    /**
-     * @return int | null
-     */
-    public function getDebugEventsUntilDate()
+    public function getDebugEventsUntilDate(): ?int
     {
         return $this->_debugEventsUntilDate;
     }
 
-    /**
-     * @return boolean
-     */
-    public function isClientSide()
+    public function isClientSide(): bool
     {
         return $this->_clientSide;
     }

@@ -12,50 +12,44 @@ namespace LaunchDarkly;
 class WeightedVariation
 {
     /** @var int */
-    private $_variation = null;
+    private $_variation;
     /** @var int */
-    private $_weight = null;
+    private $_weight;
     /** @var boolean */
     private $_untracked = false;
 
-    private function __construct($variation, $weight, $untracked)
+    private function __construct(int $variation, int $weight, bool $untracked)
     {
         $this->_variation = $variation;
         $this->_weight = $weight;
         $this->_untracked = $untracked;
     }
 
-    public static function getDecoder()
+    /**
+     * @psalm-return \Closure(array):self
+     */
+    public static function getDecoder(): \Closure
     {
-        return function ($v) {
+        return function (array $v) {
             return new WeightedVariation(
                 $v['variation'],
                 $v['weight'],
-                isset($v['untracked']) ? $v['untracked'] : false
+                $v['untracked'] ?? false
             );
         };
     }
 
-    /**
-     * @return int
-     */
-    public function getVariation()
+    public function getVariation(): int
     {
         return $this->_variation;
     }
 
-    /**
-     * @return int
-     */
-    public function getWeight()
+    public function getWeight(): int
     {
         return $this->_weight;
     }
 
-    /**
-     * @return boolean
-     */
-    public function isUntracked()
+    public function isUntracked(): bool
     {
         return $this->_untracked;
     }

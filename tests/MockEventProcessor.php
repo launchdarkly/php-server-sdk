@@ -1,7 +1,7 @@
 <?php
 namespace LaunchDarkly\Tests;
 
-class MockEventProcessor
+class MockEventProcessor extends \LaunchDarkly\EventProcessor
 {
     private $_events;
 
@@ -10,17 +10,18 @@ class MockEventProcessor
         $this->_events = array();
     }
 
-    public function enqueue($event)
+    public function enqueue($event): bool
     {
         $this->_events[] = $event;
         return true;
     }
 
-    public function flush()
+    public function flush(): bool
     {
+        return true;
     }
 
-    public function getEvents()
+    public function getEvents(): array
     {
         return $this->_events;
     }

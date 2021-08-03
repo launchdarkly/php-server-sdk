@@ -77,7 +77,7 @@ class LDClient
      *
      * @return LDClient
      */
-    public function __construct($sdkKey, $options = array())
+    public function __construct(string $sdkKey, array $options = array())
     {
         $this->_sdkKey = $sdkKey;
         if (!isset($options['base_uri'])) {
@@ -141,8 +141,10 @@ class LDClient
      * @param string $sdkKey
      * @param mixed[] $options
      * @return FeatureRequester
+     * 
+     * @psalm-suppress UndefinedClass
      */
-    private function getFeatureRequester($sdkKey, array $options)
+    private function getFeatureRequester(string $sdkKey, array $options): FeatureRequester
     {
         if (isset($options['feature_requester']) && $options['feature_requester']) {
             $fr = $options['feature_requester'];
@@ -157,6 +159,9 @@ class LDClient
         if (is_callable($fr)) {
             return $fr($this->_baseUri, $sdkKey, $options);
         }
+        /**
+         * @psalm-suppress LessSpecificReturnStatement
+         */
         if (is_a($fr, FeatureRequester::class, true)) {
             return new $fr($this->_baseUri, $sdkKey, $options);
         }
@@ -172,7 +177,7 @@ class LDClient
      *
      * @return mixed The result of the Feature Flag evaluation, or $default if any errors occurred.
      */
-    public function variation($key, $user, $default = false)
+    public function variation(string $key, LDUser $user, $default = false)
     {
         $detail = $this->variationDetailInternal($key, $user, $default, $this->_eventFactoryDefault);
         return $detail->getValue();
@@ -192,7 +197,7 @@ class LDClient
      * @return EvaluationDetail An EvaluationDetail object that includes the feature flag value
      * and evaluation reason.
      */
-    public function variationDetail($key, $user, $default = false)
+    public function variationDetail(string $key, LDUser $user, $default = false): EvaluationDetail
     {
         return $this->variationDetailInternal($key, $user, $default, $this->_eventFactoryWithReasons);
     }
@@ -202,15 +207,17 @@ class LDClient
      * @param LDUser $user
      * @param mixed $default
      * @param EventFactory $eventFactory
+     *
+     * @return EvaluationDetail
      */
-    private function variationDetailInternal($key, $user, $default, $eventFactory)
+    private function variationDetailInternal(string $key, LDUser $user, $default, EventFactory $eventFactory): EvaluationDetail
     {
         $default = $this->_get_default($key, $default);
 
-        $errorResult = function ($errorKind) use ($key, $default) {
+        $errorResult = function (string $errorKind) use ($key, $default): EvaluationDetail {
             return new EvaluationDetail($default, null, EvaluationReason::error($errorKind));
         };
-        $sendEvent = function ($detail, $flag) use ($key, $user, $default, $eventFactory) {
+        $sendEvent = function (EvaluationDetail $detail, ?FeatureFlag $flag) use ($key, $user, $default, $eventFactory): void {
             if ($flag) {
                 $event = $eventFactory->newEvalEvent($flag, $user, $detail, $default);
             } else {
@@ -224,7 +231,7 @@ class LDClient
         }
 
         try {
-            if (!is_null($user) && $user->isKeyBlank()) {
+            if ($user->isKeyBlank()) {
                 $this->_logger->warning("User key is blank. Flag evaluation will proceed, but the user will not be stored in LaunchDarkly.");
             }
             try {
@@ -239,10 +246,10 @@ class LDClient
                 $sendEvent($result, null);
                 return $result;
             }
-            if (is_null($user) || is_null($user->getKey())) {
+            if (is_null($user->getKey())) {
                 $result = $errorResult(EvaluationReason::USER_NOT_SPECIFIED_ERROR);
                 $sendEvent($result, $flag);
-                $this->_logger->warning("Variation called with null user or null user key! Returning default value");
+                $this->_logger->warning("Variation called with null user key! Returning default value");
                 return $result;
             }
             $evalResult = $flag->evaluate($user, $this->_featureRequester, $eventFactory);
@@ -276,7 +283,7 @@ class LDClient
      * @param bool $default The default value of the flag
      * @return mixed
      */
-    public function toggle($key, $user, $default = false)
+    public function toggle(string $key, LDUser $user, bool $default = false)
     {
         $this->_logger->warning("Deprecated function: toggle() called. Use variation() instead.");
         return $this->variation($key, $user, $default);
@@ -284,9 +291,8 @@ class LDClient
 
     /**
      * Returns whether the LaunchDarkly client is in offline mode.
-     * @return bool
      */
-    public function isOffline()
+    public function isOffline(): bool
     {
         return $this->_offline;
     }
@@ -297,15 +303,14 @@ class LDClient
      * @param string $eventName The name of the event
      * @param LDUser $user The user that performed the event
      * @param mixed $data Optional additional information to associate with the event
-     * @param number $metricValue A numeric value used by the LaunchDarkly experimentation feature in
+     * @param numeric $metricValue A numeric value used by the LaunchDarkly experimentation feature in
      *   numeric custom metrics. Can be omitted if this event is used by only non-numeric metrics. This
      *   field will also be returned as part of the custom event for Data Export.
-     * @return void
      */
-    public function track($eventName, $user, $data = null, $metricValue = null)
+    public function track(string $eventName, LDUser $user, $data = null, $metricValue = null): void
     {
-        if (is_null($user) || $user->isKeyBlank()) {
-            $this->_logger->warning("Track called with null user or null/empty user key!");
+        if ($user->isKeyBlank()) {
+            $this->_logger->warning("Track called with null/empty user key!");
             return;
         }
         $this->_eventProcessor->enqueue($this->_eventFactoryDefault->newCustomEvent($eventName, $user, $data, $metricValue));
@@ -320,10 +325,10 @@ class LDClient
      * @param LDUser $user The user properties
      * @return void
      */
-    public function identify($user)
+    public function identify(LDUser $user): void
     {
-        if (is_null($user) || $user->isKeyBlank()) {
-            $this->_logger->warning("Identify called with null user or null/empty user key!");
+        if ($user->isKeyBlank()) {
+            $this->_logger->warning("Identify called with null/empty user key!");
             return;
         }
         $this->_eventProcessor->enqueue($this->_eventFactoryDefault->newIdentifyEvent($user));
@@ -347,7 +352,7 @@ class LDClient
      * @param LDUser $user The end user requesting the feature flags
      * @return array|null Mapping of feature flag keys to their evaluated results for $user
      */
-    public function allFlags($user)
+    public function allFlags(LDUser $user): ?array
     {
         $state = $this->allFlagsState($user);
         if (!$state->isValid()) {
@@ -372,12 +377,13 @@ class LDClient
      *     - `withReasons`: Set this to true to include evaluation reasons (see {@link variationDetail()})
      * @return FeatureFlagsState a FeatureFlagsState object (will never be null)
      */
-    public function allFlagsState($user, $options = array())
+    public function allFlagsState(LDUser $user, array $options = array()): FeatureFlagsState
     {
-        if (is_null($user) || is_null($user->getKey())) {
-            $this->_logger->warning("allFlagsState called with null user or null/empty user key! Returning empty state");
+        if (is_null($user->getKey())) {
+            $this->_logger->warning("allFlagsState called with null/empty user key! Returning empty state");
             return new FeatureFlagsState(false);
         }
+
         if ($this->isOffline()) {
             return new FeatureFlagsState(false);
         }
@@ -418,17 +424,16 @@ class LDClient
      *
      * @param LDUser $user the newly identified user.
      * @param LDUser $previousUser the previously identified user.
-     * @return void
      */
-    public function alias($user, $previousUser)
+    public function alias(LDUser $user, LDUser $previousUser): void
     {
-        if (is_null($user) || is_null($user->getKey())) {
-            $this->_logger->warning("Alias called with null user or null/empty user!");
+        if (is_null($user->getKey())) {
+            $this->_logger->warning("Alias called with null/empty user!");
             return;
         }
 
-        if (is_null($previousUser) || is_null($previousUser->getKey())) {
-            $this->_logger->warning("Alias called with null user or null/empty previousUser!");
+        if (is_null($previousUser->getKey())) {
+            $this->_logger->warning("Alias called with null/empty previousUser!");
             return;
         }
 
@@ -440,13 +445,10 @@ class LDClient
      * Generates an HMAC sha256 hash for use in Secure mode.
      *
      * See: https://docs.launchdarkly.com/docs/js-sdk-reference#section-secure-mode
-     *
-     * @param LDUser $user
-     * @return string
      */
-    public function secureModeHash($user)
+    public function secureModeHash(LDUser $user): string
     {
-        if (is_null($user) || strlen($user->getKey()) === 0) {
+        if (strlen($user->getKey()) === 0) {
             return "";
         }
         return hash_hmac("sha256", $user->getKey(), $this->_sdkKey, false);
@@ -458,16 +460,22 @@ class LDClient
      * This is normally done automatically by the SDK.
      * @return bool Whether the events were successfully published
      */
-    public function flush()
+    public function flush(): bool
     {
         try {
             return $this->_eventProcessor->flush();
         } catch (UnrecoverableHTTPStatusException $e) {
             $this->handleUnrecoverableError();
+            return false;
         }
     }
 
-    protected function _get_default($key, $default)
+    /**
+     * @param string $key
+     * @param mixed|null $default
+     * @return mixed|null
+     */
+    protected function _get_default(string $key, $default)
     {
         if (array_key_exists($key, $this->_defaults)) {
             return $this->_defaults[$key];
@@ -476,7 +484,7 @@ class LDClient
         }
     }
 
-    protected function handleUnrecoverableError()
+    protected function handleUnrecoverableError(): void
     {
         $this->_logger->error("Due to an unrecoverable HTTP error, no further HTTP requests will be made during lifetime of LDClient");
         $this->_offline = true;

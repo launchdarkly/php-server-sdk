@@ -9,25 +9,32 @@ namespace LaunchDarkly;
  */
 class EventSerializer
 {
+    /** @var bool */
     private $_allAttrsPrivate;
+
+    /** @var array */
     private $_privateAttrNames;
 
-    public function __construct($options)
+    public function __construct(array $options)
     {
         $this->_allAttrsPrivate = isset($options['all_attributes_private']) && $options['all_attributes_private'];
         $this->_privateAttrNames = isset($options['private_attribute_names']) ? $options['private_attribute_names'] : array();
     }
 
-    public function serializeEvents($events)
+    public function serializeEvents(array $events): string
     {
         $filtered = array();
         foreach ($events as $e) {
             array_push($filtered, $this->filterEvent($e));
         }
-        return json_encode($filtered);
+        $ret = json_encode($filtered);
+        if ($ret === false) {
+            return '';
+        }
+        return $ret;
     }
 
-    private function filterEvent($e)
+    private function filterEvent(array $e): array
     {
         $ret = array();
         foreach ($e as $key => $value) {
@@ -40,12 +47,12 @@ class EventSerializer
         return $ret;
     }
 
-    private function filterAttrs($attrs, &$json, $userPrivateAttrs, &$allPrivateAttrs, $stringify)
+    private function filterAttrs(array $attrs, array &$json, ?array $userPrivateAttrs, array &$allPrivateAttrs, bool $stringify): void
     {
         foreach ($attrs as $key => $value) {
             if ($value != null) {
                 if ($this->_allAttrsPrivate ||
-                    array_search($key, $userPrivateAttrs) !== false ||
+                    (!is_null($userPrivateAttrs) && array_search($key, $userPrivateAttrs) !== false) ||
                     array_search($key, $this->_privateAttrNames) !== false) {
                     $allPrivateAttrs[$key] = true;
                 } else {
@@ -55,7 +62,7 @@ class EventSerializer
         }
     }
 
-    private function serializeUser($user)
+    private function serializeUser(LDUser $user): array
     {
         $json = array("key" => strval($user->getKey()));
         $userPrivateAttrs = $user->getPrivateAttributeNames();
@@ -75,11 +82,12 @@ class EventSerializer
         if ($user->getAnonymous()) {
             $json['anonymous'] = true;
         }
-        if (!empty($user->getCustom())) {
-            $customs = array();
-            $this->filterAttrs($user->getCustom(), $customs, $userPrivateAttrs, $allPrivateAttrs, false);
-            if ($customs) { // if this is empty, we will return a json array for 'custom' instead of an object
-                $json['custom'] = $customs;
+        $custom = $user->getCustom();
+        if (!is_null($custom) && !empty($user->getCustom())) {
+            $customOut = array();
+            $this->filterAttrs($custom, $customOut, $userPrivateAttrs, $allPrivateAttrs, false);
+            if ($customOut) { // if this is empty, we will return a json array for 'custom' instead of an object
+                $json['custom'] = $customOut;
             }
         }
         if (count($allPrivateAttrs)) {

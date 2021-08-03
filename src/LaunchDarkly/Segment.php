@@ -12,27 +12,27 @@ namespace LaunchDarkly;
 class Segment
 {
     /** @var string */
-    protected $_key = null;
+    protected $_key;
     /** @var int */
-    protected $_version = null;
+    protected $_version;
     /** @var string[] */
     protected $_included = array();
     /** @var string[] */
     protected $_excluded = array();
     /** @var string */
-    protected $_salt = null;
+    protected $_salt;
     /** @var SegmentRule[] */
     protected $_rules = array();
     /** @var bool */
     protected $_deleted = false;
 
-    protected function __construct($key,
-                                   $version,
+    protected function __construct(string $key,
+                                   int $version,
                                    array $included,
                                    array $excluded,
-                                   $salt,
+                                   string $salt,
                                    array $rules,
-                                   $deleted)
+                                   bool $deleted)
     {
         $this->_key = $key;
         $this->_version = $version;
@@ -43,9 +43,9 @@ class Segment
         $this->_deleted = $deleted;
     }
 
-    public static function getDecoder()
+    public static function getDecoder(): \Closure
     {
-        return function ($v) {
+        return function (array $v) {
             return new Segment(
                 $v['key'],
                 $v['version'],
@@ -53,20 +53,17 @@ class Segment
                 $v['excluded'] ?: [],
                 $v['salt'],
                 array_map(SegmentRule::getDecoder(), $v['rules'] ?: []),
-                $v['deleted']);
+                $v['deleted']
+            );
         };
     }
 
-    public static function decode($v)
+    public static function decode(array $v): Segment
     {
-        return call_user_func(Segment::getDecoder(), $v);
+        return static::getDecoder()($v);
     }
 
-    /**
-     * @param $user LDUser
-     * @return boolean
-     */
-    public function matchesUser($user)
+    public function matchesUser(LDUser $user): bool
     {
         $key = $user->getKey();
         if (!$key) {
@@ -86,26 +83,17 @@ class Segment
         return false;
     }
 
-    /**
-     * @return int
-     */
-    public function getVersion()
+    public function getVersion(): ?int
     {
         return $this->_version;
     }
 
-    /**
-     * @return string
-     */
-    public function getKey()
+    public function getKey(): string
     {
         return $this->_key;
     }
 
-    /**
-     * @return boolean
-     */
-    public function isDeleted()
+    public function isDeleted(): bool
     {
         return $this->_deleted;
     }

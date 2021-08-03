@@ -11,17 +11,40 @@ namespace LaunchDarkly;
  */
 class LDUser
 {
-    protected $_key = null;
+    /** @var string */
+    protected $_key;
+
+    /** @var string|null */
     protected $_secondary = null;
+
+    /** @var string|null */
     protected $_ip = null;
+
+    /** @var string|null */
     protected $_country = null;
+
+    /** @var string|null */
     protected $_email = null;
+
+    /** @var string|null */
     protected $_name = null;
+
+    /** @var string|null */
     protected $_avatar = null;
+
+    /** @var string|null */
     protected $_firstName = null;
+
+    /** @var string|null */
     protected $_lastName = null;
+
+    /** @var bool|null */
     protected $_anonymous = false;
+
+    /** @var array|null */
     protected $_custom = array();
+
+    /** @var array|null */
     protected $_privateAttributeNames = array();
 
     /**
@@ -40,11 +63,15 @@ class LDUser
      * @param array|null $custom Other custom attributes that can be used to create custom rules
      * @return LDUser
      */
-    public function __construct($key, $secondary = null, $ip = null, $country = null, $email = null, $name = null, $avatar = null, $firstName = null, $lastName = null, $anonymous = null, $custom = array(), $privateAttributeNames = array())
+    public function __construct(
+        string $key, ?string $secondary = null, 
+        ?string $ip = null, ?string $country = null, 
+        ?string $email = null, ?string $name = null, 
+        ?string $avatar = null, ?string $firstName = null, 
+        ?string $lastName = null, ?bool $anonymous = null, 
+        ?array $custom = array(), ?array $privateAttributeNames = array())
     {
-        if ($key !== null) {
-            $this->_key = strval($key);
-        }
+        $this->_key = $key;
         $this->_secondary = $secondary;
         $this->_ip = $ip;
         $this->_country = $country;
@@ -61,9 +88,13 @@ class LDUser
     /**
      * Used internally in flag evaluation.
      * @ignore
+     * @return mixed|null
      */
-    public function getValueForEvaluation($attr)
+    public function getValueForEvaluation(?string $attr)
     {
+        if (is_null($attr)) {
+            return null;
+        }
         switch ($attr) {
             case "key":
                 return $this->getKey();
@@ -97,83 +128,68 @@ class LDUser
         }
     }
 
-    /** @return string|null */
-    public function getCountry()
+    public function getCountry(): ?string
     {
         return $this->_country;
     }
 
-    /** @return array|null */
-    public function getCustom()
+    public function getCustom(): ?array
     {
         return $this->_custom;
     }
 
-    /** @return string|null */
-    public function getIP()
+    public function getIP(): ?string
     {
         return $this->_ip;
     }
 
-    /**
-     * @return string
-     */
-    public function getKey()
+    public function getKey(): string
     {
         return $this->_key;
     }
 
-    /** @return string|null */
-    public function getSecondary()
+    public function getSecondary(): ?string
     {
         return $this->_secondary;
     }
 
-    /** @return string|null */
-    public function getEmail()
+    public function getEmail(): ?string
     {
         return $this->_email;
     }
 
-    /** @return string|null */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->_name;
     }
 
-    /** @return string|null */
-    public function getAvatar()
+    public function getAvatar(): ?string
     {
         return $this->_avatar;
     }
 
-    /** @return string|null */
-    public function getFirstName()
+    public function getFirstName(): ?string
     {
         return $this->_firstName;
     }
 
-    /** @return string|null */
-    public function getLastName()
+    public function getLastName(): ?string
     {
         return $this->_lastName;
     }
 
-    /** @return bool|null */
-    public function getAnonymous()
+    public function getAnonymous(): ?bool
     {
         return $this->_anonymous;
     }
 
-    /** @return array|null */
-    public function getPrivateAttributeNames()
+    public function getPrivateAttributeNames(): ?array
     {
         return $this->_privateAttributeNames;
     }
     
-    /** @return bool */
-    public function isKeyBlank()
+    public function isKeyBlank(): bool
     {
-        return isset($this->_key) && empty($this->_key);
+        return empty($this->_key);
     }
 }

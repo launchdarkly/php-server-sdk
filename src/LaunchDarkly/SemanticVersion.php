@@ -15,6 +15,7 @@ namespace LaunchDarkly;
  */
 class SemanticVersion
 {
+    /** @var string */
     private static $REGEX = '/^(?<major>0|[1-9]\d*)(\.(?<minor>0|[1-9]\d*))?(\.(?<patch>0|[1-9]\d*))?(\-(?<prerel>[0-9A-Za-z\-\.]+))?(\+(?<build>[0-9A-Za-z\-\.]+))?$/';
 
     /** @var int */
@@ -28,7 +29,12 @@ class SemanticVersion
     /** @var string */
     public $build;
 
-    public function __construct($major, $minor, $patch, $prerelease, $build)
+    public function __construct(
+        int $major, 
+        int $minor, 
+        int $patch, 
+        string $prerelease, 
+        string $build)
     {
         $this->major = $major;
         $this->minor = $minor;
@@ -41,10 +47,9 @@ class SemanticVersion
      * Attempts to parse a string as a semantic version.
      * @param $input string the input string
      * @param $loose boolean true if minor and patch versions can be omitted
-     * @return a SemanticVersion object
-     * @throws InvalidArgumentException if the string is not in an acceptable format
+     * @throws \InvalidArgumentException if the string is not in an acceptable format
      */
-    public static function parse($input, $loose = false)
+    public static function parse(string $input, bool $loose = false): SemanticVersion
     {
         if (!preg_match(self::$REGEX, $input, $matches)) {
             throw new \InvalidArgumentException("not a valid semantic version");
@@ -63,10 +68,10 @@ class SemanticVersion
     /**
      * Compares this version to another version using Semantic Versioning precedence rules.
      * @param $other a SemanticVersion object
-     * @return -1 if this version has lower precedence than the other version; 1 if this version
+     * @return int -1 if this version has lower precedence than the other version; 1 if this version
      *   has higher precedence; zero if the two have equal precedence
      */
-    public function comparePrecedence($other)
+    public function comparePrecedence(SemanticVersion $other): int
     {
         if ($this->major != $other->major) {
             return ($this->major < $other->major) ? -1 : 1;
@@ -91,15 +96,22 @@ class SemanticVersion
         return 0;
     }
 
-    private static function compareIdentifiers($ids1, $ids2)
+    /**
+     * @param array<string> $ids1
+     * @param array<string> $ids2
+     */
+    private static function compareIdentifiers(array $ids1, array $ids2): int
     {
+        $result = 0;
         for ($i = 0; ; $i++) {
             if ($i >= count($ids1)) {
                 // x.y is always less than x.y.z
-                return ($i >= count($ids2)) ? 0 : -1;
+                $result = ($i >= count($ids2)) ? 0 : -1;
+                break;
             }
             if ($i >= count($ids2)) {
-                return 1;
+                $result = 1;
+                break;
             }
             $v1 = $ids1[$i];
             $v2 = $ids2[$i];
@@ -119,8 +131,10 @@ class SemanticVersion
                 }
             }
             if ($d != 0) {
-                return $d;
+                $result = $d;
+                break;
             }
         }
+        return $result;
     }
 }

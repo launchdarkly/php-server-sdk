@@ -3,6 +3,7 @@ namespace LaunchDarkly\Tests;
 
 use InvalidArgumentException;
 use LaunchDarkly\EvaluationReason;
+use LaunchDarkly\EventFactory;
 use LaunchDarkly\FeatureFlag;
 use LaunchDarkly\FeatureRequester;
 use LaunchDarkly\LDClient;

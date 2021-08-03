@@ -16,7 +16,7 @@ interface FeatureRequester
      * @param string $key feature key
      * @return FeatureFlag|null The decoded FeatureFlag, or null if missing
      */
-    public function getFeature($key);
+    public function getFeature(string $key): ?FeatureFlag;
 
     /**
      * Gets the configuration for a specific user segment.
@@ -24,12 +24,12 @@ interface FeatureRequester
      * @param string $key segment key
      * @return Segment|null The decoded Segment, or null if missing
      */
-    public function getSegment($key);
+    public function getSegment(string $key): ?Segment;
 
     /**
      * Gets all feature flags.
      *
      * @return array|null The decoded FeatureFlags, or null if missing
      */
-    public function getAllFeatures();
+    public function getAllFeatures(): ?array;
 }

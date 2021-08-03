@@ -1,8 +1,9 @@
 <?php
 namespace LaunchDarkly\Tests;
 
-use LaunchDarkly\Integrations\Files;
 use LaunchDarkly\LDUser;
+use LaunchDarkly\Impl\EventFactory;
+use LaunchDarkly\Integrations\Files;
 use PHPUnit\Framework\TestCase;
 
 class FileDataFeatureRequesterTest extends \PHPUnit\Framework\TestCase
@@ -30,10 +31,13 @@ class FileDataFeatureRequesterTest extends \PHPUnit\Framework\TestCase
 
     public function testShortcutFlagCanBeEvaluated()
     {
+        $requester = new MockFeatureRequester();
+        $eventFactory = new EventFactory(false);
+
         $fr = Files::featureRequester("./tests/filedata/all-properties.json");
         $flag2 = $fr->getFeature("flag2");
         $this->assertEquals("flag2", $flag2->getKey());
-        $result = $flag2->evaluate(new LDUser("user"), null, null);
+        $result = $flag2->evaluate(new LDUser("user"), $requester, $eventFactory);
         $this->assertEquals("value2", $result->getDetail()->getValue());
     }
 }

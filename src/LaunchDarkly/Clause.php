@@ -12,16 +12,16 @@ namespace LaunchDarkly;
  */
 class Clause
 {
-    /** @var string */
+    /** @var string|null */
     private $_attribute = null;
-    /** @var string */
+    /** @var string|null */
     private $_op = null;
     /** @var array  */
     private $_values = array();
     /** @var bool  */
     private $_negate = false;
 
-    private function __construct($attribute, $op, array $values, $negate)
+    private function __construct(?string $attribute, ?string $op, array $values, bool $negate)
     {
         $this->_attribute = $attribute;
         $this->_op = $op;
@@ -29,22 +29,21 @@ class Clause
         $this->_negate = $negate;
     }
 
-    public static function getDecoder()
+    /**
+     * @psalm-return \Closure(mixed):self
+     */
+    public static function getDecoder(): \Closure
     {
         return function ($v) {
             return new Clause($v['attribute'], $v['op'], $v['values'], $v['negate']);
         };
     }
 
-    /**
-     * @param $user LDUser
-     * @return bool
-     */
-    public function matchesUser($user, $featureRequester)
+    public function matchesUser(LDUser $user, ?FeatureRequester $featureRequester): bool
     {
         if ($this->_op === 'segmentMatch') {
             foreach ($this->_values as $value) {
-                $segment = $featureRequester->getSegment($value);
+                $segment = $featureRequester ? $featureRequester->getSegment($value) : null;
                 if ($segment) {
                     if ($segment->matchesUser($user)) {
                         return $this->_maybeNegate(true);
@@ -57,11 +56,7 @@ class Clause
         }
     }
 
-    /**
-     * @param $user LDUser
-     * @return bool
-     */
-    public function matchesUserNoSegments($user)
+    public function matchesUserNoSegments(LDUser $user): bool
     {
         $userValue = $user->getValueForEvaluation($this->_attribute);
         if ($userValue === null) {
@@ -79,44 +74,32 @@ class Clause
         }
     }
 
-
-    /**
-     * @return string
-     */
-    public function getAttribute()
+    public function getAttribute(): ?string
     {
         return $this->_attribute;
     }
 
-    /**
-     * @return string
-     */
-    public function getOp()
+    public function getOp(): ?string
     {
         return $this->_op;
     }
 
-    /**
-     * @return array
-     */
-    public function getValues()
+    public function getValues(): array
     {
         return $this->_values;
     }
 
-    /**
-     * @return boolean
-     */
-    public function isNegate()
+    public function isNegate(): bool
     {
         return $this->_negate;
     }
 
     /**
-     * @param $userValue
+     * @param mixed|null $userValue
+     *
      * @return bool
      */
-    private function matchAny($userValue)
+    private function matchAny($userValue): bool
     {
         foreach ($this->_values as $v) {
             $result = Operators::apply($this->_op, $userValue, $v);
@@ -127,7 +110,7 @@ class Clause
         return false;
     }
 
-    private function _maybeNegate($b)
+    private function _maybeNegate(bool $b): bool
     {
         if ($this->_negate) {
             return !$b;

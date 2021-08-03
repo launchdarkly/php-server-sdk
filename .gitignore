@@ -7,3 +7,4 @@ composer.phar
 integration-tests/vendor
 composer.lock
 docs/build
+.phpunit.result.cache

@@ -32,6 +32,9 @@ jobs:
       - run:
           name: install dependencies
           command: composer install --no-progress
+      - run:
+          name: psalm linting
+          command: ./vendor/bin/psalm --no-cache
       - run: mkdir -p ~/phpunit
       - run:
           name: run tests with highest compatible dependency versions

@@ -13,30 +13,19 @@ use DateTimeZone;
  */
 class Util
 {
-    /**
-     * @param $dateTime DateTime
-     * @return int
-     */
-    public static function dateTimeToUnixMillis($dateTime)
+    public static function dateTimeToUnixMillis(DateTime $dateTime): int
     {
         $timeStampSeconds = (int)$dateTime->getTimestamp();
-        $timestampMicros = $dateTime->format('u');
+        $timestampMicros = (int)$dateTime->format('u');
         return $timeStampSeconds * 1000 + (int)($timestampMicros / 1000);
     }
 
-    /**
-     * @return int
-     */
-    public static function currentTimeUnixMillis()
+    public static function currentTimeUnixMillis(): int
     {
         return Util::dateTimeToUnixMillis(new DateTime('now', new DateTimeZone("UTC")));
     }
 
-    /**
-     * @param $status int
-     * @return boolean
-     */
-    public static function isHttpErrorRecoverable($status)
+    public static function isHttpErrorRecoverable(int $status): bool
     {
         if ($status >= 400 && $status < 500) {
             return ($status == 400) || ($status == 408) || ($status == 429);
@@ -44,13 +33,7 @@ class Util
         return true;
     }
 
-    /**
-     * @param $status int
-     * @param $context string
-     * @param $retryMessage string
-     * @return string
-     */
-    public static function httpErrorMessage($status, $context, $retryMessage)
+    public static function httpErrorMessage(int $status, string $context, string $retryMessage): string
     {
         return 'Received error ' . $status
             . (($status == 401) ? ' (invalid SDK key)' : '')

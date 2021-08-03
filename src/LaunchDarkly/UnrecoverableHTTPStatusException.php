@@ -9,9 +9,10 @@ namespace LaunchDarkly;
  */
 class UnrecoverableHTTPStatusException extends \Exception
 {
+    /** @var int */
     public $status;
 
-    public function __construct($status)
+    public function __construct(int $status)
     {
         $this->status = $status;
     }

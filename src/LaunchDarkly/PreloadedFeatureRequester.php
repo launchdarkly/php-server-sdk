@@ -15,7 +15,7 @@ class PreloadedFeatureRequester implements FeatureRequester
     /** @var array */
     private $_knownFeatures;
 
-    public function __construct($baseRequester, $knownFeatures)
+    public function __construct(FeatureRequester $baseRequester, array $knownFeatures)
     {
         $this->_baseRequester = $baseRequester;
         $this->_knownFeatures = $knownFeatures;
@@ -24,10 +24,10 @@ class PreloadedFeatureRequester implements FeatureRequester
     /**
      * Gets feature data from cached values
      *
-     * @param $key string feature key
+     * @param $key feature key
      * @return FeatureFlag|null The decoded FeatureFlag, or null if missing
      */
-    public function getFeature($key)
+    public function getFeature(string $key): ?FeatureFlag
     {
         if (isset($this->_knownFeatures[$key])) {
             return $this->_knownFeatures[$key];
@@ -38,10 +38,10 @@ class PreloadedFeatureRequester implements FeatureRequester
     /**
      * Gets segment data from the regular feature requester
      *
-     * @param $key string segment key
+     * @param $key segment key
      * @return Segment|null The decoded Segment, or null if missing
      */
-    public function getSegment($key)
+    public function getSegment(string $key): ?Segment
     {
         return $this->_baseRequester->getSegment($key);
     }
@@ -51,7 +51,7 @@ class PreloadedFeatureRequester implements FeatureRequester
      *
      * @return array|null The decoded FeatureFlags, or null if missing
      */
-    public function getAllFeatures()
+    public function getAllFeatures(): ?array
     {
         return $this->_knownFeatures;
     }

@@ -12,6 +12,7 @@ namespace LaunchDarkly;
  */
 class VariationOrRollout
 {
+    /** @var int */
     private static $LONG_SCALE = 0xFFFFFFFFFFFFFFF;
 
     /** @var int | null */
@@ -19,44 +20,37 @@ class VariationOrRollout
     /** @var Rollout | null */
     private $_rollout = null;
 
-    protected function __construct($variation, $rollout)
+    protected function __construct(?int $variation, ?Rollout $rollout)
     {
         $this->_variation = $variation;
         $this->_rollout = $rollout;
     }
 
-    public static function getDecoder()
+    /**
+     * @psalm-return \Closure(array):self
+     */
+    public static function getDecoder(): \Closure
     {
-        return function ($v) {
-            return new VariationOrRollout(
-                isset($v['variation']) ? $v['variation'] : null,
-                isset($v['rollout']) ? call_user_func(Rollout::getDecoder(), $v['rollout']) : null);
+        return function (?array $v) {
+            $decoder = Rollout::getDecoder();
+            $variation = $v['variation'] ?? null;
+            $rollout = isset($v['rollout']) ? $decoder($v['rollout']) : null;
+            
+            return new VariationOrRollout($variation, $rollout);
         };
     }
 
-    /**
-     * @return int | null
-     */
-    public function getVariation()
+    public function getVariation(): ?int
     {
         return $this->_variation;
     }
 
-    /**
-     * @return Rollout | null
-     */
-    public function getRollout()
+    public function getRollout(): ?Rollout
     {
         return $this->_rollout;
     }
 
-    /**
-     * @param $user LDUser
-     * @param $_key string
-     * @param $_salt string
-     * @return array(int|null, boolean)
-     */
-    public function variationIndexForUser($user, $_key, $_salt)
+    public function variationIndexForUser(LDUser $user, string $_key, ?string $_salt): array
     {
         if ($this->_variation !== null) {
             return array($this->_variation, false);
@@ -67,30 +61,26 @@ class VariationOrRollout
         }
         $variations = $rollout->getVariations();
         if ($variations) {
-            $bucketBy = $this->_rollout->getBucketBy() === null ? "key" : $this->_rollout->getBucketBy();
+            $bucketBy = $rollout->getBucketBy() ?? "key";
             $bucket = self::bucketUser($user, $_key, $bucketBy, $_salt, $rollout->getSeed());
             $sum = 0.0;
             foreach ($variations as $wv) {
                 $sum += $wv->getWeight() / 100000.0;
                 if ($bucket < $sum) {
-                    return array($wv->getVariation(), $this->_rollout->isExperiment() && !$wv->isUntracked());
+                    return array($wv->getVariation(), $rollout->isExperiment() && !$wv->isUntracked());
                 }
             }
             $lastVariation = $variations[count($variations) - 1];
-            return array($lastVariation->getVariation(), $this->_rollout->isExperiment() && !$lastVariation->isUntracked());
+            return array($lastVariation->getVariation(), $rollout->isExperiment() && !$lastVariation->isUntracked());
         }
         return array(null, false);
     }
 
-    /**
-     * @param $user LDUser
-     * @param $_key string
-     * @param $attr string
-     * @param $_salt string
-     * @param $seed int|null
-     * @return float
-     */
-    public static function bucketUser($user, $_key, $attr, $_salt, $seed)
+    public static function bucketUser(
+        LDUser $user, string $_key, 
+        string $attr, ?string $_salt,
+        ?int $seed
+    ): float
     {
         $userValue = $user->getValueForEvaluation($attr);
         $idHash = null;
@@ -103,13 +93,13 @@ class VariationOrRollout
                 if (isset($seed)) {
                     $prefix = (string) $seed;
                 } else {
-                    $prefix = $_key . "." . $_salt;
+                    $prefix = $_key . "." . ($_salt ?? '');
                 }
                 if ($user->getSecondary() !== null) {
                     $idHash = $idHash . "." . strval($user->getSecondary());
                 }
                 $hash = substr(sha1($prefix . "." . $idHash), 0, 15);
-                $longVal = base_convert($hash, 16, 10);
+                $longVal = (int)base_convert($hash, 16, 10);
                 $result = $longVal / self::$LONG_SCALE;
 
                 return $result;

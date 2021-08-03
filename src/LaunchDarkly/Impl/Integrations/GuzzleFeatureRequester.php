@@ -25,7 +25,7 @@ class GuzzleFeatureRequester implements FeatureRequester
     /** @var boolean */
     private $_loggedCacheNotice = false;
 
-    public function __construct($baseUri, $sdkKey, $options)
+    public function __construct(string $baseUri, string $sdkKey, array $options)
     {
         $this->_logger = $options['logger'];
         $stack = HandlerStack::create();
@@ -63,12 +63,12 @@ class GuzzleFeatureRequester implements FeatureRequester
      * @param $key string feature key
      * @return FeatureFlag|null The decoded FeatureFlag, or null if missing
      */
-    public function getFeature($key)
+    public function getFeature(string $key): ?FeatureFlag
     {
         try {
             $response = $this->_client->get(self::SDK_FLAGS . "/" . $key);
             $body = $response->getBody();
-            return FeatureFlag::decode(json_decode($body, true));
+            return FeatureFlag::decode(json_decode($body->getContents(), true));
         } catch (BadResponseException $e) {
             $code = $e->getResponse()->getStatusCode();
             if ($code == 404) {
@@ -86,12 +86,12 @@ class GuzzleFeatureRequester implements FeatureRequester
      * @param $key string segment key
      * @return Segment|null The decoded Segment, or null if missing
      */
-    public function getSegment($key)
+    public function getSegment(string $key): ?Segment
     {
         try {
             $response = $this->_client->get(self::SDK_SEGMENTS . "/" . $key);
             $body = $response->getBody();
-            return Segment::decode(json_decode($body, true));
+            return Segment::decode(json_decode($body->getContents(), true));
         } catch (BadResponseException $e) {
             $code = $e->getResponse()->getStatusCode();
             if ($code == 404) {
@@ -106,21 +106,21 @@ class GuzzleFeatureRequester implements FeatureRequester
     /**
      * Gets all features from a likely cached store
      *
-     * @return array()|null The decoded FeatureFlags, or null if missing
+     * @return array|null The decoded FeatureFlags, or null if missing
      */
-    public function getAllFeatures()
+    public function getAllFeatures(): ?array
     {
         try {
             $response = $this->_client->get(self::SDK_FLAGS);
             $body = $response->getBody();
-            return array_map(FeatureFlag::getDecoder(), json_decode($body, true));
+            return array_map(FeatureFlag::getDecoder(), json_decode($body->getContents(), true));
         } catch (BadResponseException $e) {
             $this->handleUnexpectedStatus($e->getResponse()->getStatusCode(), "GuzzleFeatureRequester::getAll");
             return null;
         }
     }
 
-    private function handleUnexpectedStatus($code, $method)
+    private function handleUnexpectedStatus(int $code, string $method): void
     {
         $this->_logger->error(Util::httpErrorMessage($code, $method, 'default value was returned'));
         if (!Util::isHttpErrorRecoverable($code)) {

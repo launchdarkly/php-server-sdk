@@ -12,35 +12,29 @@ namespace LaunchDarkly;
 class Prerequisite
 {
     /** @var string */
-    private $_key = null;
+    private $_key;
     /** @var int */
-    private $_variation = null;
+    private $_variation;
 
-    protected function __construct($key, $variation)
+    protected function __construct(string $key, int $variation)
     {
         $this->_key = $key;
         $this->_variation = $variation;
     }
 
-    public static function getDecoder()
+    public static function getDecoder(): \Closure
     {
-        return function ($v) {
+        return function (array $v) {
             return new Prerequisite($v['key'], $v['variation']);
         };
     }
 
-    /**
-     * @return string
-     */
-    public function getKey()
+    public function getKey(): string
     {
         return $this->_key;
     }
 
-    /**
-     * @return int
-     */
-    public function getVariation()
+    public function getVariation(): int
     {
         return $this->_variation;
     }

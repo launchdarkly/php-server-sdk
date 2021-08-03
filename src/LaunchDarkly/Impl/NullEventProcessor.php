@@ -1,14 +1,15 @@
 <?php
 namespace LaunchDarkly\Impl;
 
-class NullEventProcessor
+class NullEventProcessor extends \LaunchDarkly\EventProcessor
 {
-    public function enqueue($event)
+    public function enqueue($event): bool
     {
         return true;
     }
 
-    public function flush()
+    public function flush(): bool
     {
+        return true;
     }
 }

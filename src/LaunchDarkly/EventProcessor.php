@@ -11,21 +11,28 @@ use LaunchDarkly\Integrations\Curl;
  */
 class EventProcessor
 {
+    /** @var EventPublisher */
     private $_eventPublisher;
+
+    /** @var EventSerializer */
     private $_eventSerializer;
-    private $_queue;
+
+    /** @var array */
+    private $_queue = [];
+
+    /** @var int */
     private $_capacity;
+
+    /** @var int */
     private $_timeout;
 
-    public function __construct($sdkKey, $options = array())
+    public function __construct(string $sdkKey, array $options = array())
     {
         $this->_eventPublisher = $this->getEventPublisher($sdkKey, $options);
         $this->_eventSerializer = new EventSerializer($options);
       
         $this->_capacity = $options['capacity'];
         $this->_timeout = $options['timeout'];
-
-        $this->_queue = array();
     }
 
     public function __destruct()
@@ -33,12 +40,15 @@ class EventProcessor
         $this->flush();
     }
 
-    public function sendEvent($event)
+    public function sendEvent(array $event): bool
     {
         return $this->enqueue($event);
     }
 
-    public function enqueue($event)
+    /**
+     * @param (int|mixed|string|true)[] $event
+     */
+    public function enqueue(array $event): bool
     {
         if (count($this->_queue) > $this->_capacity) {
             return false;
@@ -53,10 +63,10 @@ class EventProcessor
      * Publish events to LaunchDarkly
      * @return bool Whether the events were successfully published
      */
-    public function flush()
+    public function flush(): bool
     {
         if (empty($this->_queue)) {
-            return null;
+            return false;
         }
 
         $payload = $this->_eventSerializer->serializeEvents($this->_queue);
@@ -68,13 +78,11 @@ class EventProcessor
     }
 
     /**
-     * @param string $sdkKey
-     * @param mixed[] $options
-     * @return EventPublisher
+     * @psalm-suppress UndefinedClass
      */
-    private function getEventPublisher($sdkKey, array $options)
+    private function getEventPublisher(string $sdkKey, array $options): EventPublisher
     {
-        $ep = isset($options['event_publisher']) ? $options['event_publisher'] : null;
+        $ep = $options['event_publisher'] ?? null;
         if (!$ep && isset($options['event_publisher_class'])) {
             $ep = $options['event_publisher_class'];
         }
@@ -90,6 +98,9 @@ class EventProcessor
         if (!is_a($ep, EventPublisher::class, true)) {
             throw new \InvalidArgumentException;
         }
+        /**
+         * @psalm-suppress LessSpecificReturnStatement
+         */
         return new $ep($sdkKey, $options);
     }
 }

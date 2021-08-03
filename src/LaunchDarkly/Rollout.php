@@ -14,62 +14,59 @@ class Rollout
     const KIND_EXPERIMENT = 'experiment';
 
     /** @var WeightedVariation[] */
-    private $_variations = array();
-    /** @var string */
+    private $_variations = [];
+    /** @var string|null */
     private $_bucketBy = null;
     /** @var string */
-    private $_kind = null;
+    private $_kind;
     /** @var int|null */
     private $_seed = null;
 
-    protected function __construct(array $variations, $bucketBy, $kind = null, $seed = null)
+    protected function __construct(
+        array $variations,
+        ?string $bucketBy,
+        ?string $kind = null,
+        ?int $seed = null)
     {
         $this->_variations = $variations;
         $this->_bucketBy = $bucketBy;
-        $this->_kind = $kind;
+        $this->_kind = $kind ?? 'rollout';
         $this->_seed = $seed;
     }
 
-    public static function getDecoder()
+    /**
+     * @psalm-return \Closure(array):self
+     */
+    public static function getDecoder(): \Closure
     {
-        return function ($v) {
-            return new Rollout(
-                array_map(WeightedVariation::getDecoder(), $v['variations']),
-                isset($v['bucketBy']) ? $v['bucketBy'] : null,
-                isset($v['kind']) ? $v['kind'] : null,
-                isset($v['seed']) ? $v['seed'] : null
-            );
+        return function (array $v) {
+            $decoder = WeightedVariation::getDecoder();
+            $vars = array_map($decoder, $v['variations']);
+            $bucket = $v['bucketBy'] ?? null;
+            
+            return new Rollout($vars, $bucket, $v['kind'] ?? null, $v['seed'] ?? null);
         };
     }
 
     /**
      * @return WeightedVariation[]
      */
-    public function getVariations()
+    public function getVariations(): array
     {
         return $this->_variations;
     }
 
-    /**
-     * @return string
-     */
-    public function getBucketBy()
+    public function getBucketBy(): ?string
     {
         return $this->_bucketBy;
     }
 
-    /**
-     * @return int|null
-     */
-    public function getSeed()
+    public function getSeed(): ?int
     {
         return $this->_seed;
     }
 
-    /**
-     * @return boolean
-     */
-    public function isExperiment()
+    public function isExperiment(): bool
     {
         return $this->_kind === self::KIND_EXPERIMENT;
     }

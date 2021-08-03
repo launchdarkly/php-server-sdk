@@ -1,6 +1,10 @@
 <?php
 namespace LaunchDarkly\Impl;
 
+use LaunchDarkly\EvaluationDetail;
+use LaunchDarkly\EvaluationReason;
+use LaunchDarkly\FeatureFlag;
+use LaunchDarkly\LDUser;
 use LaunchDarkly\Util;
 
 class EventFactory
@@ -8,12 +12,25 @@ class EventFactory
     /** @var boolean */
     private $_withReasons;
 
-    public function __construct($withReasons)
+    public function __construct(bool $withReasons)
     {
         $this->_withReasons = $withReasons;
     }
 
-    public function newEvalEvent($flag, $user, $detail, $default, $prereqOfFlag = null)
+    /**
+     * @param FeatureFlag $flag
+     * @param LDUser $user
+     * @param EvaluationDetail $detail
+     * @param mixed|null $default
+     * @param FeatureFlag|null $prereqOfFlag
+     * @return (mixed|null)[]
+     */
+    public function newEvalEvent(
+        FeatureFlag $flag,
+        LDUser $user,
+        EvaluationDetail $detail,
+        $default,
+        $prereqOfFlag = null): array
     {
         $addExperimentData = static::isExperiment($flag, $detail->getReason());
         $e = array(
@@ -45,7 +62,10 @@ class EventFactory
         return $e;
     }
 
-    public function newDefaultEvent($flag, $user, $detail)
+    /**
+     * @return (mixed|null)[]
+     */
+    public function newDefaultEvent(FeatureFlag $flag, LDUser $user, EvaluationDetail $detail): array
     {
         $e = array(
             'kind' => 'feature',
@@ -72,7 +92,10 @@ class EventFactory
         return $e;
     }
 
-    public function newUnknownFlagEvent($key, $user, $detail)
+    /**
+     * @return (mixed|null)[]
+     */
+    public function newUnknownFlagEvent(string $key, LDUser $user, EvaluationDetail $detail): array
     {
         $e = array(
             'kind' => 'feature',
@@ -92,7 +115,10 @@ class EventFactory
         return $e;
     }
 
-    public function newIdentifyEvent($user)
+    /**
+     * @return (mixed|null)[]
+     */
+    public function newIdentifyEvent(LDUser $user): array
     {
         return array(
             'kind' => 'identify',
@@ -102,7 +128,15 @@ class EventFactory
         );
     }
     
-    public function newCustomEvent($eventName, $user, $data, $metricValue)
+    /**
+     * @param string $eventName
+     * @param LDUser $user
+     * @param mixed|null $data
+     * @param null|numeric $metricValue
+     *
+     * @return (mixed|null)[]
+     */
+    public function newCustomEvent(string $eventName, LDUser $user, $data, $metricValue): array
     {
         $e = array(
             'kind' => 'custom',
@@ -122,7 +156,10 @@ class EventFactory
         return $e;
     }
 
-    public function newAliasEvent($user, $previousUser)
+    /**
+     * @return (mixed|null)[]
+     */
+    public function newAliasEvent(LDUser $user, LDUser $previousUser): array
     {
         $e = array(
             'kind' => 'alias',
@@ -136,7 +173,7 @@ class EventFactory
         return $e;
     }
 
-    private static function contextKind($user)
+    private static function contextKind(LDUser $user): string
     {
         if ($user->getAnonymous()) {
             return 'anonymousUser';
@@ -145,21 +182,20 @@ class EventFactory
         }
     }
 
-    private static function isExperiment($flag, $reason)
+    private static function isExperiment(FeatureFlag $flag, EvaluationReason $reason): bool
     {
-        if ($reason) {
-            if ($reason->isInExperiment()) {
-                return true;
-            }
-            switch ($reason->getKind()) {
-                case 'RULE_MATCH':
-                    $i = $reason->getRuleIndex();
-                    $rules = $flag->getRules();
-                    return isset($i) && $i >= 0 && $i < count($rules) && $rules[$i]->isTrackEvents();
-                case 'FALLTHROUGH':
-                    return $flag->isTrackEventsFallthrough();
-            }
+        if ($reason->isInExperiment()) {
+            return true;
         }
-        return false;
+        switch ($reason->getKind()) {
+            case 'RULE_MATCH':
+                $i = $reason->getRuleIndex();
+                $rules = $flag->getRules();
+                return isset($i) && $i >= 0 && $i < count($rules) && $rules[$i]->isTrackEvents();
+            case 'FALLTHROUGH':
+                return $flag->isTrackEventsFallthrough();
+            default:
+                return false;
+        }
     }
 }

@@ -13,16 +13,17 @@ use Exception;
  */
 class Operators
 {
+    /** @var string */
     const RFC3339 = 'Y-m-d\TH:i:s.uP';
+
+    /** @var string */
     const VERSION_NUMBERS_REGEX = '/^\\d+(\\.\\d+)?(\\.\\d+)?/';
 
     /**
-     * @param $op string
-     * @param $u
-     * @param $c
-     * @return bool
+     * @param mixed|null $u
+     * @param mixed|null $c
      */
-    public static function apply($op, $u, $c)
+    public static function apply(?string $op, $u, $c): bool
     {
         try {
             if ($u === null || $c === null) {
@@ -115,8 +116,8 @@ class Operators
     }
 
     /**
-     * @param $in
-     * @return null|int|float
+     * @param mixed|null $in 
+     * @return ?numeric
      */
     public static function parseTime($in)
     {
@@ -139,11 +140,7 @@ class Operators
         return null;
     }
 
-    /**
-     * @param $in
-     * @return null|string
-     */
-    public static function parseSemVer($in)
+    public static function parseSemVer(string $in): ?SemanticVersion
     {
         try {
             return SemanticVersion::parse($in, true);

@@ -182,9 +182,11 @@ class LDUserTest extends \PHPUnit\Framework\TestCase
         $builder = new LDUserBuilder("key");
         $user = $builder->build();
         $this->assertFalse($user->isKeyBlank());
+    }
 
+    public function testLDUserNullKey()
+    {
+        $this->expectException(\TypeError::class);
         $builder = new LDUserBuilder(null);
-        $user = $builder->build();
-        $this->assertFalse($user->isKeyBlank());
     }
 }

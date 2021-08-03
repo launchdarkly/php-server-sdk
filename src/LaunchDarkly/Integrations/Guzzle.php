@@ -24,7 +24,7 @@ class Guzzle
      */
     public static function featureRequester($options = array())
     {
-        return function ($baseUri, $sdkKey, $baseOptions) use ($options) {
+        return function (string $baseUri, string $sdkKey, array $baseOptions) use ($options) {
             return new \LaunchDarkly\Impl\Integrations\GuzzleFeatureRequester($baseUri, $sdkKey,
                 array_merge($baseOptions, $options));
         };
@@ -54,7 +54,7 @@ class Guzzle
      */
     public static function eventPublisher($options = array())
     {
-        return function ($sdkKey, $baseOptions) use ($options) {
+        return function (string $sdkKey, array $baseOptions) use ($options) {
             return new \LaunchDarkly\Impl\Integrations\GuzzleEventPublisher($sdkKey,
                 array_merge($baseOptions, $options));
         };

@@ -12,17 +12,17 @@ class MockFeatureRequesterForSegment implements FeatureRequester
     {
     }
 
-    public function getFeature($key)
+    public function getFeature(string $key): ?\LaunchDarkly\FeatureFlag
     {
         return null;
     }
 
-    public function getSegment($key)
+    public function getSegment(string $key): ?\LaunchDarkly\Segment
     {
         return ($key == $this->key) ? $this->val : null;
     }
 
-    public function getAllFeatures()
+    public function getAllFeatures(): ?array
     {
         return null;
     }

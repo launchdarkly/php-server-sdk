@@ -11,35 +11,58 @@ namespace LaunchDarkly;
  */
 class LDUserBuilder
 {
-    protected $_key = null;
+    /** @var string */
+    protected $_key;
+    
+    /** @var string|null */
     protected $_secondary = null;
+    
+    /** @var string|null */
     protected $_ip = null;
+
+    /** @var string|null */
     protected $_country = null;
+
+    /** @var string|null */
+
     protected $_email = null;
+    /** @var string|null */
+
     protected $_name = null;
+    /** @var string|null */
+    
     protected $_avatar = null;
+    /** @var string|null */
+
     protected $_firstName = null;
+    /** @var string|null */
+
     protected $_lastName = null;
+    
+    /** @var bool|null */
     protected $_anonymous = null;
-    protected $_custom = array();
-    protected $_privateAttributeNames = array();
+
+    /** @var array */
+    protected $_custom = [];
+
+    /** @var array */
+    protected $_privateAttributeNames = [];
     
     /**
      * Creates a builder with the specified key.
-     * @param string $key The user key
-     * @return LDUserBuilder
+     * @param $key The user key
      */
-    public function __construct($key)
+    public function __construct(string $key)
     {
         $this->_key = $key;
     }
 
     /**
      * Sets the user's secondary key attribute.
-     * @param string $secondary The secondary key
+     * @param $secondary The secondary key
      * @return LDUserBuilder the same builder
      */
-    public function secondary($secondary)
+    public function secondary(?string $secondary): LDUserBuilder
     {
         $this->_secondary = $secondary;
         return $this;
@@ -47,10 +70,10 @@ class LDUserBuilder
 
     /**
      * Sets the user's secondary key attribute, and marks it as private.
-     * @param string $secondary The secondary key
+     * @param $secondary The secondary key
      * @return LDUserBuilder the same builder
      */
-    public function privateSecondary($secondary)
+    public function privateSecondary(?string $secondary): LDUserBuilder
     {
         array_push($this->_privateAttributeNames, 'secondary');
         return $this->secondary($secondary);
@@ -58,10 +81,10 @@ class LDUserBuilder
 
     /**
      * Sets the user's IP address attribute.
-     * @param string $ip The IP address
+     * @param $ip The IP address
      * @return LDUserBuilder the same builder
      */
-    public function ip($ip)
+    public function ip(?string $ip): LDUserBuilder
     {
         $this->_ip = $ip;
         return $this;
@@ -69,10 +92,10 @@ class LDUserBuilder
 
     /**
      * Sets the user's IP address attribute, and marks it as private.
-     * @param string $ip The IP address
+     * @param $ip The IP address
      * @return LDUserBuilder the same builder
      */
-    public function privateIp($ip)
+    public function privateIp(?string $ip): LDUserBuilder
     {
         array_push($this->_privateAttributeNames, 'ip');
         return $this->ip($ip);
@@ -85,7 +108,7 @@ class LDUserBuilder
      * @param string $country The country
      * @return LDUserBuilder the same builder
      */
-    public function country($country)
+    public function country(?string $country): LDUserBuilder
     {
         $this->_country = $country;
         return $this;
@@ -95,10 +118,10 @@ class LDUserBuilder
      * Sets the user's country attribute, and marks it as private.
      *
      * This may be an ISO 3166-1 country code, or any other value you wish; it is not validated.
-     * @param string $country The country
+     * @param $country The country
      * @return LDUserBuilder the same builder
      */
-    public function privateCountry($country)
+    public function privateCountry(?string $country): LDUserBuilder
     {
         array_push($this->_privateAttributeNames, 'country');
         return $this->country($country);
@@ -106,10 +129,10 @@ class LDUserBuilder
 
     /**
      * Sets the user's email address attribute.
-     * @param string $email The email address
+     * @param $email The email address
      * @return LDUserBuilder the same builder
      */
-    public function email($email)
+    public function email(?string $email): LDUserBuilder
     {
         $this->_email = $email;
         return $this;
@@ -117,10 +140,10 @@ class LDUserBuilder
 
     /**
      * Sets the user's email address attribute, and marks it as private.
-     * @param string $email The email address
+     * @param $email The email address
      * @return LDUserBuilder the same builder
      */
-    public function privateEmail($email)
+    public function privateEmail(?string $email): LDUserBuilder
     {
         array_push($this->_privateAttributeNames, 'email');
         return $this->email($email);
@@ -128,10 +151,10 @@ class LDUserBuilder
 
     /**
      * Sets the user's full name attribute.
-     * @param string $name The full name
+     * @param $name The full name
      * @return LDUserBuilder the same builder
      */
-    public function name($name)
+    public function name(?string $name): LDUserBuilder
     {
         $this->_name = $name;
         return $this;
@@ -139,10 +162,10 @@ class LDUserBuilder
 
     /**
      * Sets the user's full name attribute, and marks it as private.
-     * @param string $name The full name
+     * @param $name The full name
      * @return LDUserBuilder the same builder
      */
-    public function privateName($name)
+    public function privateName(?string $name): LDUserBuilder
     {
         array_push($this->_privateAttributeNames, 'name');
         return $this->name($name);
@@ -153,7 +176,7 @@ class LDUserBuilder
      * @param string $avatar The avatar URL
      * @return LDUserBuilder the same builder
      */
-    public function avatar($avatar)
+    public function avatar(?string $avatar)
     {
         $this->_avatar = $avatar;
         return $this;
@@ -161,10 +184,10 @@ class LDUserBuilder
 
     /**
      * Sets the user's avatar URL attribute, and marks it as private.
-     * @param string $avatar The avatar URL
+     * @param $avatar The avatar URL
      * @return LDUserBuilder the same builder
      */
-    public function privateAvatar($avatar)
+    public function privateAvatar(?string $avatar): LDUserBuilder
     {
         array_push($this->_privateAttributeNames, 'avatar');
         return $this->avatar($avatar);
@@ -172,10 +195,10 @@ class LDUserBuilder
 
     /**
      * Sets the user's first name attribute.
-     * @param string $firstName The first name
+     * @param $firstName The first name
      * @return LDUserBuilder the same builder
      */
-    public function firstName($firstName)
+    public function firstName(?string $firstName): LDUserBuilder
     {
         $this->_firstName = $firstName;
         return $this;
@@ -183,10 +206,10 @@ class LDUserBuilder
 
     /**
      * Sets the user's first name attribute, and marks it as private.
-     * @param string $firstName The first name
+     * @param $firstName The first name
      * @return LDUserBuilder the same builder
      */
-    public function privateFirstName($firstName)
+    public function privateFirstName(?string $firstName): LDUserBuilder
     {
         array_push($this->_privateAttributeNames, 'firstName');
         return $this->firstName($firstName);
@@ -194,10 +217,10 @@ class LDUserBuilder
 
     /**
      * Sets the user's last name attribute.
-     * @param string $lastName The last name
+     * @param $lastName The last name
      * @return LDUserBuilder the same builder
      */
-    public function lastName($lastName)
+    public function lastName(?string $lastName): LDUserBuilder
     {
         $this->_lastName = $lastName;
         return $this;
@@ -205,10 +228,10 @@ class LDUserBuilder
 
     /**
      * Sets the user's last name attribute, and marks it as private.
-     * @param string $lastName The last name
+     * @param $lastName The last name
      * @return LDUserBuilder the same builder
      */
-    public function privateLastName($lastName)
+    public function privateLastName(?string $lastName): LDUserBuilder
     {
         array_push($this->_privateAttributeNames, 'lastName');
         return $this->lastName($lastName);
@@ -218,10 +241,10 @@ class LDUserBuilder
      * Sets whether this user is anonymous.
      *
      * The default is false.
-     * @param bool $anonymous True if the user should not appear on the LaunchDarkly dashboard
+     * @param $anonymous True if the user should not appear on the LaunchDarkly dashboard
      * @return LDUserBuilder the same builder
      */
-    public function anonymous($anonymous)
+    public function anonymous(?bool $anonymous): LDUserBuilder
     {
         $this->_anonymous = $anonymous;
         return $this;
@@ -230,10 +253,10 @@ class LDUserBuilder
     /**
      * Sets any number of custom attributes for the user.
      *
-     * @param array $custom An associative array of custom attribute names and values.
+     * @param $custom An associative array of custom attribute names and values.
      * @return LDUserBuilder the same builder
      */
-    public function custom($custom)
+    public function custom(array $custom): LDUserBuilder
     {
         $this->_custom = $custom;
         return $this;
@@ -242,11 +265,11 @@ class LDUserBuilder
     /**
      * Sets a single custom attribute for the user.
      *
-     * @param string $customKey The attribute name
+     * @param $customKey The attribute name
      * @param mixed $customValue The attribute value
      * @return LDUserBuilder the same builder
      */
-    public function customAttribute($customKey, $customValue)
+    public function customAttribute(string $customKey, $customValue): LDUserBuilder
     {
         $this->_custom[$customKey] = $customValue;
         return $this;
@@ -255,11 +278,11 @@ class LDUserBuilder
     /**
      * Sets a single custom attribute for the user, and marks it as private.
      *
-     * @param string $customKey The attribute name
+     * @param $customKey The attribute name
      * @param mixed $customValue The attribute value
      * @return LDUserBuilder the same builder
      */
-    public function privateCustomAttribute($customKey, $customValue)
+    public function privateCustomAttribute(string $customKey, $customValue): LDUserBuilder
     {
         array_push($this->_privateAttributeNames, $customKey);
         return $this->customAttribute($customKey, $customValue);
@@ -267,11 +290,16 @@ class LDUserBuilder
 
     /**
      * Creates the LDUser instance based on the builder's current properties.
-     *
-     * @return LDUser
      */
-    public function build()
+    public function build(): LDUser
     {
-        return new LDUser($this->_key, $this->_secondary, $this->_ip, $this->_country, $this->_email, $this->_name, $this->_avatar, $this->_firstName, $this->_lastName, $this->_anonymous, $this->_custom, $this->_privateAttributeNames);
+        return new LDUser(
+            $this->_key, $this->_secondary, 
+            $this->_ip, $this->_country, 
+            $this->_email, $this->_name, 
+            $this->_avatar, $this->_firstName, 
+            $this->_lastName, $this->_anonymous, 
+            $this->_custom, $this->_privateAttributeNames
+        );
     }
 }

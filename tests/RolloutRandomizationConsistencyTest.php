@@ -19,6 +19,13 @@ use LaunchDarkly\Impl\EventFactory;
 
 class RolloutRandomizationConsistencyTest extends \PHPUnit\Framework\TestCase
 {
+    private static $requester;
+
+    public static function setUpBeforeClass(): void
+    {
+        static::$requester = new MockFeatureRequester();
+    }
+
     public function buildFlag()
     {
         $vr = array(
@@ -79,17 +86,17 @@ class RolloutRandomizationConsistencyTest extends \PHPUnit\Framework\TestCase
 
         $ub1 = new LDUserBuilder('userKeyA');
         $user1 = $ub1->build();
-        $result1 = $flag->evaluate($user1, null, $eventFactory);
+        $result1 = $flag->evaluate($user1, static::$requester, $eventFactory);
         $this->assertEquals($expectedEvalResult1, $result1);
 
         $ub2 = new LDUserBuilder('userKeyB');
         $user2 = $ub2->build();
-        $result2 = $flag->evaluate($user2, null, $eventFactory);
+        $result2 = $flag->evaluate($user2, static::$requester, $eventFactory);
         $this->assertEquals($expectedEvalResult2, $result2);
 
         $ub3 = new LDUserBuilder('userKeyC');
         $user3 = $ub3->build();
-        $result3 = $flag->evaluate($user3, null, $eventFactory);
+        $result3 = $flag->evaluate($user3, static::$requester, $eventFactory);
         $this->assertEquals($expectedEvalResult3, $result3);
     }
 

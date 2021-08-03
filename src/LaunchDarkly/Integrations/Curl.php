@@ -29,7 +29,7 @@ class Curl
      */
     public static function eventPublisher($options = array())
     {
-        return function ($sdkKey, $baseOptions) use ($options) {
+        return function (string $sdkKey, array $baseOptions) use ($options) {
             return new \LaunchDarkly\Impl\Integrations\CurlEventPublisher($sdkKey,
                 array_merge($baseOptions, $options));
         };

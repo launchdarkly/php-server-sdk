@@ -12,14 +12,17 @@ namespace LaunchDarkly;
  */
 class Rule extends VariationOrRollout
 {
-    /** @var string */
+    /** @var string|null */
     private $_id = null;
     /** @var Clause[] */
-    private $_clauses = array();
+    private $_clauses = [];
     /** @var boolean */
     private $_trackEvents;
 
-    protected function __construct($variation, $rollout, $id, array $clauses, $trackEvents)
+    protected function __construct(
+        ?int $variation, ?Rollout $rollout, 
+        ?string $id, array $clauses, 
+        bool $trackEvents)
     {
         parent::__construct($variation, $rollout);
         $this->_id = $id;
@@ -27,23 +30,20 @@ class Rule extends VariationOrRollout
         $this->_trackEvents = $trackEvents;
     }
 
-    public static function getDecoder()
+    public static function getDecoder(): \Closure
     {
-        return function ($v) {
+        return function (array $v) {
             return new Rule(
-                isset($v['variation']) ? $v['variation'] : null,
+                $v['variation'] ?? null,
                 isset($v['rollout']) ? call_user_func(Rollout::getDecoder(), $v['rollout']) : null,
-                isset($v['id']) ? $v['id'] : null,
+                $v['id'] ?? null,
                 array_map(Clause::getDecoder(), $v['clauses']),
-                isset($v['trackEvents']) ? $v['trackEvents'] : false);
+                $v['trackEvents']?? false
+            );
         };
     }
 
-    /**
-     * @param $user LDUser
-     * @return bool
-     */
-    public function matchesUser($user, $featureRequester)
+    public function matchesUser(LDUser $user, ?FeatureRequester $featureRequester): bool
     {
         foreach ($this->_clauses as $clause) {
             if (!$clause->matchesUser($user, $featureRequester)) {
@@ -53,10 +53,7 @@ class Rule extends VariationOrRollout
         return true;
     }
 
-    /**
-     * @return string
-     */
-    public function getId()
+    public function getId(): ?string
     {
         return $this->_id;
     }
@@ -64,15 +61,12 @@ class Rule extends VariationOrRollout
     /**
      * @return Clause[]
      */
-    public function getClauses()
+    public function getClauses(): array
     {
         return $this->_clauses;
     }
 
-    /**
-     * @return boolean
-     */
-    public function isTrackEvents()
+    public function isTrackEvents(): bool
     {
         return $this->_trackEvents;
     }
