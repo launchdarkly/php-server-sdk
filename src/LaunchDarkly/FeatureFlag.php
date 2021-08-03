@@ -185,7 +185,7 @@ class FeatureFlag
                         }
                         array_push($events, $eventFactory->newEvalEvent($prereqFeatureFlag, $user, $prereqEvalResult, null, $this));
                     }
-                } catch (EvaluationException $e) {
+                } catch (\Exception $e) {
                     $prereqOk = false;
                 }
                 if (!$prereqOk) {

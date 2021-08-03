@@ -275,21 +275,6 @@ class LDClient
     }
 
     /**
-     * Deprecated name for variation().
-     *
-     * @deprecated Use variation() instead.
-     * @param string $key The unique key for the feature flag
-     * @param LDUser $user The end user requesting the flag
-     * @param bool $default The default value of the flag
-     * @return mixed
-     */
-    public function toggle(string $key, LDUser $user, bool $default = false)
-    {
-        $this->_logger->warning("Deprecated function: toggle() called. Use variation() instead.");
-        return $this->variation($key, $user, $default);
-    }
-
-    /**
      * Returns whether the LaunchDarkly client is in offline mode.
      */
     public function isOffline(): bool
@@ -332,33 +317,6 @@ class LDClient
             return;
         }
         $this->_eventProcessor->enqueue($this->_eventFactoryDefault->newIdentifyEvent($user));
-    }
-
-    /**
-     * Deprecated alternative to allFlagsState().
-     *
-     * This returns an array mapping feature flag keys to their evaluated results for a given user.
-     *
-     * If the result of a flag's evaluation would have returned the default variation, it will have a null entry.
-     * If the client is offline, has not been initialized, or a null user or user with null/empty user key, null will be returned.
-     * This method will not send analytics events back to LaunchDarkly.
-     *
-     * The most common use case for this method is to bootstrap a set of client-side feature flags from a back-end
-     * service. Current versions of the JavaScript SDK require somewhat different data; for best compatibility,
-     * use {@link allFlagsState()} instead.
-     *
-     * @deprecated Use allFlagsState() instead. Current versions of the client-side SDK will not
-     * generate analytics events correctly if you pass the result of allFlags().
-     * @param LDUser $user The end user requesting the feature flags
-     * @return array|null Mapping of feature flag keys to their evaluated results for $user
-     */
-    public function allFlags(LDUser $user): ?array
-    {
-        $state = $this->allFlagsState($user);
-        if (!$state->isValid()) {
-            return null;
-        }
-        return $state->toValuesMap();
     }
 
     /**

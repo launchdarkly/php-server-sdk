@@ -336,33 +336,6 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('anonymousUser', $event['contextKind']);
     }
 
-    public function testAllFlagsReturnsFlagValues()
-    {
-        $flagJson = array(
-            'key' => 'feature',
-            'version' => 100,
-            'deleted' => false,
-            'on' => false,
-            'targets' => array(),
-            'prerequisites' => array(),
-            'rules' => array(),
-            'offVariation' => 1,
-            'fallthrough' => array('variation' => 0),
-            'variations' => array('fall', 'off', 'on'),
-            'salt' => ''
-        );
-        $flag = FeatureFlag::decode($flagJson);
-
-        MockFeatureRequester::$flags = array('feature' => $flag);
-        $client = $this->makeClient();
-
-        $builder = new LDUserBuilder(3);
-        $user = $builder->build();
-        $values = $client->allFlags($user);
-
-        $this->assertEquals(array('feature' => 'off'), $values);
-    }
-
     public function testAllFlagsStateReturnsState()
     {
         $flagJson = array(
