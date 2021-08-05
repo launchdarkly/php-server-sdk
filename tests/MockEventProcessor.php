@@ -1,7 +1,9 @@
 <?php
 namespace LaunchDarkly\Tests;
 
-class MockEventProcessor extends \LaunchDarkly\EventProcessor
+use LaunchDarkly\Impl\Events\EventProcessor;
+
+class MockEventProcessor extends EventProcessor
 {
     private $_events;
 

@@ -1,6 +1,8 @@
 <?php
 namespace LaunchDarkly;
 
+use LaunchDarkly\Impl\Model\FeatureFlag;
+
 /**
  * A snapshot of the state of all feature flags with regard to a specific user.
  *

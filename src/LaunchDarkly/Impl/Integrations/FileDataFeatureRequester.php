@@ -1,9 +1,9 @@
 <?php
 namespace LaunchDarkly\Impl\Integrations;
 
-use LaunchDarkly\FeatureFlag;
 use LaunchDarkly\FeatureRequester;
-use LaunchDarkly\Segment;
+use LaunchDarkly\Impl\Model\FeatureFlag;
+use LaunchDarkly\Impl\Model\Segment;
 
 class FileDataFeatureRequester implements FeatureRequester
 {

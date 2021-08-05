@@ -6,12 +6,12 @@ use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\HandlerStack;
 use Kevinrob\GuzzleCache\CacheMiddleware;
 use Kevinrob\GuzzleCache\Strategy\PublicCacheStrategy;
-use LaunchDarkly\FeatureFlag;
 use LaunchDarkly\FeatureRequester;
 use LaunchDarkly\LDClient;
-use LaunchDarkly\Segment;
-use LaunchDarkly\UnrecoverableHTTPStatusException;
-use LaunchDarkly\Util;
+use LaunchDarkly\Impl\UnrecoverableHTTPStatusException;
+use LaunchDarkly\Impl\Util;
+use LaunchDarkly\Impl\Model\FeatureFlag;
+use LaunchDarkly\Impl\Model\Segment;
 use Psr\Log\LoggerInterface;
 
 class GuzzleFeatureRequester implements FeatureRequester

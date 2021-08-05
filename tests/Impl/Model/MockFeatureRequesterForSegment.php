@@ -1,30 +1,31 @@
 <?php
-namespace LaunchDarkly\Tests;
+namespace LaunchDarkly\Tests\Impl\Model;
 
 use LaunchDarkly\FeatureRequester;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Impl\Model\Segment;
 
-class MockFeatureRequester implements FeatureRequester
+class MockFeatureRequesterForSegment implements FeatureRequester
 {
-    public static $flags = array();
+    public $key = null;
+    public $val = null;
 
-    public function __construct($baseurl = '', $key = '', $options = array())
+    public function __construct($baseurl = null, $key = null, $options = null)
     {
     }
 
     public function getFeature(string $key): ?FeatureFlag
     {
-        return self::$flags[$key] ?? null;
+        return null;
     }
 
     public function getSegment(string $key): ?Segment
     {
-        return null;
+        return ($key == $this->key) ? $this->val : null;
     }
 
     public function getAllFeatures(): ?array
     {
-        return self::$flags;
+        return null;
     }
 }

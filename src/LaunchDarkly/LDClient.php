@@ -1,8 +1,12 @@
 <?php
 namespace LaunchDarkly;
 
-use LaunchDarkly\Impl\EventFactory;
-use LaunchDarkly\Impl\NullEventProcessor;
+use LaunchDarkly\Impl\PreloadedFeatureRequester;
+use LaunchDarkly\Impl\UnrecoverableHTTPStatusException;
+use LaunchDarkly\Impl\Events\EventFactory;
+use LaunchDarkly\Impl\Events\EventProcessor;
+use LaunchDarkly\Impl\Events\NullEventProcessor;
+use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Integrations\Guzzle;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;

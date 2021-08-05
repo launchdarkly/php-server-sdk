@@ -4,8 +4,8 @@ namespace LaunchDarkly\Tests;
 use InvalidArgumentException;
 use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
-use LaunchDarkly\FeatureFlag;
 use LaunchDarkly\FeatureFlagsState;
+use LaunchDarkly\Impl\Model\FeatureFlag;
 use PHPUnit\Framework\TestCase;
 
 class FeatureFlagsStateTest extends \PHPUnit\Framework\TestCase

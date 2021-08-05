@@ -1,6 +1,9 @@
 <?php
 namespace LaunchDarkly;
 
+use LaunchDarkly\Impl\Model\FeatureFlag;
+use LaunchDarkly\Impl\Model\Segment;
+
 /**
  * Interface for the component that retrieves feature flag data.
  *
