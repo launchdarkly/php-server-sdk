@@ -14,7 +14,7 @@ use Psr\Log\LoggerInterface;
 class LDClient
 {
     /** @var string */
-    const DEFAULT_BASE_URI = 'https://app.launchdarkly.com';
+    const DEFAULT_BASE_URI = 'https://sdk.launchdarkly.com';
     /** @var string */
     const DEFAULT_EVENTS_URI = 'https://events.launchdarkly.com';
     /**
