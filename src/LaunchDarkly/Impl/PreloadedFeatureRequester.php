@@ -28,7 +28,7 @@ class PreloadedFeatureRequester implements FeatureRequester
     /**
      * Gets feature data from cached values
      *
-     * @param $key feature key
+     * @param string $key feature key
      * @return FeatureFlag|null The decoded FeatureFlag, or null if missing
      */
     public function getFeature(string $key): ?FeatureFlag
@@ -42,7 +42,7 @@ class PreloadedFeatureRequester implements FeatureRequester
     /**
      * Gets segment data from the regular feature requester
      *
-     * @param $key segment key
+     * @param string $key segment key
      * @return Segment|null The decoded Segment, or null if missing
      */
     public function getSegment(string $key): ?Segment

@@ -45,8 +45,8 @@ class SemanticVersion
 
     /**
      * Attempts to parse a string as a semantic version.
-     * @param $input string the input string
-     * @param $loose boolean true if minor and patch versions can be omitted
+     * @param string $input the input string
+     * @param bool $loose true if minor and patch versions can be omitted
      * @throws \InvalidArgumentException if the string is not in an acceptable format
      */
     public static function parse(string $input, bool $loose = false): SemanticVersion
@@ -67,7 +67,7 @@ class SemanticVersion
 
     /**
      * Compares this version to another version using Semantic Versioning precedence rules.
-     * @param $other a SemanticVersion object
+     * @param SemanticVersion $other a SemanticVersion object
      * @return int -1 if this version has lower precedence than the other version; 1 if this version
      *   has higher precedence; zero if the two have equal precedence
      */

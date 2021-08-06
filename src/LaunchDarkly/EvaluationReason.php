@@ -5,7 +5,7 @@ namespace LaunchDarkly;
 /**
  * Describes the reason that a flag evaluation produced a particular value.
  *
- * This is part of the {@link \LaunchDarkly\EvaluationDetail} object returned by {@link \LaunchDarkly\LDClient::variationDetail()}.
+ * This is part of the {@see \LaunchDarkly\EvaluationDetail} object returned by {@see \LaunchDarkly\LDClient::variationDetail()}.
  */
 class EvaluationReason implements \JsonSerializable
 {

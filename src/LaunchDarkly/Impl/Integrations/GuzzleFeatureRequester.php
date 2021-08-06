@@ -60,7 +60,7 @@ class GuzzleFeatureRequester implements FeatureRequester
     /**
      * Gets feature data from a likely cached store
      *
-     * @param $key string feature key
+     * @param string $key feature key
      * @return FeatureFlag|null The decoded FeatureFlag, or null if missing
      */
     public function getFeature(string $key): ?FeatureFlag
@@ -83,7 +83,7 @@ class GuzzleFeatureRequester implements FeatureRequester
     /**
      * Gets segment data from a likely cached store
      *
-     * @param $key string segment key
+     * @param string $key segment key
      * @return Segment|null The decoded Segment, or null if missing
      */
     public function getSegment(string $key): ?Segment

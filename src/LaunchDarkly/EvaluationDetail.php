@@ -7,7 +7,7 @@ use \LaunchDarkly\EvaluationReason;
 /**
  * An object that combines the result of a flag evaluation with an explanation of how it was calculated.
  *
- * This is returned by {@link \LaunchDarkly\LDClient::variationDetail()}.
+ * This is returned by {@see \LaunchDarkly\LDClient::variationDetail()}.
  */
 class EvaluationDetail
 {

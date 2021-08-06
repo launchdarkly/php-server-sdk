@@ -7,7 +7,7 @@ use LaunchDarkly\Impl\Model\Segment;
 /**
  * Interface for the component that retrieves feature flag data.
  *
- * The default implementation is {@link \LaunchDarkly\Integrations\Guzzle::featureRequester()}, which requests
+ * The default implementation is {@see \LaunchDarkly\Integrations\Guzzle::featureRequester()}, which requests
  * flags inefficiently via HTTP on demand. For other implementations, including database integrations, see the
  * LaunchDarkly\Integrations namespace.
  */

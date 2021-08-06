@@ -7,7 +7,7 @@ namespace LaunchDarkly;
  * The only mandatory property property is the key, which must uniquely identify each user. For authenticated users,
  * this may be a username or e-mail address. For anonymous users, it could be an IP address or session ID.
  *
- * Use {@link \LaunchDarkly\LDUserBuilder} to construct instances of this class.
+ * Use {@see \LaunchDarkly\LDUserBuilder} to construct instances of this class.
  */
 class LDUser
 {
@@ -48,7 +48,9 @@ class LDUser
     protected $_privateAttributeNames = array();
 
     /**
-     * Constructor for directly creating an instance; it is preferable to use LDUserBuilder.
+     * Constructor for directly creating an instance.
+     * 
+     * It is preferable to use {@see LDUserBuilder} instead of this constructor.
      *
      * @param string $key Unique key for the user. For authenticated users, this may be a username or e-mail address. For anonymous users, this could be an IP address or session ID.
      * @param string|null $secondary An optional secondary identifier

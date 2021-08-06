@@ -50,7 +50,7 @@ class LDUserBuilder
     
     /**
      * Creates a builder with the specified key.
-     * @param $key The user key
+     * @param string $key The user key
      */
     public function __construct(string $key)
     {
@@ -59,7 +59,7 @@ class LDUserBuilder
 
     /**
      * Sets the user's secondary key attribute.
-     * @param $secondary The secondary key
+     * @param string|null $secondary The secondary key
      * @return LDUserBuilder the same builder
      */
     public function secondary(?string $secondary): LDUserBuilder
@@ -70,7 +70,7 @@ class LDUserBuilder
 
     /**
      * Sets the user's secondary key attribute, and marks it as private.
-     * @param $secondary The secondary key
+     * @param string|null $secondary The secondary key
      * @return LDUserBuilder the same builder
      */
     public function privateSecondary(?string $secondary): LDUserBuilder
@@ -81,7 +81,7 @@ class LDUserBuilder
 
     /**
      * Sets the user's IP address attribute.
-     * @param $ip The IP address
+     * @param string|null $ip The IP address
      * @return LDUserBuilder the same builder
      */
     public function ip(?string $ip): LDUserBuilder
@@ -92,7 +92,7 @@ class LDUserBuilder
 
     /**
      * Sets the user's IP address attribute, and marks it as private.
-     * @param $ip The IP address
+     * @param string|null $ip The IP address
      * @return LDUserBuilder the same builder
      */
     public function privateIp(?string $ip): LDUserBuilder
@@ -105,7 +105,7 @@ class LDUserBuilder
      * Sets the user's country attribute.
      *
      * This may be an ISO 3166-1 country code, or any other value you wish; it is not validated.
-     * @param string $country The country
+     * @param string|null $country The country
      * @return LDUserBuilder the same builder
      */
     public function country(?string $country): LDUserBuilder
@@ -118,7 +118,7 @@ class LDUserBuilder
      * Sets the user's country attribute, and marks it as private.
      *
      * This may be an ISO 3166-1 country code, or any other value you wish; it is not validated.
-     * @param $country The country
+     * @param string|null $country The country
      * @return LDUserBuilder the same builder
      */
     public function privateCountry(?string $country): LDUserBuilder
@@ -129,7 +129,7 @@ class LDUserBuilder
 
     /**
      * Sets the user's email address attribute.
-     * @param $email The email address
+     * @param string|null $email The email address
      * @return LDUserBuilder the same builder
      */
     public function email(?string $email): LDUserBuilder
@@ -140,7 +140,7 @@ class LDUserBuilder
 
     /**
      * Sets the user's email address attribute, and marks it as private.
-     * @param $email The email address
+     * @param string|null $email The email address
      * @return LDUserBuilder the same builder
      */
     public function privateEmail(?string $email): LDUserBuilder
@@ -151,7 +151,7 @@ class LDUserBuilder
 
     /**
      * Sets the user's full name attribute.
-     * @param $name The full name
+     * @param string|null $name The full name
      * @return LDUserBuilder the same builder
      */
     public function name(?string $name): LDUserBuilder
@@ -162,7 +162,7 @@ class LDUserBuilder
 
     /**
      * Sets the user's full name attribute, and marks it as private.
-     * @param $name The full name
+     * @param string|null $name The full name
      * @return LDUserBuilder the same builder
      */
     public function privateName(?string $name): LDUserBuilder
@@ -173,7 +173,7 @@ class LDUserBuilder
 
     /**
      * Sets the user's avatar URL attribute.
-     * @param string $avatar The avatar URL
+     * @param string|null $avatar The avatar URL
      * @return LDUserBuilder the same builder
      */
     public function avatar(?string $avatar)
@@ -184,7 +184,7 @@ class LDUserBuilder
 
     /**
      * Sets the user's avatar URL attribute, and marks it as private.
-     * @param $avatar The avatar URL
+     * @param string|null $avatar The avatar URL
      * @return LDUserBuilder the same builder
      */
     public function privateAvatar(?string $avatar): LDUserBuilder
@@ -195,7 +195,7 @@ class LDUserBuilder
 
     /**
      * Sets the user's first name attribute.
-     * @param $firstName The first name
+     * @param string|null $firstName The first name
      * @return LDUserBuilder the same builder
      */
     public function firstName(?string $firstName): LDUserBuilder
@@ -206,7 +206,7 @@ class LDUserBuilder
 
     /**
      * Sets the user's first name attribute, and marks it as private.
-     * @param $firstName The first name
+     * @param string|null $firstName The first name
      * @return LDUserBuilder the same builder
      */
     public function privateFirstName(?string $firstName): LDUserBuilder
@@ -217,7 +217,7 @@ class LDUserBuilder
 
     /**
      * Sets the user's last name attribute.
-     * @param $lastName The last name
+     * @param string|null $lastName The last name
      * @return LDUserBuilder the same builder
      */
     public function lastName(?string $lastName): LDUserBuilder
@@ -228,7 +228,7 @@ class LDUserBuilder
 
     /**
      * Sets the user's last name attribute, and marks it as private.
-     * @param $lastName The last name
+     * @param string|null $lastName The last name
      * @return LDUserBuilder the same builder
      */
     public function privateLastName(?string $lastName): LDUserBuilder
@@ -241,7 +241,7 @@ class LDUserBuilder
      * Sets whether this user is anonymous.
      *
      * The default is false.
-     * @param $anonymous True if the user should not appear on the LaunchDarkly dashboard
+     * @param bool|null $anonymous True if the user should not appear on the LaunchDarkly dashboard
      * @return LDUserBuilder the same builder
      */
     public function anonymous(?bool $anonymous): LDUserBuilder
@@ -253,7 +253,7 @@ class LDUserBuilder
     /**
      * Sets any number of custom attributes for the user.
      *
-     * @param $custom An associative array of custom attribute names and values.
+     * @param array $custom An associative array of custom attribute names and values.
      * @return LDUserBuilder the same builder
      */
     public function custom(array $custom): LDUserBuilder
@@ -265,7 +265,7 @@ class LDUserBuilder
     /**
      * Sets a single custom attribute for the user.
      *
-     * @param $customKey The attribute name
+     * @param string $customKey The attribute name
      * @param mixed $customValue The attribute value
      * @return LDUserBuilder the same builder
      */
@@ -278,7 +278,7 @@ class LDUserBuilder
     /**
      * Sets a single custom attribute for the user, and marks it as private.
      *
-     * @param $customKey The attribute name
+     * @param string $customKey The attribute name
      * @param mixed $customValue The attribute value
      * @return LDUserBuilder the same builder
      */
@@ -290,6 +290,7 @@ class LDUserBuilder
 
     /**
      * Creates the LDUser instance based on the builder's current properties.
+     * @return LDUser the user
      */
     public function build(): LDUser
     {

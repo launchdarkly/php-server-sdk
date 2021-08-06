@@ -42,8 +42,8 @@ class FeatureRequesterBase implements FeatureRequester
     /**
      * Override this method to read a JSON object (as a string) from the underlying store.
      *
-     * @param $namespace "features" or "segments"
-     * @param $key flag or segment key
+     * @param string $namespace "features" or "segments"
+     * @param string $key flag or segment key
      * @return string|null the stored JSON data, or null if not found
      */
     protected function readItemString(string $namespace, string $key): ?string
@@ -54,7 +54,7 @@ class FeatureRequesterBase implements FeatureRequester
     /**
      * Override this method to read a set of JSON objects (as strings) from the underlying store.
      *
-     * @param $namespace "features" or "segments"
+     * @param string $namespace "features" or "segments"
      * @return array|null array of stored JSON strings
      */
     protected function readItemStringList(string $namespace): ?array
@@ -76,7 +76,7 @@ class FeatureRequesterBase implements FeatureRequester
     /**
      * Gets an individual feature flag.
      *
-     * @param $key string feature flag key
+     * @param string $key feature flag key
      * @return FeatureFlag|null The decoded JSON feature data, or null if missing
      */
     public function getFeature(string $key): ?FeatureFlag
@@ -98,7 +98,7 @@ class FeatureRequesterBase implements FeatureRequester
     /**
      * Gets an individual user segment.
      *
-     * @param $key string segment key
+     * @param string $key segment key
      * @return Segment|null The decoded JSON segment data, or null if missing
      */
     public function getSegment(string $key): ?Segment

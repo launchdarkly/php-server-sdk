@@ -33,7 +33,7 @@ class Guzzle
     /**
      * Configures an adapter for sending analytics events to LaunchDarkly using GuzzleHttp.
      *
-     * The default mechanism for sending events is {@link \LaunchDarkly\Integrations\Curl::eventPublisher()}.
+     * The default mechanism for sending events is {@see \LaunchDarkly\Integrations\Curl::eventPublisher()}.
      * To use Guzzle instead, call this method and store its return value in the `event_publisher` property
      * of the client configuration:
      *

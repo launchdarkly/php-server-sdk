@@ -4,12 +4,15 @@ namespace LaunchDarkly;
 /**
  * Interface for the component that sends events to the LaunchDarkly service.
  *
- * The default implementation is {@link \LaunchDarkly\Integrations\Curl::eventPublisher()}. The SDK also
- * provides {@link \LaunchDarkly\Integrations\Guzzle::eventPublisher()}.
+ * The default implementation is {@see \LaunchDarkly\Integrations\Curl::eventPublisher()}. The SDK also
+ * provides {@see \LaunchDarkly\Integrations\Guzzle::eventPublisher()}.
  */
 interface EventPublisher
 {
-    /** @var int */
+    /**
+     * @var int
+     * @ignore
+     */
     const CURRENT_SCHEMA_VERSION = 2;
 
     /**

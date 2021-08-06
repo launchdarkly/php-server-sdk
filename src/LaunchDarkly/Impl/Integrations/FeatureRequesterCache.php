@@ -6,7 +6,7 @@ interface FeatureRequesterCache
     /**
      * Read a value from the cache.
      *
-     * @param $cacheKey the unique key
+     * @param string $cacheKey the unique key
      * @return string the cached value, or null if not found
      */
     public function getCachedString(string $cacheKey): ?string;
@@ -14,8 +14,8 @@ interface FeatureRequesterCache
     /**
      * Store a value in the cache.
      *
-     * @param $cacheKey the unique key
-     * @param $data the string value
+     * @param string $cacheKey the unique key
+     * @param string $data the string value
      */
     public function putCachedString(string $cacheKey, ?string $data): void;
 }
