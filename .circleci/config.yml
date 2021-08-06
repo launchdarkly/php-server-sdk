@@ -9,11 +9,9 @@ workflows:
       - test-with-preinstalled-php:
           name: PHP 7.4
           docker-image: cimg/php:7.4
-      # we currently dont support php 8.0.x due to a bug in php 8 with guzzle, 
-      # this bug is reolved in 8.1-alpha and later
-      #- test-with-preinstalled-php:
-      #    name: PHP 8.0
-      #    docker-image: cimg/php:8.1
+      - test-with-preinstalled-php:
+         name: PHP 8.0
+         docker-image: cimg/php:8.0
 
 jobs:
   test-with-preinstalled-php:
