@@ -24,7 +24,7 @@ class Guzzle
      */
     public static function featureRequester($options = array())
     {
-        return function ($baseUri, $sdkKey, $baseOptions) use ($options) {
+        return function (string $baseUri, string $sdkKey, array $baseOptions) use ($options) {
             return new \LaunchDarkly\Impl\Integrations\GuzzleFeatureRequester($baseUri, $sdkKey,
                 array_merge($baseOptions, $options));
         };
@@ -33,7 +33,7 @@ class Guzzle
     /**
      * Configures an adapter for sending analytics events to LaunchDarkly using GuzzleHttp.
      *
-     * The default mechanism for sending events is {@link \LaunchDarkly\Integrations\Curl::eventPublisher()}.
+     * The default mechanism for sending events is {@see \LaunchDarkly\Integrations\Curl::eventPublisher()}.
      * To use Guzzle instead, call this method and store its return value in the `event_publisher` property
      * of the client configuration:
      *
@@ -54,7 +54,7 @@ class Guzzle
      */
     public static function eventPublisher($options = array())
     {
-        return function ($sdkKey, $baseOptions) use ($options) {
+        return function (string $sdkKey, array $baseOptions) use ($options) {
             return new \LaunchDarkly\Impl\Integrations\GuzzleEventPublisher($sdkKey,
                 array_merge($baseOptions, $options));
         };

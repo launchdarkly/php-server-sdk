@@ -3,14 +3,17 @@ namespace LaunchDarkly\Tests;
 
 use InvalidArgumentException;
 use LaunchDarkly\EvaluationReason;
-use LaunchDarkly\FeatureFlag;
 use LaunchDarkly\FeatureRequester;
 use LaunchDarkly\LDClient;
 use LaunchDarkly\LDUser;
 use LaunchDarkly\LDUserBuilder;
+use LaunchDarkly\Impl\Events\EventFactory;
+use LaunchDarkly\Impl\Events\EventProcessor;
+use LaunchDarkly\Impl\Model\FeatureFlag;
 use Psr\Log\LoggerInterface;
+use PHPUnit\Framework\TestCase;
 
-class LDClientTest extends \PHPUnit_Framework_TestCase
+class LDClientTest extends \PHPUnit\Framework\TestCase
 {
     public function testDefaultCtor()
     {
@@ -334,33 +337,6 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('anonymousUser', $event['contextKind']);
     }
 
-    public function testAllFlagsReturnsFlagValues()
-    {
-        $flagJson = array(
-            'key' => 'feature',
-            'version' => 100,
-            'deleted' => false,
-            'on' => false,
-            'targets' => array(),
-            'prerequisites' => array(),
-            'rules' => array(),
-            'offVariation' => 1,
-            'fallthrough' => array('variation' => 0),
-            'variations' => array('fall', 'off', 'on'),
-            'salt' => ''
-        );
-        $flag = FeatureFlag::decode($flagJson);
-
-        MockFeatureRequester::$flags = array('feature' => $flag);
-        $client = $this->makeClient();
-
-        $builder = new LDUserBuilder(3);
-        $user = $builder->build();
-        $values = $client->allFlags($user);
-
-        $this->assertEquals(array('feature' => 'off'), $values);
-    }
-
     public function testAllFlagsStateReturnsState()
     {
         $flagJson = array(
@@ -672,7 +648,7 @@ class LDClientTest extends \PHPUnit_Framework_TestCase
 
     public function testOnlyValidFeatureRequester()
     {
-        $this->setExpectedException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         new LDClient("BOGUS_SDK_KEY", ['feature_requester_class' => \stdClass::class]);
     }
 

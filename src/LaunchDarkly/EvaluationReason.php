@@ -5,7 +5,7 @@ namespace LaunchDarkly;
 /**
  * Describes the reason that a flag evaluation produced a particular value.
  *
- * This is part of the {@link \LaunchDarkly\EvaluationDetail} object returned by {@link \LaunchDarkly\LDClient::variationDetail()}.
+ * This is part of the {@see \LaunchDarkly\EvaluationDetail} object returned by {@see \LaunchDarkly\LDClient::variationDetail()}.
  */
 class EvaluationReason implements \JsonSerializable
 {
@@ -81,17 +81,29 @@ class EvaluationReason implements \JsonSerializable
      */
     const EXCEPTION_ERROR = 'EXCEPTION';
 
+    /** @var string */
     private $_kind;
+
+    /** @var string|null */
     private $_errorKind;
+
+    /** @var int|null */
     private $_ruleIndex;
+
+    /** @var string|null */
     private $_ruleId;
+
+    /** @var string|null */
     private $_prerequisiteKey;
+
+    /** @var bool */
+    private $_inExperiment;
 
     /**
      * Creates a new instance of the OFF reason.
      * @return EvaluationReason
      */
-    public static function off()
+    public static function off(): EvaluationReason
     {
         return new EvaluationReason(self::OFF);
     }
@@ -100,7 +112,7 @@ class EvaluationReason implements \JsonSerializable
      * Creates a new instance of the FALLTHROUGH reason.
      * @return EvaluationReason
      */
-    public static function fallthrough($inExperiment = false)
+    public static function fallthrough(bool $inExperiment = false): EvaluationReason
     {
         return new EvaluationReason(self::FALLTHROUGH, null, null, null, null, $inExperiment);
     }
@@ -109,16 +121,20 @@ class EvaluationReason implements \JsonSerializable
      * Creates a new instance of the TARGET_MATCH reason.
      * @return EvaluationReason
      */
-    public static function targetMatch()
+    public static function targetMatch(): EvaluationReason
     {
         return new EvaluationReason(self::TARGET_MATCH);
     }
 
     /**
      * Creates a new instance of the RULE_MATCH reason.
+     *
      * @return EvaluationReason
+     *
+     * @param null|int $ruleIndex
+     * @param null|string $ruleId
      */
-    public static function ruleMatch($ruleIndex, $ruleId, $inExperiment = false)
+    public static function ruleMatch(?int $ruleIndex, ?string $ruleId, bool $inExperiment = false): EvaluationReason
     {
         return new EvaluationReason(self::RULE_MATCH, null, $ruleIndex, $ruleId, null, $inExperiment);
     }
@@ -127,21 +143,30 @@ class EvaluationReason implements \JsonSerializable
      * Creates a new instance of the PREREQUISITE_FAILED reason.
      * @return EvaluationReason
      */
-    public static function prerequisiteFailed($prerequisiteKey)
+    public static function prerequisiteFailed(string $prerequisiteKey): EvaluationReason
     {
         return new EvaluationReason(self::PREREQUISITE_FAILED, null, null, null, $prerequisiteKey);
     }
 
     /**
      * Creates a new instance of the ERROR reason.
+     *
      * @return EvaluationReason
+     *
+     * @param string $errorKind
      */
-    public static function error($errorKind)
+    public static function error(string $errorKind): EvaluationReason
     {
         return new EvaluationReason(self::ERROR, $errorKind);
     }
 
-    private function __construct($kind, $errorKind = null, $ruleIndex = null, $ruleId = null, $prerequisiteKey = null, $inExperiment = null)
+    private function __construct(
+        string $kind,
+        ?string $errorKind = null,
+        ?int $ruleIndex = null,
+        ?string $ruleId = null,
+        ?string $prerequisiteKey = null,
+        bool $inExperiment = false)
     {
         $this->_kind = $kind;
         $this->_errorKind = $errorKind;
@@ -155,7 +180,7 @@ class EvaluationReason implements \JsonSerializable
      * Returns a constant indicating the general category of the reason, such as OFF.
      * @return string
      */
-    public function getKind()
+    public function getKind(): string
     {
         return $this->_kind;
     }
@@ -165,7 +190,7 @@ class EvaluationReason implements \JsonSerializable
      * returns null.
      * @return string|null
      */
-    public function getErrorKind()
+    public function getErrorKind(): ?string
     {
         return $this->_errorKind;
     }
@@ -175,7 +200,7 @@ class EvaluationReason implements \JsonSerializable
      * is RULE_MATCH. Otherwise returns null.
      * @return int|null
      */
-    public function getRuleIndex()
+    public function getRuleIndex(): ?int
     {
         return $this->_ruleIndex;
     }
@@ -185,7 +210,7 @@ class EvaluationReason implements \JsonSerializable
      * Otherwise returns null.
      * @return string|null
      */
-    public function getRuleId()
+    public function getRuleId(): ?string
     {
         return $this->_ruleId;
     }
@@ -195,7 +220,7 @@ class EvaluationReason implements \JsonSerializable
      * PREREQUISITE_FAILED. Otherwise returns null.
      * @return string|null
      */
-    public function getPrerequisiteKey()
+    public function getPrerequisiteKey(): ?string
     {
         return $this->_prerequisiteKey;
     }
@@ -205,23 +230,23 @@ class EvaluationReason implements \JsonSerializable
      * one of the variations in the experiment.  Otherwise it returns false.
      * @return boolean
      */
-    public function isInExperiment()
+    public function isInExperiment(): bool
     {
-        return !is_null($this->_inExperiment) && $this->_inExperiment;
+        return $this->_inExperiment;
     }
 
     /**
      * Returns a simple string representation of this object.
      */
-    public function __toString()
+    public function __toString(): string
     {
         switch ($this->_kind) {
             case self::RULE_MATCH:
-                return $this->_kind . '(' . $this->_ruleIndex . ',' . $this->_ruleId . ')';
+                return $this->_kind . '(' . ($this->_ruleIndex ?? 0) . ',' . ($this->_ruleId ?? '') . ')';
             case self::PREREQUISITE_FAILED:
-                return $this->_kind . '(' . $this->_prerequisiteKey . ')';
+                return $this->_kind . '(' . ($this->_prerequisiteKey ?? '') . ')';
             case self::ERROR:
-                return $this->_kind . '(' . $this->_errorKind . ')';
+                return $this->_kind . '(' . ($this->_errorKind ?? '') . ')';
             default:
                 return $this->_kind;
         }
@@ -231,7 +256,7 @@ class EvaluationReason implements \JsonSerializable
      * Returns a JSON representation of this object. This method is used automatically
      * if you call json_encode().
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $ret = array('kind' => $this->_kind);
         if ($this->_errorKind !== null) {
@@ -246,7 +271,7 @@ class EvaluationReason implements \JsonSerializable
         if ($this->_prerequisiteKey !== null) {
             $ret['prerequisiteKey'] = $this->_prerequisiteKey;
         }
-        if ($this->_inExperiment !== null && $this->_inExperiment) {
+        if ($this->_inExperiment) {
             $ret['inExperiment'] = $this->_inExperiment;
         }
         return $ret;

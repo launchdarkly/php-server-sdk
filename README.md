@@ -10,15 +10,15 @@
 
 ## Supported PHP versions
 
-This version of the LaunchDarkly SDK is compatible with PHP 5.5 and higher.
+This version of the LaunchDarkly SDK is compatible with PHP 7.3 and higher.
 
 ## Getting started
 
-Refer to the [SDK reference guide](https://docs.launchdarkly.com/docs/php-sdk-reference) for instructions on getting started with using the SDK.
+Refer to the [SDK reference guide](https://docs.launchdarkly.com/sdk/server-side/php) for instructions on getting started with using the SDK.
 
 ## Learn more
 
-Check out our [documentation](http://docs.launchdarkly.com) for in-depth instructions on configuring and using LaunchDarkly. You can also head straight to the [complete reference guide for this SDK](http://docs.launchdarkly.com/docs/php-sdk-reference).
+Check out our [documentation](http://docs.launchdarkly.com) for in-depth instructions on configuring and using LaunchDarkly. You can also head straight to the [complete reference guide for this SDK](https://docs.launchdarkly.com/sdk/server-side/php).
 
 The authoritative description of all types, properties, and methods is in the [generated API documentation](http://launchdarkly.github.io/php-server-sdk/).
 

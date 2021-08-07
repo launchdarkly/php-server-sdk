@@ -6,12 +6,12 @@ use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\HandlerStack;
 use Kevinrob\GuzzleCache\CacheMiddleware;
 use Kevinrob\GuzzleCache\Strategy\PublicCacheStrategy;
-use LaunchDarkly\FeatureFlag;
 use LaunchDarkly\FeatureRequester;
 use LaunchDarkly\LDClient;
-use LaunchDarkly\Segment;
-use LaunchDarkly\UnrecoverableHTTPStatusException;
-use LaunchDarkly\Util;
+use LaunchDarkly\Impl\UnrecoverableHTTPStatusException;
+use LaunchDarkly\Impl\Util;
+use LaunchDarkly\Impl\Model\FeatureFlag;
+use LaunchDarkly\Impl\Model\Segment;
 use Psr\Log\LoggerInterface;
 
 class GuzzleFeatureRequester implements FeatureRequester
@@ -20,52 +20,55 @@ class GuzzleFeatureRequester implements FeatureRequester
     const SDK_SEGMENTS = "/sdk/segments";
     /** @var Client  */
     private $_client;
-    /** @var string */
-    private $_baseUri;
-    /** @var array  */
-    private $_defaults;
     /** @var LoggerInterface */
     private $_logger;
     /** @var boolean */
     private $_loggedCacheNotice = false;
 
-    public function __construct($baseUri, $sdkKey, $options)
+    public function __construct(string $baseUri, string $sdkKey, array $options)
     {
-        $this->_baseUri = $baseUri;
         $this->_logger = $options['logger'];
         $stack = HandlerStack::create();
-        if (class_exists('Kevinrob\GuzzleCache\CacheMiddleware')) {
-            $stack->push(new CacheMiddleware(new PublicCacheStrategy(isset($options['cache']) ? $options['cache'] : null)), 'cache');
+        if (class_exists('\Kevinrob\GuzzleCache\CacheMiddleware')) {
+            $stack->push(
+                new CacheMiddleware(
+                    new PublicCacheStrategy($options['cache'] ?? null)
+                ), 
+                'cache'
+            );
         } elseif (!$this->_loggedCacheNotice) {
             $this->_logger->info("GuzzleFeatureRequester is not using an HTTP cache because Kevinrob\GuzzleCache\CacheMiddleware was not installed");
             $this->_loggedCacheNotice = true;
         }
 
-        $this->_defaults = array(
-            'headers' => array(
+        $defaults = [
+            'headers' => [
                 'Authorization' => $sdkKey,
                 'Content-Type' => 'application/json',
                 'User-Agent' => 'PHPClient/' . LDClient::VERSION
-            ),
+            ],
             'timeout' => $options['timeout'],
-            'connect_timeout' => $options['connect_timeout']
-        );
-        $this->_client = new Client(['handler' => $stack, 'debug' => false]);
+            'connect_timeout' => $options['connect_timeout'],
+            'handler' => $stack,
+            'debug' => $options['debug'] ?? false,
+            'base_uri' => $baseUri
+        ];
+
+        $this->_client = new Client($defaults);
     }
 
     /**
      * Gets feature data from a likely cached store
      *
-     * @param $key string feature key
+     * @param string $key feature key
      * @return FeatureFlag|null The decoded FeatureFlag, or null if missing
      */
-    public function getFeature($key)
+    public function getFeature(string $key): ?FeatureFlag
     {
         try {
-            $uri = $this->_baseUri . self::SDK_FLAGS . "/" . $key;
-            $response = $this->_client->get($uri, $this->_defaults);
+            $response = $this->_client->get(self::SDK_FLAGS . "/" . $key);
             $body = $response->getBody();
-            return FeatureFlag::decode(json_decode($body, true));
+            return FeatureFlag::decode(json_decode($body->getContents(), true));
         } catch (BadResponseException $e) {
             $code = $e->getResponse()->getStatusCode();
             if ($code == 404) {
@@ -80,16 +83,15 @@ class GuzzleFeatureRequester implements FeatureRequester
     /**
      * Gets segment data from a likely cached store
      *
-     * @param $key string segment key
+     * @param string $key segment key
      * @return Segment|null The decoded Segment, or null if missing
      */
-    public function getSegment($key)
+    public function getSegment(string $key): ?Segment
     {
         try {
-            $uri = $this->_baseUri . self::SDK_SEGMENTS . "/" . $key;
-            $response = $this->_client->get($uri, $this->_defaults);
+            $response = $this->_client->get(self::SDK_SEGMENTS . "/" . $key);
             $body = $response->getBody();
-            return Segment::decode(json_decode($body, true));
+            return Segment::decode(json_decode($body->getContents(), true));
         } catch (BadResponseException $e) {
             $code = $e->getResponse()->getStatusCode();
             if ($code == 404) {
@@ -104,22 +106,21 @@ class GuzzleFeatureRequester implements FeatureRequester
     /**
      * Gets all features from a likely cached store
      *
-     * @return array()|null The decoded FeatureFlags, or null if missing
+     * @return array|null The decoded FeatureFlags, or null if missing
      */
-    public function getAllFeatures()
+    public function getAllFeatures(): ?array
     {
         try {
-            $uri = $this->_baseUri . self::SDK_FLAGS;
-            $response = $this->_client->get($uri, $this->_defaults);
+            $response = $this->_client->get(self::SDK_FLAGS);
             $body = $response->getBody();
-            return array_map(FeatureFlag::getDecoder(), json_decode($body, true));
+            return array_map(FeatureFlag::getDecoder(), json_decode($body->getContents(), true));
         } catch (BadResponseException $e) {
             $this->handleUnexpectedStatus($e->getResponse()->getStatusCode(), "GuzzleFeatureRequester::getAll");
             return null;
         }
     }
 
-    private function handleUnexpectedStatus($code, $method)
+    private function handleUnexpectedStatus(int $code, string $method): void
     {
         $this->_logger->error(Util::httpErrorMessage($code, $method, 'default value was returned'));
         if (!Util::isHttpErrorRecoverable($code)) {

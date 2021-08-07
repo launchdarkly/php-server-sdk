@@ -5,12 +5,13 @@ class MockEventPublisher implements \LaunchDarkly\EventPublisher
 {
     public $payloads = array();
 
-    public function __construct($sdkKey, array $options)
+    public function __construct(string $sdkKey, array $options)
     {
     }
 
-    public function publish($payload)
+    public function publish(string $payload): bool
     {
         $this->payloads[] = $payload;
+        return true;
     }
 }

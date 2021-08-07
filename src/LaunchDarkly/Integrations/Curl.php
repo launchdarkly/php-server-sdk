@@ -21,7 +21,7 @@ class Curl
      *     $client = new LDClient("sdk_key", $config);
      *
      * This implementation forks a process for each event payload. Alternatively, you can use
-     * {@link \LaunchDarkly\Integrations\Guzzle::eventPublisher()}, which makes synchronous requests.
+     * {@see \LaunchDarkly\Integrations\Guzzle::eventPublisher()}, which makes synchronous requests.
      *
      * @param array $options  Configuration settings (can also be passed in the main client configuration):
      *   - `curl`: command for executing `curl`; defaults to `/usr/bin/env curl`
@@ -29,7 +29,7 @@ class Curl
      */
     public static function eventPublisher($options = array())
     {
-        return function ($sdkKey, $baseOptions) use ($options) {
+        return function (string $sdkKey, array $baseOptions) use ($options) {
             return new \LaunchDarkly\Impl\Integrations\CurlEventPublisher($sdkKey,
                 array_merge($baseOptions, $options));
         };

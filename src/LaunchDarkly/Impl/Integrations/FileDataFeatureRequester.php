@@ -1,9 +1,9 @@
 <?php
 namespace LaunchDarkly\Impl\Integrations;
 
-use LaunchDarkly\FeatureFlag;
 use LaunchDarkly\FeatureRequester;
-use LaunchDarkly\Segment;
+use LaunchDarkly\Impl\Model\FeatureFlag;
+use LaunchDarkly\Impl\Model\Segment;
 
 class FileDataFeatureRequester implements FeatureRequester
 {
@@ -14,6 +14,9 @@ class FileDataFeatureRequester implements FeatureRequester
     /** @var array  */
     private $_segments;
 
+    /**
+     * @param array|string $filePaths
+     */
     public function __construct($filePaths)
     {
         $this->_filePaths = is_array($filePaths) ? $filePaths : array($filePaths);
@@ -28,9 +31,9 @@ class FileDataFeatureRequester implements FeatureRequester
      * @param $key string feature key
      * @return FeatureFlag|null The decoded FeatureFlag, or null if missing
      */
-    public function getFeature($key)
+    public function getFeature(string $key): ?FeatureFlag
     {
-        return isset($this->_flags[$key]) ? $this->_flags[$key] : null;
+        return $this->_flags[$key] ?? null;
     }
 
     /**
@@ -39,22 +42,22 @@ class FileDataFeatureRequester implements FeatureRequester
      * @param $key string segment key
      * @return Segment|null The decoded Segment, or null if missing
      */
-    public function getSegment($key)
+    public function getSegment(string $key): ?Segment
     {
-        return isset($this->_segments[$key]) ? $this->_segments[$key] : null;
+        return $this->_segments[$key] ?? null;
     }
 
     /**
      * Gets all feature flags
      *
-     * @return array()|null The decoded FeatureFlags, or null if missing
+     * @return array|null The decoded FeatureFlags, or null if missing
      */
-    public function getAllFeatures()
+    public function getAllFeatures(): ?array
     {
         return $this->_flags;
     }
 
-    private function readAllData()
+    private function readAllData(): void
     {
         $flags = array();
         $segments = array();
@@ -65,7 +68,7 @@ class FileDataFeatureRequester implements FeatureRequester
         $this->_segments = $segments;
     }
 
-    private function loadFile($filePath, &$flags, &$segments)
+    private function loadFile(string $filePath, array &$flags, array &$segments): void
     {
         $content = file_get_contents($filePath);
         $data = json_decode($content, true);
@@ -106,7 +109,13 @@ class FileDataFeatureRequester implements FeatureRequester
         }
     }
 
-    private function tryToAdd(&$array, $key, $item, $kind)
+    /**
+     * @param array $array
+     * @param string $key
+     * @param mixed $item
+     * @param string $kind
+     */
+    private function tryToAdd(array &$array, string $key, $item, string $kind): void
     {
         if (isset($array[$key])) {
             throw new \InvalidArgumentException("File data contains more than one " . $kind . " with key: " . $key);

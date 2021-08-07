@@ -4,10 +4,11 @@ namespace LaunchDarkly\Tests;
 use InvalidArgumentException;
 use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
-use LaunchDarkly\FeatureFlag;
 use LaunchDarkly\FeatureFlagsState;
+use LaunchDarkly\Impl\Model\FeatureFlag;
+use PHPUnit\Framework\TestCase;
 
-class FeatureFlagsStateTest extends \PHPUnit_Framework_TestCase
+class FeatureFlagsStateTest extends \PHPUnit\Framework\TestCase
 {
     private static $flag1Json = array(
         'key' => 'key1',
@@ -38,12 +39,17 @@ class FeatureFlagsStateTest extends \PHPUnit_Framework_TestCase
         'trackEvents' => true,
         'debugEventsUntilDate' => 1000
     );
+    
+    private static function irrelevantReason(): EvaluationReason
+    {
+        return EvaluationReason::off();
+    }
 
     public function testCanGetFlagValue()
     {
         $flag = FeatureFlag::decode(FeatureFlagsStateTest::$flag1Json);
         $state = new FeatureFlagsState(true);
-        $state->addFlag($flag, new EvaluationDetail('value1', 0));
+        $state->addFlag($flag, new EvaluationDetail('value1', 0, self::irrelevantReason()));
 
         $this->assertEquals('value1', $state->getFlagValue('key1'));
     }
@@ -85,8 +91,8 @@ class FeatureFlagsStateTest extends \PHPUnit_Framework_TestCase
         $flag1 = FeatureFlag::decode(FeatureFlagsStateTest::$flag1Json);
         $flag2 = FeatureFlag::decode(FeatureFlagsStateTest::$flag2Json);
         $state = new FeatureFlagsState(true);
-        $state->addFlag($flag1, new EvaluationDetail('value1', 0));
-        $state->addFlag($flag2, new EvaluationDetail('value2', 0));
+        $state->addFlag($flag1, new EvaluationDetail('value1', 0, self::irrelevantReason()));
+        $state->addFlag($flag2, new EvaluationDetail('value2', 0, self::irrelevantReason()));
 
         $expected = array('key1' => 'value1', 'key2' => 'value2');
         $this->assertEquals($expected, $state->toValuesMap());
@@ -97,8 +103,8 @@ class FeatureFlagsStateTest extends \PHPUnit_Framework_TestCase
         $flag1 = FeatureFlag::decode(FeatureFlagsStateTest::$flag1Json);
         $flag2 = FeatureFlag::decode(FeatureFlagsStateTest::$flag2Json);
         $state = new FeatureFlagsState(true);
-        $state->addFlag($flag1, new EvaluationDetail('value1', 0));
-        $state->addFlag($flag2, new EvaluationDetail('value2', 1));
+        $state->addFlag($flag1, new EvaluationDetail('value1', 0, self::irrelevantReason()));
+        $state->addFlag($flag2, new EvaluationDetail('value2', 1, self::irrelevantReason()));
 
         $expected = array(
             'key1' => 'value1',
@@ -125,8 +131,8 @@ class FeatureFlagsStateTest extends \PHPUnit_Framework_TestCase
         $flag1 = FeatureFlag::decode(FeatureFlagsStateTest::$flag1Json);
         $flag2 = FeatureFlag::decode(FeatureFlagsStateTest::$flag2Json);
         $state = new FeatureFlagsState(true);
-        $state->addFlag($flag1, new EvaluationDetail('value1', 0));
-        $state->addFlag($flag2, new EvaluationDetail('value2', 1));
+        $state->addFlag($flag1, new EvaluationDetail('value1', 0, self::irrelevantReason()));
+        $state->addFlag($flag2, new EvaluationDetail('value2', 1, self::irrelevantReason()));
 
         $expected = $state->jsonSerialize();
         $json = json_encode($state);

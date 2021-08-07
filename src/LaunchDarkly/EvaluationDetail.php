@@ -2,24 +2,31 @@
 
 namespace LaunchDarkly;
 
+use \LaunchDarkly\EvaluationReason;
+
 /**
  * An object that combines the result of a flag evaluation with an explanation of how it was calculated.
  *
- * This is returned by {@link \LaunchDarkly\LDClient::variationDetail()}.
+ * This is returned by {@see \LaunchDarkly\LDClient::variationDetail()}.
  */
 class EvaluationDetail
 {
+    /** @var int|null */
     private $_variationIndex = null;
+
+    /** @var mixed|null */
     private $_value = null;
-    private $_reason = null;
+
+    /** @var EvaluationReason */
+    private $_reason;
 
     /**
      * EvaluationDetail constructor.
-     * @param mixed $value the value of the flag variation
+     * @param mixed|null $value the value of the flag variation
      * @param int|null $variationIndex the index of the flag variation, or null if it was the default value
      * @param EvaluationReason $reason evaluation reason properties
      */
-    public function __construct($value, $variationIndex, $reason = null)
+    public function __construct($value, ?int $variationIndex, EvaluationReason $reason)
     {
         $this->_value = $value;
         $this->_variationIndex = $variationIndex;
@@ -42,7 +49,7 @@ class EvaluationDetail
      *
      * @return int | null
      */
-    public function getVariationIndex()
+    public function getVariationIndex(): ?int
     {
         return $this->_variationIndex;
     }
@@ -52,7 +59,7 @@ class EvaluationDetail
      *
      * @return EvaluationReason
      */
-    public function getReason()
+    public function getReason(): EvaluationReason
     {
         return $this->_reason;
     }
@@ -62,7 +69,7 @@ class EvaluationDetail
      *
      * @return bool
      */
-    public function isDefaultValue()
+    public function isDefaultValue(): bool
     {
         return ($this->_variationIndex === null);
     }

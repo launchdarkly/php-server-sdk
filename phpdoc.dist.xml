@@ -10,26 +10,6 @@
     <directory>src</directory>
     <ignore>src/LaunchDarkly/Impl/*</ignore>
     <ignore>src/LaunchDarkly/Impl/Integrations/*</ignore>
-    <!-- the @ignore and @internal tags currently not working correctly in phpDocumentor, so we will manually ignore these internal files: -->
-    <ignore>src/LaunchDarkly/Clause.php</ignore>
-    <ignore>src/LaunchDarkly/EvalResult.php</ignore>
-    <ignore>src/LaunchDarkly/EvaluationException.php</ignore>
-    <ignore>src/LaunchDarkly/EventProcessor.php</ignore>
-    <ignore>src/LaunchDarkly/EventSerializer.php</ignore>
-    <ignore>src/LaunchDarkly/FeatureFlag.php</ignore>
-    <ignore>src/LaunchDarkly/Operators.php</ignore>
-    <ignore>src/LaunchDarkly/PreloadedFeatureRequester.php</ignore>
-    <ignore>src/LaunchDarkly/Prerequisite.php</ignore>
-    <ignore>src/LaunchDarkly/Rollout.php</ignore>
-    <ignore>src/LaunchDarkly/Rule.php</ignore>
-    <ignore>src/LaunchDarkly/Segment.php</ignore>
-    <ignore>src/LaunchDarkly/SegmentRule.php</ignore>
-    <ignore>src/LaunchDarkly/SemanticVersion.php</ignore>
-    <ignore>src/LaunchDarkly/Target.php</ignore>
-    <ignore>src/LaunchDarkly/UnrecoverableHTTPStatusException.php</ignore>
-    <ignore>src/LaunchDarkly/Util.php</ignore>
-    <ignore>src/LaunchDarkly/VariationOrRollout.php</ignore>
-    <ignore>src/LaunchDarkly/WeightedVariation.php</ignore>
   </files>
   <transformations>
     <template name="clean"/>

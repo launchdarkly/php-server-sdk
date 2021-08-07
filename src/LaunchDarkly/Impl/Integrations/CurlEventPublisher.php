@@ -9,13 +9,25 @@ use LaunchDarkly\LDClient;
  */
 class CurlEventPublisher implements EventPublisher
 {
+    /** @var string */
     private $_sdkKey;
+
+    /** @var string */
     private $_host;
+
+    /** @var int */
     private $_port;
+
+    /** @var string */
+    private $_path;
+
+    /** @var bool */
     private $_ssl;
+
+    /** @var string */
     private $_curl = '/usr/bin/env curl';
 
-    public function __construct($sdkKey, array $options = array())
+    public function __construct(string $sdkKey, array $options = array())
     {
         $this->_sdkKey = $sdkKey;
 
@@ -24,32 +36,28 @@ class CurlEventPublisher implements EventPublisher
             $eventsUri = $options['events_uri'];
         }
         $url = parse_url(rtrim($eventsUri, '/'));
-        $this->_host = $url['host'];
-        $this->_ssl = $url['scheme'] === 'https';
+        $this->_host = $url['host'] ?? '';
+        $this->_ssl = ($url['scheme'] ?? '') === 'https';
         if (isset($url['port'])) {
             $this->_port = $url['port'];
         } else {
             $this->_port = $this->_ssl ? 443 : 80;
         }
-        if (isset($url['path'])) {
-            $this->_path = $url['path'];
-        } else {
-            $this->_path = '';
-        }
+        $this->_path = $url['path'] ?? '';
 
         if (array_key_exists('curl', $options)) {
             $this->_curl = $options['curl'];
         }
     }
 
-    public function publish($payload)
+    public function publish(string $payload): bool
     {
         $args = $this->createArgs($payload);
 
         return $this->makeRequest($args);
     }
 
-    private function createArgs($payload)
+    private function createArgs(string $payload): string
     {
         $scheme = $this->_ssl ? "https://" : "http://";
         $args = " -X POST";
@@ -63,7 +71,10 @@ class CurlEventPublisher implements EventPublisher
         return $args;
     }
 
-    private function makeRequest($args)
+    /**
+     * @psalm-suppress ForbiddenCode
+     */
+    private function makeRequest(string $args): bool
     {
         $cmd = $this->_curl . " " . $args . ">> /dev/null 2>&1 &";
         shell_exec($cmd);

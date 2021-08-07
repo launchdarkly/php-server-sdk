@@ -1,9 +1,9 @@
 <?php
 namespace LaunchDarkly\Impl\Integrations;
 
-use LaunchDarkly\FeatureFlag;
 use LaunchDarkly\FeatureRequester;
-use LaunchDarkly\Segment;
+use LaunchDarkly\Impl\Model\FeatureFlag;
+use LaunchDarkly\Impl\Model\Segment;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -20,12 +20,12 @@ class FeatureRequesterBase implements FeatureRequester
     protected $_sdkKey;
     /** @var array */
     protected $_options;
-    /** @var FeatureRequesterCache */
+    /** @var FeatureRequesterCache|null */
     protected $_cache;
     /** @var LoggerInterface */
     protected $_logger;
 
-    protected function __construct($baseUri, $sdkKey, $options)
+    protected function __construct(string $baseUri, string $sdkKey, array $options)
     {
         $this->_baseUri = $baseUri;
         $this->_sdkKey = $sdkKey;
@@ -42,11 +42,11 @@ class FeatureRequesterBase implements FeatureRequester
     /**
      * Override this method to read a JSON object (as a string) from the underlying store.
      *
-     * @param $namespace "features" or "segments"
-     * @param $key flag or segment key
+     * @param string $namespace "features" or "segments"
+     * @param string $key flag or segment key
      * @return string|null the stored JSON data, or null if not found
      */
-    protected function readItemString($namespace, $key)
+    protected function readItemString(string $namespace, string $key): ?string
     {
         return null;
     }
@@ -54,10 +54,10 @@ class FeatureRequesterBase implements FeatureRequester
     /**
      * Override this method to read a set of JSON objects (as strings) from the underlying store.
      *
-     * @param $namespace "features" or "segments"
+     * @param string $namespace "features" or "segments"
      * @return array|null array of stored JSON strings
      */
-    protected function readItemStringList($namespace)
+    protected function readItemStringList(string $namespace): ?array
     {
         return array();
     }
@@ -67,19 +67,19 @@ class FeatureRequesterBase implements FeatureRequester
      *
      * @return FeatureRequesterCache a cache implementation, or null
      */
-    protected function createCache($options)
+    protected function createCache(array $options): ?FeatureRequesterCache
     {
-        $expiration = isset($options['apc_expiration']) ? (int)$options['apc_expiration'] : 0;
+        $expiration = (int)($options['apc_expiration'] ?? 0);
         return ($expiration > 0) ? new ApcuFeatureRequesterCache($expiration) : null;
     }
 
     /**
      * Gets an individual feature flag.
      *
-     * @param $key string feature flag key
+     * @param string $key feature flag key
      * @return FeatureFlag|null The decoded JSON feature data, or null if missing
      */
-    public function getFeature($key)
+    public function getFeature(string $key): ?FeatureFlag
     {
         $json = $this->getJsonItem(self::FEATURES_NAMESPACE, $key);
         if ($json) {
@@ -98,10 +98,10 @@ class FeatureRequesterBase implements FeatureRequester
     /**
      * Gets an individual user segment.
      *
-     * @param $key string segment key
+     * @param string $key segment key
      * @return Segment|null The decoded JSON segment data, or null if missing
      */
-    public function getSegment($key)
+    public function getSegment(string $key): ?Segment
     {
         $json = $this->getJsonItem(self::SEGMENTS_NAMESPACE, $key);
         if ($json) {
@@ -120,22 +120,22 @@ class FeatureRequesterBase implements FeatureRequester
     /**
      * Gets all features
      *
-     * @return array()|null The decoded FeatureFlags, or null if missing
+     * @return array|null The decoded FeatureFlags, or null if missing
      */
-    public function getAllFeatures()
+    public function getAllFeatures(): ?array
     {
         $jsonList = $this->getJsonItemList(self::FEATURES_NAMESPACE);
         $itemsOut = array();
         foreach ($jsonList as $json) {
             $flag = FeatureFlag::decode($json);
-            if ($flag && !$flag->isDeleted()) {
+            if (!$flag->isDeleted()) {
                 $itemsOut[$flag->getKey()] = $flag;
             }
         }
         return $itemsOut;
     }
 
-    protected function getJsonItem($namespace, $key)
+    protected function getJsonItem(string $namespace, string $key): ?array
     {
         $cacheKey = $this->makeCacheKey($namespace, $key);
         $raw = $this->_cache ? $this->_cache->getCachedString($cacheKey) : null;
@@ -148,7 +148,7 @@ class FeatureRequesterBase implements FeatureRequester
         return ($raw === null) ? null : json_decode($raw, true);
     }
 
-    protected function getJsonItemList($namespace)
+    protected function getJsonItemList(string $namespace): array
     {
         $cacheKey = $this->makeCacheKey($namespace, self::ALL_ITEMS_KEY);
         $raw = $this->_cache ? $this->_cache->getCachedString($cacheKey) : null;
@@ -169,7 +169,7 @@ class FeatureRequesterBase implements FeatureRequester
         return $values;
     }
 
-    private function makeCacheKey($namespace, $key)
+    private function makeCacheKey(string $namespace, string $key): string
     {
         return self::CACHE_PREFIX . $namespace . ':' . $key;
     }

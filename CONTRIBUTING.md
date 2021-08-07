@@ -32,6 +32,4 @@ To run all unit tests:
 ./vendor/bin/phpunit
 ```
 
-By default, the full unit test suite includes live tests of the integrations for Consul, DynamoDB, and Redis. Those tests expect you to have instances of all of those databases running locally. To skip them, set the environment variable `LD_SKIP_DATABASE_TESTS=1` before running the tests.
-
 It is preferable to run tests against all supported minor versions of PHP (as described in `README.md` under Requirements), or at least the lowest and highest versions, prior to submitting a pull request. However, LaunchDarkly's CI tests will run automatically against all supported versions.

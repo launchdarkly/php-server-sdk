@@ -4,8 +4,8 @@ namespace LaunchDarkly\Impl\Integrations;
 use GuzzleHttp\Client;
 use LaunchDarkly\EventPublisher;
 use LaunchDarkly\LDClient;
-use LaunchDarkly\UnrecoverableHTTPStatusException;
-use LaunchDarkly\Util;
+use LaunchDarkly\Impl\UnrecoverableHTTPStatusException;
+use LaunchDarkly\Impl\Util;
 use Psr\Log\LoggerInterface;
 
 class GuzzleEventPublisher implements EventPublisher
@@ -19,7 +19,7 @@ class GuzzleEventPublisher implements EventPublisher
     /** @var mixed[] */
     private $_requestOptions;
 
-    public function __construct($sdkKey, array $options = array())
+    public function __construct(string $sdkKey, array $options = array())
     {
         $this->_sdkKey = $sdkKey;
         $this->_logger = $options['logger'];
@@ -41,7 +41,7 @@ class GuzzleEventPublisher implements EventPublisher
         ];
     }
 
-    public function publish($payload)
+    public function publish(string $payload): bool
     {
         $client = new Client(['base_uri' => $this->_eventsUri]);
         $response = null;
@@ -54,13 +54,13 @@ class GuzzleEventPublisher implements EventPublisher
             $this->_logger->warning("GuzzleEventPublisher::publish caught $e");
             return false;
         }
-        if ($response && ($response->getStatusCode() >= 300)) {
+        if ($response->getStatusCode() >= 300) {
             $this->_logger->error(Util::httpErrorMessage($response->getStatusCode(), 'event posting', 'some events were dropped'));
             if (!Util::isHttpErrorRecoverable($response->getStatusCode())) {
                 throw new UnrecoverableHTTPStatusException($response->getStatusCode());
             }
             return false;
         }
-        return $response != null;
+        return true;
     }
 }

@@ -3,8 +3,9 @@ namespace LaunchDarkly\Tests;
 
 use LaunchDarkly\LDUser;
 use LaunchDarkly\LDUserBuilder;
+use PHPUnit\Framework\TestCase;
 
-class LDUserTest extends \PHPUnit_Framework_TestCase
+class LDUserTest extends \PHPUnit\Framework\TestCase
 {
     public function testLDUserKey()
     {
@@ -181,9 +182,11 @@ class LDUserTest extends \PHPUnit_Framework_TestCase
         $builder = new LDUserBuilder("key");
         $user = $builder->build();
         $this->assertFalse($user->isKeyBlank());
+    }
 
+    public function testLDUserNullKey()
+    {
+        $this->expectException(\TypeError::class);
         $builder = new LDUserBuilder(null);
-        $user = $builder->build();
-        $this->assertFalse($user->isKeyBlank());
     }
 }
