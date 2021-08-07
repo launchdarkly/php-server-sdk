@@ -2,6 +2,28 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [4.0.0] - 2021-08-06
+This major version release is for updating PHP compatibility, simplifying the SDK&#39;s dependencies, and removing deprecated names.
+
+Except for the dependency changes described below which may require minor changes in your build, usage of the SDK has not changed in this release. For more details about changes that may be necessary, see the [3.x to 4.0 migration guide](https://docs.launchdarkly.com/sdk/server-side/php/migration-3-to-4).
+
+Dropping support for obsolete PHP versions makes it easier to maintain the SDK and keep its dependencies up to date. See LaunchDarkly&#39;s [End of Life Policy](https://launchdarkly.com/policies/end-of-life-policy/) regarding platform version support.
+
+Simplifying dependencies by moving optional integration features into separate packages reduces the size of the SDK bundle, as well as reducing potential compatibility problems and vulnerabilities.
+
+### Added:
+- Added type declarations to all methods. These could result in a `TypeError` at runtime if you have been passing values of the wrong types to SDK methods (including passing a `null` value for a parameter that should not be null)-- although in most cases, this would have caused an error anyway at some point in the SDK code, just not such a clearly identifiable error. To detect type mistakes before runtime, you can use a static analysis tool such as [Psalm](https://psalm.dev/).
+
+### Changed:
+- The minimum PHP version is now 7.3.
+- Updated many dependencies to newer versions and/or more actively maintained packages.
+
+### Removed:
+- Removed the bundled Redis, DynamoDB, and Consul integrations. These are now provided as separate packages; see [php-server-sdk-redis-predis](https://github.com/launchdarkly/php-server-sdk-redis-predis), [php-server-sdk-redis-phpredis](https://github.com/launchdarkly/php-server-sdk-redis-phpredis), [php-server-sdk-dynamodb](https://github.com/launchdarkly/php-server-sdk-dynamodb), and [php-server-sdk-consul](https://github.com/launchdarkly/php-server-sdk-consul).
+- Removed all types and methods that were deprecated in the last 3.x version.
+- Removed implementation types from the `LaunchDarkly` namespace that were annotated as `@internal` and not documented, such as types that are part of the internal feature data model. These are not meant for use by application code, and are always subject to change. They have been moved into `LaunchDarklyImpl`.
+
+
 ## [3.9.1] - 2021-08-02
 ### Fixed:
 - The `phpredis` integration was ignoring the `phpredis_client` option for passing in a preconfigured Redis client. (Thanks, [CameronHall](https://github.com/launchdarkly/php-server-sdk/pull/151)!)
