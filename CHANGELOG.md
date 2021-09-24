@@ -108,7 +108,7 @@ The package name will also change. In the 3.5.3 release, it is still `launchdark
 
 ## [3.5.0] - 2019-01-30
 ### Added:
-- It is now possible to use Consul or DynamoDB as a data store with `ld-relay`, similar to the existing Redis integration. See `LaunchDarkly\Integrations\Consul` and `LaunchDarkly\Integrations\DynamoDb`, and the reference guide [Using a persistent feature store](https://docs.launchdarkly.com/v2.0/docs/using-a-persistent-feature-store).
+- It is now possible to use Consul or DynamoDB as a data store with `ld-relay`, similar to the existing Redis integration. See `LaunchDarkly\Integrations\Consul` and `LaunchDarkly\Integrations\DynamoDb`, and the reference guide [Persistent data stores](https://docs.launchdarkly.com/sdk/concepts/data-stores).
 - When using the Redis integration, you can specify a Redis connection timeout different from the default of 5 seconds by setting the option `redis_timeout` to the desired number of seconds. (Thanks, [jjozefowicz](https://github.com/launchdarkly/php-client/pull/113)!)
 - It is now possible to inject feature flags into the client from local JSON files, replacing the normal LaunchDarkly connection. This would typically be for testing purposes. See `LaunchDarkly\Integrations\Files`.
 - The `allFlagsState` method now accepts a new option, `detailsOnlyForTrackedFlags`, which reduces the size of the JSON representation of the flag state by omitting some metadata. Specifically, it omits any data that is normally used for generating detailed evaluation events if a flag does not have event tracking or debugging turned on.
@@ -166,7 +166,7 @@ The package name will also change. In the 3.5.3 release, it is still `launchdark
 
 ## [2.4.0] - 2018-01-04
 ### Added
-- Support for [private user attributes](https://docs.launchdarkly.com/docs/private-user-attributes).
+- Support for [private user attributes](https://docs.launchdarkly.com/home/users/attributes#creating-private-user-attributes).
 
 ### Changed
 - Stop retrying HTTP requests if the API key has been invalidated.
