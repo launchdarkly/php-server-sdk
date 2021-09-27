@@ -11,7 +11,7 @@ use LaunchDarkly\LDClient;
  *
  * Serializing this object to JSON using json_encode(), or the jsonSerialize() method, will produce the
  * appropriate data structure for bootstrapping the LaunchDarkly JavaScript client. See the SDK
- * reference guide on ["Bootstrapping"](https://docs.launchdarkly.com/docs/js-sdk-reference#section-bootstrapping).
+ * reference guide on ["Bootstrapping"](https://docs.launchdarkly.com/sdk/features/bootstrapping#javascript).
  */
 class FeatureFlagsState implements \JsonSerializable
 {
