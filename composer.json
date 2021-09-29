@@ -24,7 +24,7 @@
         "kevinrob/guzzle-cache-middleware": "^3",
         "phpunit/phpunit": "^9",
         "phpunit/php-code-coverage": "^9",
-        "vimeo/psalm": "^4.7"
+        "vimeo/psalm": "4.9.2"
     },
     "suggest": {
         "guzzlehttp/guzzle": "(^7) Required when using GuzzleEventPublisher or the default FeatureRequester",
