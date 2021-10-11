@@ -9,11 +9,12 @@ publications:
     description: Packagist
 
 jobs:
-  - docker:
-      image: ldcircleci/php-sdk-release:1  # built in sdks-ci-docker project, contains PHP 7.3 + phpDocumentor 3
+  - template:
+      name: php
 
 documentation:
   gitHubPages: true
+  title: "LaunchDarkly PHP SDK"
 
 sdk:
   displayName: "PHP"

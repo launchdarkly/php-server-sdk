@@ -7,6 +7,10 @@ use LaunchDarkly\LDUser;
 use LaunchDarkly\Impl\Util;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 
+/**
+ * @ignore
+ * @internal
+ */
 class EventFactory
 {
     /** @var boolean */

@@ -14,6 +14,10 @@ use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Impl\Model\Segment;
 use Psr\Log\LoggerInterface;
 
+/**
+ * @ignore
+ * @internal
+ */
 class GuzzleFeatureRequester implements FeatureRequester
 {
     const SDK_FLAGS = "/sdk/flags";

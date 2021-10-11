@@ -8,6 +8,10 @@ use LaunchDarkly\Impl\UnrecoverableHTTPStatusException;
 use LaunchDarkly\Impl\Util;
 use Psr\Log\LoggerInterface;
 
+/**
+ * @ignore
+ * @internal
+ */
 class GuzzleEventPublisher implements EventPublisher
 {
     /** @var string */

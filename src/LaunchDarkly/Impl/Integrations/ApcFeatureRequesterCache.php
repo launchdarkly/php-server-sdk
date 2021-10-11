@@ -3,6 +3,9 @@ namespace LaunchDarkly\Impl\Integrations;
 
 /**
  * Deprecated caching implementation based on the APC extension.
+ *
+ * @ignore
+ * @internal
  */
 class ApcFeatureRequesterCache implements FeatureRequesterCache
 {

@@ -7,6 +7,10 @@ use LaunchDarkly\Impl\Model\Segment;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
+/**
+ * @ignore
+ * @internal
+ */
 class FeatureRequesterBase implements FeatureRequester
 {
     const FEATURES_NAMESPACE = 'features';

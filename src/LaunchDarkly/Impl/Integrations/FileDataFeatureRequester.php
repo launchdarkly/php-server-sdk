@@ -5,6 +5,10 @@ use LaunchDarkly\FeatureRequester;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Impl\Model\Segment;
 
+/**
+ * @ignore
+ * @internal
+ */
 class FileDataFeatureRequester implements FeatureRequester
 {
     /** @var array  */

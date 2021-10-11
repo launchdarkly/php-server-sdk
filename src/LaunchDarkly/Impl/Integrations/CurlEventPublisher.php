@@ -6,6 +6,9 @@ use LaunchDarkly\LDClient;
 
 /**
  * Curl-based implementation of sending events. This is used by default.
+ *
+ * @ignore
+ * @internal
  */
 class CurlEventPublisher implements EventPublisher
 {
