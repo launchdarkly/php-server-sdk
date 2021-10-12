@@ -220,7 +220,6 @@ class FeatureFlag
     private function getValueForVariationOrRollout(VariationOrRollout $r, LDUser $user, EvaluationReason $reason): EvaluationDetail
     {
         $rollout = $r->getRollout();
-        $seed = is_null($rollout) ? null : $rollout->getSeed();
         list($index, $inExperiment) = $r->variationIndexForUser($user, $this->_key, $this->_salt);
         if ($index === null) {
             return new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR));
