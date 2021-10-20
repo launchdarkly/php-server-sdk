@@ -27,7 +27,7 @@ class EventSerializer
     {
         $filtered = array();
         foreach ($events as $e) {
-            array_push($filtered, $this->filterEvent($e));
+            $filtered[] = $this->filterEvent($e);
         }
         $ret = json_encode($filtered);
         if ($ret === false) {
@@ -54,9 +54,9 @@ class EventSerializer
         foreach ($attrs as $key => $value) {
             if ($value != null) {
                 if ($this->_allAttrsPrivate ||
-                    (!is_null($userPrivateAttrs) && array_search($key, $userPrivateAttrs) !== false) ||
-                    array_search($key, $this->_privateAttrNames) !== false) {
-                    $allPrivateAttrs[$key] = true;
+                    (!is_null($userPrivateAttrs) && in_array($key, $userPrivateAttrs)) ||
+                    in_array($key, $this->_privateAttrNames)) {
+                    $allPrivateAttrs[] = $key;
                 } else {
                     $json[$key] = $stringify ? strval($value) : $value;
                 }
@@ -93,9 +93,8 @@ class EventSerializer
             }
         }
         if (count($allPrivateAttrs)) {
-            $pa = array_keys($allPrivateAttrs);
-            sort($pa);
-            $json['privateAttrs'] = $pa;
+            sort($allPrivateAttrs);
+            $json['privateAttrs'] = $allPrivateAttrs;
         }
         return $json;
     }

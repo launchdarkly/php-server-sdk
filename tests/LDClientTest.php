@@ -675,13 +675,4 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
 
         $client->variation('MyFeature', $user);
     }
-
-    private function getPrivateField(&$object, $fieldName)
-    {
-        $reflection = new \ReflectionClass(get_class($object));
-        $field = $reflection->getProperty($fieldName);
-        $field->setAccessible(true);
-
-        return $field->getValue($object);
-    }
 }

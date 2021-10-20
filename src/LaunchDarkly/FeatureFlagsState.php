@@ -27,7 +27,7 @@ class FeatureFlagsState implements \JsonSerializable
     /**
      * @ignore
      */
-    public function __construct(bool $valid, array $flagValues = array(), array $flagMetadata = array())
+    public function __construct(bool $valid)
     {
         $this->_valid = $valid;
         $this->_flagValues = array();

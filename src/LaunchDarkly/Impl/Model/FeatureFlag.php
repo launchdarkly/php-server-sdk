@@ -188,7 +188,7 @@ class FeatureFlag
                         if (!$prereqFeatureFlag->isOn() || $prereqEvalResult->getVariationIndex() !== $variation) {
                             $prereqOk = false;
                         }
-                        array_push($events, $eventFactory->newEvalEvent($prereqFeatureFlag, $user, $prereqEvalResult, null, $this));
+                        $events[] = $eventFactory->newEvalEvent($prereqFeatureFlag, $user, $prereqEvalResult, null, $this);
                     }
                 } catch (\Exception $e) {
                     $prereqOk = false;
