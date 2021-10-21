@@ -22,8 +22,8 @@
         "friendsofphp/php-cs-fixer": ">=2.2.19 <3.0",
         "guzzlehttp/guzzle": "^7",
         "kevinrob/guzzle-cache-middleware": "^3",
-        "phpunit/phpunit": "^9",
         "phpunit/php-code-coverage": "^9",
+        "phpunit/phpunit": "^9",
         "vimeo/psalm": "4.9.2"
     },
     "suggest": {

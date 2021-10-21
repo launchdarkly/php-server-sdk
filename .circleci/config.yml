@@ -19,10 +19,15 @@ jobs:
       docker-image:
         type: string
 
+    environment:
+      LD_INCLUDE_INTEGRATION_TESTS: 1
+
     docker:
       - image: <<parameters.docker-image>>
+      - image: wiremock/wiremock
 
     steps:
+      - setup_remote_docker
       - checkout
       - run:
           name: validate composer.json
