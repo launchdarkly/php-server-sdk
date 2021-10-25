@@ -33,6 +33,9 @@ class CurlEventPublisher implements EventPublisher
     /** @var int */
     private $_connectTimeout;
 
+    /** @var bool */
+    private $_isWindows;
+
     public function __construct(string $sdkKey, array $options = array())
     {
         $this->_sdkKey = $sdkKey;
@@ -56,16 +59,33 @@ class CurlEventPublisher implements EventPublisher
         }
 
         $this->_connectTimeout = $options['connect_timeout'];
+        $this->_isWindows = PHP_OS_FAMILY == 'Windows';
     }
 
     public function publish(string $payload): bool
     {
-        $args = $this->createArgs($payload);
+        if (!$this->_isWindows) {
+            $args = $this->createCurlArgs($payload);
+            return $this->makeCurlRequest($args);
+        }
 
-        return $this->makeRequest($args);
+        $tmpfile = tempnam(sys_get_temp_dir(), 'ld-');
+        if ($tmpfile === false) {
+            return false;
+        }
+
+        if (file_put_contents($tmpfile, $payload) === false) {
+            return false;
+        };
+
+        $args = $this->createPowershellArgs($tmpfile);
+        $this->makePowershellRequest($args);
+
+        return true;
+
     }
 
-    private function createArgs(string $payload): string
+    private function createCurlArgs(string $payload): string
     {
         $scheme = $this->_ssl ? "https://" : "http://";
         $args = " -X POST";
@@ -83,10 +103,48 @@ class CurlEventPublisher implements EventPublisher
     /**
      * @psalm-suppress ForbiddenCode
      */
-    private function makeRequest(string $args): bool
+    private function makeCurlRequest(string $args): bool
     {
         $cmd = $this->_curl . " " . $args . ">> /dev/null 2>&1 &";
         shell_exec($cmd);
+        return true;
+    }
+
+    private function createPowershellArgs(string $payloadFile): string
+    {
+        $headers = [
+            'Content-Type' => 'application/json',
+            'Authorization' => $this->_sdkKey,
+            'User-Agent' => 'PHPClient/' . LDClient::VERSION,
+            'X-LaunchDarkly-Event-Schema' => EventPublisher::CURRENT_SCHEMA_VERSION,
+            'Accept' => 'application/json',
+        ];
+
+        $headerString = "";
+        foreach ($headers as $key => $value) {
+            $headerString .= sprintf("'%s'='%s';", $key, $value);
+        }
+
+        $scheme = $this->_ssl ? "https://" : "http://";
+        $args = " Invoke-WebRequest";
+        $args.= " -Method POST";
+        $args.= " -UseBasicParsing";
+        $args.= " -InFile $payloadFile";
+        $args.= " -H @{" . $headerString . "}";
+        $args.= " -Uri " . escapeshellarg($scheme . $this->_host . ":" . $this->_port . $this->_path . "/bulk");
+        $args.= " ; Remove-Item $payloadFile";
+
+        return $args;
+    }
+
+    /**
+     * @psalm-suppress ForbiddenCode
+     */
+    private function makePowershellRequest(string $args): bool
+    {
+        $cmd = base64_encode(iconv("UTF-8", "UTF-16LE", utf8_encode($args)));
+        shell_exec("start /B powershell.exe -encodedCommand $cmd > nul 2>&1");
+
         return true;
     }
 }

@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  win: circleci/windows@2.2.0
+
 workflows:
   workflow:
     jobs:
@@ -12,8 +15,39 @@ workflows:
       - test-with-preinstalled-php:
          name: PHP 8.0
          docker-image: cimg/php:8.0
+      - test-on-windows
 
 jobs:
+  test-on-windows:
+    executor:
+      name: win/default
+      shell: powershell.exe
+
+    environment:
+      LD_INCLUDE_INTEGRATION_TESTS: 1
+
+    steps:
+      - checkout
+      - run:
+          name: install php and java support
+          command: choco install -y php composer javaruntime
+      - run:
+          name: download wiremock
+          command: Invoke-WebRequest -Uri https://repo1.maven.org/maven2/com/github/tomakehurst/wiremock-jre8-standalone/2.31.0/wiremock-jre8-standalone-2.31.0.jar -UseBasicParsing -OutFile wiremock.jar
+      - run:
+          name: start wiremock
+          background: true
+          command: java -jar ./wiremock.jar
+      - run:
+          name: wait for wiremock to be available
+          command: PowerShell -Command Start-Sleep -Seconds 5
+      - run:
+          name: install dependencies
+          command: composer install --no-progress
+      - run:
+          name: run tests
+          command: .\vendor\bin\phpunit
+
   test-with-preinstalled-php:
     parameters:
       docker-image:
