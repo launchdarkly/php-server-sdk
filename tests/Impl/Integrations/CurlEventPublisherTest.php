@@ -23,7 +23,13 @@ class CurlEventPublisherTest extends TestCase
     public function testSendsCorrectBodyAndHeaders()
     {
         $event = json_encode(["key" => "user-key"]);
-        $publisher = new Integrations\CurlEventPublisher('sdk-key', ['events_uri' => 'http://localhost:8080']);
+        $publisher = new Integrations\CurlEventPublisher(
+            'sdk-key',
+            [
+                'events_uri' => 'http://localhost:8080',
+                'connect_timeout' => 3,
+            ]
+        );
         $publisher->publish($event);
 
         $requests = [];
