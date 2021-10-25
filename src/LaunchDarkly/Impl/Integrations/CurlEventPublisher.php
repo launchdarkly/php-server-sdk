@@ -30,6 +30,9 @@ class CurlEventPublisher implements EventPublisher
     /** @var string */
     private $_curl = '/usr/bin/env curl';
 
+    /** @var int */
+    private $_connectTimeout;
+
     public function __construct(string $sdkKey, array $options = array())
     {
         $this->_sdkKey = $sdkKey;
@@ -51,6 +54,8 @@ class CurlEventPublisher implements EventPublisher
         if (array_key_exists('curl', $options)) {
             $this->_curl = $options['curl'];
         }
+
+        $this->_connectTimeout = $options['connect_timeout'];
     }
 
     public function publish(string $payload): bool
@@ -64,6 +69,7 @@ class CurlEventPublisher implements EventPublisher
     {
         $scheme = $this->_ssl ? "https://" : "http://";
         $args = " -X POST";
+        $args.= " --connect-timeout " . $this->_connectTimeout;
         $args.= " -H 'Content-Type: application/json'";
         $args.= " -H " . escapeshellarg("Authorization: " . $this->_sdkKey);
         $args.= " -H 'User-Agent: PHPClient/" . LDClient::VERSION . "'";
