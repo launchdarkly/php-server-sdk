@@ -1,4 +1,5 @@
 <?php
+
 namespace LaunchDarkly\Impl\Model;
 
 /**
@@ -26,8 +27,8 @@ class Rollout
         array $variations,
         ?string $bucketBy,
         ?string $kind = null,
-        ?int $seed = null)
-    {
+        ?int $seed = null
+    ) {
         $this->_variations = $variations;
         $this->_bucketBy = $bucketBy;
         $this->_kind = $kind ?? 'rollout';

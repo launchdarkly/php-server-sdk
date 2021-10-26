@@ -1,4 +1,5 @@
 <?php
+
 namespace LaunchDarkly\Impl;
 
 use LaunchDarkly\FeatureRequester;

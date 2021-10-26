@@ -1,4 +1,5 @@
 <?php
+
 namespace LaunchDarkly;
 
 /**
@@ -295,12 +296,18 @@ class LDUserBuilder
     public function build(): LDUser
     {
         return new LDUser(
-            $this->_key, $this->_secondary, 
-            $this->_ip, $this->_country, 
-            $this->_email, $this->_name, 
-            $this->_avatar, $this->_firstName, 
-            $this->_lastName, $this->_anonymous, 
-            $this->_custom, $this->_privateAttributeNames
+            $this->_key,
+            $this->_secondary,
+            $this->_ip,
+            $this->_country,
+            $this->_email,
+            $this->_name,
+            $this->_avatar,
+            $this->_firstName,
+            $this->_lastName,
+            $this->_anonymous,
+            $this->_custom,
+            $this->_privateAttributeNames
         );
     }
 }

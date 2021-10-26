@@ -1,9 +1,10 @@
 <?php
+
 namespace LaunchDarkly\Tests\Integrations;
 
-use LaunchDarkly\LDUser;
 use LaunchDarkly\Impl\Events\EventFactory;
 use LaunchDarkly\Integrations\Files;
+use LaunchDarkly\LDUser;
 use LaunchDarkly\Tests\MockFeatureRequester;
 use PHPUnit\Framework\TestCase;
 
@@ -22,8 +23,8 @@ class FileDataFeatureRequesterTest extends TestCase
 
     public function testLoadsMultipleFiles()
     {
-        $fr = Files::featureRequester(array("./tests/filedata/flag-only.json",
-            "./tests/filedata/segment-only.json"));
+        $fr = Files::featureRequester(["./tests/filedata/flag-only.json",
+            "./tests/filedata/segment-only.json"]);
         $flag1 = $fr->getFeature("flag1");
         $this->assertEquals("flag1", $flag1->getKey());
         $seg1 = $fr->getSegment("seg1");

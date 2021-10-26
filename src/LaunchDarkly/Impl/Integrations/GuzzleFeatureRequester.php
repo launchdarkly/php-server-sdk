@@ -1,4 +1,5 @@
 <?php
+
 namespace LaunchDarkly\Impl\Integrations;
 
 use GuzzleHttp\Client;
@@ -7,11 +8,11 @@ use GuzzleHttp\HandlerStack;
 use Kevinrob\GuzzleCache\CacheMiddleware;
 use Kevinrob\GuzzleCache\Strategy\PublicCacheStrategy;
 use LaunchDarkly\FeatureRequester;
-use LaunchDarkly\LDClient;
-use LaunchDarkly\Impl\UnrecoverableHTTPStatusException;
-use LaunchDarkly\Impl\Util;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Impl\Model\Segment;
+use LaunchDarkly\Impl\UnrecoverableHTTPStatusException;
+use LaunchDarkly\Impl\Util;
+use LaunchDarkly\LDClient;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -37,7 +38,7 @@ class GuzzleFeatureRequester implements FeatureRequester
             $stack->push(
                 new CacheMiddleware(
                     new PublicCacheStrategy($options['cache'] ?? null)
-                ), 
+                ),
                 'cache'
             );
         } elseif (!$this->_loggedCacheNotice) {

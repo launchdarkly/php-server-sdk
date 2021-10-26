@@ -1,11 +1,12 @@
 <?php
+
 namespace LaunchDarkly\Impl\Events;
 
 use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
-use LaunchDarkly\LDUser;
-use LaunchDarkly\Impl\Util;
 use LaunchDarkly\Impl\Model\FeatureFlag;
+use LaunchDarkly\Impl\Util;
+use LaunchDarkly\LDUser;
 
 /**
  * @ignore
@@ -34,10 +35,10 @@ class EventFactory
         LDUser $user,
         EvaluationDetail $detail,
         $default,
-        $prereqOfFlag = null): array
-    {
+        $prereqOfFlag = null
+    ): array {
         $addExperimentData = static::isExperiment($flag, $detail->getReason());
-        $e = array(
+        $e = [
             'kind' => 'feature',
             'creationDate' => Util::currentTimeUnixMillis(),
             'key' => $flag->getKey(),
@@ -46,7 +47,7 @@ class EventFactory
             'value' => $detail->getValue(),
             'default' => $default,
             'version' => $flag->getVersion()
-        );
+        ];
         // the following properties are handled separately so we don't waste bandwidth on unused keys
         if ($addExperimentData || $flag->isTrackEvents()) {
             $e['trackEvents'] = true;
@@ -71,7 +72,7 @@ class EventFactory
      */
     public function newDefaultEvent(FeatureFlag $flag, LDUser $user, EvaluationDetail $detail): array
     {
-        $e = array(
+        $e = [
             'kind' => 'feature',
             'creationDate' => Util::currentTimeUnixMillis(),
             'key' => $flag->getKey(),
@@ -79,7 +80,7 @@ class EventFactory
             'value' => $detail->getValue(),
             'default' => $detail->getValue(),
             'version' => $flag->getVersion()
-        );
+        ];
         // the following properties are handled separately so we don't waste bandwidth on unused keys
         if ($flag->isTrackEvents()) {
             $e['trackEvents'] = true;
@@ -101,14 +102,14 @@ class EventFactory
      */
     public function newUnknownFlagEvent(string $key, LDUser $user, EvaluationDetail $detail): array
     {
-        $e = array(
+        $e = [
             'kind' => 'feature',
             'creationDate' => Util::currentTimeUnixMillis(),
             'key' => $key,
             'user' => $user,
             'value' => $detail->getValue(),
             'default' => $detail->getValue()
-        );
+        ];
         // the following properties are handled separately so we don't waste bandwidth on unused keys
         if ($this->_withReasons && $detail->getReason()) {
             $e['reason'] = $detail->getReason()->jsonSerialize();
@@ -124,12 +125,12 @@ class EventFactory
      */
     public function newIdentifyEvent(LDUser $user): array
     {
-        return array(
+        return [
             'kind' => 'identify',
             'creationDate' => Util::currentTimeUnixMillis(),
             'key' => strval($user->getKey()),
             'user' => $user
-        );
+        ];
     }
     
     /**
@@ -142,12 +143,12 @@ class EventFactory
      */
     public function newCustomEvent(string $eventName, LDUser $user, $data, $metricValue): array
     {
-        $e = array(
+        $e = [
             'kind' => 'custom',
             'creationDate' => Util::currentTimeUnixMillis(),
             'key' => $eventName,
             'user' => $user
-        );
+        ];
         if (isset($data)) {
             $e['data'] = $data;
         }
@@ -165,14 +166,14 @@ class EventFactory
      */
     public function newAliasEvent(LDUser $user, LDUser $previousUser): array
     {
-        $e = array(
+        $e = [
             'kind' => 'alias',
             'key' => strval($user->getKey()),
             'contextKind' => static::contextKind($user),
             'previousKey' => strval($previousUser->getKey()),
             'previousContextKind' => static::contextKind($previousUser),
             'creationDate' => Util::currentTimeUnixMillis()
-        );
+        ];
 
         return $e;
     }

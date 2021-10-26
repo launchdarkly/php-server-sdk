@@ -1,4 +1,5 @@
 <?php
+
 namespace LaunchDarkly\Impl\Integrations;
 
 use LaunchDarkly\EventPublisher;
@@ -36,7 +37,7 @@ class CurlEventPublisher implements EventPublisher
     /** @var bool */
     private $_isWindows;
 
-    public function __construct(string $sdkKey, array $options = array())
+    public function __construct(string $sdkKey, array $options = [])
     {
         $this->_sdkKey = $sdkKey;
 
@@ -82,7 +83,6 @@ class CurlEventPublisher implements EventPublisher
         $this->makePowershellRequest($args);
 
         return true;
-
     }
 
     private function createCurlArgs(string $payload): string

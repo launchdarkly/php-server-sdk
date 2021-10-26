@@ -1,4 +1,5 @@
 <?php
+
 namespace LaunchDarkly\Impl\Integrations;
 
 use LaunchDarkly\FeatureRequester;
@@ -23,9 +24,9 @@ class FileDataFeatureRequester implements FeatureRequester
      */
     public function __construct($filePaths)
     {
-        $this->_filePaths = is_array($filePaths) ? $filePaths : array($filePaths);
-        $this->_flags = array();
-        $this->_segments = array();
+        $this->_filePaths = is_array($filePaths) ? $filePaths : [$filePaths];
+        $this->_flags = [];
+        $this->_segments = [];
         $this->readAllData();
     }
 
@@ -63,8 +64,8 @@ class FileDataFeatureRequester implements FeatureRequester
 
     private function readAllData(): void
     {
-        $flags = array();
-        $segments = array();
+        $flags = [];
+        $segments = [];
         foreach ($this->_filePaths as $filePath) {
             $this->loadFile($filePath, $flags, $segments);
         }
@@ -87,21 +88,21 @@ class FileDataFeatureRequester implements FeatureRequester
         }
         if (isset($data['flagValues'])) {
             foreach ($data['flagValues'] as $key => $value) {
-                $flag = FeatureFlag::decode(array(
+                $flag = FeatureFlag::decode([
                     "key" => $key,
                     "version" => 1,
                     "on" => false,
-                    "prerequisites" => array(),
+                    "prerequisites" => [],
                     "salt" => "",
-                    "targets" => array(),
-                    "rules" => array(),
-                    "fallthrough" => array(),
+                    "targets" => [],
+                    "rules" => [],
+                    "fallthrough" => [],
                     "offVariation" => 0,
-                    "variations" => array($value),
+                    "variations" => [$value],
                     "deleted" => false,
                     "trackEvents" => false,
                     "clientSide" => false
-                ));
+                ]);
                 $this->tryToAdd($flags, $key, $flag, "feature flag");
             }
         }

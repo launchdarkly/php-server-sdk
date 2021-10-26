@@ -1,4 +1,5 @@
 <?php
+
 namespace LaunchDarkly\Impl\Events;
 
 use LaunchDarkly\EventPublisher;
@@ -24,7 +25,7 @@ class EventProcessor
     /** @var int */
     private $_capacity;
 
-    public function __construct(string $sdkKey, array $options = array())
+    public function __construct(string $sdkKey, array $options = [])
     {
         $this->_eventPublisher = $this->getEventPublisher($sdkKey, $options);
         $this->_eventSerializer = new EventSerializer($options);
@@ -69,7 +70,7 @@ class EventProcessor
         $payload = $this->_eventSerializer->serializeEvents($this->_queue);
 
         // We don't expect flush to be called more than once per request cycle, but let's empty the queue just in case
-        $this->_queue = array();
+        $this->_queue = [];
 
         return $this->_eventPublisher->publish($payload);
     }

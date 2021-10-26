@@ -1,9 +1,10 @@
 <?php
+
 namespace LaunchDarkly\Tests;
 
 class MockEventPublisher implements \LaunchDarkly\EventPublisher
 {
-    public $payloads = array();
+    public $payloads = [];
 
     public function __construct(string $sdkKey, array $options)
     {

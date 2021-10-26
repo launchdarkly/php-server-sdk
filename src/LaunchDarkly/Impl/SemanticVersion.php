@@ -30,12 +30,12 @@ class SemanticVersion
     public $build;
 
     public function __construct(
-        int $major, 
-        int $minor, 
-        int $patch, 
-        string $prerelease, 
-        string $build)
-    {
+        int $major,
+        int $minor,
+        int $patch,
+        string $prerelease,
+        string $build
+    ) {
         $this->major = $major;
         $this->minor = $minor;
         $this->patch = $patch;

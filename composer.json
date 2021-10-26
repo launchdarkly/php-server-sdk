@@ -44,6 +44,7 @@
         "sort-packages": true
     },
     "scripts": {
-        "cs": "vendor/bin/php-cs-fixer fix --diff --verbose"
+        "cs-check": "vendor/bin/php-cs-fixer fix --diff --dry-run --verbose",
+        "cs-fix": "vendor/bin/php-cs-fixer fix --diff --verbose"
     }
 }

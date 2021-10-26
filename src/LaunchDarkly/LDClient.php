@@ -1,12 +1,13 @@
 <?php
+
 namespace LaunchDarkly;
 
-use LaunchDarkly\Impl\PreloadedFeatureRequester;
-use LaunchDarkly\Impl\UnrecoverableHTTPStatusException;
 use LaunchDarkly\Impl\Events\EventFactory;
 use LaunchDarkly\Impl\Events\EventProcessor;
 use LaunchDarkly\Impl\Events\NullEventProcessor;
 use LaunchDarkly\Impl\Model\FeatureFlag;
+use LaunchDarkly\Impl\PreloadedFeatureRequester;
+use LaunchDarkly\Impl\UnrecoverableHTTPStatusException;
 use LaunchDarkly\Integrations\Guzzle;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
@@ -40,7 +41,7 @@ class LDClient
     /** @var bool */
     protected $_send_events = true;
     /** @var array|mixed */
-    protected $_defaults = array();
+    protected $_defaults = [];
     /** @var LoggerInterface */
     protected $_logger;
     /** @var FeatureRequester */
@@ -82,7 +83,7 @@ class LDClient
      *
      * @return LDClient
      */
-    public function __construct(string $sdkKey, array $options = array())
+    public function __construct(string $sdkKey, array $options = [])
     {
         $this->_sdkKey = $sdkKey;
         if (!isset($options['base_uri'])) {
@@ -146,7 +147,7 @@ class LDClient
      * @param string $sdkKey
      * @param mixed[] $options
      * @return FeatureRequester
-     * 
+     *
      * @psalm-suppress UndefinedClass
      */
     private function getFeatureRequester(string $sdkKey, array $options): FeatureRequester
@@ -340,7 +341,7 @@ class LDClient
      * - `withReasons`: Set this to true to include evaluation reasons (see {@see \LaunchDarkly\LDClient::variationDetail()})
      * @return FeatureFlagsState a FeatureFlagsState object (will never be null)
      */
-    public function allFlagsState(LDUser $user, array $options = array()): FeatureFlagsState
+    public function allFlagsState(LDUser $user, array $options = []): FeatureFlagsState
     {
         if (is_null($user->getKey())) {
             $this->_logger->warning("allFlagsState called with null/empty user key! Returning empty state");

@@ -1,4 +1,5 @@
 <?php
+
 namespace LaunchDarkly\Impl\Model;
 
 use LaunchDarkly\LDUser;
@@ -18,24 +19,25 @@ class Segment
     /** @var int */
     protected $_version;
     /** @var string[] */
-    protected $_included = array();
+    protected $_included = [];
     /** @var string[] */
-    protected $_excluded = array();
+    protected $_excluded = [];
     /** @var string */
     protected $_salt;
     /** @var SegmentRule[] */
-    protected $_rules = array();
+    protected $_rules = [];
     /** @var bool */
     protected $_deleted = false;
 
-    protected function __construct(string $key,
-                                   int $version,
-                                   array $included,
-                                   array $excluded,
-                                   string $salt,
-                                   array $rules,
-                                   bool $deleted)
-    {
+    protected function __construct(
+        string $key,
+        int $version,
+        array $included,
+        array $excluded,
+        string $salt,
+        array $rules,
+        bool $deleted
+    ) {
         $this->_key = $key;
         $this->_version = $version;
         $this->_included = $included;

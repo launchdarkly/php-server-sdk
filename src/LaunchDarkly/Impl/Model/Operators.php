@@ -1,11 +1,12 @@
 <?php
+
 namespace LaunchDarkly\Impl\Model;
 
-use LaunchDarkly\Impl\SemanticVersion;
-use LaunchDarkly\Impl\Util;
 use DateTime;
 use DateTimeZone;
 use Exception;
+use LaunchDarkly\Impl\SemanticVersion;
+use LaunchDarkly\Impl\Util;
 
 /**
  * Internal class used in feature flag evaluations.
@@ -118,7 +119,7 @@ class Operators
     }
 
     /**
-     * @param mixed|null $in 
+     * @param mixed|null $in
      * @return ?numeric
      */
     public static function parseTime($in)

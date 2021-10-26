@@ -1,4 +1,5 @@
 <?php
+
 namespace LaunchDarkly\Impl\Integrations;
 
 use LaunchDarkly\FeatureRequester;
@@ -63,7 +64,7 @@ class FeatureRequesterBase implements FeatureRequester
      */
     protected function readItemStringList(string $namespace): ?array
     {
-        return array();
+        return [];
     }
 
     /**
@@ -129,7 +130,7 @@ class FeatureRequesterBase implements FeatureRequester
     public function getAllFeatures(): ?array
     {
         $jsonList = $this->getJsonItemList(self::FEATURES_NAMESPACE);
-        $itemsOut = array();
+        $itemsOut = [];
         foreach ($jsonList as $json) {
             $flag = FeatureFlag::decode($json);
             if (!$flag->isDeleted()) {
@@ -161,7 +162,7 @@ class FeatureRequesterBase implements FeatureRequester
         } else {
             $values = $this->readItemStringList($namespace);
             if (!$values) {
-                $values = array();
+                $values = [];
             }
             if ($this->_cache) {
                 $this->_cache->putCachedString($cacheKey, json_encode($values));

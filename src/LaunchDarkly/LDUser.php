@@ -1,4 +1,5 @@
 <?php
+
 namespace LaunchDarkly;
 
 /**
@@ -42,14 +43,14 @@ class LDUser
     protected $_anonymous = false;
 
     /** @var array|null */
-    protected $_custom = array();
+    protected $_custom = [];
 
     /** @var array|null */
-    protected $_privateAttributeNames = array();
+    protected $_privateAttributeNames = [];
 
     /**
      * Constructor for directly creating an instance.
-     * 
+     *
      * It is preferable to use {@see LDUserBuilder} instead of this constructor.
      *
      * @param string $key Unique key for the user. For authenticated users, this may be a username or e-mail address. For anonymous users, this could be an IP address or session ID.
@@ -66,13 +67,19 @@ class LDUser
      * @return LDUser
      */
     public function __construct(
-        string $key, ?string $secondary = null, 
-        ?string $ip = null, ?string $country = null, 
-        ?string $email = null, ?string $name = null, 
-        ?string $avatar = null, ?string $firstName = null, 
-        ?string $lastName = null, ?bool $anonymous = null, 
-        ?array $custom = array(), ?array $privateAttributeNames = array())
-    {
+        string $key,
+        ?string $secondary = null,
+        ?string $ip = null,
+        ?string $country = null,
+        ?string $email = null,
+        ?string $name = null,
+        ?string $avatar = null,
+        ?string $firstName = null,
+        ?string $lastName = null,
+        ?bool $anonymous = null,
+        ?array $custom = [],
+        ?array $privateAttributeNames = []
+    ) {
         $this->_key = $key;
         $this->_secondary = $secondary;
         $this->_ip = $ip;

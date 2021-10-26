@@ -55,11 +55,11 @@ class VariationOrRollout
     public function variationIndexForUser(LDUser $user, string $_key, ?string $_salt): array
     {
         if ($this->_variation !== null) {
-            return array($this->_variation, false);
+            return [$this->_variation, false];
         }
         $rollout = $this->_rollout;
         if ($rollout === null) {
-            return array(null, false);
+            return [null, false];
         }
         $variations = $rollout->getVariations();
         if ($variations) {
@@ -69,21 +69,22 @@ class VariationOrRollout
             foreach ($variations as $wv) {
                 $sum += $wv->getWeight() / 100000.0;
                 if ($bucket < $sum) {
-                    return array($wv->getVariation(), $rollout->isExperiment() && !$wv->isUntracked());
+                    return [$wv->getVariation(), $rollout->isExperiment() && !$wv->isUntracked()];
                 }
             }
             $lastVariation = $variations[count($variations) - 1];
-            return array($lastVariation->getVariation(), $rollout->isExperiment() && !$lastVariation->isUntracked());
+            return [$lastVariation->getVariation(), $rollout->isExperiment() && !$lastVariation->isUntracked()];
         }
-        return array(null, false);
+        return [null, false];
     }
 
     public static function bucketUser(
-        LDUser $user, string $_key, 
-        string $attr, ?string $_salt,
+        LDUser $user,
+        string $_key,
+        string $attr,
+        ?string $_salt,
         ?int $seed
-    ): float
-    {
+    ): float {
         $userValue = $user->getValueForEvaluation($attr);
         $idHash = null;
         if ($userValue != null) {

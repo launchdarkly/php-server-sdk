@@ -1,12 +1,13 @@
 <?php
+
 namespace LaunchDarkly\Impl\Model;
 
 use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
 use LaunchDarkly\FeatureRequester;
-use LaunchDarkly\LDUser;
 use LaunchDarkly\Impl\EvalResult;
 use LaunchDarkly\Impl\Events\EventFactory;
+use LaunchDarkly\LDUser;
 
 /**
  * Internal data model class that describes a feature flag configuration.
@@ -28,19 +29,19 @@ class FeatureFlag
     /** @var bool */
     protected $_on = false;
     /** @var Prerequisite[] */
-    protected $_prerequisites = array();
+    protected $_prerequisites = [];
     /** @var string|null */
     protected $_salt = null;
     /** @var Target[] */
-    protected $_targets = array();
+    protected $_targets = [];
     /** @var Rule[] */
-    protected $_rules = array();
+    protected $_rules = [];
     /** @var VariationOrRollout */
     protected $_fallthrough;
     /** @var int | null */
     protected $_offVariation = null;
     /** @var array */
-    protected $_variations = array();
+    protected $_variations = [];
     /** @var bool */
     protected $_deleted = false;
     /** @var bool */
@@ -56,22 +57,23 @@ class FeatureFlag
     // the PHP client doesn't do summary events. However, we need to capture them in case
     // they want to pass the flag data to the front end with allFlagsState().
 
-    protected function __construct(string $key,
-                                   int $version,
-                                   bool $on,
-                                   array $prerequisites,
-                                   ?string $salt,
-                                   array $targets,
-                                   array $rules,
-                                   VariationOrRollout $fallthrough,
-                                   ?int $offVariation,
-                                   array $variations,
-                                   bool $deleted,
-                                   bool $trackEvents,
-                                   bool $trackEventsFallthrough,
-                                   ?int $debugEventsUntilDate,
-                                   bool $clientSide)
-    {
+    protected function __construct(
+        string $key,
+        int $version,
+        bool $on,
+        array $prerequisites,
+        ?string $salt,
+        array $targets,
+        array $rules,
+        VariationOrRollout $fallthrough,
+        ?int $offVariation,
+        array $variations,
+        bool $deleted,
+        bool $trackEvents,
+        bool $trackEventsFallthrough,
+        ?int $debugEventsUntilDate,
+        bool $clientSide
+    ) {
         $this->_key = $key;
         $this->_version = $version;
         $this->_on = $on;
@@ -130,7 +132,7 @@ class FeatureFlag
 
     public function evaluate(LDUser $user, FeatureRequester $featureRequester, EventFactory $eventFactory): EvalResult
     {
-        $prereqEvents = array();
+        $prereqEvents = [];
         $detail = $this->evaluateInternal($user, $featureRequester, $prereqEvents, $eventFactory);
         return new EvalResult($detail, $prereqEvents);
     }
@@ -139,8 +141,8 @@ class FeatureFlag
         LDUser $user,
         FeatureRequester $featureRequester,
         array &$events,
-        EventFactory $eventFactory): EvaluationDetail
-    {
+        EventFactory $eventFactory
+    ): EvaluationDetail {
         if (!$this->isOn()) {
             return $this->getOffValue(EvaluationReason::off());
         }
@@ -164,8 +166,11 @@ class FeatureFlag
         if ($this->_rules != null) {
             foreach ($this->_rules as $i => $rule) {
                 if ($rule->matchesUser($user, $featureRequester)) {
-                    return $this->getValueForVariationOrRollout($rule, $user,
-                        EvaluationReason::ruleMatch($i, $rule->getId()));
+                    return $this->getValueForVariationOrRollout(
+                        $rule,
+                        $user,
+                        EvaluationReason::ruleMatch($i, $rule->getId())
+                    );
                 }
             }
         }

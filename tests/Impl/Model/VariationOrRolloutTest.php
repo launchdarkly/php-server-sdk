@@ -1,8 +1,9 @@
 <?php
+
 namespace LaunchDarkly\Tests\Impl\Model;
 
-use LaunchDarkly\LDUserBuilder;
 use LaunchDarkly\Impl\Model\VariationOrRollout;
+use LaunchDarkly\LDUserBuilder;
 use PHPUnit\Framework\TestCase;
 
 class VariationOrRolloutTest extends TestCase
@@ -10,12 +11,12 @@ class VariationOrRolloutTest extends TestCase
     public function testUsingSeedIsDifferentThanSalt()
     {
         $seed = 357;
-        $vr = array('rollout' => array(
-            'variations' => array(
-                array('variation' => 1, 'weight' => 50000),
-                array('variation' => 2, 'weight' => 50000)
-            )
-        ));
+        $vr = ['rollout' => [
+            'variations' => [
+                ['variation' => 1, 'weight' => 50000],
+                ['variation' => 2, 'weight' => 50000]
+            ]
+        ]];
 
         $decodedVr = call_user_func(VariationOrRollout::getDecoder(), $vr);
 
@@ -34,12 +35,12 @@ class VariationOrRolloutTest extends TestCase
     {
         $seed1 = 357;
         $seed2 = 13;
-        $vr = array('rollout' => array(
-            'variations' => array(
-                array('variation' => 1, 'weight' => 50000),
-                array('variation' => 2, 'weight' => 50000)
-            )
-        ));
+        $vr = ['rollout' => [
+            'variations' => [
+                ['variation' => 1, 'weight' => 50000],
+                ['variation' => 2, 'weight' => 50000]
+            ]
+        ]];
 
         $decodedVr = call_user_func(VariationOrRollout::getDecoder(), $vr);
 
@@ -57,12 +58,12 @@ class VariationOrRolloutTest extends TestCase
     public function testSameSeedIsDeterministic()
     {
         $seed = 357;
-        $vr = array('rollout' => array(
-            'variations' => array(
-                array('variation' => 1, 'weight' => 50000),
-                array('variation' => 2, 'weight' => 50000)
-            )
-        ));
+        $vr = ['rollout' => [
+            'variations' => [
+                ['variation' => 1, 'weight' => 50000],
+                ['variation' => 2, 'weight' => 50000]
+            ]
+        ]];
 
         $decodedVr = call_user_func(VariationOrRollout::getDecoder(), $vr);
 

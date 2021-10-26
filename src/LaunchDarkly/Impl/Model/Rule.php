@@ -23,10 +23,12 @@ class Rule extends VariationOrRollout
     private $_trackEvents;
 
     protected function __construct(
-        ?int $variation, ?Rollout $rollout, 
-        ?string $id, array $clauses, 
-        bool $trackEvents)
-    {
+        ?int $variation,
+        ?Rollout $rollout,
+        ?string $id,
+        array $clauses,
+        bool $trackEvents
+    ) {
         parent::__construct($variation, $rollout);
         $this->_id = $id;
         $this->_clauses = $clauses;

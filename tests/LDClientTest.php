@@ -1,12 +1,13 @@
 <?php
+
 namespace LaunchDarkly\Tests;
 
 use InvalidArgumentException;
 use LaunchDarkly\EvaluationReason;
+use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\LDClient;
 use LaunchDarkly\LDUser;
 use LaunchDarkly\LDUserBuilder;
-use LaunchDarkly\Impl\Model\FeatureFlag;
 use Psr\Log\LoggerInterface;
 
 class LDClientTest extends \PHPUnit\Framework\TestCase
@@ -18,53 +19,53 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
 
     private function makeOffFlagWithValue($key, $value)
     {
-        $flagJson = array(
+        $flagJson = [
             'key' => $key,
             'version' => 100,
             'deleted' => false,
             'on' => false,
-            'targets' => array(),
-            'prerequisites' => array(),
-            'rules' => array(),
+            'targets' => [],
+            'prerequisites' => [],
+            'rules' => [],
             'offVariation' => 1,
-            'fallthrough' => array('variation' => 0),
-            'variations' => array('FALLTHROUGH', $value),
+            'fallthrough' => ['variation' => 0],
+            'variations' => ['FALLTHROUGH', $value],
             'salt' => ''
-        );
+        ];
         return FeatureFlag::decode($flagJson);
     }
 
     private function makeFlagThatEvaluatesToNull($key)
     {
-        $flagJson = array(
+        $flagJson = [
             'key' => $key,
             'version' => 100,
             'deleted' => false,
             'on' => false,
-            'targets' => array(),
-            'prerequisites' => array(),
-            'rules' => array(),
+            'targets' => [],
+            'prerequisites' => [],
+            'rules' => [],
             'offVariation' => null,
-            'fallthrough' => array('variation' => 0),
-            'variations' => array('none'),
+            'fallthrough' => ['variation' => 0],
+            'variations' => ['none'],
             'salt' => ''
-        );
+        ];
         return FeatureFlag::decode($flagJson);
     }
 
-    private function makeClient($overrideOptions = array())
+    private function makeClient($overrideOptions = [])
     {
-        $options = array(
+        $options = [
             'feature_requester_class' => MockFeatureRequester::class,
             'event_processor' => new MockEventProcessor()
-        );
+        ];
         return new LDClient("someKey", array_merge($options, $overrideOptions));
     }
 
     public function testVariationReturnsFlagValue()
     {
         $flag = $this->makeOffFlagWithValue('feature', 'value');
-        MockFeatureRequester::$flags = array('feature' => $flag);
+        MockFeatureRequester::$flags = ['feature' => $flag];
         $client = $this->makeClient();
 
         $value = $client->variation('feature', new LDUser('userkey'), 'default');
@@ -74,7 +75,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
     public function testVariationDetailReturnsFlagValue()
     {
         $flag = $this->makeOffFlagWithValue('feature', 'value');
-        MockFeatureRequester::$flags = array('feature' => $flag);
+        MockFeatureRequester::$flags = ['feature' => $flag];
         $client = $this->makeClient();
 
         $detail = $client->variationDetail('feature', new LDUser('userkey'), 'default');
@@ -87,7 +88,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
     public function testVariationReturnsDefaultIfFlagEvaluatesToNull()
     {
         $flag = $this->makeFlagThatEvaluatesToNull('feature');
-        MockFeatureRequester::$flags = array('feature' => $flag);
+        MockFeatureRequester::$flags = ['feature' => $flag];
         $client = $this->makeClient();
 
         $value = $client->variation('feature', new LDUser('userkey'), 'default');
@@ -97,7 +98,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
     public function testVariationDetailReturnsDefaultIfFlagEvaluatesToNull()
     {
         $flag = $this->makeFlagThatEvaluatesToNull('feature');
-        MockFeatureRequester::$flags = array('feature' => $flag);
+        MockFeatureRequester::$flags = ['feature' => $flag];
         $client = $this->makeClient();
 
         $detail = $client->variationDetail('feature', new LDUser('userkey'), 'default');
@@ -109,7 +110,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
 
     public function testVariationReturnsDefaultForUnknownFlag()
     {
-        MockFeatureRequester::$flags = array();
+        MockFeatureRequester::$flags = [];
         $client = $this->makeClient();
 
         $this->assertEquals('argdef', $client->variation('foo', new LDUser('userkey'), 'argdef'));
@@ -117,7 +118,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
 
     public function testVariationDetailReturnsDefaultForUnknownFlag()
     {
-        MockFeatureRequester::$flags = array();
+        MockFeatureRequester::$flags = [];
         $client = $this->makeClient();
 
         $detail = $client->variationDetail('foo', new LDUser('userkey'), 'default');
@@ -129,8 +130,8 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
 
     public function testVariationReturnsDefaultFromConfigurationForUnknownFlag()
     {
-        MockFeatureRequester::$flags = array();
-        $client = $this->makeClient(array('defaults' => array('foo' => 'fromarray')));
+        MockFeatureRequester::$flags = [];
+        $client = $this->makeClient(['defaults' => ['foo' => 'fromarray']]);
 
         $this->assertEquals('fromarray', $client->variation('foo', new LDUser('userkey'), 'argdef'));
     }
@@ -138,9 +139,9 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
     public function testVariationSendsEvent()
     {
         $flag = $this->makeOffFlagWithValue('flagkey', 'flagvalue');
-        MockFeatureRequester::$flags = array('flagkey' => $flag);
+        MockFeatureRequester::$flags = ['flagkey' => $flag];
         $ep = new MockEventProcessor();
-        $client = $this->makeClient(array('event_processor' => $ep));
+        $client = $this->makeClient(['event_processor' => $ep]);
 
         $user = new LDUser('userkey');
         $client->variation('flagkey', new LDUser('userkey'), 'default');
@@ -161,9 +162,9 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
     public function testVariationDetailSendsEvent()
     {
         $flag = $this->makeOffFlagWithValue('flagkey', 'flagvalue');
-        MockFeatureRequester::$flags = array('flagkey' => $flag);
+        MockFeatureRequester::$flags = ['flagkey' => $flag];
         $ep = new MockEventProcessor();
-        $client = $this->makeClient(array('event_processor' => $ep));
+        $client = $this->makeClient(['event_processor' => $ep]);
 
         $user = new LDUser('userkey');
         $client->variationDetail('flagkey', $user, 'default');
@@ -178,43 +179,43 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($user, $event['user']);
         $this->assertEquals('default', $event['default']);
         $this->assertFalse(isset($event['trackEvents']));
-        $this->assertEquals(array('kind' => 'OFF'), $event['reason']);
+        $this->assertEquals(['kind' => 'OFF'], $event['reason']);
     }
 
     public function testVariationForcesTrackingWhenMatchedRuleHasTrackEventsSet()
     {
-        $flagJson = array(
+        $flagJson = [
             'key' => 'flagkey',
             'version' => 100,
             'deleted' => false,
             'on' => true,
-            'targets' => array(),
-            'prerequisites' => array(),
-            'rules' => array(
-                array(
-                    'clauses' => array(
-                        array(
+            'targets' => [],
+            'prerequisites' => [],
+            'rules' => [
+                [
+                    'clauses' => [
+                        [
                             'attribute' => 'key',
                             'op' => 'in',
-                            'values' => array('userkey'),
+                            'values' => ['userkey'],
                             'negate' => false
-                        )
-                    ),
+                        ]
+                    ],
                     'id' => 'rule-id',
                     'variation' => 1,
                     'trackEvents' => true
-                )
-            ),
+                ]
+            ],
             'offVariation' => 1,
-            'fallthrough' => array('variation' => 0),
-            'variations' => array('fellthrough', 'flagvalue'),
+            'fallthrough' => ['variation' => 0],
+            'variations' => ['fellthrough', 'flagvalue'],
             'salt' => ''
-        );
+        ];
         $flag = FeatureFlag::decode($flagJson);
 
-        MockFeatureRequester::$flags = array('flagkey' => $flag);
+        MockFeatureRequester::$flags = ['flagkey' => $flag];
         $ep = new MockEventProcessor();
-        $client = $this->makeClient(array('event_processor' => $ep));
+        $client = $this->makeClient(['event_processor' => $ep]);
 
         $user = new LDUser('userkey');
         $client->variation('flagkey', new LDUser('userkey'), 'default');
@@ -229,30 +230,30 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($user, $event['user']);
         $this->assertEquals('default', $event['default']);
         $this->assertTrue($event['trackEvents']);
-        $this->assertEquals(array('kind' => 'RULE_MATCH', 'ruleIndex' => 0, 'ruleId' => 'rule-id'), $event['reason']);
+        $this->assertEquals(['kind' => 'RULE_MATCH', 'ruleIndex' => 0, 'ruleId' => 'rule-id'], $event['reason']);
     }
 
     public function testVariationForcesTrackingForFallthroughWhenTrackEventsFallthroughIsSet()
     {
-        $flagJson = array(
+        $flagJson = [
             'key' => 'flagkey',
             'version' => 100,
             'deleted' => false,
             'on' => true,
-            'targets' => array(),
-            'prerequisites' => array(),
-            'rules' => array(),
+            'targets' => [],
+            'prerequisites' => [],
+            'rules' => [],
             'offVariation' => 1,
-            'fallthrough' => array('variation' => 0),
-            'variations' => array('fellthrough', 'flagvalue'),
+            'fallthrough' => ['variation' => 0],
+            'variations' => ['fellthrough', 'flagvalue'],
             'salt' => '',
             'trackEventsFallthrough' => true
-        );
+        ];
         $flag = FeatureFlag::decode($flagJson);
 
-        MockFeatureRequester::$flags = array('flagkey' => $flag);
+        MockFeatureRequester::$flags = ['flagkey' => $flag];
         $ep = new MockEventProcessor();
-        $client = $this->makeClient(array('event_processor' => $ep));
+        $client = $this->makeClient(['event_processor' => $ep]);
 
         $user = new LDUser('userkey');
         $client->variation('flagkey', new LDUser('userkey'), 'default');
@@ -267,14 +268,14 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($user, $event['user']);
         $this->assertEquals('default', $event['default']);
         $this->assertTrue($event['trackEvents']);
-        $this->assertEquals(array('kind' => 'FALLTHROUGH'), $event['reason']);
+        $this->assertEquals(['kind' => 'FALLTHROUGH'], $event['reason']);
     }
 
     public function testVariationSendsEventForUnknownFlag()
     {
-        MockFeatureRequester::$flags = array();
+        MockFeatureRequester::$flags = [];
         $ep = new MockEventProcessor();
-        $client = $this->makeClient(array('event_processor' => $ep));
+        $client = $this->makeClient(['event_processor' => $ep]);
 
         $user = new LDUser('userkey');
         $client->variation('flagkey', new LDUser('userkey'), 'default');
@@ -293,9 +294,9 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
 
     public function testVariationDetailSendsEventForUnknownFlag()
     {
-        MockFeatureRequester::$flags = array();
+        MockFeatureRequester::$flags = [];
         $ep = new MockEventProcessor();
-        $client = $this->makeClient(array('event_processor' => $ep));
+        $client = $this->makeClient(['event_processor' => $ep]);
 
         $user = new LDUser('userkey');
         $client->variationDetail('flagkey', new LDUser('userkey'), 'default');
@@ -309,14 +310,14 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse(isset($event['variation']));
         $this->assertEquals($user, $event['user']);
         $this->assertEquals('default', $event['default']);
-        $this->assertEquals(array('kind' => 'ERROR', 'errorKind' => 'FLAG_NOT_FOUND'), $event['reason']);
+        $this->assertEquals(['kind' => 'ERROR', 'errorKind' => 'FLAG_NOT_FOUND'], $event['reason']);
     }
 
 
     public function testVariationWithAnonymousUserSendsEventWithAnonymousContextKind()
     {
         $ep = new MockEventProcessor();
-        $client = $this->makeClient(array('event_processor' => $ep));
+        $client = $this->makeClient(['event_processor' => $ep]);
 
         $flag = $this->makeOffFlagWithValue('feature', 'value');
 
@@ -335,24 +336,24 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
 
     public function testAllFlagsStateReturnsState()
     {
-        $flagJson = array(
+        $flagJson = [
             'key' => 'feature',
             'version' => 100,
             'deleted' => false,
             'on' => false,
-            'targets' => array(),
-            'prerequisites' => array(),
-            'rules' => array(),
+            'targets' => [],
+            'prerequisites' => [],
+            'rules' => [],
             'offVariation' => 1,
-            'fallthrough' => array('variation' => 0),
-            'variations' => array('fall', 'off', 'on'),
+            'fallthrough' => ['variation' => 0],
+            'variations' => ['fall', 'off', 'on'],
             'salt' => '',
             'trackEvents' => true,
             'debugEventsUntilDate' => 1000
-        );
+        ];
         $flag = FeatureFlag::decode($flagJson);
 
-        MockFeatureRequester::$flags = array('feature' => $flag);
+        MockFeatureRequester::$flags = ['feature' => $flag];
         $client = $this->makeClient();
 
         $builder = new LDUserBuilder(3);
@@ -360,182 +361,182 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $state = $client->allFlagsState($user);
 
         $this->assertTrue($state->isValid());
-        $this->assertEquals(array('feature' => 'off'), $state->toValuesMap());
-        $expectedState = array(
+        $this->assertEquals(['feature' => 'off'], $state->toValuesMap());
+        $expectedState = [
             'feature' => 'off',
-            '$flagsState' => array(
-                'feature' => array(
+            '$flagsState' => [
+                'feature' => [
                     'variation' => 1,
                     'version' => 100,
                     'trackEvents' => true,
                     'debugEventsUntilDate' => 1000
-                )
-            ),
+                ]
+            ],
             '$valid' => true
-        );
+        ];
         $this->assertEquals($expectedState, $state->jsonSerialize());
     }
 
     public function testAllFlagsStateReturnsStateWithReasons()
     {
-        $flagJson = array(
+        $flagJson = [
             'key' => 'feature',
             'version' => 100,
             'deleted' => false,
             'on' => false,
-            'targets' => array(),
-            'prerequisites' => array(),
-            'rules' => array(),
+            'targets' => [],
+            'prerequisites' => [],
+            'rules' => [],
             'offVariation' => 1,
-            'fallthrough' => array('variation' => 0),
-            'variations' => array('fall', 'off', 'on'),
+            'fallthrough' => ['variation' => 0],
+            'variations' => ['fall', 'off', 'on'],
             'salt' => '',
             'trackEvents' => true,
             'debugEventsUntilDate' => 1000
-        );
+        ];
         $flag = FeatureFlag::decode($flagJson);
 
-        MockFeatureRequester::$flags = array('feature' => $flag);
+        MockFeatureRequester::$flags = ['feature' => $flag];
         $client = $this->makeClient();
 
         $builder = new LDUserBuilder(3);
         $user = $builder->build();
-        $state = $client->allFlagsState($user, array('withReasons' => true));
+        $state = $client->allFlagsState($user, ['withReasons' => true]);
 
         $this->assertTrue($state->isValid());
-        $this->assertEquals(array('feature' => 'off'), $state->toValuesMap());
-        $expectedState = array(
+        $this->assertEquals(['feature' => 'off'], $state->toValuesMap());
+        $expectedState = [
             'feature' => 'off',
-            '$flagsState' => array(
-                'feature' => array(
+            '$flagsState' => [
+                'feature' => [
                     'variation' => 1,
                     'version' => 100,
                     'trackEvents' => true,
                     'debugEventsUntilDate' => 1000,
-                    'reason' => array('kind' => 'OFF')
-                )
-            ),
+                    'reason' => ['kind' => 'OFF']
+                ]
+            ],
             '$valid' => true
-        );
+        ];
         $this->assertEquals($expectedState, $state->jsonSerialize());
     }
 
     public function testAllFlagsStateCanFilterForClientSideFlags()
     {
-        $flagJson = array('key' => 'server-side-1', 'version' => 1, 'on' => false, 'salt' => '', 'deleted' => false,
-            'targets' => array(), 'rules' => array(), 'prerequisites' => array(), 'fallthrough' => array(),
-            'offVariation' => 0, 'variations' => array('a'), 'clientSide' => false);
+        $flagJson = ['key' => 'server-side-1', 'version' => 1, 'on' => false, 'salt' => '', 'deleted' => false,
+            'targets' => [], 'rules' => [], 'prerequisites' => [], 'fallthrough' => [],
+            'offVariation' => 0, 'variations' => ['a'], 'clientSide' => false];
         $flag1 = FeatureFlag::decode($flagJson);
         $flagJson['key'] = 'server-side-2';
         $flag2 = FeatureFlag::decode($flagJson);
         $flagJson['key'] = 'client-side-1';
         $flagJson['clientSide'] = true;
-        $flagJson['variations'] = array('value1');
+        $flagJson['variations'] = ['value1'];
         $flag3 = FeatureFlag::decode($flagJson);
         $flagJson['key'] = 'client-side-2';
-        $flagJson['variations'] = array('value2');
+        $flagJson['variations'] = ['value2'];
         $flag4 = FeatureFlag::decode($flagJson);
-        MockFeatureRequester::$flags = array(
+        MockFeatureRequester::$flags = [
             $flag1->getKey() => $flag1, $flag2->getKey() => $flag2, $flag3->getKey() => $flag3, $flag4->getKey() => $flag4
-        );
+        ];
         $client = $this->makeClient();
 
         $builder = new LDUserBuilder(3);
         $user = $builder->build();
-        $state = $client->allFlagsState($user, array('clientSideOnly' => true));
+        $state = $client->allFlagsState($user, ['clientSideOnly' => true]);
 
         $this->assertTrue($state->isValid());
-        $this->assertEquals(array('client-side-1' => 'value1', 'client-side-2' => 'value2'), $state->toValuesMap());
+        $this->assertEquals(['client-side-1' => 'value1', 'client-side-2' => 'value2'], $state->toValuesMap());
     }
 
     public function testAllFlagsStateCanOmitDetailsForUntrackedFlags()
     {
-        $flag1Json = array(
+        $flag1Json = [
             'key' => 'flag1',
             'version' => 100,
             'deleted' => false,
             'on' => false,
-            'targets' => array(),
-            'prerequisites' => array(),
-            'rules' => array(),
+            'targets' => [],
+            'prerequisites' => [],
+            'rules' => [],
             'offVariation' => 0,
             'fallthrough' => null,
-            'variations' => array('value1'),
+            'variations' => ['value1'],
             'salt' => '',
             'trackEvents' => false
-        );
-        $flag2Json = array(
+        ];
+        $flag2Json = [
             'key' => 'flag2',
             'version' => 200,
             'deleted' => false,
             'on' => false,
-            'targets' => array(),
-            'prerequisites' => array(),
-            'rules' => array(),
+            'targets' => [],
+            'prerequisites' => [],
+            'rules' => [],
             'offVariation' => 0,
             'fallthrough' => null,
-            'variations' => array('value2'),
+            'variations' => ['value2'],
             'salt' => '',
             'trackEvents' => true
-        );
-        $flag3Json = array(
+        ];
+        $flag3Json = [
             'key' => 'flag3',
             'version' => 300,
             'deleted' => false,
             'on' => false,
-            'targets' => array(),
-            'prerequisites' => array(),
-            'rules' => array(),
+            'targets' => [],
+            'prerequisites' => [],
+            'rules' => [],
             'offVariation' => 0,
             'fallthrough' => null,
-            'variations' => array('value3'),
+            'variations' => ['value3'],
             'salt' => '',
             'trackEvents' => false,
             'debugEventsUntilDate' => 1000
-        );
+        ];
         $flag1 = FeatureFlag::decode($flag1Json);
         $flag2 = FeatureFlag::decode($flag2Json);
         $flag3 = FeatureFlag::decode($flag3Json);
 
-        MockFeatureRequester::$flags = array('flag1' => $flag1, 'flag2' => $flag2, 'flag3' => $flag3);
+        MockFeatureRequester::$flags = ['flag1' => $flag1, 'flag2' => $flag2, 'flag3' => $flag3];
         $client = $this->makeClient();
 
         $builder = new LDUserBuilder(3);
         $user = $builder->build();
-        $state = $client->allFlagsState($user, array('withReasons' => true, 'detailsOnlyForTrackedFlags' => true));
+        $state = $client->allFlagsState($user, ['withReasons' => true, 'detailsOnlyForTrackedFlags' => true]);
 
         $this->assertTrue($state->isValid());
-        $this->assertEquals(array('flag1' => 'value1', 'flag2' => 'value2', 'flag3' => 'value3'), $state->toValuesMap());
-        $expectedState = array(
+        $this->assertEquals(['flag1' => 'value1', 'flag2' => 'value2', 'flag3' => 'value3'], $state->toValuesMap());
+        $expectedState = [
             'flag1' => 'value1',
             'flag2' => 'value2',
             'flag3' => 'value3',
-            '$flagsState' => array(
-                'flag1' => array(
+            '$flagsState' => [
+                'flag1' => [
                     'variation' => 0,
-                ),
-                'flag2' => array(
+                ],
+                'flag2' => [
                     'variation' =>  0,
                     'version' => 200,
-                    'reason' => array('kind' => 'OFF'),
+                    'reason' => ['kind' => 'OFF'],
                     'trackEvents' => true
-                ),
-                'flag3' => array(
+                ],
+                'flag3' => [
                     'variation' => 0,
                     'version' => 300,
-                    'reason' => array('kind' => 'OFF'),
+                    'reason' => ['kind' => 'OFF'],
                     'debugEventsUntilDate' => 1000
-                )
-            ),
+                ]
+            ],
             '$valid' => true
-        );
+        ];
         $this->assertEquals($expectedState, $state->jsonSerialize());
     }
 
     public function testTrackSendsEvent()
     {
         $ep = new MockEventProcessor();
-        $client = $this->makeClient(array('event_processor' => $ep));
+        $client = $this->makeClient(['event_processor' => $ep]);
 
         $user = new LDUser('userkey');
         $client->track('eventkey', $user);
@@ -552,8 +553,8 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
     public function testTrackSendsEventWithData()
     {
         $ep = new MockEventProcessor();
-        $client = $this->makeClient(array('event_processor' => $ep));
-        $data = array('thing' => 'stuff');
+        $client = $this->makeClient(['event_processor' => $ep]);
+        $data = ['thing' => 'stuff'];
 
         $user = new LDUser('userkey');
         $client->track('eventkey', $user, $data);
@@ -570,8 +571,8 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
     public function testTrackSendsEventWithDataAndMetricValue()
     {
         $ep = new MockEventProcessor();
-        $client = $this->makeClient(array('event_processor' => $ep));
-        $data = array('thing' => 'stuff');
+        $client = $this->makeClient(['event_processor' => $ep]);
+        $data = ['thing' => 'stuff'];
         $metricValue = 1.5;
 
         $user = new LDUser('userkey');
@@ -589,7 +590,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
     public function testTrackWithAnonymousUserSendsEventWithAnonymousContextKind()
     {
         $ep = new MockEventProcessor();
-        $client = $this->makeClient(array('event_processor' => $ep));
+        $client = $this->makeClient(['event_processor' => $ep]);
 
         $anon_builder = new LDUserBuilder("anon@email.com");
         $anon = $anon_builder->anonymous(true)->build();
@@ -605,7 +606,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
     public function testAliasEventsAreCorrect()
     {
         $ep = new MockEventProcessor();
-        $client = $this->makeClient(array('event_processor' => $ep));
+        $client = $this->makeClient(['event_processor' => $ep]);
 
         $user_builder = new LDUserBuilder("user@email.com");
         $user = $user_builder->anonymous(false)->build();
@@ -632,19 +633,19 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         // because if we do that, it won't bother even looking at the send_events flag.
         // Instead, we need to just put in a mock Event_Publisher_, so that the default
         // EventProcessor would forward events to it if send_events were not disabled.
-        $mockPublisher = new MockEventPublisher("", array());
-        $options = array(
+        $mockPublisher = new MockEventPublisher("", []);
+        $options = [
             'feature_requester_class' => MockFeatureRequester::class,
             'event_publisher' => $mockPublisher,
             'send_events' => false,
-        );
+        ];
         $client = new LDClient("someKey", $options);
         $client->track('eventkey', new LDUser('userkey'));
 
         // We don't flush the event processor until __destruct is called. Let's
         // force that by unsetting this variable.
         unset($client);
-        $this->assertEquals(array(), $mockPublisher->payloads);
+        $this->assertEquals([], $mockPublisher->payloads);
     }
 
     public function testOnlyValidFeatureRequester()

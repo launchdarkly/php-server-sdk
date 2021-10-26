@@ -1,8 +1,8 @@
 <?php
+
 namespace LaunchDarkly;
 
 use LaunchDarkly\Impl\Model\FeatureFlag;
-use LaunchDarkly\LDClient;
 
 /**
  * A snapshot of the state of all feature flags with regard to a specific user.
@@ -30,25 +30,25 @@ class FeatureFlagsState implements \JsonSerializable
     public function __construct(bool $valid)
     {
         $this->_valid = $valid;
-        $this->_flagValues = array();
-        $this->_flagMetadata = array();
+        $this->_flagValues = [];
+        $this->_flagMetadata = [];
     }
 
     /**
      * Used internally to build the state map.
      *
      * @ignore
-     * 
+     *
      * @return void
      */
     public function addFlag(
         FeatureFlag $flag,
         EvaluationDetail $detail,
         bool $withReason = false,
-        bool $detailsOnlyIfTracked = false): void
-    {
+        bool $detailsOnlyIfTracked = false
+    ): void {
         $this->_flagValues[$flag->getKey()] = $detail->getValue();
-        $meta = array();
+        $meta = [];
         if (!$detailsOnlyIfTracked || $flag->isTrackEvents() || $flag->getDebugEventsUntilDate()) {
             $meta['version'] = $flag->getVersion();
             if ($withReason) {
@@ -106,9 +106,9 @@ class FeatureFlagsState implements \JsonSerializable
 
     /**
      * Returns an associative array of flag keys to flag values.
-     * 
+     *
      * If a flag would have evaluated to the default value, its value will be null.
-     * 
+     *
      * Do not use this method if you are passing data to the front end to "bootstrap" the JavaScript client.
      * Instead, use jsonSerialize().
      * @return array an associative array of flag keys to JSON values
@@ -121,9 +121,9 @@ class FeatureFlagsState implements \JsonSerializable
     /**
      * Returns a JSON representation of the entire state map (as an associative array), in the format used
      * by the LaunchDarkly JavaScript SDK.
-     * 
+     *
      * Use this method if you are passing data to the front end in order to "bootstrap" the JavaScript client.
-     * 
+     *
      * Note that calling json_encode() on a FeatureFlagsState object will automatically use the
      * jsonSerialize() method.
      * @return array an associative array suitable for passing as a JSON object
@@ -131,7 +131,7 @@ class FeatureFlagsState implements \JsonSerializable
     public function jsonSerialize(): array
     {
         $ret = array_replace([], $this->_flagValues);
-        $metaMap = array();
+        $metaMap = [];
         foreach ($this->_flagMetadata as $key => $meta) {
             $meta = array_replace([], $meta);
             if (isset($meta['reason'])) {

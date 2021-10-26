@@ -72,6 +72,9 @@ jobs:
       - run:
           name: psalm linting
           command: ./vendor/bin/psalm --no-cache
+      - run:
+          name: php-cs-fixer check
+          command: composer cs-check
       - run: mkdir -p ~/phpunit
       - run:
           name: run tests with highest compatible dependency versions

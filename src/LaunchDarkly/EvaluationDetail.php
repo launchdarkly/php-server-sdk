@@ -2,8 +2,6 @@
 
 namespace LaunchDarkly;
 
-use \LaunchDarkly\EvaluationReason;
-
 /**
  * An object that combines the result of a flag evaluation with an explanation of how it was calculated.
  *

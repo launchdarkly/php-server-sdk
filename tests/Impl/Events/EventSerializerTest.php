@@ -1,8 +1,9 @@
 <?php
+
 namespace LaunchDarkly\Tests\Impl\Events;
 
-use LaunchDarkly\LDUserBuilder;
 use LaunchDarkly\Impl\Events\EventSerializer;
+use LaunchDarkly\LDUserBuilder;
 use PHPUnit\Framework\TestCase;
 
 class EventSerializerTest extends TestCase
@@ -11,7 +12,7 @@ class EventSerializerTest extends TestCase
     {
         return (new LDUserBuilder('abc'))
             ->firstName('Sue')
-            ->custom(array('bizzle' => 'def', 'dizzle' => 'ghi'))
+            ->custom(['bizzle' => 'def', 'dizzle' => 'ghi'])
             ->build();
     }
     
@@ -26,100 +27,100 @@ class EventSerializerTest extends TestCase
     
     private function getFullUserResult()
     {
-        return array(
+        return [
             'key' => 'abc',
             'firstName' => 'Sue',
-            'custom' => array('bizzle' => 'def', 'dizzle' => 'ghi')
-        );
+            'custom' => ['bizzle' => 'def', 'dizzle' => 'ghi']
+        ];
     }
     
     private function getUserResultWithAllAttrsHidden()
     {
-        return array(
+        return [
             'key' => 'abc',
-            'privateAttrs' => array('bizzle', 'dizzle', 'firstName')
-        );
+            'privateAttrs' => ['bizzle', 'dizzle', 'firstName']
+        ];
     }
     
     private function getUserResultWithSomeAttrsHidden()
     {
-        return array(
+        return [
             'key' => 'abc',
-            'custom' => array('dizzle' => 'ghi'),
-            'privateAttrs' => array('bizzle', 'firstName')
-        );
+            'custom' => ['dizzle' => 'ghi'],
+            'privateAttrs' => ['bizzle', 'firstName']
+        ];
     }
     
     private function getUserResultWithOwnSpecifiedAttrHidden()
     {
-        return array(
+        return [
             'key' => 'abc',
             'firstName' => 'Sue',
-            'custom' => array('bizzle' => 'def'),
-            'privateAttrs' => array('dizzle')
-        );
+            'custom' => ['bizzle' => 'def'],
+            'privateAttrs' => ['dizzle']
+        ];
     }
     
     private function makeEvent($user)
     {
-        return array(
+        return [
             'creationDate' => 1000000,
             'key' => 'abc',
             'kind' => 'thing',
             'user' => $user
-        );
+        ];
     }
     
     private function getJsonForUserBySerializingEvent($user)
     {
-        $es = new EventSerializer(array());
+        $es = new EventSerializer([]);
         $event = $this->makeEvent($user);
-        return json_decode($es->serializeEvents(array($event)), true)[0]['user'];
+        return json_decode($es->serializeEvents([$event]), true)[0]['user'];
     }
     
     public function testAllUserAttrsSerialized()
     {
-        $es = new EventSerializer(array());
+        $es = new EventSerializer([]);
         $event = $this->makeEvent($this->getUser());
-        $json = $es->serializeEvents(array($event));
+        $json = $es->serializeEvents([$event]);
         $expected = $this->makeEvent($this->getFullUserResult());
-        $this->assertEquals(array($expected), json_decode($json, true));
+        $this->assertEquals([$expected], json_decode($json, true));
     }
 
     public function testAllUserAttrsPrivate()
     {
-        $es = new EventSerializer(array('all_attributes_private' => true));
+        $es = new EventSerializer(['all_attributes_private' => true]);
         $event = $this->makeEvent($this->getUser());
-        $json = $es->serializeEvents(array($event));
+        $json = $es->serializeEvents([$event]);
         $expected = $this->makeEvent($this->getUserResultWithAllAttrsHidden());
-        $this->assertEquals(array($expected), json_decode($json, true));
+        $this->assertEquals([$expected], json_decode($json, true));
     }
     
     public function testSomeUserAttrsPrivate()
     {
-        $es = new EventSerializer(array('private_attribute_names' => array('firstName', 'bizzle')));
+        $es = new EventSerializer(['private_attribute_names' => ['firstName', 'bizzle']]);
         $event = $this->makeEvent($this->getUser());
-        $json = $es->serializeEvents(array($event));
+        $json = $es->serializeEvents([$event]);
         $expected = $this->makeEvent($this->getUserResultWithSomeAttrsHidden());
-        $this->assertEquals(array($expected), json_decode($json, true));
+        $this->assertEquals([$expected], json_decode($json, true));
     }
     
     public function testPerUserPrivateAttr()
     {
-        $es = new EventSerializer(array());
+        $es = new EventSerializer([]);
         $event = $this->makeEvent($this->getUserSpecifyingOwnPrivateAttr());
-        $json = $es->serializeEvents(array($event));
+        $json = $es->serializeEvents([$event]);
         $expected = $this->makeEvent($this->getUserResultWithOwnSpecifiedAttrHidden());
-        $this->assertEquals(array($expected), json_decode($json, true));
+        $this->assertEquals([$expected], json_decode($json, true));
     }
 
     public function testPerUserPrivateAttrPlusGlobalPrivateAttrs()
     {
-        $es = new EventSerializer(array('private_attribute_names' => array('firstName', 'bizzle')));
+        $es = new EventSerializer(['private_attribute_names' => ['firstName', 'bizzle']]);
         $event = $this->makeEvent($this->getUserSpecifyingOwnPrivateAttr());
-        $json = $es->serializeEvents(array($event));
+        $json = $es->serializeEvents([$event]);
         $expected = $this->makeEvent($this->getUserResultWithAllAttrsHidden());
-        $this->assertEquals(array($expected), json_decode($json, true));
+        $this->assertEquals([$expected], json_decode($json, true));
     }
     
     public function testUserKey()
