@@ -74,4 +74,57 @@ class OperatorsTest extends TestCase
         $this->assertFalse(Operators::apply("semVerLessThan", "2.0.0", "xbad%ver"));
         $this->assertFalse(Operators::apply("semVerGreaterThan", "2.0.0", "xbad%ver"));
     }
+
+    public function comparisonOperators(): array
+    {
+        return [
+            ["lessThan", 100, 200, true],
+            ["lessThan", 200, 100, false],
+            ["lessThan", 100, 100, false],
+            ["lessThan", "100", 200, false],
+            ["lessThan", "100", "200", false],
+            ["lessThan", 100, "200", false],
+            ["lessThan", 100, true, false],
+            ["lessThan", true, 100, false],
+            ["lessThan", true, true, false],
+
+            ["lessThanOrEqual", 100, 200, true],
+            ["lessThanOrEqual", 200, 100, false],
+            ["lessThanOrEqual", 100, 100, true],
+            ["lessThanOrEqual", "100", 200, false],
+            ["lessThanOrEqual", "100", "200", false],
+            ["lessThanOrEqual", 100, "200", false],
+            ["lessThanOrEqual", 100, true, false],
+            ["lessThanOrEqual", true, 100, false],
+            ["lessThanOrEqual", true, true, false],
+
+            ["greaterThan", 100, 200, false],
+            ["greaterThan", 200, 100, true],
+            ["greaterThan", 100, 100, false],
+            ["greaterThan", "100", 200, false],
+            ["greaterThan", "100", "200", false],
+            ["greaterThan", 100, "200", false],
+            ["greaterThan", 100, true, false],
+            ["greaterThan", true, 100, false],
+            ["greaterThan", true, true, false],
+
+            ["greaterThanOrEqual", 100, 200, false],
+            ["greaterThanOrEqual", 200, 100, true],
+            ["greaterThanOrEqual", 100, 100, true],
+            ["greaterThanOrEqual", "100", 200, false],
+            ["greaterThanOrEqual", "100", "200", false],
+            ["greaterThanOrEqual", 100, "200", false],
+            ["greaterThanOrEqual", 100, true, false],
+            ["greaterThanOrEqual", true, 100, false],
+            ["greaterThanOrEqual", true, true, false],
+        ];
+    }
+
+    /**
+     * @dataProvider comparisonOperators
+     */
+    public function testComparisonOperators($operator, $lhs, $rhs, $expected)
+    {
+        $this->assertEquals($expected, Operators::apply($operator, $lhs, $rhs));
+    }
 }

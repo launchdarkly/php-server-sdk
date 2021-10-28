@@ -63,22 +63,22 @@ class Operators
                     }
                     break;
                 case "lessThan":
-                    if (is_numeric($u) && is_numeric($c)) {
+                    if (self::is_numeric($u) && self::is_numeric($c)) {
                         return $u < $c;
                     }
                     break;
                 case "lessThanOrEqual":
-                    if (is_numeric($u) && is_numeric($c)) {
+                    if (self::is_numeric($u) && self::is_numeric($c)) {
                         return $u <= $c;
                     }
                     break;
                 case "greaterThan":
-                    if (is_numeric($u) && is_numeric($c)) {
+                    if (self::is_numeric($u) && self::is_numeric($c)) {
                         return $u > $c;
                     }
                     break;
                 case "greaterThanOrEqual":
-                    if (is_numeric($u) && is_numeric($c)) {
+                    if (self::is_numeric($u) && self::is_numeric($c)) {
                         return $u >= $c;
                     }
                     break;
@@ -116,6 +116,21 @@ class Operators
         } catch (Exception $ignored) {
         }
         return false;
+    }
+
+    /**
+     * A stricter version of the built-in is_numeric checker.
+     *
+     * This version will check if the provided value is numeric, but isn't a
+     * string. This helps us stay consistent with the way flag evaluations work
+     * in more strictly typed languages.
+     *
+     * @param mixed $value
+     * @return bool
+     */
+    public static function is_numeric($value): bool
+    {
+        return is_numeric($value) && !is_string($value);
     }
 
     /**
