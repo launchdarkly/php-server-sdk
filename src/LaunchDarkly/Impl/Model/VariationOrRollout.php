@@ -86,7 +86,6 @@ class VariationOrRollout
         ?int $seed
     ): float {
         $userValue = $user->getValueForEvaluation($attr);
-        $idHash = null;
         if ($userValue != null) {
             if (is_int($userValue)) {
                 $userValue = (string) $userValue;

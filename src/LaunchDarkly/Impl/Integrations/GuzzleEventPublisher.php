@@ -49,7 +49,6 @@ class GuzzleEventPublisher implements EventPublisher
     public function publish(string $payload): bool
     {
         $client = new Client(['base_uri' => $this->_eventsUri]);
-        $response = null;
 
         try {
             $options = $this->_requestOptions;

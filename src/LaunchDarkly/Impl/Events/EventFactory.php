@@ -58,7 +58,7 @@ class EventFactory
         if ($prereqOfFlag) {
             $e['prereqOf'] = $prereqOfFlag->getKey();
         }
-        if (($addExperimentData || $this->_withReasons) && $detail->getReason()) {
+        if (($addExperimentData || $this->_withReasons)) {
             $e['reason'] = $detail->getReason()->jsonSerialize();
         }
         if ($user->getAnonymous()) {
@@ -88,7 +88,7 @@ class EventFactory
         if ($flag->getDebugEventsUntilDate()) {
             $e['debugEventsUntilDate'] = $flag->getDebugEventsUntilDate();
         }
-        if ($this->_withReasons && $detail->getReason()) {
+        if ($this->_withReasons) {
             $e['reason'] = $detail->getReason()->jsonSerialize();
         }
         if ($user->getAnonymous()) {
@@ -111,7 +111,7 @@ class EventFactory
             'default' => $detail->getValue()
         ];
         // the following properties are handled separately so we don't waste bandwidth on unused keys
-        if ($this->_withReasons && $detail->getReason()) {
+        if ($this->_withReasons) {
             $e['reason'] = $detail->getReason()->jsonSerialize();
         }
         if ($user->getAnonymous()) {

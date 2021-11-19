@@ -40,7 +40,7 @@ class LDClient
     protected $_offline = false;
     /** @var bool */
     protected $_send_events = true;
-    /** @var array|mixed */
+    /** @var array */
     protected $_defaults = [];
     /** @var LoggerInterface */
     protected $_logger;
@@ -53,6 +53,8 @@ class LDClient
 
     /**
      * Creates a new client instance that connects to LaunchDarkly.
+     *
+     * @psalm-param array{capacity?: int, defaults?: array<string, mixed|null>} $options
      *
      * @param string $sdkKey The SDK key for your account
      * @param array $options Client configuration settings
@@ -220,7 +222,7 @@ class LDClient
     {
         $default = $this->_get_default($key, $default);
 
-        $errorResult = function (string $errorKind) use ($key, $default): EvaluationDetail {
+        $errorResult = function (string $errorKind) use ($default): EvaluationDetail {
             return new EvaluationDetail($default, null, EvaluationReason::error($errorKind));
         };
         $sendEvent = function (EvaluationDetail $detail, ?FeatureFlag $flag) use ($key, $user, $default, $eventFactory): void {
@@ -368,7 +370,7 @@ class LDClient
         $clientOnly = isset($options['clientSideOnly']) && $options['clientSideOnly'];
         $withReasons = isset($options['withReasons']) && $options['withReasons'];
         $detailsOnlyIfTracked = isset($options['detailsOnlyForTrackedFlags']) && $options['detailsOnlyForTrackedFlags'];
-        foreach ($flags as $key => $flag) {
+        foreach ($flags as $flag) {
             if ($clientOnly && !$flag->isClientSide()) {
                 continue;
             }

@@ -25,11 +25,14 @@ class EventProcessor
     /** @var int */
     private $_capacity;
 
-    public function __construct(string $sdkKey, array $options = [])
+    /**
+     * @psalm-param array{capacity: int} $options
+     */
+    public function __construct(string $sdkKey, array $options)
     {
         $this->_eventPublisher = $this->getEventPublisher($sdkKey, $options);
         $this->_eventSerializer = new EventSerializer($options);
-      
+
         $this->_capacity = $options['capacity'];
     }
 

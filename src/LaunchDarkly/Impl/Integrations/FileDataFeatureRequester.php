@@ -55,7 +55,7 @@ class FileDataFeatureRequester implements FeatureRequester
     /**
      * Gets all feature flags
      *
-     * @return array|null The decoded FeatureFlags, or null if missing
+     * @return array<string, FeatureFlag>|null The decoded FeatureFlags, or null if missing
      */
     public function getAllFeatures(): ?array
     {

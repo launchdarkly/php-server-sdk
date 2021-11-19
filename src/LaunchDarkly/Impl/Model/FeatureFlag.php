@@ -183,7 +183,6 @@ class FeatureFlag
             foreach ($this->_prerequisites as $prereq) {
                 $prereqOk = true;
                 try {
-                    $prereqEvalResult = null;
                     $prereqFeatureFlag = $featureRequester->getFeature($prereq->getKey());
                     if ($prereqFeatureFlag == null) {
                         $prereqOk = false;
@@ -221,10 +220,9 @@ class FeatureFlag
         }
         return $this->getVariation($this->_offVariation, $reason);
     }
-    
+
     private function getValueForVariationOrRollout(VariationOrRollout $r, LDUser $user, EvaluationReason $reason): EvaluationDetail
     {
-        $rollout = $r->getRollout();
         list($index, $inExperiment) = $r->variationIndexForUser($user, $this->_key, $this->_salt);
         if ($index === null) {
             return new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR));

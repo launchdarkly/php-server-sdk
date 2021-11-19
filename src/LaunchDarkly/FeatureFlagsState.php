@@ -21,7 +21,7 @@ class FeatureFlagsState implements \JsonSerializable
     /** @var array */
     protected $_flagValues;
 
-    /** @var array */
+    /** @var array<string, array{debugEventsUntilDate?: int|null, reason?: EvaluationReason, trackEvents?: true, variation?: int|null, version?: int}> **/
     protected $_flagMetadata;
 
     /**

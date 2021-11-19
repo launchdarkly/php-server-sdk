@@ -111,7 +111,7 @@ class GuzzleFeatureRequester implements FeatureRequester
     /**
      * Gets all features from a likely cached store
      *
-     * @return array|null The decoded FeatureFlags, or null if missing
+     * @return array<string, FeatureFlag>|null The decoded FeatureFlags, or null if missing
      */
     public function getAllFeatures(): ?array
     {
