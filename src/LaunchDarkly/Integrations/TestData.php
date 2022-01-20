@@ -4,7 +4,7 @@ namespace LaunchDarkly\Integrations;
 
 class TestData {
 
-    public function flag($key)
+    public function flag(string $key): FlagBuilder
     {
 
         return new FlagBuilder($key);
@@ -14,6 +14,21 @@ class TestData {
 }
 
 class FlagBuilder {
+
+    /** @var string */
+    protected $_key;
+    /** @var boolean */
+    protected $_on;
+    /** @var array */
+    protected $_variations;
+    /** @var int|null */
+    protected $_off_variation;
+    /** @var int|null */
+    protected $_fallthrough_variation;
+    /** @var array */
+    protected $_targets;
+    /** @var array */
+    protected $_rules;
 
     public function __construct(string $key)
     {
@@ -63,11 +78,53 @@ class FlagBuilder {
      * @param bool $on true if targeting should be on
      * @return FlagBuilder the flag builder object
      */
-    public function on($on) {
+    public function on($on)
+    {
 
         $this->_on = $on;
         return $this;
 
+    }
+
+    /**    
+     *  Changes the allowable variation values for the flag. 
+     *  
+     *  The value may be of any valid JSON type. For instance, a boolean flag
+     *  normally has True, False; a string-valued flag might have
+     *  'red', 'green'; etc.
+     *
+     *  Example: A single variation
+     *
+     *      $td->flag('new-flag')->variations(True)
+     *
+     *  Example: Multiple variations
+     *
+     *      $td->flag('new-flag')->variations('red', 'green', 'blue')
+     *
+     *  @param array $variations the the desired variations
+     *  @return FlagBuilder the flag builder object
+     */    
+    public function variations(...$variations): FlagBuilder
+    {
+
+        if (count($variations) == 1) {
+            if (is_array($variations[0])) {
+                $variations = $variations[0];
+            }
+        }
+        $this->_variations = $variations;
+        return $this;
+    }
+
+    public function build(int $version): array
+    {
+        $base_flag_object = [
+            'key'        => $this->_key,
+            'version'    => $version,
+            'on'         => $this->_on,
+            'variations' => $this->_variations
+        ];
+        return $base_flag_object;
     }
 
 }
