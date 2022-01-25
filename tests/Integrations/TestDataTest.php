@@ -40,15 +40,6 @@ class TestDataTest extends TestCase
 
     }
 
-    public function testFlagBuilderCanSetFallthroughVariation()
-    {
-        $td = new TestData();
-        $flag = $td->flag('test-flag');
-        $flag->fallthroughVariation(2);
-
-        $this->assertEquals(['variation' => 2], $flag->build(0)['fallthrough']);
-    }
-
     public function testFlagConfigSimpleBoolean()
     {
         $td = new TestData();
@@ -73,22 +64,39 @@ class TestDataTest extends TestCase
         $this->assertEquals(false, $flagOffBuild['on']);
         $this->assertEquals(['variation' => 0], $flagOffBuild['fallthrough']);
 
-        $flagFallthroughAndOffVariation = $td->flag('test-flag-5')
-                                             ->fallthroughVariation(true)
-                                             ->offVariation(false);
-        $flagFallthroughAndOffVariationBuild = $flagFallthroughAndOffVariation->build(0);
-        $this->assertEquals(true, $flagFallthroughAndOffVariationBuild['on']);
-        $this->assertEquals(['variation' => 0], $flagFallthroughAndOffVariationBuild['fallthrough']);
-    }
+        $flagVariationForAllUsersFalse = $td->flag('test-flag-5')
+                                             ->variationForAllUsers(false)
+                                             ->build(0);
+        $this->assertEquals([true, false], $flagVariationForAllUsersFalse['variations']);
+        $this->assertEquals(1, $flagVariationForAllUsersFalse['offVariation']);
+        $this->assertEquals(true, $flagVariationForAllUsersFalse['on']);
+        $this->assertEquals(['variation' => 1], $flagVariationForAllUsersFalse['fallthrough']);
 
-    public function testFlagBuilderClearTargets() 
-    {
-        $td = new TestData();
-        $flag = $td->flag('test-flag')
-                    // TODO: Fill the flag with targets
-                   ->clearTargets()
-                   ->build(0);
-        $this->assertEquals([], $flag['targets']);
+        $flagVariationForAllUsersTrue = $td->flag('test-flag-6')
+                                             ->variationForAllUsers(true)
+                                             ->build(0);
+        $this->assertEquals([true, false], $flagVariationForAllUsersTrue['variations']);
+        $this->assertEquals(1, $flagVariationForAllUsersTrue['offVariation']);
+        $this->assertEquals(true, $flagVariationForAllUsersTrue['on']);
+        $this->assertEquals(['variation' => 0], $flagVariationForAllUsersTrue['fallthrough']);
+
+        $flagFallthroughAndOffVariation1 = $td->flag('test-flag-7')
+                                             ->fallthroughVariation(true)
+                                             ->offVariation(false)
+                                             ->build(0);
+        $this->assertEquals([true, false], $flagFallthroughAndOffVariation1['variations']);
+        $this->assertEquals(1, $flagFallthroughAndOffVariation1['offVariation']);
+        $this->assertEquals(true, $flagFallthroughAndOffVariation1['on']);
+        $this->assertEquals(['variation' => 0], $flagFallthroughAndOffVariation1['fallthrough']);
+
+        $flagFallthroughAndOffVariation2 = $td->flag('test-flag-8')
+                                             ->fallthroughVariation(false)
+                                             ->offVariation(true)
+                                             ->build(0);
+        $this->assertEquals([true, false], $flagFallthroughAndOffVariation2['variations']);
+        $this->assertEquals(0, $flagFallthroughAndOffVariation2['offVariation']);
+        $this->assertEquals(true, $flagFallthroughAndOffVariation2['on']);
+        $this->assertEquals(['variation' => 1], $flagFallthroughAndOffVariation2['fallthrough']);
     }
 
     public function testFlagBuilderBooleanConfigMethodsForcesFlagToBeBoolean()
@@ -127,93 +135,9 @@ class TestDataTest extends TestCase
         $this->assertEquals(['variation' => 2], $stringVariationFlag['fallthrough']);
     }
 
-    public function testFlagBuilderDefaultsToBooleanFlag()
-    {
-        $td = new TestData();
-        $flag = $td->flag('empty-flag');
-        $this->assertEquals([true, false], $flag->build(0)['variations']);
-        $this->assertEquals(['variation' => 0], $flag->build(0)['fallthrough']);
-        $this->assertEquals(1, $flag->build(0)['offVariation']);
-    }
 
-    public function testFlagbuilderCanTurnFlagOff()
-    {
-        $td = new TestData();
-        $flag = $td->flag('test-flag');
-        $flag->on(false);
 
-        $this->assertEquals(false, $flag->build(0)['on']);
-    }
-
-    public function testFlagbuilderCanSetVariationWhenTargetingIsOff()
-    {
-        $td = new TestData();
-        $flag = $td->flag('test-flag')->on(False);
-        $this->assertEquals(false, $flag->build(0)['on']);
-        $this->assertEquals([true,false], $flag->build(0)['variations']);
-        $flag->variations('dog', 'cat');
-        $this->assertEquals(['dog','cat'], $flag->build(0)['variations']);
-    }
-
-    public function testFlagbuilderCanSetVariationForAllUsers()
-    {
-        $td = new TestData();
-        $flag = $td->flag('test-flag');
-        $flag->variationForAllUsers(true);
-        $this->assertEquals(['variation' => 0], $flag->build(0)['fallthrough']);
-    }
-
-    public function testFlagbuilderCanSetValueForAllUsers()
-    {
-        $jsonString1 = " 
-            {
-                \"boolField\": true,
-                \"stringField\": \"some val\",
-                \"intField\": 1,
-                \"arrayField\": [\"cat\", \"dog\", \"fish\" ],
-                \"objectField\": {\"animal\": \"dog\" }
-            }
-        ";
-        $testObject = [
-            "boolField" => true,
-            "stringField" => "some val",
-            "intField" => 1,
-            "arrayField" => ["cat", "dog", "fish" ],
-            "objectField" => [ "animal" => "dog" ]
-        ];
-
-        $td = new TestData();
-        $flagFromJSONString = $td->flag('test-flag');
-        $testObjFromStr = json_decode($jsonString1);
-        $flagFromJSONString->valueForAllUsers($testObjFromStr);
-        $this->assertEquals([$testObject], $flagFromJSONString->build(0)['variations']);
-
-        $flagBoolean = $td->flag('test-flag');
-        $flagBoolean->valueForAllUsers(false);
-        $this->assertEquals([false], $flagBoolean->build(0)['variations']);
-
-        $flagInt = $td->flag('test-flag');
-        $flagInt->valueForAllUsers(4);
-        $this->assertEquals([4], $flagInt->build(0)['variations']);
-
-        $flagArray = $td->flag('test-flag');
-        $flagArray->valueForAllUsers(['cat', 'dog', 'fish']);
-        $this->assertEquals([ ['cat', 'dog', 'fish'] ], $flagArray->build(0)['variations']);
-
-        $flagAssociatedArray = $td->flag('test-flag');
-        $flagAssociatedArray->valueForAllUsers(['animal' => 'dog', 'legs' => 4]);
-        $this->assertEquals([ ['animal' => 'dog', 'legs' => 4] ], $flagAssociatedArray->build(0)['variations']);
-
-        $flagNull = $td->flag('test-flag');
-        $flagNull->valueForAllUsers(null);
-        $this->assertEquals([null], $flagNull->build(0)['variations']);
-
-        $flagObject = $td->flag('test-flag');
-        $flagObject->valueForAllUsers((object) ['animal' => 'dog', 'legs' => 4]);
-        $this->assertEquals([['animal' => 'dog', 'legs' => 4]], $flagObject->build(0)['variations']);
-    }
-
-    public function testSetsVariationForUser()
+    public function testUserTargets()
     {
         $td = new TestData();
         $flagBool1 = $td->flag('test-flag-1')
@@ -311,6 +235,57 @@ class TestDataTest extends TestCase
         $this->assertEquals($expectedTargets, $flagString2['targets']);
     }
 
+
+    public function testFlagbuilderCanSetValueForAllUsers()
+    {
+        $jsonString1 = " 
+            {
+                \"boolField\": true,
+                \"stringField\": \"some val\",
+                \"intField\": 1,
+                \"arrayField\": [\"cat\", \"dog\", \"fish\" ],
+                \"objectField\": {\"animal\": \"dog\" }
+            }
+        ";
+        $testObject = [
+            "boolField" => true,
+            "stringField" => "some val",
+            "intField" => 1,
+            "arrayField" => ["cat", "dog", "fish" ],
+            "objectField" => [ "animal" => "dog" ]
+        ];
+
+        $td = new TestData();
+        $flagFromJSONString = $td->flag('test-flag');
+        $testObjFromStr = json_decode($jsonString1);
+        $flagFromJSONString->valueForAllUsers($testObjFromStr);
+        $this->assertEquals([$testObject], $flagFromJSONString->build(0)['variations']);
+
+        $flagBoolean = $td->flag('test-flag');
+        $flagBoolean->valueForAllUsers(false);
+        $this->assertEquals([false], $flagBoolean->build(0)['variations']);
+
+        $flagInt = $td->flag('test-flag');
+        $flagInt->valueForAllUsers(4);
+        $this->assertEquals([4], $flagInt->build(0)['variations']);
+
+        $flagArray = $td->flag('test-flag');
+        $flagArray->valueForAllUsers(['cat', 'dog', 'fish']);
+        $this->assertEquals([ ['cat', 'dog', 'fish'] ], $flagArray->build(0)['variations']);
+
+        $flagAssociatedArray = $td->flag('test-flag');
+        $flagAssociatedArray->valueForAllUsers(['animal' => 'dog', 'legs' => 4]);
+        $this->assertEquals([ ['animal' => 'dog', 'legs' => 4] ], $flagAssociatedArray->build(0)['variations']);
+
+        $flagNull = $td->flag('test-flag');
+        $flagNull->valueForAllUsers(null);
+        $this->assertEquals([null], $flagNull->build(0)['variations']);
+
+        $flagObject = $td->flag('test-flag');
+        $flagObject->valueForAllUsers((object) ['animal' => 'dog', 'legs' => 4]);
+        $this->assertEquals([['animal' => 'dog', 'legs' => 4]], $flagObject->build(0)['variations']);
+    }
+
     public function testSetsVariations()
     {
         $td = new TestData();
@@ -325,5 +300,61 @@ class TestDataTest extends TestCase
 
         $flag4 = $td->flag('new-flag-4')->variations([['red', 'green', 'blue']]);
         $this->assertEquals(['red', 'green', 'blue'], $flag4->build(0)['variations'][0]);
+    }
+
+    public function testFlagBuilderCanSetFallthroughVariation()
+    {
+        $td = new TestData();
+        $flag = $td->flag('test-flag');
+        $flag->fallthroughVariation(2);
+
+        $this->assertEquals(['variation' => 2], $flag->build(0)['fallthrough']);
+    }
+
+    public function testFlagBuilderClearUserTargets() 
+    {
+        $td = new TestData();
+        $flag = $td->flag('test-flag')
+                    // TODO: Fill the flag with targets
+                   ->clearUserTargets()
+                   ->build(0);
+        $this->assertEquals([], $flag['targets']);
+    }
+
+
+    public function testFlagBuilderDefaultsToBooleanFlag()
+    {
+        $td = new TestData();
+        $flag = $td->flag('empty-flag');
+        $this->assertEquals([true, false], $flag->build(0)['variations']);
+        $this->assertEquals(['variation' => 0], $flag->build(0)['fallthrough']);
+        $this->assertEquals(1, $flag->build(0)['offVariation']);
+    }
+
+    public function testFlagbuilderCanTurnFlagOff()
+    {
+        $td = new TestData();
+        $flag = $td->flag('test-flag');
+        $flag->on(false);
+
+        $this->assertEquals(false, $flag->build(0)['on']);
+    }
+
+    public function testFlagbuilderCanSetVariationWhenTargetingIsOff()
+    {
+        $td = new TestData();
+        $flag = $td->flag('test-flag')->on(False);
+        $this->assertEquals(false, $flag->build(0)['on']);
+        $this->assertEquals([true,false], $flag->build(0)['variations']);
+        $flag->variations('dog', 'cat');
+        $this->assertEquals(['dog','cat'], $flag->build(0)['variations']);
+    }
+
+    public function testFlagbuilderCanSetVariationForAllUsers()
+    {
+        $td = new TestData();
+        $flag = $td->flag('test-flag');
+        $flag->variationForAllUsers(true);
+        $this->assertEquals(['variation' => 0], $flag->build(0)['fallthrough']);
     }
 }

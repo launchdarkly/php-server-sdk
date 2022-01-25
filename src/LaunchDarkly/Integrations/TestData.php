@@ -67,7 +67,6 @@ class FlagBuilder {
     /** @var array */
     protected $_rules;
 
-
     public function __construct(string $key)
     {
 
@@ -79,7 +78,6 @@ class FlagBuilder {
         $this->_targets = [];
         $this->_rules = [];
     }
-
 
     /**
      * Creates a deep copy of the flag builder. Subsequent updates to
@@ -103,6 +101,40 @@ class FlagBuilder {
         return $to;
     }
 
+    /**    
+     * Determines if the current flag is a boolean flag.
+     *
+     * @return boolean true if flag is a boolean flag, false otherwise
+     */
+    private function _isBooleanFlag()
+    {
+        return (count($this->_variations) == 2
+            && $this->_variations[TRUE_VARIATION_INDEX] == True
+            && $this->_variations[FALSE_VARIATION_INDEX] == False);
+    }
+
+    /**
+     * A shortcut for setting the flag to use the standard boolean configuration.
+     *
+     * This is the default for all new flags created with
+     *      `$ldclient->integrations->test_data->TestData->flag()`.
+     *
+     * The flag will have two variations, `True` and `False` (in that order);
+     * it will return `False` whenever targeting is off, and `True` when targeting is on
+     * if no other settings specify otherwise.
+     *
+     * @return FlagBuilder the flag builder
+     */
+    public function booleanFlag()
+    {
+        if ($this->_isBooleanFlag()) {
+            return $this;
+        } else {
+            return ($this->variations(true, false)
+                ->fallthroughVariation(TRUE_VARIATION_INDEX)
+                ->offVariation(FALSE_VARIATION_INDEX));
+        }
+    }
 
     /**
      * Sets targeting to be on or off for this flag.
@@ -124,7 +156,6 @@ class FlagBuilder {
 
     }
 
-
     /** 
      * Specifies the fallthrough variation. The fallthrough is the value
      * that is returned if targeting is on and the user was not matched by a more specific
@@ -137,7 +168,7 @@ class FlagBuilder {
      *                  `0` for the first, `1` for the second, etc.
      * @return FlagBuilder the flag builder
      */ 
-    public function fallthroughVariation(bool|int $variation)
+    public function fallthroughVariation($variation)
     {
         if (is_bool($variation)) {
             $this->booleanFlag()->_fallthroughVariation = $this->_variationForBoolean($variation);
@@ -147,65 +178,24 @@ class FlagBuilder {
             return $this;
         }
     }
-    /*  
-     *  Specifies the fallthrough variation. This is the variation that is returned
-     *  whenever targeting is off.
-     *
-     *  If the flag was previously configured with other variations and the variation
-     *  specified is a boolean, this also changes it to a boolean flag.
-     *
-     *  @param bool/int $variation: `True` or `False` or the desired off variation index:
-     *                   `0` for the first, `1` for the second, etc.
-     *  @return FlagBuilder the flag builder
-     */
 
-    public function offVariation(bool|int $variation)
+    /**
+     * Specifies the off variation for a boolean flag or index of variation. 
+     * This is the variation that is returned whenever targeting is off.
+     * 
+     * @param value bool|int either boolean variation or index of variation
+     * @return FlagBuilder the flag builder
+     */
+    public function offVariation($variation)
     {
         if (is_bool($variation)) {
             $this->booleanFlag()->_offVariation = $this->_variationForBoolean($variation);
             return $this;
         }
-            $this->_offVariation = $variation;
-            return $this;
-        }
+
+        $this->_offVariation = $variation;
+        return $this;
     }
-
-    /**
-     * A shortcut for setting the flag to use the standard boolean configuration.
-     *
-     * This is the default for all new flags created with
-     *      `$ldclient->integrations->test_data->TestData->flag()`.
-     *
-     * The flag will have two variations, `True` and `False` (in that order);
-     * it will return `False` whenever targeting is off, and `True` when targeting is on
-     * if no other settings specify otherwise.
-     *
-     * @return FlagBuilder the flag builder
-     */    
-    public function booleanFlag()
-    {
-        if ($this->_isBooleanFlag()) {
-            return $this;
-        } else {
-            return ($this->variations(true, false)
-                ->fallthroughVariation(TRUE_VARIATION_INDEX)
-                ->offVariation(FALSE_VARIATION_INDEX));
-        }
-    }
-
-
-    /**    
-     * Determines if the current flag is a boolean flag.
-     *
-     * @return boolean true if flag is a boolean flag, false otherwise
-     */
-    private function _isBooleanFlag()
-    {
-        return (count($this->_variations) == 2
-            && $this->_variations[TRUE_VARIATION_INDEX] == True
-            && $this->_variations[FALSE_VARIATION_INDEX] == False);
-    }
-
 
     /**
      * Sets the flag to always return the specified variation for all users.
@@ -220,7 +210,7 @@ class FlagBuilder {
      *                  `0` for the first, `1` for the second, etc.
      * @return FlagBuilder the flag builder
      */
-    public function variationForAllUsers(bool|int $variation)
+    public function variationForAllUsers($variation)
     {
         if (is_bool($variation)) {
             return $this->booleanFlag()->variationForAllUsers($this->_variationForBoolean($variation));
@@ -228,7 +218,6 @@ class FlagBuilder {
             return $this->on(true)->clearRules()->clearUserTargets()->fallthroughVariation($variation);
         }
     }
-    
 
     /**
      * Sets the flag to always return the specified variation value for all users.
@@ -240,10 +229,10 @@ class FlagBuilder {
      * the same variation regardless of whether targeting is on or off. Any existing targets 
      * or rules are removed.
      * 
-     * @param value the desired value to be returned for all users
+     * @param bool|int|string|array|object|null value the desired value to be returned for all users
      * @return FlagBuilder the flag builder
      */
-    public function valueForAllUsers(bool|int|string|array|object|null $value) {
+    public function valueForAllUsers($value) {
       $json = json_decode(json_encode($value), true);
       // TODO: Is there some error to return if
       // $value is not json decode-able?
@@ -253,93 +242,6 @@ class FlagBuilder {
       } else {
           return $this;
       }
-    }
-
-    /**
-     * Removes any existing user targets from the flag. This undoes the effect of methods like
-     * TODO: implement this link in php if possible
-     * {@link #variationForUser(String, boolean)}.
-     * 
-     * @return FlagBuilder the same builder
-     */
-    public function clearUserTargets() {
-      $this->_targets = [];
-      return $this;
-    }
-
-
-    /**
-     * Removes any existing rules from the flag. This undoes the effect of methods like
-     * TODO: implement this link in php if possible
-     * {@link #ifMatch(UserAttribute, LDValue...)}.
-     * 
-     * @return FlagBuilder the same builder
-     */
-    public function clearRules()
-    {
-      $this->_rules = [];
-      return $this;
-    }
-    
-
-    /**    
-     * Converts a boolean to the corresponding variation index.
-     *
-     * @param boolean $variation the boolean variation value
-     * @return int the variation index for the given boolean
-     */
-    private function _variationForBoolean($variation)
-    {
-        if ($variation) {
-            return TRUE_VARIATION_INDEX;
-        } else {
-            return FALSE_VARIATION_INDEX;
-        }
-    }
-
-
-    /**    
-     * Changes the allowable variation values for the flag. 
-     * 
-     * The value may be of any valid JSON type. For instance, a boolean flag
-     * normally has True, False; a string-valued flag might have
-     * 'red', 'green'; etc.
-     *
-     * Example: A single variation
-     *
-     *     $td->flag('new-flag')->variations(True)
-     *
-     * Example: Multiple variations
-     *
-     *     $td->flag('new-flag')->variations('red', 'green', 'blue')
-     *
-     * @param array $variations the the desired variations
-     * @return FlagBuilder the flag builder object
-     */    
-    public function variations(...$variations): FlagBuilder
-    {
-
-        if (count($variations) == 1) {
-            if (is_array($variations[0])) {
-                $variations = $variations[0];
-            }
-        }
-        $this->_variations = $variations;
-        return $this;
-    }
-
-
-    /**
-     * Removes any existing targets from the flag.
-     * This undoes the effect of methods like
-     *      `$ldclient->integrations->test_data->FlagBuilder->variationForUser()`
-     *
-     * @return FlagBuilder the same flag builder
-     */
-    public function clearTargets()
-    {
-        $this->_targets = []; 
-        return $this;
     }
 
     /**
@@ -356,7 +258,7 @@ class FlagBuilder {
      *   0 for the first, 1 for the second, etc.
      * @return FlagBuilder the flag builder
      */
-    public function variationForUser(string $userKey, int|bool $variation)
+    public function variationForUser(string $userKey, $variation)
     {
         if (is_bool($variation)) {
             return $this->booleanFlag()
@@ -399,8 +301,119 @@ class FlagBuilder {
         }
     }
 
+    /**    
+     * Changes the allowable variation values for the flag. 
+     * 
+     * The value may be of any valid JSON type. For instance, a boolean flag
+     * normally has True, False; a string-valued flag might have
+     * 'red', 'green'; etc.
+     *
+     * Example: A single variation
+     *
+     *     $td->flag('new-flag')->variations(True)
+     *
+     * Example: Multiple variations
+     *
+     *     $td->flag('new-flag')->variations('red', 'green', 'blue')
+     *
+     * @param array $variations the the desired variations
+     * @return FlagBuilder the flag builder object
+     */    
+    public function variations(...$variations): FlagBuilder
+    {
+
+        if (count($variations) == 1) {
+            if (is_array($variations[0])) {
+                $variations = $variations[0];
+            }
+        }
+        $this->_variations = $variations;
+        return $this;
+    }
+
     /**
-     * Creates a dictionary representation of the flag
+     * TODO: Implement
+     *
+     * Starts defining a flag rule, using the "is one of" operator.
+     *
+     * For example, this creates a rule that returns `true` if the name is "Patsy" or "Edina":
+     * 
+     *     $testData->flag("flag")
+     *         ->ifMatch(UserAttribute.NAME, "Patsy", "Edina")
+     *         ->thenReturn(true));
+     * 
+     * @param attribute the user attribute to match against
+     * @param values values to compare to
+     * @return FlagRuleBuilder call `thenReturn(boolean)` or
+     *   `thenReturn(int)` to finish the rule, or add more tests with another
+     *   method like `andMatch(UserAttribute, LDValue...)`
+     */
+    public function ifMatch($attribute, $values) {
+      return $this;
+    }
+    
+    /**
+     * Starts defining a flag rule, using the "is not one of" operator.
+     *
+     * For example, this creates a rule that returns `true` if the name 
+     * is neither "Saffron" nor "Bubble":
+     * 
+     *     testData.flag("flag")
+     *         .ifNotMatch(UserAttribute.NAME, LDValue.of("Saffron"), LDValue.of("Bubble"))
+     *         .thenReturn(true));
+     *
+     * @param $attribute the user attribute to match against
+     * @param $values values to compare to
+     * @return FlagRuleBuilder call `thenReturn(boolean)` or
+     *   `thenReturn(int)` to finish the rule, or add more tests with another
+     *   method like `andMatch(UserAttribute, LDValue...)`
+     */
+    public function ifNotMatch($attribute, $values) {
+        return $this;
+    }
+
+    /**
+     * Removes any existing rules from the flag. This undoes the effect of methods like
+     * TODO: implement this link in php if possible
+     * {@link #ifMatch(UserAttribute, LDValue...)}.
+     * 
+     * @return FlagBuilder the same builder
+     */
+    public function clearRules()
+    {
+      $this->_rules = [];
+      return $this;
+    }
+
+    /**
+     * Removes any existing user targets from the flag. This undoes the effect of methods like
+     * TODO: implement this link in php if possible
+     * {@link #variationForUser(String, boolean)}.
+     * 
+     * @return FlagBuilder the same builder
+     */
+    public function clearUserTargets() {
+      $this->_targets = [];
+      return $this;
+    }
+
+    /**    
+     * Converts a boolean to the corresponding variation index.
+     *
+     * @param boolean $variation the boolean variation value
+     * @return int the variation index for the given boolean
+     */
+    private function _variationForBoolean($variation)
+    {
+        if ($variation) {
+            return TRUE_VARIATION_INDEX;
+        } else {
+            return FALSE_VARIATION_INDEX;
+        }
+    }
+
+    /**
+     * Creates an associative array representation of the flag
      *
      * @param int $version: the version number of the rule
      * @return: the array representation of the flag
@@ -442,4 +455,113 @@ class FlagBuilder {
         return $baseFlagObject;
     }
 
+}
+
+/**
+ * A builder for feature flag rules to be used with {@link FlagBuilder}.
+ *
+ * In the LaunchDarkly model, a flag can have any number of rules, 
+ * and a rule can have any number of clauses. A clause is an individual 
+ * test such as "name is 'X'". A rule matches a user if all of the
+ * rule's clauses match the user.
+ *
+ * To start defining a rule, use one of the flag builder's matching methods such as
+ * `ifMatch(UserAttribute, LDValue...)`. This defines the first clause for the rule.
+ * Optionally, you may add more clauses with the rule builder's methods such as
+ * `andMatch(UserAttribute, LDValue...)`. Finally, call `thenReturn(boolean)` or
+ * `thenReturn(int)` to finish defining the rule.
+ */
+class FlagRuleBuilder {
+
+    /** @var FlagBuilder */
+    protected $_flagBuilder;
+    /** @var array */
+    protected $clauses;
+    /** @var int */
+    protected $variation;
+
+
+    public function __construct($flagBuilder)
+    {
+        $this->_flagBuilder = $flagBuilder;
+        $this->clauses = [];
+        $this->variation = null;
+    }
+
+    /**
+     * TODO: Implement
+     *
+     * Adds another clause, using the "is one of" operator.
+     *
+     * For example, this creates a rule that returns `true` if 
+     * the name is "Patsy" and the country is "gb":
+     * 
+     *     $testData->flag("flag")
+     *         ->ifMatch(UserAttribute.NAME, LDValue.of("Patsy"))
+     *         ->andMatch(UserAttribute.COUNTRY, LDValue.of("gb"))
+     *         ->thenReturn(true));
+     * 
+     * @param $attribute the user attribute to match against
+     * @param $values values to compare to
+     * @return FlagBuilder the rule builder
+     */
+    public function andMatch($attribute, $values) {
+        return $this;
+    }
+
+    /**
+     * TODO: Implement
+     *
+     * Adds another clause, using the "is not one of" operator.
+     *
+     * For example, this creates a rule that returns `true` if 
+     * the name is "Patsy" and the country is not "gb":
+     * 
+     *     testData.flag("flag")
+     *         ->ifMatch(UserAttribute.NAME, LDValue.of("Patsy"))
+     *         ->andNotMatch(UserAttribute.COUNTRY, LDValue.of("gb"))
+     *         ->thenReturn(true));
+     * 
+     * @param $attribute the user attribute to match against
+     * @param $values values to compare to
+     * @return FlagBuilder the rule builder
+     */
+    public function andNotMatch($attribute, $values) {
+        return $this;
+    }
+
+    /**
+     * Finishes defining the rule, specifying the result 
+     * value as a boolean or variation index.
+     * 
+     * @param bool|int $variation the value to return if the rule matches the user
+     * @return FlagBuilder the flag builder
+     */
+    public function thenReturn($variation) {
+        if (is_bool($variation)) {
+            $this->_flagBuilder.booleanFlag();
+            return $this->thenReturn($this->_flagBuilder->_variationForBoolean($variation));
+        } else {
+            $this->_variation = $variation;
+            $this->_flagBuilder->_add_rule($this);
+            return $this->_flagBuilder;
+        }
+    }
+
+    /**
+     * TODO: is $id actually int?
+     *
+     * Creates an associative array representation of the flag
+     *
+     * @param int $id: the rule id
+     * @return: the array representation of the flag
+     */ 
+    public function build(int $id)
+    {
+        return [
+            "id" => "rule" + "$id",
+            "variation" => $this->_variation,
+            "clauses" => $this->_clauses
+        ];
+    }
 }
