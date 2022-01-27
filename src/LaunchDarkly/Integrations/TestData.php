@@ -2,17 +2,68 @@
 
 namespace LaunchDarkly\Integrations;
 
+use \LaunchDarkly\FeatureRequester;
+use \LaunchDarkly\Impl\Model\FeatureFlag;
+use \LaunchDarkly\Impl\Model\Segment;
+
 define('TRUE_VARIATION_INDEX', 0);
 define('FALSE_VARIATION_INDEX', 1);
 
-class TestData {
+class TestData implements FeatureRequester {
 
     /** @var array */
     protected $_flagBuilders;
+    /** @var array */
+    protected $_currentFlags;
+    /** @var array */
+    protected $_instances;
 
     public function __construct()
     {
         $this->_flagBuilders = [];
+    }
+
+
+    /**
+     * Gets the configuration for a specific feature flag.
+     *
+     * @param string $key feature key
+     * @return FeatureFlag|null The decoded FeatureFlag, or null if missing
+     */
+    public function getFeature(string $key): ?FeatureFlag
+    {
+        return null;
+    }
+
+    /**
+     * Gets the configuration for a specific user segment.
+     *
+     * @param string $key segment key
+     * @return Segment|null The decoded Segment, or null if missing
+     */
+    public function getSegment(string $key): ?Segment
+    {
+        return null;
+    }
+
+    /**
+     * Gets all feature flags.
+     *
+     * @return array<string, FeatureFlag>|null The decoded FeatureFlags, or null if missing
+     */
+    public function getAllFeatures(): ?array
+    {
+        return null;
+    }
+
+    /** 
+     * Creates a new instance of the test data source
+     *
+     * @return a new configurable test data source
+     */
+    public function dataSource()
+    {
+        return new TestData();
     }
 
 
@@ -44,6 +95,41 @@ class TestData {
             }
         } finally {
             //self._lock.runlock()
+        }
+    }
+
+    /**
+     * Updates the test data with the specified flag configuration.
+     *
+     * This has the same effect as if a flag were added or modified on the LaunchDarkly dashboard.
+     * It immediately propagates the flag change to any `LDClient` instance(s) that you have
+     * already configured to use this `TestData`. If no `LDClient` has been started yet,
+     * it simply adds this flag to the test data which will be provided to any `LDClient` that
+     * you subsequently configure.
+     *
+     * Any subsequent changes to this `FlagBuilder` instance do not affect the test data,
+     * unless you call `update(FlagBuilder)` again.
+     * 
+     * @param FlagBuilder flagBuilder a flag configuration builder
+     * @return FlagBuilder flagBuilder the same `TestData` instance
+     */
+    public function update(FlagBuilder $flagBuilder)
+    {
+        $key = $flagBuilder->_key;
+        $oldVersion = 0;
+
+        if (array_key_exists($key, $this->_currentFlags)) {
+            $oldFlag = $this->_currentFlags[$key];
+            if ($oldFlag) {
+                $oldVersion = $oldFlag['version'];
+            }
+        }
+        $newFlag = $flagBuilder->build($oldVersion + 1);
+        $this->_current_flags[$key] = $newFlag;
+        $this->_flagBuilders[$key] = $flagBuilder->copy();
+
+        foreach ($this->_instances as $instance) {
+            $instance->upsert($newFlag);
         }
     }
 
@@ -349,7 +435,9 @@ class FlagBuilder {
      *   method like `andMatch(UserAttribute, LDValue...)`
      */
     public function ifMatch($attribute, $values) {
-      return $this;
+        
+        $flagRuleBuilder = new FlagRuleBuilder($this);
+        return $flagRuleBuilder->and_match($attribute, $values);
     }
     
     /**
@@ -369,7 +457,8 @@ class FlagBuilder {
      *   method like `andMatch(UserAttribute, LDValue...)`
      */
     public function ifNotMatch($attribute, $values) {
-        return $this;
+        $flagRuleBuilder = new FlagRuleBuilder($this);
+        return $flagRuleBuilder->andNotMatch($attribute, $values);
     }
 
     /**
@@ -413,12 +502,12 @@ class FlagBuilder {
     }
 
     /**
-     * Creates an associative array representation of the flag
+     * Creates a Feature Flag
      *
      * @param int $version: the version number of the rule
-     * @return: the array representation of the flag
+     * @return FeatureFlag: the feature flag
      */ 
-    public function build(int $version): array
+    public function build(int $version): FeatureFlag
     {
         $baseFlagObject = [
             'key'        => $this->_key,
@@ -452,7 +541,16 @@ class FlagBuilder {
             array_push($baseFlagObject['rules'], $rule->build($idx));
         }
 
-        return $baseFlagObject;
+        $baseFlagObject['prerequisites'] = [];
+        $baseFlagObject['salt'] = null;
+        $baseFlagObject['deleted'] = false;
+        $baseFlagObject['trackEvents'] = false;
+        $baseFlagObject['trackEventsFallthrough'] = false;
+        $baseFlagObject['debugEventsUntilDate'] = false;
+        $baseFlagObject['clientSide'] = false;
+
+        $newFeatureFlag = FeatureFlag::decode($baseFlagObject);
+        return $newFeatureFlag;
     }
 
 }
@@ -489,8 +587,6 @@ class FlagRuleBuilder {
     }
 
     /**
-     * TODO: Implement
-     *
      * Adds another clause, using the "is one of" operator.
      *
      * For example, this creates a rule that returns `true` if 
@@ -506,12 +602,19 @@ class FlagRuleBuilder {
      * @return FlagBuilder the rule builder
      */
     public function andMatch($attribute, $values) {
+        $newClause = [
+            "attribute" => $attribute,
+            "operator" => 'in',
+            // TODO: does values need to be type checked
+            // or put into a list?
+            "values" => $values,
+            "negate" => false,
+        ];
+        array_push($this->_clauses, $newClause);
         return $this;
     }
 
     /**
-     * TODO: Implement
-     *
      * Adds another clause, using the "is not one of" operator.
      *
      * For example, this creates a rule that returns `true` if 
@@ -527,6 +630,15 @@ class FlagRuleBuilder {
      * @return FlagBuilder the rule builder
      */
     public function andNotMatch($attribute, $values) {
+        $newClause = [
+            "attribute" => $attribute,
+            "operator" => 'in',
+            // TODO: does values need to be type checked
+            // or put into a list?
+            "values" => $values,
+            "negate" => True,
+        ];
+        array_push($this->_clauses, $newClause);
         return $this;
     }
 
