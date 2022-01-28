@@ -15,8 +15,6 @@ class TestData implements FeatureRequester {
     protected $_flagBuilders;
     /** @var array */
     protected $_currentFlags;
-    /** @var array */
-    protected $_instances;
 
     public function __construct()
     {
@@ -32,6 +30,21 @@ class TestData implements FeatureRequester {
      */
     public function getFeature(string $key): ?FeatureFlag
     {
+        if (array_key_exists($key, $this->_currentFlags)) {
+            $flag = $this->_currentFlags[$key];
+            $baseFlagObject = $flag->build(0);
+            $baseFlagObject['prerequisites'] = [];
+            $baseFlagObject['salt'] = null;
+            $baseFlagObject['deleted'] = false;
+            $baseFlagObject['trackEvents'] = false;
+            $baseFlagObject['trackEventsFallthrough'] = false;
+            $baseFlagObject['debugEventsUntilDate'] = false;
+            $baseFlagObject['clientSide'] = false;
+
+            $newFeatureFlag = FeatureFlag::decode($baseFlagObject);
+
+            return $newFeatureFlag;
+        }
         return null;
     }
 
@@ -53,7 +66,22 @@ class TestData implements FeatureRequester {
      */
     public function getAllFeatures(): ?array
     {
-        return null;
+        $featureFlags = [];
+
+        foreach ($this->_currentFlags as $flag) {
+            $baseFlagObject['prerequisites'] = [];
+            $baseFlagObject['salt'] = null;
+            $baseFlagObject['deleted'] = false;
+            $baseFlagObject['trackEvents'] = false;
+            $baseFlagObject['trackEventsFallthrough'] = false;
+            $baseFlagObject['debugEventsUntilDate'] = false;
+            $baseFlagObject['clientSide'] = false;
+
+            $newFeatureFlag = FeatureFlag::decode($baseFlagObject);
+
+            array_push($featureFlags, $newFeatureFlag);
+        }
+        return $featureFlags;
     }
 
     /** 
@@ -127,10 +155,6 @@ class TestData implements FeatureRequester {
         $newFlag = $flagBuilder->build($oldVersion + 1);
         $this->_current_flags[$key] = $newFlag;
         $this->_flagBuilders[$key] = $flagBuilder->copy();
-
-        foreach ($this->_instances as $instance) {
-            $instance->upsert($newFlag);
-        }
     }
 
 }
@@ -505,9 +529,9 @@ class FlagBuilder {
      * Creates a Feature Flag
      *
      * @param int $version: the version number of the rule
-     * @return FeatureFlag: the feature flag
+     * @return array: the feature flag
      */ 
-    public function build(int $version): FeatureFlag
+    public function build(int $version)
     {
         $baseFlagObject = [
             'key'        => $this->_key,
@@ -541,16 +565,7 @@ class FlagBuilder {
             array_push($baseFlagObject['rules'], $rule->build($idx));
         }
 
-        $baseFlagObject['prerequisites'] = [];
-        $baseFlagObject['salt'] = null;
-        $baseFlagObject['deleted'] = false;
-        $baseFlagObject['trackEvents'] = false;
-        $baseFlagObject['trackEventsFallthrough'] = false;
-        $baseFlagObject['debugEventsUntilDate'] = false;
-        $baseFlagObject['clientSide'] = false;
-
-        $newFeatureFlag = FeatureFlag::decode($baseFlagObject);
-        return $newFeatureFlag;
+        return $baseFlagObject;
     }
 
 }

@@ -17,7 +17,7 @@ class TestDataTest extends TestCase
         $td = new TestData();
         $flag = $td->flag('test-flag');
 
-        $this->assertEquals('test-flag', $flag->build(0)->getKey());
+        $this->assertEquals('test-flag', $flag->build(0)['key']);
         $this->assertEquals(true, $flag->build(0)['on']);
 
     }
@@ -353,10 +353,7 @@ class TestDataTest extends TestCase
     public function testFlagbuilderCanSetVariationForAllUsers()
     {
         $td = new TestData();
-        $flag = $td->flag('test-flag');
-        $flag->variationForAllUsers(true);
-        // TODO figure out how to test fallthrough with FlagFeature object
-        $json = json_decode(json_encode($flag->build(0)), true);
-        $this->assertEquals(['variation' => 0], $json['fallthrough']);
+        $flag = $td->flag('test-flag')->variationForAllUsers(true)->build(0);
+        $this->assertEquals(['variation' => 0], $flag['fallthrough']);
     }
 }
