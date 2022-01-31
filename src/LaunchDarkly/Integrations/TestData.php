@@ -19,6 +19,7 @@ class TestData implements FeatureRequester {
     public function __construct()
     {
         $this->_flagBuilders = [];
+        $this->_currentFlags = [];
     }
 
 
@@ -31,19 +32,7 @@ class TestData implements FeatureRequester {
     public function getFeature(string $key): ?FeatureFlag
     {
         if (array_key_exists($key, $this->_currentFlags)) {
-            $flag = $this->_currentFlags[$key];
-            $baseFlagObject = $flag->build(0);
-            $baseFlagObject['prerequisites'] = [];
-            $baseFlagObject['salt'] = null;
-            $baseFlagObject['deleted'] = false;
-            $baseFlagObject['trackEvents'] = false;
-            $baseFlagObject['trackEventsFallthrough'] = false;
-            $baseFlagObject['debugEventsUntilDate'] = false;
-            $baseFlagObject['clientSide'] = false;
-
-            $newFeatureFlag = FeatureFlag::decode($baseFlagObject);
-
-            return $newFeatureFlag;
+            return $this->_currentFlags[$key];
         }
         return null;
     }
@@ -66,22 +55,7 @@ class TestData implements FeatureRequester {
      */
     public function getAllFeatures(): ?array
     {
-        $featureFlags = [];
-
-        foreach ($this->_currentFlags as $flag) {
-            $baseFlagObject['prerequisites'] = [];
-            $baseFlagObject['salt'] = null;
-            $baseFlagObject['deleted'] = false;
-            $baseFlagObject['trackEvents'] = false;
-            $baseFlagObject['trackEventsFallthrough'] = false;
-            $baseFlagObject['debugEventsUntilDate'] = false;
-            $baseFlagObject['clientSide'] = false;
-
-            $newFeatureFlag = FeatureFlag::decode($baseFlagObject);
-
-            array_push($featureFlags, $newFeatureFlag);
-        }
-        return $featureFlags;
+        return $this->_currentFlags;
     }
 
     /** 
@@ -113,16 +87,11 @@ class TestData implements FeatureRequester {
     */
     public function flag(string $key)
     {
-        try {
-            //self._lock.rlock()
-            if (in_array($key, $this->_flagBuilders) && $this->_flagBuilders[$key]) {
-                return $this->_flagBuilders[$key]->copy();
-            } else {
-                $flagBuilder = new FlagBuilder($key);
-                return $flagBuilder->booleanFlag();
-            }
-        } finally {
-            //self._lock.runlock()
+        if (in_array($key, $this->_flagBuilders) && $this->_flagBuilders[$key]) {
+            return $this->_flagBuilders[$key]->copy();
+        } else {
+            $flagBuilder = new FlagBuilder($key);
+            return $flagBuilder->booleanFlag();
         }
     }
 
@@ -143,7 +112,7 @@ class TestData implements FeatureRequester {
      */
     public function update(FlagBuilder $flagBuilder)
     {
-        $key = $flagBuilder->_key;
+        $key = $flagBuilder->getKey();
         $oldVersion = 0;
 
         if (array_key_exists($key, $this->_currentFlags)) {
@@ -152,8 +121,10 @@ class TestData implements FeatureRequester {
                 $oldVersion = $oldFlag['version'];
             }
         }
+
         $newFlag = $flagBuilder->build($oldVersion + 1);
-        $this->_current_flags[$key] = $newFlag;
+        $newFeatureFlag = FeatureFlag::decode($newFlag);
+        $this->_currentFlags[$key] = $newFeatureFlag;
         $this->_flagBuilders[$key] = $flagBuilder->copy();
     }
 
@@ -187,6 +158,17 @@ class FlagBuilder {
         $this->_fallthroughVariation = null;
         $this->_targets = [];
         $this->_rules = [];
+    }
+
+
+    /**
+     * Returns the key of the Flag Builder
+     *
+     * @return string the key of the flag builder
+     */
+    public function getKey()
+    {
+        return $this->_key;
     }
 
     /**
@@ -332,9 +314,7 @@ class FlagBuilder {
     /**
      * Sets the flag to always return the specified variation value for all users.
      *
-     * TODO: Missing from python implementation?
-     * TODO: implement this link in php if possible
-     * The value may be of any JSON type, as defined by {@link LDValue}. This method 
+     * The value may be of any JSON type. This method 
      * changes the flag to have only a single variation, which is this value, and to return 
      * the same variation regardless of whether targeting is on or off. Any existing targets 
      * or rules are removed.
@@ -442,8 +422,6 @@ class FlagBuilder {
     }
 
     /**
-     * TODO: Implement
-     *
      * Starts defining a flag rule, using the "is one of" operator.
      *
      * For example, this creates a rule that returns `true` if the name is "Patsy" or "Edina":
@@ -487,8 +465,7 @@ class FlagBuilder {
 
     /**
      * Removes any existing rules from the flag. This undoes the effect of methods like
-     * TODO: implement this link in php if possible
-     * {@link #ifMatch(UserAttribute, LDValue...)}.
+     * `ifMatch(UserAttribute, LDValue...)`.
      * 
      * @return FlagBuilder the same builder
      */
@@ -500,8 +477,7 @@ class FlagBuilder {
 
     /**
      * Removes any existing user targets from the flag. This undoes the effect of methods like
-     * TODO: implement this link in php if possible
-     * {@link #variationForUser(String, boolean)}.
+     * `variationForUser(string, boolean)`.
      * 
      * @return FlagBuilder the same builder
      */
@@ -564,6 +540,8 @@ class FlagBuilder {
         foreach ($this->_rules as $idx => $rule) {
             array_push($baseFlagObject['rules'], $rule->build($idx));
         }
+
+        $baseFlagObject['deleted'] = false;
 
         return $baseFlagObject;
     }

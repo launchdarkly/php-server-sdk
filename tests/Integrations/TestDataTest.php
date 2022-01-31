@@ -4,6 +4,7 @@ namespace LaunchDarkly\Tests\Integrations;
 
 use PHPUnit\Framework\TestCase;
 use LaunchDarkly\Integrations\TestData;
+use LaunchDarkly\Impl\Model\FeatureFlag;
 
 class TestDataTest extends TestCase
 {
@@ -355,5 +356,31 @@ class TestDataTest extends TestCase
         $td = new TestData();
         $flag = $td->flag('test-flag')->variationForAllUsers(true)->build(0);
         $this->assertEquals(['variation' => 0], $flag['fallthrough']);
+    }
+
+
+    public function testCanSetAndGetFeatureFlag()
+    {
+        $key = 'test-flag';
+        $expectedFlagJson = [
+            'key' => $key,
+            'version' => 1,
+            'deleted' => false,
+            'on' => true,
+            'targets' => [],
+            'prerequisites' => [],
+            'rules' => [],
+            'offVariation' => 1,
+            'fallthrough' => ['variation' => 0],
+            'variations' => [true, false],
+            'salt' => null
+        ];
+        $expectedFeatureFlag = FeatureFlag::decode($expectedFlagJson);
+
+        $td = TestData::dataSource();
+        $flag = $td->flag($key);
+        $td->update($flag);
+        $featureFlag = $td->getFeature($key);
+        $this->assertEquals($expectedFeatureFlag, $featureFlag);
     }
 }
