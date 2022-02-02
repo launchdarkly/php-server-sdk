@@ -47,19 +47,37 @@ class FeatureFlagsState implements \JsonSerializable
         bool $withReason = false,
         bool $detailsOnlyIfTracked = false
     ): void {
+        $requireExperimentData = $flag->isExperiment($detail->getReason());
+
         $this->_flagValues[$flag->getKey()] = $detail->getValue();
         $meta = [];
-        if (!$detailsOnlyIfTracked || $flag->isTrackEvents() || $flag->getDebugEventsUntilDate()) {
-            $meta['version'] = $flag->getVersion();
-            if ($withReason) {
-                $meta['reason'] = $detail->getReason();
+
+        $trackEvents = $flag->isTrackEvents() || $requireExperimentData;
+        $trackReason = $requireExperimentData;
+
+        $omitDetails = false;
+        if ($detailsOnlyIfTracked) {
+            if (!$trackEvents && !$trackReason && !$flag->getDebugEventsUntilDate()) {
+                $omitDetails = true;
             }
+        }
+
+        $reason = (!$withReason && !$trackReason) ? null : $detail->getReason();
+
+        if ($reason && !$omitDetails) {
+            $meta['reason'] = $reason;
+        }
+        if (!$omitDetails) {
+            $meta['version'] = $flag->getVersion();
         }
         if (!is_null($detail->getVariationIndex())) {
             $meta['variation'] = $detail->getVariationIndex();
         }
-        if ($flag->isTrackEvents()) {
+        if ($trackEvents) {
             $meta['trackEvents'] = true;
+        }
+        if ($trackReason) {
+            $meta['trackReason'] = true;
         }
         if ($flag->getDebugEventsUntilDate()) {
             $meta['debugEventsUntilDate'] = $flag->getDebugEventsUntilDate();

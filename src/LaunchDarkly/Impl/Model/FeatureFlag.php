@@ -137,6 +137,24 @@ class FeatureFlag
         return new EvalResult($detail, $prereqEvents);
     }
 
+    public function isExperiment(EvaluationReason $reason): bool
+    {
+        if ($reason->isInExperiment()) {
+            return true;
+        }
+
+        switch ($reason->getKind()) {
+            case 'RULE_MATCH':
+                $i = $reason->getRuleIndex();
+                $rules = $this->getRules();
+                return isset($i) && $i >= 0 && $i < count($rules) && $rules[$i]->isTrackEvents();
+            case 'FALLTHROUGH':
+                return $this->isTrackEventsFallthrough();
+            default:
+                return false;
+        }
+    }
+
     private function evaluateInternal(
         LDUser $user,
         FeatureRequester $featureRequester,

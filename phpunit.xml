@@ -2,7 +2,7 @@
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd" bootstrap="vendor/autoload.php" colors="true" beStrictAboutChangesToGlobalState="true" beStrictAboutOutputDuringTests="true" beStrictAboutResourceUsageDuringSmallTests="true" beStrictAboutTestsThatDoNotTestAnything="true" beStrictAboutTodoAnnotatedTests="true" verbose="true" defaultTimeLimit="10">
   
   <logging>
-    <junit outputFile="~/phpunit/junit.xml"/>
+    <junit outputFile="build/phpunit/junit.xml"/>
   </logging>
 
   <coverage>
@@ -10,8 +10,8 @@
       <directory suffix=".php">src</directory>
     </include>
     <report>
-      <html outputDirectory="~/phpunit/html-coverage"/>
-      <xml outputDirectory="~/phpunit/xml-coverage"/>
+      <html outputDirectory="build/phpunit/html-coverage"/>
+      <xml outputDirectory="build/phpunit/xml-coverage"/>
     </report>
   </coverage>
 

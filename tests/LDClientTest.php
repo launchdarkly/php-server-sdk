@@ -377,6 +377,54 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedState, $state->jsonSerialize());
     }
 
+    public function testAllFlagsStateHandlesExperimentationReasons()
+    {
+        $flagJson = [
+            'key' => 'feature',
+            'version' => 100,
+            'deleted' => false,
+            'on' => true,
+            'targets' => [],
+            'prerequisites' => [],
+            'rules' => [],
+            'offVariation' => 1,
+            'fallthrough' => ['variation' => 0],
+            'variations' => ['fall', 'off', 'on'],
+            'salt' => '',
+            'trackEvents' => false,
+            'trackEventsFallthrough' => true,
+            'debugEventsUntilDate' => 1000
+        ];
+        $flag = FeatureFlag::decode($flagJson);
+
+        MockFeatureRequester::$flags = ['feature' => $flag];
+        $client = $this->makeClient();
+
+        $builder = new LDUserBuilder(3);
+        $user = $builder->build();
+        $state = $client->allFlagsState($user);
+
+        $this->assertTrue($state->isValid());
+        $this->assertEquals(['feature' => 'fall'], $state->toValuesMap());
+        $expectedState = [
+            'feature' => 'fall',
+            '$flagsState' => [
+                'feature' => [
+                    'variation' => 0,
+                    'version' => 100,
+                    'trackEvents' => true,
+                    'trackReason' => true,
+                    'debugEventsUntilDate' => 1000,
+                    'reason' => [
+                        'kind' => 'FALLTHROUGH',
+                    ],
+                ]
+            ],
+            '$valid' => true
+        ];
+        $this->assertEquals($expectedState, $state->jsonSerialize());
+    }
+
     public function testAllFlagsStateReturnsStateWithReasons()
     {
         $flagJson = [

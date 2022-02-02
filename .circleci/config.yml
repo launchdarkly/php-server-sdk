@@ -75,13 +75,12 @@ jobs:
       - run:
           name: php-cs-fixer check
           command: composer cs-check
-      - run: mkdir -p ~/phpunit
       - run:
           name: run tests with highest compatible dependency versions
           command: php -d xdebug.mode=coverage vendor/bin/phpunit
           enviroment:
             XDEBUG_MODE: coverage
       - store_test_results:
-          path: ~/phpunit
+          path: build/phpunit
       - store_artifacts:
-          path: ~/phpunit
+          path: build/phpunit

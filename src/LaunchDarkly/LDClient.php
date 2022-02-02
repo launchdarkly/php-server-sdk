@@ -341,6 +341,11 @@ class LDClient
      * - `clientSideOnly`: Set this to true to specify that only flags marked for client-side use
      * should be included; by default, all flags are included
      * - `withReasons`: Set this to true to include evaluation reasons (see {@see \LaunchDarkly\LDClient::variationDetail()})
+     * - `detailsOnlyForTrackedFlags`: Set to true to omit any metadata that is
+     * normally only used for event generation, such as flag versions and
+     * evaluation reasons, unless the flag has event tracking or debugging
+     * turned on
+     *
      * @return FeatureFlagsState a FeatureFlagsState object (will never be null)
      */
     public function allFlagsState(LDUser $user, array $options = []): FeatureFlagsState

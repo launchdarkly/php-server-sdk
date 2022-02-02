@@ -3,7 +3,6 @@
 namespace LaunchDarkly\Impl\Events;
 
 use LaunchDarkly\EvaluationDetail;
-use LaunchDarkly\EvaluationReason;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Impl\Util;
 use LaunchDarkly\LDUser;
@@ -37,7 +36,7 @@ class EventFactory
         $default,
         $prereqOfFlag = null
     ): array {
-        $addExperimentData = static::isExperiment($flag, $detail->getReason());
+        $addExperimentData = $flag->isExperiment($detail->getReason());
         $e = [
             'kind' => 'feature',
             'creationDate' => Util::currentTimeUnixMillis(),
@@ -184,23 +183,6 @@ class EventFactory
             return 'anonymousUser';
         } else {
             return 'user';
-        }
-    }
-
-    private static function isExperiment(FeatureFlag $flag, EvaluationReason $reason): bool
-    {
-        if ($reason->isInExperiment()) {
-            return true;
-        }
-        switch ($reason->getKind()) {
-            case 'RULE_MATCH':
-                $i = $reason->getRuleIndex();
-                $rules = $flag->getRules();
-                return isset($i) && $i >= 0 && $i < count($rules) && $rules[$i]->isTrackEvents();
-            case 'FALLTHROUGH':
-                return $flag->isTrackEventsFallthrough();
-            default:
-                return false;
         }
     }
 }
