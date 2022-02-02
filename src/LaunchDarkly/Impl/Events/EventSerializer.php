@@ -53,7 +53,7 @@ class EventSerializer
     private function filterAttrs(array $attrs, array &$json, ?array $userPrivateAttrs, array &$allPrivateAttrs, bool $stringify): void
     {
         foreach ($attrs as $key => $value) {
-            if ($value != null) {
+            if ($value !== null) {
                 if ($this->_allAttrsPrivate ||
                     (!is_null($userPrivateAttrs) && in_array($key, $userPrivateAttrs)) ||
                     in_array($key, $this->_privateAttrNames)) {

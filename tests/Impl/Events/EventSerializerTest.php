@@ -139,6 +139,19 @@ class EventSerializerTest extends TestCase
         $this->assertFalse(isset($json['custom']));
     }
 
+    public function testFiltersAttributesCorrectly()
+    {
+        $builder = new LDUserBuilder("foo@bar.com");
+        $user = $builder
+            ->customAttribute("foo", "")
+            ->customAttribute("bar", 0)
+            ->customAttribute("baz", null)
+            ->customAttribute("qux", false)
+            ->build();
+        $json = $this->getJsonForUserBySerializingEvent($user);
+        $this->assertEquals(["foo" => "", "bar" => 0, "qux" => false], $json['custom']);
+    }
+
     public function testEmptyPrivateCustom()
     {
         $builder = new LDUserBuilder("foo@bar.com");
