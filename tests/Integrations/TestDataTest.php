@@ -365,7 +365,6 @@ class TestDataTest extends TestCase
             'deleted' => false,
             'on' => true,
             'targets' => [],
-            'prerequisites' => [],
             'rules' => [],
             'offVariation' => 1,
             'fallthrough' => ['variation' => 0],
@@ -374,7 +373,7 @@ class TestDataTest extends TestCase
         ];
         $expectedFeatureFlag = FeatureFlag::decode($expectedFlagJson);
 
-        $td = TestData::dataSource();
+        $td = new TestData();
         $flag = $td->flag($key);
         $td->update($flag);
         $featureFlag = $td->getFeature($key);
