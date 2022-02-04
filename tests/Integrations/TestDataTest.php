@@ -2,15 +2,14 @@
 
 namespace LaunchDarkly\Tests\Integrations;
 
-use PHPUnit\Framework\TestCase;
-use LaunchDarkly\Integrations\TestData;
 use LaunchDarkly\Impl\Model\FeatureFlag;
+use LaunchDarkly\Integrations\TestData;
+use PHPUnit\Framework\TestCase;
 
 class TestDataTest extends TestCase
 {
     public function initializesWithEmptyData()
     {
-
     }
 
     public function testMakesFlag()
@@ -20,7 +19,6 @@ class TestDataTest extends TestCase
 
         $this->assertEquals('test-flag', $flag->build(0)['key']);
         $this->assertEquals(true, $flag->build(0)['on']);
-
     }
 
     public function testMakesCopy()
@@ -38,7 +36,6 @@ class TestDataTest extends TestCase
 
         $this->assertEquals([1,2,3], $flag->build(0)['variations']);
         $this->assertEquals([4,5,6], $flagCopy->build(0)['variations']);
-
     }
 
     public function testFlagConfigSimpleBoolean()
@@ -239,7 +236,7 @@ class TestDataTest extends TestCase
 
     public function testFlagbuilderCanSetValueForAllUsers()
     {
-        $jsonString1 = " 
+        $jsonString1 = "
             {
                 \"boolField\": true,
                 \"stringField\": \"some val\",
@@ -312,7 +309,7 @@ class TestDataTest extends TestCase
         $this->assertEquals(['variation' => 2], $flag->build(0)['fallthrough']);
     }
 
-    public function testFlagBuilderClearUserTargets() 
+    public function testFlagBuilderClearUserTargets()
     {
         $td = new TestData();
         $flag = $td->flag('test-flag')
@@ -344,7 +341,7 @@ class TestDataTest extends TestCase
     public function testFlagbuilderCanSetVariationWhenTargetingIsOff()
     {
         $td = new TestData();
-        $flag = $td->flag('test-flag')->on(False);
+        $flag = $td->flag('test-flag')->on(false);
         $this->assertEquals(false, $flag->build(0)['on']);
         $this->assertEquals([true,false], $flag->build(0)['variations']);
         $flag->variations('dog', 'cat');
@@ -382,5 +379,36 @@ class TestDataTest extends TestCase
         $td->update($flag);
         $featureFlag = $td->getFeature($key);
         $this->assertEquals($expectedFeatureFlag, $featureFlag);
+    }
+
+    public function testFlagBuilderCanAddAndBuildRules()
+    {
+        $td = new TestData();
+        $flag = $td->flag("flag")
+                   ->ifMatch("name", "Patsy", "Edina")
+                   ->andNotMatch("country", "gb")
+                   ->thenReturn(true);
+        $builtFlag = $flag->build(0);
+        $expectedRule = [
+            [
+                "id" => "rule0",
+                "variation" => 0,
+                "clauses" => [
+                    [
+                        "attribute" => "name",
+                        "operator" => 'in',
+                        "values" => ["Patsy", "Edina"],
+                        "negate" => false,
+                    ],
+                    [
+                        "attribute" => "country",
+                        "operator" => 'in',
+                        "values" => ["gb"],
+                        "negate" => true,
+                    ]
+                ]
+            ]
+        ];
+        $this->assertEquals($expectedRule, $builtFlag['rules']);
     }
 }
