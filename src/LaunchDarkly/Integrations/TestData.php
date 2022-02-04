@@ -2,9 +2,9 @@
 
 namespace LaunchDarkly\Integrations;
 
-use \LaunchDarkly\FeatureRequester;
-use \LaunchDarkly\Impl\Model\FeatureFlag;
-use \LaunchDarkly\Impl\Model\Segment;
+use LaunchDarkly\FeatureRequester;
+use LaunchDarkly\Impl\Model\FeatureFlag;
+use LaunchDarkly\Impl\Model\Segment;
 
 define('TRUE_VARIATION_INDEX', 0);
 define('FALSE_VARIATION_INDEX', 1);
@@ -23,7 +23,6 @@ class TestData implements FeatureRequester
         $this->_currentFlags = [];
     }
 
-
     /**
      * Gets the configuration for a specific feature flag.
      *
@@ -32,10 +31,7 @@ class TestData implements FeatureRequester
      */
     public function getFeature(string $key): ?FeatureFlag
     {
-        if (array_key_exists($key, $this->_currentFlags)) {
-            return $this->_currentFlags[$key];
-        }
-        return null;
+        return $this->_currentFlags[$key] ?? null;
     }
 
     /**
@@ -116,11 +112,9 @@ class TestData implements FeatureRequester
         $key = $flagBuilder->getKey();
         $oldVersion = 0;
 
-        if (array_key_exists($key, $this->_currentFlags)) {
-            $oldFlag = $this->_currentFlags[$key];
-            if ($oldFlag) {
-                $oldVersion = $oldFlag['version'];
-            }
+        $oldFlag = $this->_currentFlags[$key] ?? null;
+        if ($oldFlag) {
+            $oldVersion = $oldFlag['version'];
         }
 
         $newFlag = $flagBuilder->build($oldVersion + 1);
@@ -166,7 +160,6 @@ class FlagBuilder
         $this->_targets = [];
         $this->_rules = [];
     }
-
 
     /**
      * Returns the key of the Flag Builder
@@ -365,10 +358,7 @@ class FlagBuilder
             $variationKeys = array_keys($this->_variations);
             foreach ($variationKeys as $idx) {
                 if ($idx == $variationIndex) {
-                    $targetForVariation = [];
-                    if (array_key_exists($idx, $targets)) {
-                        $targetForVariation = $targets[$idx];
-                    }
+                    $targetForVariation = $targets[$idx] ?? [];
 
                     if (!in_array($userKey, $targetForVariation)) {
                         array_push($targetForVariation, $userKey);
@@ -382,9 +372,7 @@ class FlagBuilder
                         // Needs a strict check to ensure it doesn't eval to true
                         // when index === 0
                         if ($userKeyIdx !== false) {
-                            unset($targetForVariation[$userKeyIdx]);
-                            $targetForVariation = array_values($targetForVariation);
-                            $this->_targets[$idx] = $targetForVariation;
+                            $this->_targets[$idx] = array_splice($targetForVariation, $userKeyIdx, 1);
                         }
                     }
                 }
@@ -551,7 +539,7 @@ class FlagBuilder
         $baseFlagObject['rules'] = [];
 
         foreach ($this->_rules as $idx => $rule) {
-            array_push($baseFlagObject['rules'], $rule->build($idx));
+            $baseFlagObject['rules'][] = $rule->build($idx);
         }
 
         $baseFlagObject['deleted'] = false;

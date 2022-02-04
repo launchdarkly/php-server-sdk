@@ -133,8 +133,6 @@ class TestDataTest extends TestCase
         $this->assertEquals(['variation' => 2], $stringVariationFlag['fallthrough']);
     }
 
-
-
     public function testUserTargets()
     {
         $td = new TestData();
