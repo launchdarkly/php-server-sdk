@@ -76,9 +76,9 @@ class TestData implements FeatureRequester
      * If this flag key has already been defined in this `TestData` instance, then the builder
      * starts with the same configuration that was last provided for this flag.
      *
-     * Otherwise, it starts with a new default configuration in which the flag has `True` and
-     * `False` variations, is `True` for all users when targeting is turned on and
-     * `False` otherwise, and currently has targeting turned on. You can change any of those
+     * Otherwise, it starts with a new default configuration in which the flag has `true` and
+     * `false` variations, is `true` for all users when targeting is turned on and
+     * `false` otherwise, and currently has targeting turned on. You can change any of those
      * properties, and provide more complex behavior, using the `FlagBuilder` methods.
      *
      * Once you have set the desired configuration, pass the builder to `update`.
@@ -135,8 +135,8 @@ class TestData implements FeatureRequester
 /**
  * A builder for feature flag configurations to be used with {@see \LaunchDarkly\Integrations\TestData}.
  *
- * @see TestData::flag()
- * @see TestData::update()
+ * @see \LaunchDarkly\Integrations\TestData::flag()
+ * @see \LaunchDarkly\Integrations\TestData::update()
  */
 class FlagBuilder
 {
@@ -217,8 +217,8 @@ class FlagBuilder
      * This is the default for all new flags created with
      *      `$ldclient->integrations->test_data->TestData->flag()`.
      *
-     * The flag will have two variations, `True` and `False` (in that order);
-     * it will return `False` whenever targeting is off, and `True` when targeting is on
+     * The flag will have two variations, `true` and `false` (in that order);
+     * it will return `false` whenever targeting is off, and `true` when targeting is on
      * if no other settings specify otherwise.
      *
      * @return FlagBuilder the flag builder
@@ -302,7 +302,7 @@ class FlagBuilder
      * If the flag was previously configured with other variations and the variation specified is a boolean,
      * this also changes it to a boolean flag.
      *
-     * @param bool|int $variation `True` or `False` or the desired variation index to return:
+     * @param bool|int $variation `true` or `false` or the desired variation index to return:
      *                  `0` for the first, `1` for the second, etc.
      * @return FlagBuilder the flag builder
      */
@@ -371,7 +371,7 @@ class FlagBuilder
                     }
 
                     if (!in_array($userKey, $targetForVariation)) {
-                        array_push($targetForVariation, $userKey);
+                        $targetForVariation[] = $userKey;
                     }
                     $this->_targets[$idx] = $targetForVariation;
                 } else {
@@ -397,12 +397,12 @@ class FlagBuilder
      * Changes the allowable variation values for the flag.
      *
      * The value may be of any valid JSON type. For instance, a boolean flag
-     * normally has True, False; a string-valued flag might have
+     * normally has true, false; a string-valued flag might have
      * 'red', 'green'; etc.
      *
      * Example: A single variation
      *
-     *     $td->flag('new-flag')->variations(True)
+     *     $td->flag('new-flag')->variations(true)
      *
      * Example: Multiple variations
      *
@@ -617,7 +617,7 @@ class FlagRuleBuilder
             "values" => $values,
             "negate" => false,
         ];
-        array_push($this->_clauses, $newClause);
+        $this->_clauses[] = $newClause;
         return $this;
     }
 
@@ -646,7 +646,7 @@ class FlagRuleBuilder
             "values" => $values,
             "negate" => true,
         ];
-        array_push($this->_clauses, $newClause);
+        $this->_clauses[] = $newClause;
         return $this;
     }
 
