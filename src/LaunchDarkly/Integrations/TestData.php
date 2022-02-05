@@ -372,9 +372,7 @@ class FlagBuilder
                         // Needs a strict check to ensure it doesn't eval to true
                         // when index === 0
                         if ($userKeyIdx !== false) {
-                            // TODO convert to use array_splice
-                            unset($targetForVariation[$userKeyIdx]);
-                            $targetForVariation = array_values($targetForVariation);
+                            array_splice($targetForVariation, $userKeyIdx, 1);
                             $this->_targets[$idx] = $targetForVariation;
                         }
                     }
