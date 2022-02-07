@@ -367,7 +367,10 @@ class TestDataTest extends TestCase
             'offVariation' => 1,
             'fallthrough' => ['variation' => 0],
             'variations' => [true, false],
-            'salt' => null
+
+            /* Required FeatureFlag fields */
+            'salt' => null,
+            'prerequisites' => [],
         ];
         $expectedFeatureFlag = FeatureFlag::decode($expectedFlagJson);
 

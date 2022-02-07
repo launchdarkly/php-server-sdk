@@ -515,7 +515,12 @@ class FlagBuilder
             'key'        => $this->_key,
             'version'    => $version,
             'on'         => $this->_on,
-            'variations' => $this->_variations
+            'variations' => $this->_variations,
+
+            // Fields necessary to be able to pass the result
+            // of build() into FeatureFlag::decode
+            'prerequisites' => [],
+            'salt' => null,
         ];
 
         $baseFlagObject['offVariation'] = $this->_offVariation;
