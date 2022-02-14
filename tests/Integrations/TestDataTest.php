@@ -47,64 +47,87 @@ class TestDataTest extends TestCase
         $this->assertEquals(['red','blue'], $flag->build(0)['variations']);
     }
 
-    public function testFlagConfigSimpleBoolean()
+    public function provideFlagConfig()
     {
         $td = new TestData();
-
-        $flag = $td->flag('test-flag-1');
-        $flagBuild = $flag->build(0);
-        $this->assertEquals(true, $flagBuild['on']);
-        $this->assertEquals(['variation' => 0], $flagBuild['fallthrough']);
-
-        $flagBool = $td->flag('test-flag-2')->booleanFlag();
-        $flagBoolBuild = $flagBool->build(0);
-        $this->assertEquals(true, $flagBoolBuild['on']);
-        $this->assertEquals(['variation' => 0], $flagBoolBuild['fallthrough']);
-
-        $flagOn = $td->flag('test-flag-3')->on(true);
-        $flagOnBuild = $flagOn->build(0);
-        $this->assertEquals(true, $flagOnBuild['on']);
-        $this->assertEquals(['variation' => 0], $flagOnBuild['fallthrough']);
-
-        $flagOff = $td->flag('test-flag-4')->on(false);
-        $flagOffBuild = $flagOff->build(0);
-        $this->assertEquals(false, $flagOffBuild['on']);
-        $this->assertEquals(['variation' => 0], $flagOffBuild['fallthrough']);
-
-        $flagVariationForAllUsersFalse = $td->flag('test-flag-5')
-                                             ->variationForAllUsers(false)
-                                             ->build(0);
-        $this->assertEquals([true, false], $flagVariationForAllUsersFalse['variations']);
-        $this->assertEquals(1, $flagVariationForAllUsersFalse['offVariation']);
-        $this->assertEquals(true, $flagVariationForAllUsersFalse['on']);
-        $this->assertEquals(['variation' => 1], $flagVariationForAllUsersFalse['fallthrough']);
-
-        $flagVariationForAllUsersTrue = $td->flag('test-flag-6')
-                                             ->variationForAllUsers(true)
-                                             ->build(0);
-        $this->assertEquals([true, false], $flagVariationForAllUsersTrue['variations']);
-        $this->assertEquals(1, $flagVariationForAllUsersTrue['offVariation']);
-        $this->assertEquals(true, $flagVariationForAllUsersTrue['on']);
-        $this->assertEquals(['variation' => 0], $flagVariationForAllUsersTrue['fallthrough']);
-
-        $flagFallthroughAndOffVariation1 = $td->flag('test-flag-7')
-                                             ->fallthroughVariation(true)
-                                             ->offVariation(false)
-                                             ->build(0);
-        $this->assertEquals([true, false], $flagFallthroughAndOffVariation1['variations']);
-        $this->assertEquals(1, $flagFallthroughAndOffVariation1['offVariation']);
-        $this->assertEquals(true, $flagFallthroughAndOffVariation1['on']);
-        $this->assertEquals(['variation' => 0], $flagFallthroughAndOffVariation1['fallthrough']);
-
-        $flagFallthroughAndOffVariation2 = $td->flag('test-flag-8')
-                                             ->fallthroughVariation(false)
-                                             ->offVariation(true)
-                                             ->build(0);
-        $this->assertEquals([true, false], $flagFallthroughAndOffVariation2['variations']);
-        $this->assertEquals(0, $flagFallthroughAndOffVariation2['offVariation']);
-        $this->assertEquals(true, $flagFallthroughAndOffVariation2['on']);
-        $this->assertEquals(['variation' => 1], $flagFallthroughAndOffVariation2['fallthrough']);
+        return [
+            [
+                [
+                    'on' => true,
+                    'fallthrough' => ['variation' => 0]
+                ],
+                $td->flag('test-flag-1')->build(0)
+            ],
+            [
+                [
+                    'on' => true,
+                    'fallthrough' => ['variation' => 0]
+                ],
+                $td->flag('test-flag-2')->booleanFlag()->build(0)
+            ],
+            [
+                [
+                    'on' => true,
+                    'fallthrough' => ['variation' => 0]
+                ],
+                $td->flag('test-flag-3')->on(true)->build(0)
+            ],
+            [
+                [
+                    'on' => false,
+                    'fallthrough' => ['variation' => 0]
+                ],
+                $td->flag('test-flag-4')->on(false)->build(0)
+            ],
+            [
+                [
+                    'on' => true,
+                    'offVariation' => 1,
+                    'variations' => [true, false],
+                    'fallthrough' => ['variation' => 1],
+                ],
+                $td->flag('test-flag-5')->variationForAllUsers(false)->build(0)
+            ],
+            [
+                [
+                    'on' => true,
+                    'offVariation' => 1,
+                    'variations' => [true, false],
+                    'fallthrough' => ['variation' => 0],
+                ],
+                $td->flag('test-flag-6')->variationForAllUsers(true)->build(0)
+            ],
+            [
+                [
+                    'on' => true,
+                    'offVariation' => 1,
+                    'variations' => [true, false],
+                    'fallthrough' => ['variation' => 0],
+                ],
+                $td->flag('test-flag-7')->variationForAllUsers(true)->build(0)
+            ],
+            [
+                [
+                    'on' => true,
+                    'offVariation' => 1,
+                    'variations' => [true, false],
+                    'fallthrough' => ['variation' => 1],
+                ],
+                $td->flag('test-flag-7')->variationForAllUsers(false)->build(0)
+            ],
+        ];
     }
+
+    /**
+     * @dataProvider provideFlagConfig
+     */
+    public function testFlagConfigSimpleBoolean($expected, $actual)
+    {
+        foreach (array_keys($expected) as $key) {
+            $this->assertEquals($actual[$key], $expected[$key]);
+        }
+    }
+
 
     public function testFlagBuilderBooleanConfigMethodsForcesFlagToBeBoolean()
     {
