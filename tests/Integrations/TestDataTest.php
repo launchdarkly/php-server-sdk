@@ -124,7 +124,7 @@ class TestDataTest extends TestCase
     public function testFlagConfigSimpleBoolean($expected, $actual)
     {
         foreach (array_keys($expected) as $key) {
-            $this->assertEquals($actual[$key], $expected[$key]);
+            $this->assertEquals($expected[$key], $actual[$key]);
         }
     }
 
