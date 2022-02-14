@@ -4,6 +4,7 @@ namespace LaunchDarkly\Tests\Integrations;
 
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Integrations\TestData;
+use LaunchDarkly\Integrations\TestData\FlagBuilder;
 use PHPUnit\Framework\TestCase;
 
 class TestDataTest extends TestCase
@@ -36,6 +37,16 @@ class TestDataTest extends TestCase
 
         $this->assertEquals([1,2,3], $flag->build(0)['variations']);
         $this->assertEquals([4,5,6], $flagCopy->build(0)['variations']);
+    }
+
+    public function testCanReferenceSameFlag()
+    {
+        $td = new TestData();
+        $td->update($td->flag('test-flag')->variations('red', 'blue'));
+
+        $flag = $td->flag('test-flag');
+        $this->assertEquals(['red','blue'], $flag->build(0)['variations']);
+
     }
 
     public function testFlagConfigSimpleBoolean()
