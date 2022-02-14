@@ -2,8 +2,6 @@
 
 namespace LaunchDarkly\Integrations\TestData;
 
-use LaunchDarkly\Integrations\TestData\FlagRuleBuilder;
-
 define('TRUE_VARIATION_INDEX', 0);
 define('FALSE_VARIATION_INDEX', 1);
 
@@ -244,7 +242,7 @@ class FlagBuilder
                         $targetForVariation[] = $userKey;
                     }
                     $this->_targets[$idx] = $targetForVariation;
-                } else if (array_key_exists($idx, $targets)) {
+                } elseif (array_key_exists($idx, $targets)) {
                     $targetForVariation = $targets[$idx];
                     $userKeyIdx = array_search($userKey, $targetForVariation);
                     // $userKeyIdx can be 0,1,2,3 etc or false if not found.

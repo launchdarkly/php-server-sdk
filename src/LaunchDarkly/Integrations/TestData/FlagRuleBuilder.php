@@ -2,8 +2,6 @@
 
 namespace LaunchDarkly\Integrations\TestData;
 
-use LaunchDarkly\Integrations\TestData\FlagBuilder;
-
 /**
  * A builder for feature flag rules to be used with {@see \LaunchDarkly\Integrations\TestData\FlagBuilder}.
  *

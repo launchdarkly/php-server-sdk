@@ -4,7 +4,6 @@ namespace LaunchDarkly\Tests\Integrations;
 
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Integrations\TestData;
-use LaunchDarkly\Integrations\TestData\FlagBuilder;
 use PHPUnit\Framework\TestCase;
 
 class TestDataTest extends TestCase
@@ -27,13 +26,13 @@ class TestDataTest extends TestCase
         $td = new TestData();
         $flag = $td->flag('test-flag');
 
-        $flag->variations(1,2,3);
+        $flag->variations(1, 2, 3);
 
         $this->assertEquals([1,2,3], $flag->build(0)['variations']);
 
         $flagCopy = $flag->copy();
 
-        $flagCopy->variations(4,5,6);
+        $flagCopy->variations(4, 5, 6);
 
         $this->assertEquals([1,2,3], $flag->build(0)['variations']);
         $this->assertEquals([4,5,6], $flagCopy->build(0)['variations']);
@@ -46,7 +45,6 @@ class TestDataTest extends TestCase
 
         $flag = $td->flag('test-flag');
         $this->assertEquals(['red','blue'], $flag->build(0)['variations']);
-
     }
 
     public function testFlagConfigSimpleBoolean()
