@@ -205,7 +205,7 @@ class FlagBuilder
     {
         $json = json_decode(json_encode($value), true);
         if (json_last_error() === JSON_ERROR_NONE) {
-            $this->variations([$json]);
+            $this->variations($json);
             return $this->variationForAllUsers(0);
         } else {
             return $this;
@@ -280,11 +280,6 @@ class FlagBuilder
      */
     public function variations(...$variations): FlagBuilder
     {
-        if (count($variations) == 1) {
-            if (is_array($variations[0])) {
-                $variations = $variations[0];
-            }
-        }
         $this->_variations = $variations;
         return $this;
     }
