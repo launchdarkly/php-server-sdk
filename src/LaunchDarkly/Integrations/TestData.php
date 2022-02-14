@@ -58,7 +58,7 @@ class TestData implements FeatureRequester
      *
      * @return TestData a new configurable test data source
      */
-    public function dataSource()
+    public function dataSource(): TestData
     {
         return new TestData();
     }

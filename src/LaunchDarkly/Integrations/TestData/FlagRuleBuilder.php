@@ -56,8 +56,6 @@ class FlagRuleBuilder
         $newClause = [
             "attribute" => $attribute,
             "operator" => 'in',
-            // TODO: does values need to be type checked
-            // or put into a list?
             "values" => $values,
             "negate" => false,
         ];
@@ -122,7 +120,7 @@ class FlagRuleBuilder
     public function build(int $id)
     {
         return [
-            "id" => "rule$id",
+            "id" => "rule{$id}",
             "variation" => $this->_variation,
             "clauses" => $this->_clauses
         ];

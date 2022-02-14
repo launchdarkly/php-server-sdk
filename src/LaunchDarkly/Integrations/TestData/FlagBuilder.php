@@ -204,8 +204,6 @@ class FlagBuilder
     public function valueForAllUsers($value)
     {
         $json = json_decode(json_encode($value), true);
-        // TODO: Is there some error to return if
-        // $value is not json decode-able?
         if (json_last_error() === JSON_ERROR_NONE) {
             $this->variations([$json]);
             return $this->variationForAllUsers(0);
@@ -246,17 +244,15 @@ class FlagBuilder
                         $targetForVariation[] = $userKey;
                     }
                     $this->_targets[$idx] = $targetForVariation;
-                } else {
-                    if (array_key_exists($idx, $targets)) {
-                        $targetForVariation = $targets[$idx];
-                        $userKeyIdx = array_search($userKey, $targetForVariation);
-                        // $userKeyIdx can be 0,1,2,3 etc or false if not found.
-                        // Needs a strict check to ensure it doesn't eval to true
-                        // when index === 0
-                        if ($userKeyIdx !== false) {
-                            array_splice($targetForVariation, $userKeyIdx, 1);
-                            $this->_targets[$idx] = $targetForVariation;
-                        }
+                } else if (array_key_exists($idx, $targets)) {
+                    $targetForVariation = $targets[$idx];
+                    $userKeyIdx = array_search($userKey, $targetForVariation);
+                    // $userKeyIdx can be 0,1,2,3 etc or false if not found.
+                    // Needs a strict check to ensure it doesn't eval to true
+                    // when index === 0
+                    if ($userKeyIdx !== false) {
+                        array_splice($targetForVariation, $userKeyIdx, 1);
+                        $this->_targets[$idx] = $targetForVariation;
                     }
                 }
             }
