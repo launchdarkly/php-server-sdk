@@ -67,10 +67,10 @@ class FlagRuleBuilder
      * For example, this creates a rule that returns `true` if
      * the name is "Patsy" and the country is not "gb":
      *
-     *     testData.flag("flag")
-     *         ->ifMatch("name", "Patsy")
-     *         ->andNotMatch("country", "gb")
-     *         ->thenReturn(true);
+     *    $testData->flag("flag")
+     *             ->ifMatch("name", "Patsy")
+     *             ->andNotMatch("country", "gb")
+     *             ->thenReturn(true);
      *
      * @param string $attribute the user attribute to match against
      * @param mixed $values values to compare to
@@ -81,8 +81,6 @@ class FlagRuleBuilder
         $newClause = [
             "attribute" => $attribute,
             "operator" => 'in',
-            // TODO: does values need to be type checked
-            // or put into a list?
             "values" => $values,
             "negate" => true,
         ];

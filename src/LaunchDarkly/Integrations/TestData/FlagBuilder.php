@@ -309,7 +309,7 @@ class FlagBuilder
      * For example, this creates a rule that returns `true` if the name
      * is neither "Saffron" nor "Bubble":
      *
-     *     testData->flag("flag")
+     *    $testData->flag("flag")
      *             ->ifNotMatch("name", "Saffron", "Bubble")
      *             ->thenReturn(true);
      *
