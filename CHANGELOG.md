@@ -2,6 +2,16 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [4.1.0] - 2022-02-16
+### Added:
+- The curl command used for publishing events will now honor the connect_timeout parameter.
+- Publishing events on Windows will now use PowerShell and Invoke-WebRequest instead of curl.
+
+### Fixed:
+- Numeric strings are no longer treated like numbers in equality checks.
+- User attributes with values of 0 or false will no longer be filtered out of event payloads.
+- When using allFlagsState to produce bootstrap data for the JavaScript SDK, the PHP SDK was not returning the correct metadata for evaluations that involved an experiment. As a result, the analytics events produced by the JavaScript SDK did not correctly reflect experimentation results.
+
 ## [4.0.0] - 2021-08-06
 This major version release is for updating PHP compatibility, simplifying the SDK&#39;s dependencies, and removing deprecated names.
 
