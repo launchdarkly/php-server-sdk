@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>LaunchDarkly PHP SDK 4.0.0</title>
+    <title>LaunchDarkly PHP SDK 4.1.0</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="../">
     <link rel="icon" href="images/favicon.ico"/>
@@ -23,7 +23,7 @@
     </head>
 <body id="top">
     <header class="phpdocumentor-header phpdocumentor-section">
-    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">LaunchDarkly PHP SDK 4.0.0</a></h1>
+    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">LaunchDarkly PHP SDK 4.1.0</a></h1>
     <input class="phpdocumentor-header__menu-button" type="checkbox" id="menu-button" name="menu-button" />
     <label class="phpdocumentor-header__menu-icon" for="menu-button">
         <i class="fas fa-bars"></i>
@@ -52,20 +52,23 @@
     Menu
 </label>
 <aside class="phpdocumentor-column -four phpdocumentor-sidebar">
-        
-    <section class="phpdocumentor-sidebar__category">
-        <h2 class="phpdocumentor-sidebar__category-header">Namespaces</h2>
-                                                <h4 class="phpdocumentor-sidebar__root-namespace"><a href="namespaces/launchdarkly.html"><abbr title="\LaunchDarkly">LaunchDarkly</abbr></a></h4>
-                <ul class="phpdocumentor-list">
-                                            <li><a href="namespaces/launchdarkly-integrations.html"><abbr title="\LaunchDarkly\Integrations">Integrations</abbr></a></li>
-                                    </ul>
-                        </section>
+                    <section class="phpdocumentor-sidebar__category">
+            <h2 class="phpdocumentor-sidebar__category-header">Namespaces</h2>
+                                    <h4 class="phpdocumentor-sidebar__root-namespace"><a href="namespaces/launchdarkly.html">LaunchDarkly</a></h4>
+    <ul class="phpdocumentor-list">
+                    <li>
+                <a href="namespaces/launchdarkly-integrations.html">Integrations</a>
+                
+            </li>
+            </ul>
 
-        <section class="phpdocumentor-sidebar__category">
-        <h2 class="phpdocumentor-sidebar__category-header">Packages</h2>
-                    <h3 class="phpdocumentor-sidebar__root-package"><a href="packages/SDK.html"><abbr title="\SDK">SDK</abbr></a></h3>
                         </section>
-    
+                <section class="phpdocumentor-sidebar__category">
+            <h2 class="phpdocumentor-sidebar__category-header">Packages</h2>
+                                    <h4 class="phpdocumentor-sidebar__root-namespace"><a href="packages/LaunchDarklyPHPSDK.html">LaunchDarklyPHPSDK</a></h4>
+
+                        </section>
+            
     <section class="phpdocumentor-sidebar__category">
         <h2 class="phpdocumentor-sidebar__category-header">Reports</h2>
                 <h3 class="phpdocumentor-sidebar__root-package"><a href="reports/deprecated.html">Deprecated</a></h3>
@@ -90,15 +93,15 @@
                 <div class="phpdocumentor-element__package">
             in
             <ul class="phpdocumentor-breadcrumbs">
-                                    <li><a href="packages/SDK.html">SDK</a></li>
+                                    <li><a href="packages/LaunchDarklyPHPSDK.html">LaunchDarklyPHPSDK</a></li>
                             </ul>
         </div>
     </h2>
 
         <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/FeatureRequester.php"><a href="files/src-launchdarkly-featurerequester.html"><abbr title="src/LaunchDarkly/FeatureRequester.php">FeatureRequester.php</abbr></a></abbr>
+    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/FeatureRequester.php"><a href="files/launchdarkly-featurerequester.html"><abbr title="LaunchDarkly/FeatureRequester.php">FeatureRequester.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">14</span>
+    <span class="phpdocumentor-element-found-in__line">15</span>
 
     </aside>
 
@@ -125,7 +128,7 @@ LaunchDarkly\Integrations namespace.</p>
                     <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-FeatureRequester.html#method_getAllFeatures">getAllFeatures()</a>
     <span>
-                        &nbsp;: array&lt;string|int, mixed&gt;|null    </span>
+                        &nbsp;: array&lt;string, <abbr title="\LaunchDarkly\Impl\Model\FeatureFlag">FeatureFlag</abbr>&gt;|null    </span>
 </dt>
 <dd>Gets all feature flags.</dd>
 
@@ -165,9 +168,9 @@ LaunchDarkly\Integrations namespace.</p>
         <a href="classes/LaunchDarkly-FeatureRequester.html#method_getAllFeatures" class="headerlink"><i class="fas fa-link"></i></a>
     </h4>
     <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/FeatureRequester.php"><a href="files/src-launchdarkly-featurerequester.html"><abbr title="src/LaunchDarkly/FeatureRequester.php">FeatureRequester.php</abbr></a></abbr>
+    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/FeatureRequester.php"><a href="files/launchdarkly-featurerequester.html"><abbr title="LaunchDarkly/FeatureRequester.php">FeatureRequester.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">37</span>
+    <span class="phpdocumentor-element-found-in__line">38</span>
 
     </aside>
 
@@ -175,14 +178,14 @@ LaunchDarkly\Integrations namespace.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getAllFeatures</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;string|int, mixed&gt;|null</span></code>
+                <span class="phpdocumentor-signature__name">getAllFeatures</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;string, <abbr title="\LaunchDarkly\Impl\Model\FeatureFlag">FeatureFlag</abbr>&gt;|null</span></code>
 
     
     
     
 
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-    <span class="phpdocumentor-signature__response_type">array&lt;string|int, mixed&gt;|null</span>
+    <span class="phpdocumentor-signature__response_type">array&lt;string, <abbr title="\LaunchDarkly\Impl\Model\FeatureFlag">FeatureFlag</abbr>&gt;|null</span>
             &mdash;
             <section class="phpdocumentor-description"><p>The decoded FeatureFlags, or null if missing</p>
 </section>
@@ -200,9 +203,9 @@ LaunchDarkly\Integrations namespace.</p>
         <a href="classes/LaunchDarkly-FeatureRequester.html#method_getFeature" class="headerlink"><i class="fas fa-link"></i></a>
     </h4>
     <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/FeatureRequester.php"><a href="files/src-launchdarkly-featurerequester.html"><abbr title="src/LaunchDarkly/FeatureRequester.php">FeatureRequester.php</abbr></a></abbr>
+    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/FeatureRequester.php"><a href="files/launchdarkly-featurerequester.html"><abbr title="LaunchDarkly/FeatureRequester.php">FeatureRequester.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">22</span>
+    <span class="phpdocumentor-element-found-in__line">23</span>
 
     </aside>
 
@@ -247,9 +250,9 @@ LaunchDarkly\Integrations namespace.</p>
         <a href="classes/LaunchDarkly-FeatureRequester.html#method_getSegment" class="headerlink"><i class="fas fa-link"></i></a>
     </h4>
     <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="src/LaunchDarkly/FeatureRequester.php"><a href="files/src-launchdarkly-featurerequester.html"><abbr title="src/LaunchDarkly/FeatureRequester.php">FeatureRequester.php</abbr></a></abbr>
+    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/FeatureRequester.php"><a href="files/launchdarkly-featurerequester.html"><abbr title="LaunchDarkly/FeatureRequester.php">FeatureRequester.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">30</span>
+    <span class="phpdocumentor-element-found-in__line">31</span>
 
     </aside>
 
