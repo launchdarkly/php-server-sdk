@@ -1,12 +1,13 @@
 <?php
+
 namespace LaunchDarkly;
 
-use LaunchDarkly\Impl\PreloadedFeatureRequester;
-use LaunchDarkly\Impl\UnrecoverableHTTPStatusException;
 use LaunchDarkly\Impl\Events\EventFactory;
 use LaunchDarkly\Impl\Events\EventProcessor;
 use LaunchDarkly\Impl\Events\NullEventProcessor;
 use LaunchDarkly\Impl\Model\FeatureFlag;
+use LaunchDarkly\Impl\PreloadedFeatureRequester;
+use LaunchDarkly\Impl\UnrecoverableHTTPStatusException;
 use LaunchDarkly\Integrations\Guzzle;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
@@ -39,8 +40,8 @@ class LDClient
     protected $_offline = false;
     /** @var bool */
     protected $_send_events = true;
-    /** @var array|mixed */
-    protected $_defaults = array();
+    /** @var array */
+    protected $_defaults = [];
     /** @var LoggerInterface */
     protected $_logger;
     /** @var FeatureRequester */
@@ -52,6 +53,8 @@ class LDClient
 
     /**
      * Creates a new client instance that connects to LaunchDarkly.
+     *
+     * @psalm-param array{capacity?: int, defaults?: array<string, mixed|null>} $options
      *
      * @param string $sdkKey The SDK key for your account
      * @param array $options Client configuration settings
@@ -82,7 +85,7 @@ class LDClient
      *
      * @return LDClient
      */
-    public function __construct(string $sdkKey, array $options = array())
+    public function __construct(string $sdkKey, array $options = [])
     {
         $this->_sdkKey = $sdkKey;
         if (!isset($options['base_uri'])) {
@@ -146,7 +149,7 @@ class LDClient
      * @param string $sdkKey
      * @param mixed[] $options
      * @return FeatureRequester
-     * 
+     *
      * @psalm-suppress UndefinedClass
      */
     private function getFeatureRequester(string $sdkKey, array $options): FeatureRequester
@@ -219,7 +222,7 @@ class LDClient
     {
         $default = $this->_get_default($key, $default);
 
-        $errorResult = function (string $errorKind) use ($key, $default): EvaluationDetail {
+        $errorResult = function (string $errorKind) use ($default): EvaluationDetail {
             return new EvaluationDetail($default, null, EvaluationReason::error($errorKind));
         };
         $sendEvent = function (EvaluationDetail $detail, ?FeatureFlag $flag) use ($key, $user, $default, $eventFactory): void {
@@ -338,9 +341,14 @@ class LDClient
      * - `clientSideOnly`: Set this to true to specify that only flags marked for client-side use
      * should be included; by default, all flags are included
      * - `withReasons`: Set this to true to include evaluation reasons (see {@see \LaunchDarkly\LDClient::variationDetail()})
+     * - `detailsOnlyForTrackedFlags`: Set to true to omit any metadata that is
+     * normally only used for event generation, such as flag versions and
+     * evaluation reasons, unless the flag has event tracking or debugging
+     * turned on
+     *
      * @return FeatureFlagsState a FeatureFlagsState object (will never be null)
      */
-    public function allFlagsState(LDUser $user, array $options = array()): FeatureFlagsState
+    public function allFlagsState(LDUser $user, array $options = []): FeatureFlagsState
     {
         if (is_null($user->getKey())) {
             $this->_logger->warning("allFlagsState called with null/empty user key! Returning empty state");
@@ -367,7 +375,7 @@ class LDClient
         $clientOnly = isset($options['clientSideOnly']) && $options['clientSideOnly'];
         $withReasons = isset($options['withReasons']) && $options['withReasons'];
         $detailsOnlyIfTracked = isset($options['detailsOnlyForTrackedFlags']) && $options['detailsOnlyForTrackedFlags'];
-        foreach ($flags as $key => $flag) {
+        foreach ($flags as $flag) {
             if ($clientOnly && !$flag->isClientSide()) {
                 continue;
             }

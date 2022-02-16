@@ -1,4 +1,5 @@
 <?php
+
 namespace LaunchDarkly\Tests\Impl\Model;
 
 use LaunchDarkly\Impl\Model\WeightedVariation;
@@ -12,11 +13,11 @@ class WeightedVariationTest extends TestCase
         $weight = 35700;
         $untracked = false;
         
-        $variation = array(
+        $variation = [
             'variation' => $variationId,
             'weight' => $weight,
             'untracked' => $untracked
-        );
+        ];
         $decodedVariation = call_user_func(WeightedVariation::getDecoder(), $variation);
         
         $this->assertEquals($decodedVariation->getVariation(), $variationId);
@@ -29,10 +30,10 @@ class WeightedVariationTest extends TestCase
         $variationId = 2;
         $weight = 35700;
         
-        $variation = array(
+        $variation = [
             'variation' => $variationId,
             'weight' => $weight
-        );
+        ];
         $decodedVariation = call_user_func(WeightedVariation::getDecoder(), $variation);
         
         $this->assertEquals($decodedVariation->getVariation(), $variationId);

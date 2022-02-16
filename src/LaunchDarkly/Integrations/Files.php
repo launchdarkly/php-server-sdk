@@ -27,7 +27,7 @@ class Files
      * LaunchDarkly to send analytics events either.)
      *
      * For more information about using this component, and the format of data files, see
-     * the SDK reference guide on ["Reading flags from a file"](https://docs.launchdarkly.com/docs/reading-flags-from-a-file).
+     * the SDK reference guide on ["Reading flags from a file"](https://docs.launchdarkly.com/sdk/features/flags-from-files#php).
      *
      * @param array $filePaths relative or absolute paths to the data files
      * @return mixed  an object to be stored in the `feature_requester` configuration property

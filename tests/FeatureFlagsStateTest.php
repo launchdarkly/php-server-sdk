@@ -1,44 +1,43 @@
 <?php
+
 namespace LaunchDarkly\Tests;
 
-use InvalidArgumentException;
 use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
 use LaunchDarkly\FeatureFlagsState;
 use LaunchDarkly\Impl\Model\FeatureFlag;
-use PHPUnit\Framework\TestCase;
 
 class FeatureFlagsStateTest extends \PHPUnit\Framework\TestCase
 {
-    private static $flag1Json = array(
+    private static $flag1Json = [
         'key' => 'key1',
         'version' => 100,
         'deleted' => false,
         'on' => false,
-        'targets' => array(),
-        'prerequisites' => array(),
-        'rules' => array(),
+        'targets' => [],
+        'prerequisites' => [],
+        'rules' => [],
         'offVariation' => 0,
-        'fallthrough' => array('variation' => 0),
-        'variations' => array('value1'),
+        'fallthrough' => ['variation' => 0],
+        'variations' => ['value1'],
         'salt' => '',
         'trackEvents' => false
-    );
-    private static $flag2Json = array(
+    ];
+    private static $flag2Json = [
         'key' => 'key2',
         'version' => 200,
         'deleted' => false,
         'on' => false,
-        'targets' => array(),
-        'prerequisites' => array(),
-        'rules' => array(),
+        'targets' => [],
+        'prerequisites' => [],
+        'rules' => [],
         'offVariation' => 0,
-        'fallthrough' => array('variation' => 0),
-        'variations' => array('value2'),
+        'fallthrough' => ['variation' => 0],
+        'variations' => ['value2'],
         'salt' => '',
         'trackEvents' => true,
         'debugEventsUntilDate' => 1000
-    );
+    ];
     
     private static function irrelevantReason(): EvaluationReason
     {
@@ -94,7 +93,7 @@ class FeatureFlagsStateTest extends \PHPUnit\Framework\TestCase
         $state->addFlag($flag1, new EvaluationDetail('value1', 0, self::irrelevantReason()));
         $state->addFlag($flag2, new EvaluationDetail('value2', 0, self::irrelevantReason()));
 
-        $expected = array('key1' => 'value1', 'key2' => 'value2');
+        $expected = ['key1' => 'value1', 'key2' => 'value2'];
         $this->assertEquals($expected, $state->toValuesMap());
     }
 
@@ -106,23 +105,23 @@ class FeatureFlagsStateTest extends \PHPUnit\Framework\TestCase
         $state->addFlag($flag1, new EvaluationDetail('value1', 0, self::irrelevantReason()));
         $state->addFlag($flag2, new EvaluationDetail('value2', 1, self::irrelevantReason()));
 
-        $expected = array(
+        $expected = [
             'key1' => 'value1',
             'key2' => 'value2',
-            '$flagsState' => array(
-                'key1' => array(
+            '$flagsState' => [
+                'key1' => [
                     'variation' => 0,
                     'version' => 100
-                ),
-                'key2' => array(
+                ],
+                'key2' => [
                     'variation' => 1,
                     'version' => 200,
                     'trackEvents' => true,
                     'debugEventsUntilDate' => 1000
-                )
-            ),
+                ]
+            ],
             '$valid' => true
-        );
+        ];
         $this->assertEquals($expected, $state->jsonSerialize());
     }
 

@@ -1,6 +1,11 @@
 <?php
+
 namespace LaunchDarkly\Impl\Integrations;
 
+/**
+ * @ignore
+ * @internal
+ */
 interface FeatureRequesterCache
 {
     /**

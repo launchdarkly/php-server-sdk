@@ -1,4 +1,5 @@
 <?php
+
 namespace LaunchDarkly\Tests;
 
 use LaunchDarkly\FeatureRequester;
@@ -7,9 +8,9 @@ use LaunchDarkly\Impl\Model\Segment;
 
 class MockFeatureRequester implements FeatureRequester
 {
-    public static $flags = array();
+    public static $flags = [];
 
-    public function __construct($baseurl = '', $key = '', $options = array())
+    public function __construct($baseurl = '', $key = '', $options = [])
     {
     }
 

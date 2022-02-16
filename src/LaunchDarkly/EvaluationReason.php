@@ -166,8 +166,8 @@ class EvaluationReason implements \JsonSerializable
         ?int $ruleIndex = null,
         ?string $ruleId = null,
         ?string $prerequisiteKey = null,
-        bool $inExperiment = false)
-    {
+        bool $inExperiment = false
+    ) {
         $this->_kind = $kind;
         $this->_errorKind = $errorKind;
         $this->_ruleIndex = $ruleIndex;
@@ -258,7 +258,7 @@ class EvaluationReason implements \JsonSerializable
      */
     public function jsonSerialize(): array
     {
-        $ret = array('kind' => $this->_kind);
+        $ret = ['kind' => $this->_kind];
         if ($this->_errorKind !== null) {
             $ret['errorKind'] = $this->_errorKind;
         }

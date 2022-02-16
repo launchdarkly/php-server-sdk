@@ -1,9 +1,13 @@
 <?php
+
 namespace LaunchDarkly\Impl\Integrations;
 
 /**
  * Caching implementation based on the APCu extension. This is used by default by all database feature
  * requester implementations if the 'apc_expiration' property is set.
+ *
+ * @ignore
+ * @internal
  */
 class ApcuFeatureRequesterCache implements FeatureRequesterCache
 {

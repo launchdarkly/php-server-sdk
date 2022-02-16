@@ -22,11 +22,14 @@ class Guzzle
      *   - `timeout`: read timeout in seconds; defaults to 3
      * @return mixed  an object to be stored in the `feature_requester` configuration property
      */
-    public static function featureRequester($options = array())
+    public static function featureRequester($options = [])
     {
         return function (string $baseUri, string $sdkKey, array $baseOptions) use ($options) {
-            return new \LaunchDarkly\Impl\Integrations\GuzzleFeatureRequester($baseUri, $sdkKey,
-                array_merge($baseOptions, $options));
+            return new \LaunchDarkly\Impl\Integrations\GuzzleFeatureRequester(
+                $baseUri,
+                $sdkKey,
+                array_merge($baseOptions, $options)
+            );
         };
     }
 
@@ -52,11 +55,13 @@ class Guzzle
      *   - `timeout`: read timeout in seconds; defaults to 3
      * @return mixed  an object to be stored in the `event_publisher` configuration property
      */
-    public static function eventPublisher($options = array())
+    public static function eventPublisher($options = [])
     {
         return function (string $sdkKey, array $baseOptions) use ($options) {
-            return new \LaunchDarkly\Impl\Integrations\GuzzleEventPublisher($sdkKey,
-                array_merge($baseOptions, $options));
+            return new \LaunchDarkly\Impl\Integrations\GuzzleEventPublisher(
+                $sdkKey,
+                array_merge($baseOptions, $options)
+            );
         };
     }
 }

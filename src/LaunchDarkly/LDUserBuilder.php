@@ -1,4 +1,5 @@
 <?php
+
 namespace LaunchDarkly;
 
 /**
@@ -75,7 +76,7 @@ class LDUserBuilder
      */
     public function privateSecondary(?string $secondary): LDUserBuilder
     {
-        array_push($this->_privateAttributeNames, 'secondary');
+        $this->_privateAttributeNames[] = 'secondary';
         return $this->secondary($secondary);
     }
 
@@ -97,7 +98,7 @@ class LDUserBuilder
      */
     public function privateIp(?string $ip): LDUserBuilder
     {
-        array_push($this->_privateAttributeNames, 'ip');
+        $this->_privateAttributeNames[] = 'ip';
         return $this->ip($ip);
     }
 
@@ -123,7 +124,7 @@ class LDUserBuilder
      */
     public function privateCountry(?string $country): LDUserBuilder
     {
-        array_push($this->_privateAttributeNames, 'country');
+        $this->_privateAttributeNames[] = 'country';
         return $this->country($country);
     }
 
@@ -145,7 +146,7 @@ class LDUserBuilder
      */
     public function privateEmail(?string $email): LDUserBuilder
     {
-        array_push($this->_privateAttributeNames, 'email');
+        $this->_privateAttributeNames[] = 'email';
         return $this->email($email);
     }
 
@@ -167,7 +168,7 @@ class LDUserBuilder
      */
     public function privateName(?string $name): LDUserBuilder
     {
-        array_push($this->_privateAttributeNames, 'name');
+        $this->_privateAttributeNames[] = 'name';
         return $this->name($name);
     }
 
@@ -189,7 +190,7 @@ class LDUserBuilder
      */
     public function privateAvatar(?string $avatar): LDUserBuilder
     {
-        array_push($this->_privateAttributeNames, 'avatar');
+        $this->_privateAttributeNames[] = 'avatar';
         return $this->avatar($avatar);
     }
 
@@ -211,7 +212,7 @@ class LDUserBuilder
      */
     public function privateFirstName(?string $firstName): LDUserBuilder
     {
-        array_push($this->_privateAttributeNames, 'firstName');
+        $this->_privateAttributeNames[] = 'firstName';
         return $this->firstName($firstName);
     }
 
@@ -233,7 +234,7 @@ class LDUserBuilder
      */
     public function privateLastName(?string $lastName): LDUserBuilder
     {
-        array_push($this->_privateAttributeNames, 'lastName');
+        $this->_privateAttributeNames[] = 'lastName';
         return $this->lastName($lastName);
     }
 
@@ -284,7 +285,7 @@ class LDUserBuilder
      */
     public function privateCustomAttribute(string $customKey, $customValue): LDUserBuilder
     {
-        array_push($this->_privateAttributeNames, $customKey);
+        $this->_privateAttributeNames[] = $customKey;
         return $this->customAttribute($customKey, $customValue);
     }
 
@@ -295,12 +296,18 @@ class LDUserBuilder
     public function build(): LDUser
     {
         return new LDUser(
-            $this->_key, $this->_secondary, 
-            $this->_ip, $this->_country, 
-            $this->_email, $this->_name, 
-            $this->_avatar, $this->_firstName, 
-            $this->_lastName, $this->_anonymous, 
-            $this->_custom, $this->_privateAttributeNames
+            $this->_key,
+            $this->_secondary,
+            $this->_ip,
+            $this->_country,
+            $this->_email,
+            $this->_name,
+            $this->_avatar,
+            $this->_firstName,
+            $this->_lastName,
+            $this->_anonymous,
+            $this->_custom,
+            $this->_privateAttributeNames
         );
     }
 }

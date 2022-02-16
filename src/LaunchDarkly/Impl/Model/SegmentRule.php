@@ -1,4 +1,5 @@
 <?php
+
 namespace LaunchDarkly\Impl\Model;
 
 use LaunchDarkly\LDUser;
@@ -14,7 +15,7 @@ use LaunchDarkly\LDUser;
 class SegmentRule
 {
     /** @var Clause[] */
-    private $_clauses = array();
+    private $_clauses = [];
     /** @var int|null */
     private $_weight = null;
     /** @var string|null */

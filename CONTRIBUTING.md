@@ -1,6 +1,6 @@
 # Contributing to the LaunchDarkly Server-Side SDK for PHP
 
-LaunchDarkly has published an [SDK contributor's guide](https://docs.launchdarkly.com/docs/sdk-contributors-guide) that provides a detailed explanation of how our SDKs work. See below for additional information on how to contribute to this SDK.
+LaunchDarkly has published an [SDK contributor's guide](https://docs.launchdarkly.com/sdk/concepts/contributors-guide) that provides a detailed explanation of how our SDKs work. See below for additional information on how to contribute to this SDK.
 
 ## Submitting bug reports and feature requests
  
@@ -33,3 +33,9 @@ To run all unit tests:
 ```
 
 It is preferable to run tests against all supported minor versions of PHP (as described in `README.md` under Requirements), or at least the lowest and highest versions, prior to submitting a pull request. However, LaunchDarkly's CI tests will run automatically against all supported versions.
+
+By default, this test suite does not include any integration test that relies on external dependencies. To include them, set the environment variable `LD_INCLUDE_INTEGRATION_TESTS=1` before running the tests. Note that you will also need an instance of [WireMock](http://wiremock.org/) for the tests to connect to. This can be run via docker as follows:
+
+```
+docker run --rm -p 8080:8080 wiremock/wiremock
+```

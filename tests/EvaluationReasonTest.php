@@ -1,8 +1,8 @@
 <?php
+
 namespace LaunchDarkly\Tests;
 
 use LaunchDarkly\EvaluationReason;
-use PHPUnit\Framework\TestCase;
 
 class EvaluationReasonTest extends \PHPUnit\Framework\TestCase
 {
@@ -10,7 +10,7 @@ class EvaluationReasonTest extends \PHPUnit\Framework\TestCase
     {
         $reason = EvaluationReason::off();
         $json = json_encode($reason);
-        $this->assertEquals(array('kind' => 'OFF'), json_decode($json, true));
+        $this->assertEquals(['kind' => 'OFF'], json_decode($json, true));
         $this->assertEquals('OFF', (string)$reason);
     }
 
@@ -18,7 +18,7 @@ class EvaluationReasonTest extends \PHPUnit\Framework\TestCase
     {
         $reason = EvaluationReason::fallthrough();
         $json = json_encode($reason);
-        $this->assertEquals(array('kind' => 'FALLTHROUGH'), json_decode($json, true));
+        $this->assertEquals(['kind' => 'FALLTHROUGH'], json_decode($json, true));
         $this->assertEquals('FALLTHROUGH', (string)$reason);
     }
 
@@ -26,7 +26,7 @@ class EvaluationReasonTest extends \PHPUnit\Framework\TestCase
     {
         $reason = EvaluationReason::fallthrough(false);
         $json = json_encode($reason);
-        $this->assertEquals(array('kind' => 'FALLTHROUGH'), json_decode($json, true));
+        $this->assertEquals(['kind' => 'FALLTHROUGH'], json_decode($json, true));
         $this->assertEquals('FALLTHROUGH', (string)$reason);
     }
 
@@ -34,7 +34,7 @@ class EvaluationReasonTest extends \PHPUnit\Framework\TestCase
     {
         $reason = EvaluationReason::fallthrough(true);
         $json = json_encode($reason);
-        $this->assertEquals(array('kind' => 'FALLTHROUGH', 'inExperiment' => true), json_decode($json, true));
+        $this->assertEquals(['kind' => 'FALLTHROUGH', 'inExperiment' => true], json_decode($json, true));
         $this->assertEquals('FALLTHROUGH', (string)$reason);
     }
 
@@ -42,7 +42,7 @@ class EvaluationReasonTest extends \PHPUnit\Framework\TestCase
     {
         $reason = EvaluationReason::targetMatch();
         $json = json_encode($reason);
-        $this->assertEquals(array('kind' => 'TARGET_MATCH'), json_decode($json, true));
+        $this->assertEquals(['kind' => 'TARGET_MATCH'], json_decode($json, true));
         $this->assertEquals('TARGET_MATCH', (string)$reason);
     }
 
@@ -51,7 +51,7 @@ class EvaluationReasonTest extends \PHPUnit\Framework\TestCase
         $reason = EvaluationReason::ruleMatch(0, 'id');
         $json = json_encode($reason);
         $this->assertEquals(
-            array('kind' => 'RULE_MATCH', 'ruleIndex' => 0, 'ruleId' => 'id'),
+            ['kind' => 'RULE_MATCH', 'ruleIndex' => 0, 'ruleId' => 'id'],
             json_decode($json, true)
         );
         $this->assertEquals('RULE_MATCH(0,id)', (string)$reason);
@@ -62,7 +62,7 @@ class EvaluationReasonTest extends \PHPUnit\Framework\TestCase
         $reason = EvaluationReason::ruleMatch(0, 'id', false);
         $json = json_encode($reason);
         $this->assertEquals(
-            array('kind' => 'RULE_MATCH', 'ruleIndex' => 0, 'ruleId' => 'id'),
+            ['kind' => 'RULE_MATCH', 'ruleIndex' => 0, 'ruleId' => 'id'],
             json_decode($json, true)
         );
         $this->assertEquals('RULE_MATCH(0,id)', (string)$reason);
@@ -73,7 +73,7 @@ class EvaluationReasonTest extends \PHPUnit\Framework\TestCase
         $reason = EvaluationReason::ruleMatch(0, 'id', true);
         $json = json_encode($reason);
         $this->assertEquals(
-            array('kind' => 'RULE_MATCH', 'ruleIndex' => 0, 'ruleId' => 'id', 'inExperiment' => true),
+            ['kind' => 'RULE_MATCH', 'ruleIndex' => 0, 'ruleId' => 'id', 'inExperiment' => true],
             json_decode($json, true)
         );
         $this->assertEquals('RULE_MATCH(0,id)', (string)$reason);
@@ -84,7 +84,7 @@ class EvaluationReasonTest extends \PHPUnit\Framework\TestCase
         $reason = EvaluationReason::prerequisiteFailed('key');
         $json = json_encode($reason);
         $this->assertEquals(
-            array('kind' => 'PREREQUISITE_FAILED', 'prerequisiteKey' => 'key'),
+            ['kind' => 'PREREQUISITE_FAILED', 'prerequisiteKey' => 'key'],
             json_decode($json, true)
         );
         $this->assertEquals('PREREQUISITE_FAILED(key)', (string)$reason);
@@ -94,7 +94,7 @@ class EvaluationReasonTest extends \PHPUnit\Framework\TestCase
     {
         $reason = EvaluationReason::error(EvaluationReason::EXCEPTION_ERROR);
         $json = json_encode($reason);
-        $this->assertEquals(array('kind' => 'ERROR', 'errorKind' => 'EXCEPTION'), json_decode($json, true));
+        $this->assertEquals(['kind' => 'ERROR', 'errorKind' => 'EXCEPTION'], json_decode($json, true));
         $this->assertEquals('ERROR(EXCEPTION)', (string)$reason);
     }
 }

@@ -1,25 +1,26 @@
 <?php
+
 namespace LaunchDarkly\Tests\Impl\Model;
 
-use LaunchDarkly\LDUserBuilder;
 use LaunchDarkly\Impl\Model\Segment;
+use LaunchDarkly\LDUserBuilder;
 use PHPUnit\Framework\TestCase;
 
 $defaultUser = (new LDUserBuilder('foo'))->build();
 
-function makeSegmentMatchingUser($user, $ruleAttrs = array())
+function makeSegmentMatchingUser($user, $ruleAttrs = [])
 {
-    $clause = array('attribute' => 'key', 'op' => 'in', 'values' => array($user->getKey()), 'negate' => false);
-    $rule = array_merge(array('clauses' => array($clause)), $ruleAttrs);
-    $json = array(
+    $clause = ['attribute' => 'key', 'op' => 'in', 'values' => [$user->getKey()], 'negate' => false];
+    $rule = array_merge(['clauses' => [$clause]], $ruleAttrs);
+    $json = [
         'key' => 'test',
-        'included' => array(),
-        'excluded' => array(),
+        'included' => [],
+        'excluded' => [],
         'salt' => 'salt',
-        'rules' => array($rule),
+        'rules' => [$rule],
         'version' => 1,
         'deleted' => false
-    );
+    ];
     return Segment::decode($json);
 }
 
@@ -28,15 +29,15 @@ class SegmentTest extends TestCase
     public function testExplicitIncludeUser()
     {
         global $defaultUser;
-        $json = array(
+        $json = [
             'key' => 'test',
-            'included' => array($defaultUser->getKey()),
-            'excluded' => array(),
-            'rules' => array(),
+            'included' => [$defaultUser->getKey()],
+            'excluded' => [],
+            'rules' => [],
             'salt' => 'salt',
             'version' => 1,
             'deleted' => false
-        );
+        ];
         $segment = Segment::decode($json);
         $this->assertTrue($segment->matchesUser($defaultUser));
     }
@@ -44,15 +45,15 @@ class SegmentTest extends TestCase
     public function testExplicitExcludeUser()
     {
         global $defaultUser;
-        $json = array(
+        $json = [
             'key' => 'test',
-            'included' => array(),
-            'excluded' => array($defaultUser->getKey()),
-            'rules' => array(),
+            'included' => [],
+            'excluded' => [$defaultUser->getKey()],
+            'rules' => [],
             'salt' => 'salt',
             'version' => 1,
             'deleted' => false
-        );
+        ];
         $segment = Segment::decode($json);
         $this->assertFalse($segment->matchesUser($defaultUser));
     }
@@ -60,15 +61,15 @@ class SegmentTest extends TestCase
     public function testExplicitIncludePasPrecedence()
     {
         global $defaultUser;
-        $json = array(
+        $json = [
             'key' => 'test',
-            'included' => array($defaultUser->getKey()),
-            'excluded' => array($defaultUser->getKey()),
-            'rules' => array(),
+            'included' => [$defaultUser->getKey()],
+            'excluded' => [$defaultUser->getKey()],
+            'rules' => [],
             'salt' => 'salt',
             'version' => 1,
             'deleted' => false
-        );
+        ];
         $segment = Segment::decode($json);
         $ub = new LDUserBuilder('foo');
         $this->assertTrue($segment->matchesUser($ub->build()));
@@ -77,14 +78,14 @@ class SegmentTest extends TestCase
     public function testMatchingRuleWithFullRollout()
     {
         global $defaultUser;
-        $segment = makeSegmentMatchingUser($defaultUser, array('weight' => 100000));
+        $segment = makeSegmentMatchingUser($defaultUser, ['weight' => 100000]);
         $this->assertTrue($segment->matchesUser($defaultUser));
     }
 
     public function testMatchingRuleWithZeroRollout()
     {
         global $defaultUser;
-        $segment = makeSegmentMatchingUser($defaultUser, array('weight' => 0));
+        $segment = makeSegmentMatchingUser($defaultUser, ['weight' => 0]);
         $this->assertFalse($segment->matchesUser($defaultUser));
     }
 
@@ -109,46 +110,46 @@ class SegmentTest extends TestCase
     public function testRolloutCalculationCanBucketBySpecificAttribute()
     {
         $user = (new LDUserBuilder('userkey'))->name('Bob')->build();
-        $this->verifyRollout($user, 61691, array('bucketBy' => 'name'));
+        $this->verifyRollout($user, 61691, ['bucketBy' => 'name']);
     }
 
-    private function verifyRollout($user, $expectedBucketValue, $rolloutAttrs = array())
+    private function verifyRollout($user, $expectedBucketValue, $rolloutAttrs = [])
     {
-        $segment0 = makeSegmentMatchingUser($user, array_merge(array('weight' => $expectedBucketValue + 1), $rolloutAttrs));
+        $segment0 = makeSegmentMatchingUser($user, array_merge(['weight' => $expectedBucketValue + 1], $rolloutAttrs));
         $this->assertTrue($segment0->matchesUser($user));
-        $segment1 = makeSegmentMatchingUser($user, array_merge(array('weight' => $expectedBucketValue), $rolloutAttrs));
+        $segment1 = makeSegmentMatchingUser($user, array_merge(['weight' => $expectedBucketValue], $rolloutAttrs));
         $this->assertFalse($segment1->matchesUser($user));
     }
 
     public function testMatchingRuleWithMultipleClauses()
     {
-        $json = array(
+        $json = [
             'key' => 'test',
-            'included' => array(),
-            'excluded' => array(),
+            'included' => [],
+            'excluded' => [],
             'salt' => 'salt',
-            'rules' => array(
-                array(
-                    'clauses' => array(
-                        array(
+            'rules' => [
+                [
+                    'clauses' => [
+                        [
                             'attribute' => 'email',
                             'op' => 'in',
-                            'values' => array('test@example.com'),
+                            'values' => ['test@example.com'],
                             'negate' => false
-                        ),
-                        array(
+                        ],
+                        [
                             'attribute' => 'name',
                             'op' => 'in',
-                            'values' => array('bob'),
+                            'values' => ['bob'],
                             'negate' => false
-                        )
-                    ),
+                        ]
+                    ],
                     'weight' => 100000
-                )
-            ),
+                ]
+            ],
             'version' => 1,
             'deleted' => false
-        );
+        ];
         $segment = Segment::decode($json);
         $ub = new LDUserBuilder('foo');
         $ub->email('test@example.com');
@@ -158,33 +159,33 @@ class SegmentTest extends TestCase
 
     public function testNonMatchingRuleWithMultipleClauses()
     {
-        $json = array(
+        $json = [
             'key' => 'test',
-            'included' => array(),
-            'excluded' => array(),
+            'included' => [],
+            'excluded' => [],
             'salt' => 'salt',
-            'rules' => array(
-                array(
-                    'clauses' => array(
-                        array(
+            'rules' => [
+                [
+                    'clauses' => [
+                        [
                             'attribute' => 'email',
                             'op' => 'in',
-                            'values' => array('test@example.com'),
+                            'values' => ['test@example.com'],
                             'negate' => false
-                        ),
-                        array(
+                        ],
+                        [
                             'attribute' => 'name',
                             'op' => 'in',
-                            'values' => array('bill'),
+                            'values' => ['bill'],
                             'negate' => false
-                        )
-                    ),
+                        ]
+                    ],
                     'weight' => 100000
-                )
-            ),
+                ]
+            ],
             'version' => 1,
             'deleted' => false
-        );
+        ];
         $segment = Segment::decode($json);
         $ub = new LDUserBuilder('foo');
         $ub->email('test@example.com');

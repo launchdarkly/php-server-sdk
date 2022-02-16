@@ -22,9 +22,9 @@
         "friendsofphp/php-cs-fixer": ">=2.2.19 <3.0",
         "guzzlehttp/guzzle": "^7",
         "kevinrob/guzzle-cache-middleware": "^3",
-        "phpunit/phpunit": "^9",
         "phpunit/php-code-coverage": "^9",
-        "vimeo/psalm": "^4.7"
+        "phpunit/phpunit": "^9",
+        "vimeo/psalm": "^4.0"
     },
     "suggest": {
         "guzzlehttp/guzzle": "(^7) Required when using GuzzleEventPublisher or the default FeatureRequester",
@@ -44,6 +44,7 @@
         "sort-packages": true
     },
     "scripts": {
-        "cs": "vendor/bin/php-cs-fixer fix --diff --verbose"
+        "cs-check": "vendor/bin/php-cs-fixer fix --diff --dry-run --verbose",
+        "cs-fix": "vendor/bin/php-cs-fixer fix --diff --verbose"
     }
 }

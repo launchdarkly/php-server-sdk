@@ -20,7 +20,7 @@ class Clause
     /** @var string|null */
     private $_op = null;
     /** @var array  */
-    private $_values = array();
+    private $_values = [];
     /** @var bool  */
     private $_negate = false;
 

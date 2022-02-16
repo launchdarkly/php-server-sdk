@@ -27,11 +27,13 @@ class Curl
      *   - `curl`: command for executing `curl`; defaults to `/usr/bin/env curl`
      * @return mixed  an object to be stored in the `event_publisher` configuration property
      */
-    public static function eventPublisher($options = array())
+    public static function eventPublisher($options = [])
     {
         return function (string $sdkKey, array $baseOptions) use ($options) {
-            return new \LaunchDarkly\Impl\Integrations\CurlEventPublisher($sdkKey,
-                array_merge($baseOptions, $options));
+            return new \LaunchDarkly\Impl\Integrations\CurlEventPublisher(
+                $sdkKey,
+                array_merge($baseOptions, $options)
+            );
         };
     }
 }
