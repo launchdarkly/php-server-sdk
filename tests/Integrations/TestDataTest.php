@@ -165,7 +165,7 @@ class TestDataTest extends TestCase
         $this->assertEquals(['variation' => 2], $stringVariationFlag['fallthrough']);
     }
 
-    public function testUserTargets()
+    public function testUserTargetsCanSetSameVariationForDistinctUsers()
     {
         $td = new TestData();
         $flagBool1 = $td->flag('test-flag-1')
@@ -180,6 +180,11 @@ class TestDataTest extends TestCase
             ['variation' => 0, 'values' => ["a", "b"]],
         ];
         $this->assertEquals($expectedTargets, $flagBool1['targets']);
+    }
+
+    public function testUserTargetsWillNotDuplicateSameUser()
+    {
+        $td = new TestData();
 
         $flagBool2 = $td->flag('test-flag-2')
                         ->variationForUser("a", true)
@@ -193,6 +198,11 @@ class TestDataTest extends TestCase
             ['variation' => 0, 'values' => ["a"]],
         ];
         $this->assertEquals($expectedTargets, $flagBool2['targets']);
+    }
+
+    public function testUserTargetsCanSetDistinctVariationsForDistinctUsers()
+    {
+        $td = new TestData();
 
         $flagBool3 = $td->flag('test-flag-3')
                         ->variationForUser("a", false)
@@ -208,7 +218,11 @@ class TestDataTest extends TestCase
             ['variation' => 1, 'values' => ["a", "c"]],
         ];
         $this->assertEquals($expectedTargets, $flagBool3['targets']);
+    }
 
+    public function testUserTargetsCanModifyVariationForSpecificUser()
+    {
+        $td = new TestData();
         $flagBool4 = $td->flag('test-flag-3')
                         ->variationForUser("a", true)
                         ->variationForUser("b", true)
@@ -223,7 +237,11 @@ class TestDataTest extends TestCase
             ['variation' => 1, 'values' => ["a"]],
         ];
         $this->assertEquals($expectedTargets, $flagBool4['targets']);
+    }
 
+    public function testUserTargetsCanSetVariationsWithFallbackValues()
+    {
+        $td = new TestData();
         $flagString1 = $td->flag('test-flag-4')
                         ->variations('red', 'green', 'blue')
                         ->offVariation(0)
@@ -239,6 +257,11 @@ class TestDataTest extends TestCase
             ['variation' => 2, 'values' => ["a", "b"]],
         ];
         $this->assertEquals($expectedTargets, $flagString1['targets']);
+    }
+
+    public function testUserTargetsCanSetVariationsWithFallbackValuesWithDistinctUserVariations()
+    {
+        $td = new TestData();
 
         $flagString2 = $td->flag('test-flag-5')
                         ->variations('red', 'green', 'blue')
@@ -255,6 +278,23 @@ class TestDataTest extends TestCase
         $expectedTargets = [
             ['variation' => 1, 'values' => ["b"]],
             ['variation' => 2, 'values' => ["a", "c"]],
+        ];
+        $this->assertEquals($expectedTargets, $flagString2['targets']);
+    }
+
+    public function testUserTargetsWillIgnoreSettingNonexistentUserVariation()
+    {
+        $td = new TestData();
+
+        $flagString2 = $td->flag('test-flag-5')
+                        ->variations('red', 'green', 'blue')
+                        ->variationForUser("a", 1)
+                        ->variationForUser("b", 4)
+                        ->build(0);
+        $this->assertEquals(['red', 'green', 'blue'], $flagString2['variations']);
+        $this->assertEquals(true, $flagString2['on']);
+        $expectedTargets = [
+            ['variation' => 1, 'values' => ["a"]],
         ];
         $this->assertEquals($expectedTargets, $flagString2['targets']);
     }
@@ -338,7 +378,8 @@ class TestDataTest extends TestCase
     {
         $td = new TestData();
         $flag = $td->flag('test-flag')
-                    // TODO: Fill the flag with targets
+                   ->variationForUser('user-1', 0)
+                   ->variationForUser('user-2', 1)
                    ->clearUserTargets()
                    ->build(0);
         $this->assertEquals([], $flag['targets']);
