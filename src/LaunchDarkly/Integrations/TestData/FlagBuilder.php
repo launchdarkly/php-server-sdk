@@ -78,9 +78,9 @@ class FlagBuilder
      */
     private function _isBooleanFlag()
     {
-        return (count($this->_variations) == 2
-            && $this->_variations[TRUE_VARIATION_INDEX] == true
-            && $this->_variations[FALSE_VARIATION_INDEX] == false);
+        return (count($this->_variations) === 2
+            && $this->_variations[TRUE_VARIATION_INDEX] === true
+            && $this->_variations[FALSE_VARIATION_INDEX] === false);
     }
 
     /**
