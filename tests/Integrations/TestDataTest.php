@@ -181,7 +181,6 @@ class TestDataTest extends TestCase
         ];
         $this->assertEquals($expectedTargets, $flagBool1['targets']);
 
-
         $flagBool2 = $td->flag('test-flag-2')
                         ->variationForUser("a", true)
                         ->variationForUser("a", true)
@@ -210,7 +209,6 @@ class TestDataTest extends TestCase
         ];
         $this->assertEquals($expectedTargets, $flagBool3['targets']);
 
-
         $flagBool4 = $td->flag('test-flag-3')
                         ->variationForUser("a", true)
                         ->variationForUser("b", true)
@@ -225,7 +223,6 @@ class TestDataTest extends TestCase
             ['variation' => 1, 'values' => ["a"]],
         ];
         $this->assertEquals($expectedTargets, $flagBool4['targets']);
-
 
         $flagString1 = $td->flag('test-flag-4')
                         ->variations('red', 'green', 'blue')
@@ -242,7 +239,6 @@ class TestDataTest extends TestCase
             ['variation' => 2, 'values' => ["a", "b"]],
         ];
         $this->assertEquals($expectedTargets, $flagString1['targets']);
-
 
         $flagString2 = $td->flag('test-flag-5')
                         ->variations('red', 'green', 'blue')
@@ -262,7 +258,6 @@ class TestDataTest extends TestCase
         ];
         $this->assertEquals($expectedTargets, $flagString2['targets']);
     }
-
 
     public function testFlagbuilderCanSetValueForAllUsers()
     {

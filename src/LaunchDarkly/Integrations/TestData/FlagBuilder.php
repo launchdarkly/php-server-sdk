@@ -14,7 +14,6 @@ define('FALSE_VARIATION_INDEX', 1);
  */
 class FlagBuilder
 {
-
     /** @var string */
     protected $_key;
     /** @var boolean */

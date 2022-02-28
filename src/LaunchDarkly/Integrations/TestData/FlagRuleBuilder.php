@@ -18,14 +18,12 @@ namespace LaunchDarkly\Integrations\TestData;
  */
 class FlagRuleBuilder
 {
-
     /** @var FlagBuilder */
     protected $_flagBuilder;
     /** @var array */
     protected $_clauses;
     /** @var int|null */
     protected $_variation;
-
 
     public function __construct(FlagBuilder $flagBuilder)
     {

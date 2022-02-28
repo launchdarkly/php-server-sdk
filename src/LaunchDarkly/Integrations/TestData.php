@@ -9,7 +9,6 @@ use LaunchDarkly\Integrations\TestData\FlagBuilder;
 
 class TestData implements FeatureRequester
 {
-
     /** @var array */
     protected $_flagBuilders;
     /** @var array */
@@ -62,7 +61,6 @@ class TestData implements FeatureRequester
     {
         return new TestData();
     }
-
 
     /**
      * Creates or copies a `FlagBuilder` for building a test flag configuration.
