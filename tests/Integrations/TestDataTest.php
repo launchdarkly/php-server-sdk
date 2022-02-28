@@ -51,35 +51,35 @@ class TestDataTest extends TestCase
     {
         $td = new TestData();
         return [
-            [
+            'flag has fallthrough variation by default' => [
                 [
                     'on' => true,
                     'fallthrough' => ['variation' => 0]
                 ],
                 $td->flag('test-flag-1')->build(0)
             ],
-            [
+            'explicitly changing empty flag to boolean flag has no effect compared to default flag' => [
                 [
                     'on' => true,
                     'fallthrough' => ['variation' => 0]
                 ],
                 $td->flag('test-flag-2')->booleanFlag()->build(0)
             ],
-            [
+            'explicitly changing empty flag to be on has no effect compared to default flag' => [
                 [
                     'on' => true,
                     'fallthrough' => ['variation' => 0]
                 ],
                 $td->flag('test-flag-3')->on(true)->build(0)
             ],
-            [
+            'flag can be turned off' => [
                 [
                     'on' => false,
                     'fallthrough' => ['variation' => 0]
                 ],
                 $td->flag('test-flag-4')->on(false)->build(0)
             ],
-            [
+            'flag can set false boolean variation for all users' => [
                 [
                     'on' => true,
                     'offVariation' => 1,
@@ -88,7 +88,7 @@ class TestDataTest extends TestCase
                 ],
                 $td->flag('test-flag-5')->variationForAllUsers(false)->build(0)
             ],
-            [
+            'flag can set true boolean variation for all users' => [
                 [
                     'on' => true,
                     'offVariation' => 1,
@@ -96,24 +96,6 @@ class TestDataTest extends TestCase
                     'fallthrough' => ['variation' => 0],
                 ],
                 $td->flag('test-flag-6')->variationForAllUsers(true)->build(0)
-            ],
-            [
-                [
-                    'on' => true,
-                    'offVariation' => 1,
-                    'variations' => [true, false],
-                    'fallthrough' => ['variation' => 0],
-                ],
-                $td->flag('test-flag-7')->variationForAllUsers(true)->build(0)
-            ],
-            [
-                [
-                    'on' => true,
-                    'offVariation' => 1,
-                    'variations' => [true, false],
-                    'fallthrough' => ['variation' => 1],
-                ],
-                $td->flag('test-flag-7')->variationForAllUsers(false)->build(0)
             ],
         ];
     }
