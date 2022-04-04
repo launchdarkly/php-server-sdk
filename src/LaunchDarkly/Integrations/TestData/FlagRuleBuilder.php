@@ -51,7 +51,7 @@ class FlagRuleBuilder
     {
         $newClause = [
             "attribute" => $attribute,
-            "operator" => 'in',
+            "op" => 'in',
             "values" => $values,
             "negate" => false,
         ];
@@ -78,7 +78,7 @@ class FlagRuleBuilder
     {
         $newClause = [
             "attribute" => $attribute,
-            "operator" => 'in',
+            "op" => 'in',
             "values" => $values,
             "negate" => true,
         ];

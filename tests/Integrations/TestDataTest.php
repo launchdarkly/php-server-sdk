@@ -4,14 +4,13 @@ namespace LaunchDarkly\Tests\Integrations;
 
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Integrations\TestData;
+use LaunchDarkly\LDClient;
+use LaunchDarkly\LDUserBuilder;
+use LaunchDarkly\Tests;
 use PHPUnit\Framework\TestCase;
 
 class TestDataTest extends TestCase
 {
-    public function initializesWithEmptyData()
-    {
-    }
-
     public function testMakesFlag()
     {
         $td = new TestData();
@@ -446,13 +445,13 @@ class TestDataTest extends TestCase
                 "clauses" => [
                     [
                         "attribute" => "name",
-                        "operator" => 'in',
+                        "op" => 'in',
                         "values" => ["Patsy", "Edina"],
                         "negate" => false,
                     ],
                     [
                         "attribute" => "country",
-                        "operator" => 'in',
+                        "op" => 'in',
                         "values" => ["gb"],
                         "negate" => true,
                     ]
@@ -460,5 +459,34 @@ class TestDataTest extends TestCase
             ]
         ];
         $this->assertEquals($expectedRule, $builtFlag['rules']);
+    }
+
+    public function testUsingTestDataInClientEvaluations()
+    {
+        $td = new TestData();
+        $flagBuilder = $td->flag("flag")
+                          ->fallthroughVariation(false)
+                          ->ifMatch("firstName", "Patsy", "Edina")
+                          ->andNotMatch("lastName", "Cline", "Gallovits-Hall")
+                          ->thenReturn(true);
+
+        $td->update($flagBuilder);
+
+        $options = [
+            'feature_requester' => $td,
+            'event_processor' => new Tests\MockEventProcessor()
+        ];
+        $client = new LDClient("someKey", $options);
+
+        $userBuilder = new LDUserBuilder("someKey");
+
+        $userBuilder->firstName("Janet")->lastName("Cline");
+        $this->assertFalse($client->variation("flag", $userBuilder->build()));
+
+        $userBuilder->firstName("Patsy")->lastName("Cline");
+        $this->assertFalse($client->variation("flag", $userBuilder->build()));
+
+        $userBuilder->firstName("Patsy")->lastName("Smith");
+        $this->assertTrue($client->variation("flag", $userBuilder->build()));
     }
 }
