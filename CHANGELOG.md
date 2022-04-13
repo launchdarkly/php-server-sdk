@@ -2,6 +2,11 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [4.2.0] - 2022-04-13
+### Added:
+- Add support for psr/log v2 and v3.
+- The LaunchDarkly\Integrations\TestData is a new way to inject feature flag data programmatically into the SDK for testing—either with fixed values for each flag, or with targets and/or rules that can return different values for different users. Unlike LaunchDarkly\Integrations\Files, this mechanism does not use any external resources, only the data that your test code has provided.
+
 ## [4.1.0] - 2022-02-16
 ### Added:
 - The curl command used for publishing events will now honor the connect_timeout parameter.
