@@ -59,7 +59,7 @@ class LDClient
      * @param string $sdkKey The SDK key for your account
      * @param array $options Client configuration settings
      * - `base_uri`: Base URI of the LaunchDarkly service. Change this if you are connecting to a Relay Proxy instance instead of
-     * directly to LaunchDarkly.
+     * directly to LaunchDarkly. To learn more, read [The Relay Proxy](https://docs.launchdarkly.com/home/relay-proxy).
      * - `events_uri`: Base URI for sending events to LaunchDarkly. Change this if you are forwarding events through a Relay Proxy instance.
      * - `timeout`: The maximum length of an HTTP request in seconds. Defaults to 3.
      * - `connect_timeout`: The maximum number of seconds to wait while trying to connect to a server. Defaults to 3.
