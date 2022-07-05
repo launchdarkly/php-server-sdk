@@ -6,15 +6,11 @@ orbs:
 workflows:
   workflow:
     jobs:
-      - test-with-preinstalled-php:
-          name: PHP 7.3
-          docker-image: cimg/php:7.3
-      - test-with-preinstalled-php:
-          name: PHP 7.4
-          docker-image: cimg/php:7.4
-      - test-with-preinstalled-php:
-         name: PHP 8.0
-         docker-image: cimg/php:8.0
+      - test-on-linux:
+          matrix:
+              parameters:
+                  php-version: ["7.3", "7.4", "8.0"]
+                  composer-dependencies: ["lowest", "highest"]
       - test-on-windows
 
 jobs:
@@ -48,27 +44,38 @@ jobs:
           name: run tests
           command: .\vendor\bin\phpunit
 
-  test-with-preinstalled-php:
+  test-on-linux:
     parameters:
-      docker-image:
+      php-version:
+        type: string
+      composer-dependencies:
         type: string
 
     environment:
       LD_INCLUDE_INTEGRATION_TESTS: 1
 
     docker:
-      - image: <<parameters.docker-image>>
+      - image: cimg/php:<<parameters.php-version>>
       - image: wiremock/wiremock
 
     steps:
       - setup_remote_docker
       - checkout
+
       - run:
           name: validate composer.json
           command: composer validate
       - run:
           name: install dependencies
           command: composer install --no-progress
+      - when:
+          condition:
+            equal: [ <<parameters.composer-dependencies>>, "lowest" ]
+          steps:
+            - run:
+                name: downgrade to lowest versions
+                command: composer update --prefer-lowest --prefer-stable
+
       - run:
           name: psalm linting
           command: ./vendor/bin/psalm --no-cache
@@ -76,10 +83,11 @@ jobs:
           name: php-cs-fixer check
           command: composer cs-check
       - run:
-          name: run tests with highest compatible dependency versions
+          name: run tests
           command: php -d xdebug.mode=coverage vendor/bin/phpunit
           enviroment:
             XDEBUG_MODE: coverage
+
       - store_test_results:
           path: build/phpunit
       - store_artifacts:
