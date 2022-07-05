@@ -75,6 +75,7 @@ class GuzzleFeatureRequester implements FeatureRequester
             $body = $response->getBody();
             return FeatureFlag::decode(json_decode($body->getContents(), true));
         } catch (BadResponseException $e) {
+            /** @psalm-suppress PossiblyNullReference (resolved in guzzle 7) */
             $code = $e->getResponse()->getStatusCode();
             if ($code == 404) {
                 $this->_logger->warning("GuzzleFeatureRequester::get returned 404. Feature flag does not exist for key: " . $key);
@@ -98,6 +99,7 @@ class GuzzleFeatureRequester implements FeatureRequester
             $body = $response->getBody();
             return Segment::decode(json_decode($body->getContents(), true));
         } catch (BadResponseException $e) {
+            /** @psalm-suppress PossiblyNullReference (resolved in guzzle 7) */
             $code = $e->getResponse()->getStatusCode();
             if ($code == 404) {
                 $this->_logger->warning("GuzzleFeatureRequester::get returned 404. Segment does not exist for key: " . $key);
@@ -120,6 +122,7 @@ class GuzzleFeatureRequester implements FeatureRequester
             $body = $response->getBody();
             return array_map(FeatureFlag::getDecoder(), json_decode($body->getContents(), true));
         } catch (BadResponseException $e) {
+            /** @psalm-suppress PossiblyNullReference (resolved in guzzle 7) */
             $this->handleUnexpectedStatus($e->getResponse()->getStatusCode(), "GuzzleFeatureRequester::getAll");
             return null;
         }
