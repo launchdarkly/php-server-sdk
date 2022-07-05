@@ -2,6 +2,10 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [4.2.1] - 2022-07-05
+### Changed:
+- Expanded lower version restriction on [Guzzle](https://github.com/guzzle/guzzle).
+
 ## [4.2.0] - 2022-04-13
 ### Added:
 - Add support for psr/log v2 and v3.
