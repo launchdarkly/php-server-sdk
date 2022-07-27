@@ -430,6 +430,37 @@ class TestDataTest extends TestCase
         $this->assertEquals($expectedFeatureFlag, $featureFlag);
     }
 
+    public function testCanSetAndResetFeatureFlag()
+    {
+        $key = 'test-flag';
+        $expectedUpdatedFlagJson = [
+            'key' => $key,
+            'version' => 2,
+            'deleted' => false,
+            'on' => true,
+            'targets' => [],
+            'rules' => [],
+            'offVariation' => 1,
+            'fallthrough' => ['variation' => 2],
+            'variations' => ['red', 'amber', 'green'],
+
+            /* Required FeatureFlag fields */
+            'salt' => null,
+            'prerequisites' => [],
+        ];
+        $expectedUpdatedFeatureFlag = FeatureFlag::decode($expectedUpdatedFlagJson);
+
+        $td = new TestData();
+        $flag = $td->flag($key);
+        $td->update($flag);
+        
+        $updatedFlag = $flag->variations('red', 'amber', 'green')->fallthroughVariation(2);
+        $td->update($updatedFlag);
+
+        $featureFlag = $td->getFeature($key);
+        $this->assertEquals($expectedUpdatedFeatureFlag, $featureFlag);
+    }
+
     public function testFlagBuilderCanAddAndBuildRules()
     {
         $td = new TestData();
