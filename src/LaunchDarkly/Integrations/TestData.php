@@ -110,7 +110,7 @@ class TestData implements FeatureRequester
 
         $oldFlag = $this->_currentFlags[$key] ?? null;
         if ($oldFlag) {
-            $oldVersion = $oldFlag['version'];
+            $oldVersion = $oldFlag->getVersion();
         }
 
         $newFlag = $flagBuilder->build($oldVersion + 1);
