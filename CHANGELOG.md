@@ -2,6 +2,10 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [4.2.2] - 2022-08-01
+### Fixed:
+- The TestData class was incorrectly generating an error when updating a changed flag. (Thanks, [aretenz](https://github.com/launchdarkly/php-server-sdk/pull/161)!)
+
 ## [4.2.1] - 2022-07-05
 ### Changed:
 - Expanded lower version restriction on [Guzzle](https://github.com/guzzle/guzzle).
