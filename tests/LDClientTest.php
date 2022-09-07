@@ -711,7 +711,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
 
     public function testLoggerInterfaceWarn()
     {
-        // Use LoggerInterface impl, instead of concreate Logger from Monolog, to demonstrate the problem with `warn`.
+        // Use LoggerInterface impl, instead of concrete Logger from Monolog, to demonstrate the problem with `warn`.
         $logger = $this->getMockBuilder(LoggerInterface::class)->getMock();
 
         $logger->expects(self::atLeastOnce())->method('warning');
