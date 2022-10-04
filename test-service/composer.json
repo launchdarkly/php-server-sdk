@@ -1,0 +1,20 @@
+{
+  "repositories": [
+    {
+      "type": "path",
+      "url": ".."
+    }
+  ],
+  "require": {
+    "doctrine/cache": "^1.0",
+    "guzzlehttp/guzzle": "^7",
+    "kevinrob/guzzle-cache-middleware": "^3",
+    "launchdarkly/server-sdk": "*",
+    "mikecao/flight": "1.*",
+    "monolog/monolog": "1.*",
+    "php": ">=7.3",
+    "psr/log": "1.*"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
