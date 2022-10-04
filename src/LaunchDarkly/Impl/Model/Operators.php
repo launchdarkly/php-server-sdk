@@ -101,21 +101,31 @@ class Operators
                     }
                     break;
                 case "semVerEqual":
-                    $uVer = self::parseSemVer($u);
-                    $cVer = self::parseSemVer($c);
-                    return ($uVer != null) && ($cVer != null) && $uVer->comparePrecedence($cVer) == 0;
+                    return self::semver_operator($u, $c, 0);
                 case "semVerLessThan":
-                    $uVer = self::parseSemVer($u);
-                    $cVer = self::parseSemVer($c);
-                    return ($uVer != null) && ($cVer != null) && $uVer->comparePrecedence($cVer) < 0;
+                    return self::semver_operator($u, $c, -1);
                 case "semVerGreaterThan":
-                    $uVer = self::parseSemVer($u);
-                    $cVer = self::parseSemVer($c);
-                    return ($uVer != null) && ($cVer != null) && $uVer->comparePrecedence($cVer) > 0;
+                    return self::semver_operator($u, $c, 1);
             }
         } catch (Exception $ignored) {
         }
         return false;
+    }
+
+    /**
+     * @param mixed|null $u
+     * @param mixed|null $c
+     * @param int $expectedComparisonResult
+     * @return bool
+     */
+    private static function semver_operator($u, $c, $expectedComparisonResult): bool
+    {
+        if (!is_string($u) || !is_string($c)) {
+            return false;
+        }
+        $uVer = self::parseSemVer($u);
+        $cVer = self::parseSemVer($c);
+        return ($uVer != null) && ($cVer != null) && $uVer->comparePrecedence($cVer) == $expectedComparisonResult;
     }
 
     /**

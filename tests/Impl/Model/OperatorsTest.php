@@ -73,6 +73,11 @@ class OperatorsTest extends TestCase
         $this->assertTrue(Operators::apply("semVerGreaterThan", "2.0.0-rc.1", "2.0.0-rc.0"));
         $this->assertFalse(Operators::apply("semVerLessThan", "2.0.0", "xbad%ver"));
         $this->assertFalse(Operators::apply("semVerGreaterThan", "2.0.0", "xbad%ver"));
+
+        // numeric values are always invalid - must be a string
+        $this->assertFalse(Operators::apply("semVerEqual", 2, "2.0.0"));
+        $this->assertFalse(Operators::apply("semVerLessThan", 2, "2.0.1"));
+        $this->assertFalse(Operators::apply("semVerGreaterThan", 3, "2.0.1"));
     }
 
     public function comparisonOperators(): array
