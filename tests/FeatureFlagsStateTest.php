@@ -146,7 +146,7 @@ class FeatureFlagsStateTest extends \PHPUnit\Framework\TestCase
 
         $expected = [
             '$valid' => true,
-            '$flagsState' => array()
+            '$flagsState' => []
         ];
         $this->assertEquals($expected, json_decode($json, true));
 
