@@ -32,9 +32,7 @@ class GuzzleFeatureRequester implements FeatureRequester
 
     public function __construct(string $baseUri, string $sdkKey, array $options)
     {
-        if (substr($baseUri, strlen($baseUri) - 1, 1) != '/') {
-            $baseUri .= '/';  // ensures that subpaths are concatenated correctly
-        }
+        $baseUri = \LaunchDarkly\Impl\Util::adjustBaseUri($baseUri);
 
         $this->_logger = $options['logger'];
         $stack = HandlerStack::create();
