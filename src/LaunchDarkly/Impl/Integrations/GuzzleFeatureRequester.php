@@ -21,8 +21,8 @@ use Psr\Log\LoggerInterface;
  */
 class GuzzleFeatureRequester implements FeatureRequester
 {
-    const SDK_FLAGS = "/sdk/flags";
-    const SDK_SEGMENTS = "/sdk/segments";
+    const SDK_FLAGS = "sdk/flags";
+    const SDK_SEGMENTS = "sdk/segments";
     /** @var Client  */
     private $_client;
     /** @var LoggerInterface */
@@ -32,6 +32,8 @@ class GuzzleFeatureRequester implements FeatureRequester
 
     public function __construct(string $baseUri, string $sdkKey, array $options)
     {
+        $baseUri = \LaunchDarkly\Impl\Util::adjustBaseUri($baseUri);
+
         $this->_logger = $options['logger'];
         $stack = HandlerStack::create();
         if (class_exists('\Kevinrob\GuzzleCache\CacheMiddleware')) {

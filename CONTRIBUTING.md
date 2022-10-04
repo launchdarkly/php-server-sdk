@@ -39,3 +39,9 @@ By default, this test suite does not include any integration test that relies on
 ```
 docker run --rm -p 8080:8080 wiremock/wiremock
 ```
+
+To run the SDK contract test suite in Linux (see [`test-service/README.md`](./test-service/README.md)):
+
+```bash
+make contract-tests
+```

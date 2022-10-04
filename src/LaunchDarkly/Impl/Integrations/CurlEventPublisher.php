@@ -41,10 +41,12 @@ class CurlEventPublisher implements EventPublisher
     {
         $this->_sdkKey = $sdkKey;
 
-        $eventsUri = LDClient::DEFAULT_EVENTS_URI;
-        if (isset($options['events_uri'])) {
-            $eventsUri = $options['events_uri'];
+        $baseUri = $options['events_uri'] ?? null;
+        if (!$baseUri) {
+            $baseUri = LDClient::DEFAULT_EVENTS_URI;
         }
+        $eventsUri = \LaunchDarkly\Impl\Util::adjustBaseUri($baseUri);
+
         $url = parse_url(rtrim($eventsUri, '/'));
         $this->_host = $url['host'] ?? '';
         $this->_ssl = ($url['scheme'] ?? '') === 'https';
