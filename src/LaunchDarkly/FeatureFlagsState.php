@@ -149,13 +149,17 @@ class FeatureFlagsState implements \JsonSerializable
     public function jsonSerialize(): array
     {
         $ret = array_replace([], $this->_flagValues);
-        $metaMap = [];
-        foreach ($this->_flagMetadata as $key => $meta) {
-            $meta = array_replace([], $meta);
-            if (isset($meta['reason'])) {
-                $meta['reason'] = $meta['reason']->jsonSerialize();
+        if (count($this->_flagMetadata) === 0) {
+            $metaMap = new \stdClass(); // using object rather than array ensures the JSON value is {}, not []
+        } else {
+            $metaMap = [];
+            foreach ($this->_flagMetadata as $key => $meta) {
+                $meta = array_replace([], $meta);
+                if (isset($meta['reason'])) {
+                    $meta['reason'] = $meta['reason']->jsonSerialize();
+                }
+                $metaMap[$key] = $meta;
             }
-            $metaMap[$key] = $meta;
         }
         $ret['$flagsState'] = $metaMap;
         $ret['$valid'] = $this->_valid;
