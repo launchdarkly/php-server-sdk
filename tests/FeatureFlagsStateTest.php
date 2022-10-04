@@ -138,4 +138,20 @@ class FeatureFlagsStateTest extends \PHPUnit\Framework\TestCase
         $decoded = json_decode($json, true);
         $this->assertEquals($expected, $decoded);
     }
+
+    public function testJsonEncodeWithEmptyData()
+    {
+        $state = new FeatureFlagsState(true);
+        $json = json_encode($state);
+
+        $expected = [
+            '$valid' => true,
+            '$flagsState' => array()
+        ];
+        $this->assertEquals($expected, json_decode($json, true));
+
+        // Due to ambiguity of PHP array types, we need to verify that the $flagsState value
+        // is an empty JSON object, not an empty JSON array.
+        $this->assertStringContainsString('"$flagsState":{}', $json);
+    }
 }
