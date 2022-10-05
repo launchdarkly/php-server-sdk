@@ -3,7 +3,7 @@
 namespace LaunchDarkly\Impl\Model;
 
 use DateTime;
-use DateTimeZone;
+use DateTimeInterface;
 use Exception;
 use LaunchDarkly\Impl\SemanticVersion;
 use LaunchDarkly\Impl\Util;
@@ -149,7 +149,19 @@ class Operators
      */
     public static function parseTime($in)
     {
-        if (is_numeric($in)) {
+        if (is_string($in)) {
+            $dateTime = DateTime::createFromFormat(DateTimeInterface::RFC3339_EXTENDED, $in);
+            if ($dateTime == null) {
+                // try the same format but without fractional seconds
+                $dateTime = DateTime::createFromFormat(DateTimeInterface::RFC3339, $in);
+            }
+            if ($dateTime == null) {
+                return null;
+            }
+            return Util::dateTimeToUnixMillis($dateTime);
+        }
+
+        if (is_numeric($in)) { // check this after is_string, because a numeric string would return true
             return $in;
         }
 
@@ -157,14 +169,6 @@ class Operators
             return Util::dateTimeToUnixMillis($in);
         }
 
-        if (is_string($in)) {
-            try {
-                $dateTime = new DateTime($in, new DateTimeZone('UTC'));
-                return Util::dateTimeToUnixMillis($dateTime);
-            } catch (Exception $e) {
-                return null;
-            }
-        }
         return null;
     }
 
