@@ -53,6 +53,7 @@ jobs:
 
     environment:
       LD_INCLUDE_INTEGRATION_TESTS: 1
+      TEST_HARNESS_PARAMS: -junit build/contract-tests-output/junit-results.xml
 
     docker:
       - image: cimg/php:<<parameters.php-version>>
@@ -90,10 +91,23 @@ jobs:
       - run:
           name: run tests
           command: php -d xdebug.mode=coverage vendor/bin/phpunit
-          enviroment:
+          environment:
             XDEBUG_MODE: coverage
+
+      - run:
+          name: build contract test service
+          command: make build-contract-tests
+      - run:
+          name: start contract test service
+          command: make start-contract-test-service
+          background: true
+      - run:
+          name: run contract tests
+          command: mkdir -p build/contract-tests-output && make run-contract-tests
 
       - store_test_results:
           path: build/phpunit
+      - store_test_results:
+          path: build/contract-tests-output
       - store_artifacts:
           path: build/phpunit

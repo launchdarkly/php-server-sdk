@@ -7,10 +7,10 @@
   ],
   "require": {
     "doctrine/cache": "^1.0",
-    "guzzlehttp/guzzle": "^7",
-    "kevinrob/guzzle-cache-middleware": "^3",
+    "guzzlehttp/guzzle": "^6.3 | ^7",
+    "kevinrob/guzzle-cache-middleware": "^4.0",
     "launchdarkly/server-sdk": "*",
-    "mikecao/flight": "1.*",
+    "mikecao/flight": "1.* | 2.*",
     "monolog/monolog": "1.*",
     "php": ">=7.3",
     "psr/log": "1.*"

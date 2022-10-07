@@ -31,11 +31,11 @@ class SdkClientEntity
         ];
 
         $pollingConfig = $config['polling'] ?? [];
-        $options['base_uri'] = self::adjustBaseUri($pollingConfig['baseUri'] ?? null);
+        $options['base_uri'] = $pollingConfig['baseUri'] ?? null;
 
         $options['send_events'] = ($config['events'] ?? null) !== null;
         $eventsConfig = $config['events'] ?? [];
-        $options['events_uri'] = self::adjustBaseUri($eventsConfig['baseUri'] ?? null);
+        $options['events_uri'] = $eventsConfig['baseUri'] ?? null;
         $options['all_attributes_private'] = $eventsConfig['allAttributesPrivate'] ?? false;
         $options['private_attribute_names'] = $eventsConfig['globalPrivateAttributes'] ?? null;
 
@@ -53,6 +53,10 @@ class SdkClientEntity
         $command = $reqParams['command'];
         $commandParams = $reqParams[$command] ?? null;
         switch ($command) {
+            case 'aliasEvent':
+                $this->doAliasEvent($commandParams);
+                return null;
+
             case 'customEvent':
                 $this->doCustomEvent($commandParams);
                 return null;
@@ -79,11 +83,12 @@ class SdkClientEntity
         }
     }
 
-    private static function adjustBaseUri($baseUri)
+    private function doAliasEvent($params)
     {
-        return $baseUri ?
-            preg_replace('@^http://localhost:@', 'http://host.docker.internal:', $baseUri)
-            : null;
+        $this->_client->alias(
+            $this->makeUser($params['user']),
+            $this->makeUser($params['previousUser'])
+        );
     }
 
     private function doCustomEvent($params)
