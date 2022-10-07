@@ -1,4 +1,5 @@
 /vendor/
+/test-service/vendor/
 /doc/
 *.iml
 composer.phar

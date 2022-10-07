@@ -13,6 +13,14 @@ use DateTimeZone;
  */
 class Util
 {
+    public static function adjustBaseUri(string $uri): string
+    {
+        if (substr($uri, strlen($uri) - 1, 1) == '/') {
+            return $uri;
+        }
+        return $uri . '/';  // ensures that subpaths are concatenated correctly
+    }
+
     public static function dateTimeToUnixMillis(DateTime $dateTime): int
     {
         $timeStampSeconds = (int)$dateTime->getTimestamp();

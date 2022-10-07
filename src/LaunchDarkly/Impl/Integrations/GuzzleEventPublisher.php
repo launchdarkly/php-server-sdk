@@ -28,11 +28,13 @@ class GuzzleEventPublisher implements EventPublisher
     {
         $this->_sdkKey = $sdkKey;
         $this->_logger = $options['logger'];
-        if (isset($options['events_uri'])) {
-            $this->_eventsUri = $options['events_uri'];
-        } else {
-            $this->_eventsUri = LDClient::DEFAULT_EVENTS_URI;
+
+        $baseUri = $options['events_uri'] ?? null;
+        if (!$baseUri) {
+            $baseUri = LDClient::DEFAULT_EVENTS_URI;
         }
+        $this->_eventsUri = \LaunchDarkly\Impl\Util::adjustBaseUri($baseUri);
+
         $this->_requestOptions = [
             'headers' => [
                 'Content-Type'  => 'application/json',
@@ -53,7 +55,7 @@ class GuzzleEventPublisher implements EventPublisher
         try {
             $options = $this->_requestOptions;
             $options['body'] = $payload;
-            $response = $client->request('POST', '/bulk', $options);
+            $response = $client->request('POST', 'bulk', $options);
         } catch (\Exception $e) {
             $this->_logger->warning("GuzzleEventPublisher::publish caught $e");
             return false;
