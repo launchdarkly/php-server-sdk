@@ -2,6 +2,14 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [4.2.4] - 2022-10-07
+### Changed:
+- CI builds now include a cross-platform test suite implemented in https://github.com/launchdarkly/sdk-test-harness. This is in addition to unit test coverage, and ensures consistent behavior across SDKs.
+
+### Fixed:
+- Setting a `base_uri` or `events_uri` with a non-empty path, such as `http://my-reverse-proxy-host/launchdarkly-requests`, did not work.
+- The object returned by `allFlagsState()`, when converted to JSON, had an incorrect format in the case where no flags exist.
+
 ## [4.2.3] - 2022-09-07
 ### Changed:
 - Expanded upper version restriction on [Monolog](https://github.com/Seldaek/monolog).
