@@ -651,30 +651,6 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('anonymousUser', $event['contextKind']);
     }
 
-    public function testAliasEventsAreCorrect()
-    {
-        $ep = new MockEventProcessor();
-        $client = $this->makeClient(['event_processor' => $ep]);
-
-        $user_builder = new LDUserBuilder("user@email.com");
-        $user = $user_builder->anonymous(false)->build();
-        $anon_builder = new LDUserBuilder("anon@email.com");
-        $anon = $anon_builder->anonymous(true)->build();
-
-        $client->alias($user, $anon);
-
-        $queue = $ep->getEvents();
-        $this->assertEquals(1, sizeof($queue));
-
-        $event = $queue[0];
-
-        $this->assertEquals('alias', $event['kind']);
-        $this->assertEquals($user->getKey(), $event['key']);
-        $this->assertEquals('user', $event['contextKind']);
-        $this->assertEquals($anon->getKey(), $event['previousKey']);
-        $this->assertEquals('anonymousUser', $event['previousContextKind']);
-    }
-
     public function testEventsAreNotPublishedIfSendEventsIsFalse()
     {
         // In order to do this test, we cannot provide a mock object for Event_Processor_,

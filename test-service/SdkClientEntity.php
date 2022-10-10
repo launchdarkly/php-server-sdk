@@ -53,10 +53,6 @@ class SdkClientEntity
         $command = $reqParams['command'];
         $commandParams = $reqParams[$command] ?? null;
         switch ($command) {
-            case 'aliasEvent':
-                $this->doAliasEvent($commandParams);
-                return null;
-
             case 'customEvent':
                 $this->doCustomEvent($commandParams);
                 return null;
@@ -81,14 +77,6 @@ class SdkClientEntity
             default:
                 return false;  // means invalid command
         }
-    }
-
-    private function doAliasEvent($params)
-    {
-        $this->_client->alias(
-            $this->makeUser($params['user']),
-            $this->makeUser($params['previousUser'])
-        );
     }
 
     private function doCustomEvent($params)

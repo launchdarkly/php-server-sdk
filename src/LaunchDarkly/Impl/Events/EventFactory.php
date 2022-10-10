@@ -160,23 +160,6 @@ class EventFactory
         return $e;
     }
 
-    /**
-     * @return (mixed|null)[]
-     */
-    public function newAliasEvent(LDUser $user, LDUser $previousUser): array
-    {
-        $e = [
-            'kind' => 'alias',
-            'key' => strval($user->getKey()),
-            'contextKind' => static::contextKind($user),
-            'previousKey' => strval($previousUser->getKey()),
-            'previousContextKind' => static::contextKind($previousUser),
-            'creationDate' => Util::currentTimeUnixMillis()
-        ];
-
-        return $e;
-    }
-
     private static function contextKind(LDUser $user): string
     {
         if ($user->getAnonymous()) {

@@ -386,33 +386,6 @@ class LDClient
     }
 
     /**
-     * Associates two users for analytics purposes.
-     *
-     * This can be helpful in the situation where a person is represented by multiple
-     * LaunchDarkly users. This may happen, for example, when a person initially logs into
-     * an application-- the person might be represented by an anonymous user prior to logging
-     * in and a different user after logging in, as denoted by a different user key.
-     *
-     * @param LDUser $user the newly identified user.
-     * @param LDUser $previousUser the previously identified user.
-     */
-    public function alias(LDUser $user, LDUser $previousUser): void
-    {
-        if (is_null($user->getKey())) {
-            $this->_logger->warning("Alias called with null/empty user!");
-            return;
-        }
-
-        if (is_null($previousUser->getKey())) {
-            $this->_logger->warning("Alias called with null/empty previousUser!");
-            return;
-        }
-
-        $event = $this->_eventFactoryDefault->newAliasEvent($user, $previousUser);
-        $this->_eventProcessor->enqueue($event);
-    }
-
-    /**
      * Generates an HMAC sha256 hash for use in Secure mode.
      *
      * See: [Secure mode](https://docs.launchdarkly.com/sdk/features/secure-mode)
