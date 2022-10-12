@@ -1,5 +1,8 @@
 <?php
 
+use LaunchDarkly\LDClient;
+use LaunchDarkly\LDContext;
+
 class SdkClientEntity
 {
     private $_client;
@@ -39,7 +42,7 @@ class SdkClientEntity
         $options['all_attributes_private'] = $eventsConfig['allAttributesPrivate'] ?? false;
         $options['private_attribute_names'] = $eventsConfig['globalPrivateAttributes'] ?? null;
 
-        return new LaunchDarkly\LDClient($sdkKey, $options);
+        return new LDClient($sdkKey, $options);
     }
 
     public function close()
@@ -74,6 +77,12 @@ class SdkClientEntity
             case 'secureModeHash':
                 return $this->doSecureModeHash($commandParams);
 
+            case 'contextBuild':
+                return $this->doContextBuild($commandParams);
+            
+            case 'contextConvert':
+                return $this->doContextConvert($commandParams);
+            
             default:
                 return false;  // means invalid command
         }
@@ -139,7 +148,58 @@ class SdkClientEntity
         ];
     }
 
-    private function makeUser($data)
+    private function doContextBuild($params)
+    {
+        try {
+            if ($params['multi'] ?? null) {
+                $b = LDContext::multiBuilder();
+                foreach ($params['multi'] as $mp) {
+                    $b->add($this->buildSingleKind($mp));
+                }
+                $c = $b->build();
+            } else {
+                $c = $this->buildSingleKind($params['single']);
+            }
+            return $this->makeContextResponse($c);
+        } catch (Throwable $e) {
+            return ['error' => "$e"];
+        }
+    }
+
+    private function buildSingleKind($params)
+    {
+        $b = LDContext::builder($params['key'] ?? null);
+        if (($params['kind'] ?? null) != null) {
+            $b->kind($params['kind']);
+        }
+        $b->name($params['name'] ?? null)
+            ->anonymous($params['anonymous'] ?? false);
+        if ($params['custom'] ?? null) {
+            foreach ($params['custom'] as $k => $v) {
+                $b->set($k, $v);
+            }
+        }
+        foreach ($params['private'] ?? [] as $p) {
+            $b->private($p);
+        }
+        return $b->build();
+    }
+
+    private function makeContextResponse($c)
+    {
+        return $c->isValid() ? ['output' => json_encode($c)] : ['error' => $c->getError()];
+    }
+
+    private function doContextConvert($params)
+    {
+        try {
+            return $this->makeContextResponse(LDContext::fromJson($params['input']));
+        } catch (Throwable $e) {
+            return ['error' => "$e"];
+        }
+    }
+
+    private function makeContext($data)
     {
         $privateAttributeNames = $data['privateAttributeNames'] ?? [];
 

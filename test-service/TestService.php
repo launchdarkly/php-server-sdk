@@ -32,8 +32,7 @@ class TestService
                 http_response_code(404);
                 return;
             }
-            $params = $this->_app->request()->data;
-            $resp = $c->doCommand($params);
+            $resp = $c->doCommand($this->_app->request()->data);
             if ($resp === false) {
                 http_response_code(400);
             } elseif (is_array($resp)) {
@@ -63,6 +62,7 @@ class TestService
                 'all-flags-client-side-only',
                 'all-flags-details-only-for-tracked-flags',
                 'all-flags-with-reasons',
+                'context-type',
                 'secure-mode-hash'
             ],
             'clientVersion' => \LaunchDarkly\LDClient::VERSION
