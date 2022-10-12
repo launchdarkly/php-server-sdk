@@ -2,7 +2,7 @@
 
 namespace LaunchDarkly\Impl\Model;
 
-use LaunchDarkly\LDUser;
+use LaunchDarkly\LDContext;
 
 /**
  * Internal data model class that describes a user segment.
@@ -67,9 +67,9 @@ class Segment
         return static::getDecoder()($v);
     }
 
-    public function matchesUser(LDUser $user): bool
+    public function matchesContext(LDContext $context): bool
     {
-        $key = $user->getKey();
+        $key = $context->getKey();
         if (!$key) {
             return false;
         }
@@ -80,7 +80,7 @@ class Segment
             return false;
         }
         foreach ($this->_rules as $rule) {
-            if ($rule->matchesUser($user, $this->_key, $this->_salt)) {
+            if ($rule->matchesContext($context, $this->_key, $this->_salt)) {
                 return true;
             }
         }

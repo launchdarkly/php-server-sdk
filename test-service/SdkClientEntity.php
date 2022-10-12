@@ -101,19 +101,19 @@ class SdkClientEntity
     private function doEvaluate($params)
     {
         $flagKey = $params['flagKey'];
-        $user = $this->makeUser($params['user']);
+        $context = LDContext::fromJson($params['context']);
         $defaultValue = $params['defaultValue'] ?? null;
         $detail = $params['detail'] ?? false;
 
         if ($detail) {
-            $result = $this->_client->variationDetail($flagKey, $user, $defaultValue);
+            $result = $this->_client->variationDetail($flagKey, $context, $defaultValue);
             return [
                 "value" => $result->getValue(),
                 "variationIndex" => $result->getVariationIndex(),
                 "reason" => $result->getReason()
             ];
         } else {
-            $value = $this->_client->variation($flagKey, $user, $defaultValue);
+            $value = $this->_client->variation($flagKey, $context, $defaultValue);
             return [
                 "value" => $value
             ];
@@ -128,7 +128,8 @@ class SdkClientEntity
                 $options[$option] = true;
             }
         }
-        $state = $this->_client->allFlagsState($this->makeUser($params['user']), $options);
+        $context = LDContext::fromJson($params['context']);
+        $state = $this->_client->allFlagsState($context, $options);
         return [
             'state' => $state->jsonSerialize()
         ];
@@ -201,80 +202,6 @@ class SdkClientEntity
 
     private function makeContext($data)
     {
-        $privateAttributeNames = $data['privateAttributeNames'] ?? [];
-
-        $builder = new LaunchDarkly\LDUserBuilder(isset($data['key']) ? $data['key'] : null);
-
-        $secondary = $data['secondary'] ?? null;
-        if (in_array('secondary', $privateAttributeNames)) {
-            $builder->privateSecondary($secondary);
-        } else {
-            $builder->secondary($secondary);
-        }
-
-        $ip = $data['ip'] ?? null;
-        if (in_array('ip', $privateAttributeNames)) {
-            $builder->privateIp($ip);
-        } else {
-            $builder->ip($ip);
-        }
-
-        $country = $data['country'] ?? null;
-        if (in_array('country', $privateAttributeNames)) {
-            $builder->privateCountry($country);
-        } else {
-            $builder->country($country);
-        }
-
-        $email = $data['email'] ?? null;
-        if (in_array('email', $privateAttributeNames)) {
-            $builder->privateEmail($email);
-        } else {
-            $builder->email($email);
-        }
-
-        $name = $data['name'] ?? null;
-        if (in_array('name', $privateAttributeNames)) {
-            $builder->privateName($name);
-        } else {
-            $builder->name($name);
-        }
-
-        $avatar = $data['avatar'] ?? null;
-        if (in_array('avatar', $privateAttributeNames)) {
-            $builder->privateAvatar($avatar);
-        } else {
-            $builder->avatar($avatar);
-        }
-
-        $firstName = $data['firstName'] ?? null;
-        if (in_array('firstName', $privateAttributeNames)) {
-            $builder->privateFirstName($firstName);
-        } else {
-            $builder->firstName($firstName);
-        }
-
-        $lastName = $data['lastName'] ?? null;
-        if (in_array('lastName', $privateAttributeNames)) {
-            $builder->privateLastName($lastName);
-        } else {
-            $builder->lastName($lastName);
-        }
-
-        if (isset($data['anonymous'])) {
-            $builder->anonymous($data['anonymous']);
-        }
-
-        if (isset($data['custom'])) {
-            foreach ($data['custom'] as $key => $value) {
-                if (in_array($key, $privateAttributeNames)) {
-                    $builder->privateCustomAttribute($key, $value);
-                } else {
-                    $builder->customAttribute($key, $value);
-                }
-            }
-        }
-
-        return $builder->build();
+        return LDContext::fromJson($data);
     }
 }

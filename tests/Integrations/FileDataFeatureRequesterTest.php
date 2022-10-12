@@ -4,7 +4,7 @@ namespace LaunchDarkly\Tests\Integrations;
 
 use LaunchDarkly\Impl\Events\EventFactory;
 use LaunchDarkly\Integrations\Files;
-use LaunchDarkly\LDUser;
+use LaunchDarkly\LDContext;
 use LaunchDarkly\Tests\MockFeatureRequester;
 use PHPUnit\Framework\TestCase;
 
@@ -39,7 +39,7 @@ class FileDataFeatureRequesterTest extends TestCase
         $fr = Files::featureRequester("./tests/filedata/all-properties.json");
         $flag2 = $fr->getFeature("flag2");
         $this->assertEquals("flag2", $flag2->getKey());
-        $result = $flag2->evaluate(new LDUser("user"), $requester, $eventFactory);
+        $result = $flag2->evaluate(LDContext::create("user"), $requester, $eventFactory);
         $this->assertEquals("value2", $result->getDetail()->getValue());
     }
 }

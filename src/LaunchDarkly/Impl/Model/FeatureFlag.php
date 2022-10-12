@@ -7,7 +7,7 @@ use LaunchDarkly\EvaluationReason;
 use LaunchDarkly\FeatureRequester;
 use LaunchDarkly\Impl\EvalResult;
 use LaunchDarkly\Impl\Events\EventFactory;
-use LaunchDarkly\LDUser;
+use LaunchDarkly\LDContext;
 
 /**
  * Internal data model class that describes a feature flag configuration.
@@ -130,10 +130,10 @@ class FeatureFlag
         return $this->_on;
     }
 
-    public function evaluate(LDUser $user, FeatureRequester $featureRequester, EventFactory $eventFactory): EvalResult
+    public function evaluate(LDContext $context, FeatureRequester $featureRequester, EventFactory $eventFactory): EvalResult
     {
         $prereqEvents = [];
-        $detail = $this->evaluateInternal($user, $featureRequester, $prereqEvents, $eventFactory);
+        $detail = $this->evaluateInternal($context, $featureRequester, $prereqEvents, $eventFactory);
         return new EvalResult($detail, $prereqEvents);
     }
 
@@ -156,7 +156,7 @@ class FeatureFlag
     }
 
     private function evaluateInternal(
-        LDUser $user,
+        LDContext $context,
         FeatureRequester $featureRequester,
         array &$events,
         EventFactory $eventFactory
@@ -165,7 +165,7 @@ class FeatureFlag
             return $this->getOffValue(EvaluationReason::off());
         }
 
-        $prereqFailureReason = $this->checkPrerequisites($user, $featureRequester, $events, $eventFactory);
+        $prereqFailureReason = $this->checkPrerequisites($context, $featureRequester, $events, $eventFactory);
         if ($prereqFailureReason !== null) {
             return $this->getOffValue($prereqFailureReason);
         }
@@ -174,7 +174,7 @@ class FeatureFlag
         if ($this->_targets != null) {
             foreach ($this->_targets as $target) {
                 foreach ($target->getValues() as $value) {
-                    if ($value === $user->getKey()) {
+                    if ($value === $context->getKey()) {
                         return $this->getVariation($target->getVariation(), EvaluationReason::targetMatch());
                     }
                 }
@@ -183,19 +183,19 @@ class FeatureFlag
         // Now walk through the rules and see if any match
         if ($this->_rules != null) {
             foreach ($this->_rules as $i => $rule) {
-                if ($rule->matchesUser($user, $featureRequester)) {
+                if ($rule->matchesContext($context, $featureRequester)) {
                     return $this->getValueForVariationOrRollout(
                         $rule,
-                        $user,
+                        $context,
                         EvaluationReason::ruleMatch($i, $rule->getId())
                     );
                 }
             }
         }
-        return $this->getValueForVariationOrRollout($this->_fallthrough, $user, EvaluationReason::fallthrough());
+        return $this->getValueForVariationOrRollout($this->_fallthrough, $context, EvaluationReason::fallthrough());
     }
 
-    private function checkPrerequisites(LDUser $user, FeatureRequester $featureRequester, array &$events, EventFactory $eventFactory): ?EvaluationReason
+    private function checkPrerequisites(LDContext $context, FeatureRequester $featureRequester, array &$events, EventFactory $eventFactory): ?EvaluationReason
     {
         if ($this->_prerequisites != null) {
             foreach ($this->_prerequisites as $prereq) {
@@ -205,12 +205,12 @@ class FeatureFlag
                     if ($prereqFeatureFlag == null) {
                         $prereqOk = false;
                     } else {
-                        $prereqEvalResult = $prereqFeatureFlag->evaluateInternal($user, $featureRequester, $events, $eventFactory);
+                        $prereqEvalResult = $prereqFeatureFlag->evaluateInternal($context, $featureRequester, $events, $eventFactory);
                         $variation = $prereq->getVariation();
                         if (!$prereqFeatureFlag->isOn() || $prereqEvalResult->getVariationIndex() !== $variation) {
                             $prereqOk = false;
                         }
-                        $events[] = $eventFactory->newEvalEvent($prereqFeatureFlag, $user, $prereqEvalResult, null, $this);
+                        // $events[] = $eventFactory->newEvalEvent($prereqFeatureFlag, $context, $prereqEvalResult, null, $this);
                     }
                 } catch (\Exception $e) {
                     $prereqOk = false;
@@ -239,9 +239,9 @@ class FeatureFlag
         return $this->getVariation($this->_offVariation, $reason);
     }
 
-    private function getValueForVariationOrRollout(VariationOrRollout $r, LDUser $user, EvaluationReason $reason): EvaluationDetail
+    private function getValueForVariationOrRollout(VariationOrRollout $r, LDContext $context, EvaluationReason $reason): EvaluationDetail
     {
-        list($index, $inExperiment) = $r->variationIndexForUser($user, $this->_key, $this->_salt);
+        list($index, $inExperiment) = $r->variationIndexForContext($context, $this->_key, $this->_salt);
         if ($index === null) {
             return new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR));
         }

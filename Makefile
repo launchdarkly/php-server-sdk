@@ -3,9 +3,24 @@ TEMP_TEST_OUTPUT=/tmp/sse-contract-test-service.log
 
 # TEST_HARNESS_PARAMS can be set to add -skip parameters for any contract tests that cannot yet pass
 # Explanation of current skips:
-# - "evaluation", "events": These test suites will be unavailable until more of the U2C implementation is done.
+# - "evaluation/parameterized/prerequisites": Can't pass yet because prerequisite cycle detection is not implemented.
+# - various other "evaluation" subtests: These tests require context kind support.
+# - "events": These test suites will be unavailable until more of the U2C implementation is done.
 TEST_HARNESS_PARAMS := $(TEST_HARNESS_PARAMS) \
-	-skip 'evaluation' \
+	-skip 'evaluation/bucketing/bucket by non-key attribute' \
+	-skip 'evaluation/bucketing/secondary' \
+	-skip 'evaluation/bucketing/selection of context' \
+	-skip 'evaluation/parameterized/attribute references' \
+	-skip 'evaluation/parameterized/bad attribute reference errors' \
+	-skip 'evaluation/parameterized/clause kind matching' \
+	-skip 'evaluation/parameterized/prerequisites' \
+	-skip 'evaluation/parameterized/segment match/included list is specific to user kind' \
+	-skip 'evaluation/parameterized/segment match/includedContexts' \
+	-skip 'evaluation/parameterized/segment match/excluded list is specific to user kind' \
+	-skip 'evaluation/parameterized/segment match/excludedContexts' \
+	-skip 'evaluation/parameterized/segment recursion' \
+	-skip 'evaluation/parameterized/target match/context targets' \
+	-skip 'evaluation/parameterized/target match/multi-kind' \
 	-skip 'events'
 
 build-contract-tests:

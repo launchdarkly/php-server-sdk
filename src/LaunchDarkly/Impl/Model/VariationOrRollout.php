@@ -2,7 +2,7 @@
 
 namespace LaunchDarkly\Impl\Model;
 
-use LaunchDarkly\LDUser;
+use LaunchDarkly\LDContext;
 
 /**
  * Internal data model class that describes a fixed variation or percentage rollout.
@@ -52,7 +52,7 @@ class VariationOrRollout
         return $this->_rollout;
     }
 
-    public function variationIndexForUser(LDUser $user, string $_key, ?string $_salt): array
+    public function variationIndexForContext(LDContext $context, string $_key, ?string $_salt): array
     {
         if ($this->_variation !== null) {
             return [$this->_variation, false];
@@ -64,7 +64,7 @@ class VariationOrRollout
         $variations = $rollout->getVariations();
         if ($variations) {
             $bucketBy = $rollout->getBucketBy() ?? "key";
-            $bucket = self::bucketUser($user, $_key, $bucketBy, $_salt, $rollout->getSeed());
+            $bucket = self::bucketContext($context, $_key, $bucketBy, $_salt, $rollout->getSeed());
             $sum = 0.0;
             foreach ($variations as $wv) {
                 $sum += $wv->getWeight() / 100000.0;
@@ -78,35 +78,32 @@ class VariationOrRollout
         return [null, false];
     }
 
-    public static function bucketUser(
-        LDUser $user,
+    public static function bucketContext(
+        LDContext $context,
         string $_key,
         string $attr,
         ?string $_salt,
         ?int $seed
     ): float {
-        $userValue = $user->getValueForEvaluation($attr);
-        if ($userValue != null) {
-            if (is_int($userValue)) {
-                $userValue = (string) $userValue;
-            }
-            if (is_string($userValue)) {
-                $idHash = $userValue;
-                if (isset($seed)) {
-                    $prefix = (string) $seed;
-                } else {
-                    $prefix = $_key . "." . ($_salt ?? '');
-                }
-                if ($user->getSecondary() !== null) {
-                    $idHash = $idHash . "." . strval($user->getSecondary());
-                }
-                $hash = substr(sha1($prefix . "." . $idHash), 0, 15);
-                $longVal = (int)base_convert($hash, 16, 10);
-                $result = $longVal / self::$LONG_SCALE;
-
-                return $result;
-            }
+        $contextValue = $context->get($attr);
+        if ($contextValue === null) {
+            return 0.0;
         }
-        return 0.0;
+        if (is_int($contextValue)) {
+            $contextValue = (string) $contextValue;
+        } elseif (!is_string($contextValue)) {
+            return 0.0;
+        }
+        $idHash = $contextValue;
+        if (isset($seed)) {
+            $prefix = (string) $seed;
+        } else {
+            $prefix = $_key . "." . ($_salt ?? '');
+        }
+        $hash = substr(sha1($prefix . "." . $idHash), 0, 15);
+        $longVal = (int)base_convert($hash, 16, 10);
+        $result = $longVal / self::$LONG_SCALE;
+
+        return $result;
     }
 }

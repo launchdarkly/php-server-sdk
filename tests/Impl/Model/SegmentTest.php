@@ -3,14 +3,14 @@
 namespace LaunchDarkly\Tests\Impl\Model;
 
 use LaunchDarkly\Impl\Model\Segment;
-use LaunchDarkly\LDUserBuilder;
+use LaunchDarkly\LDContext;
 use PHPUnit\Framework\TestCase;
 
-$defaultUser = (new LDUserBuilder('foo'))->build();
+$defaultContext = LDContext::create('foo');
 
-function makeSegmentMatchingUser($user, $ruleAttrs = [])
+function makeSegmentMatchingContext($context, $ruleAttrs = [])
 {
-    $clause = ['attribute' => 'key', 'op' => 'in', 'values' => [$user->getKey()], 'negate' => false];
+    $clause = ['attribute' => 'key', 'op' => 'in', 'values' => [$context->getKey()], 'negate' => false];
     $rule = array_merge(['clauses' => [$clause]], $ruleAttrs);
     $json = [
         'key' => 'test',
@@ -26,12 +26,12 @@ function makeSegmentMatchingUser($user, $ruleAttrs = [])
 
 class SegmentTest extends TestCase
 {
-    public function testExplicitIncludeUser()
+    public function testExplicitIncludeContext()
     {
-        global $defaultUser;
+        global $defaultContext;
         $json = [
             'key' => 'test',
-            'included' => [$defaultUser->getKey()],
+            'included' => [$defaultContext->getKey()],
             'excluded' => [],
             'rules' => [],
             'salt' => 'salt',
@@ -39,86 +39,73 @@ class SegmentTest extends TestCase
             'deleted' => false
         ];
         $segment = Segment::decode($json);
-        $this->assertTrue($segment->matchesUser($defaultUser));
+        $this->assertTrue($segment->matchesContext($defaultContext));
     }
 
-    public function testExplicitExcludeUser()
+    public function testExplicitExcludeContext()
     {
-        global $defaultUser;
+        global $defaultContext;
         $json = [
             'key' => 'test',
             'included' => [],
-            'excluded' => [$defaultUser->getKey()],
+            'excluded' => [$defaultContext->getKey()],
             'rules' => [],
             'salt' => 'salt',
             'version' => 1,
             'deleted' => false
         ];
         $segment = Segment::decode($json);
-        $this->assertFalse($segment->matchesUser($defaultUser));
+        $this->assertFalse($segment->matchesContext($defaultContext));
     }
 
-    public function testExplicitIncludePasPrecedence()
+    public function testExplicitIncludeHasPrecedence()
     {
-        global $defaultUser;
+        global $defaultContext;
         $json = [
             'key' => 'test',
-            'included' => [$defaultUser->getKey()],
-            'excluded' => [$defaultUser->getKey()],
+            'included' => [$defaultContext->getKey()],
+            'excluded' => [$defaultContext->getKey()],
             'rules' => [],
             'salt' => 'salt',
             'version' => 1,
             'deleted' => false
         ];
         $segment = Segment::decode($json);
-        $ub = new LDUserBuilder('foo');
-        $this->assertTrue($segment->matchesUser($ub->build()));
+        $this->assertTrue($segment->matchesContext($defaultContext));
     }
 
     public function testMatchingRuleWithFullRollout()
     {
-        global $defaultUser;
-        $segment = makeSegmentMatchingUser($defaultUser, ['weight' => 100000]);
-        $this->assertTrue($segment->matchesUser($defaultUser));
+        global $defaultContext;
+        $segment = makeSegmentMatchingContext($defaultContext, ['weight' => 100000]);
+        $this->assertTrue($segment->matchesContext($defaultContext));
     }
 
     public function testMatchingRuleWithZeroRollout()
     {
-        global $defaultUser;
-        $segment = makeSegmentMatchingUser($defaultUser, ['weight' => 0]);
-        $this->assertFalse($segment->matchesUser($defaultUser));
+        global $defaultContext;
+        $segment = makeSegmentMatchingContext($defaultContext, ['weight' => 0]);
+        $this->assertFalse($segment->matchesContext($defaultContext));
     }
 
     public function testRolloutCalculationCanBucketByKey()
     {
-        $user = (new LDUserBuilder('userkey'))->name('Bob')->build();
-        $this->verifyRollout($user, 12551);
-    }
-
-    public function testRolloutCalculationIncludesSecondaryKey()
-    {
-        $user = (new LDUserBuilder('userkey'))->secondary('999')->build();
-        $this->verifyRollout($user, 81650);
-    }
-
-    public function testRolloutCalculationCoercesSecondaryKeyToString()
-    {
-        $user = (new LDUserBuilder('userkey'))->secondary(999)->build();
-        $this->verifyRollout($user, 81650);
+        $context = LDContext::builder('userkey')->name('Bob')->build();
+        $this->verifyRollout($context, 12551);
     }
 
     public function testRolloutCalculationCanBucketBySpecificAttribute()
     {
-        $user = (new LDUserBuilder('userkey'))->name('Bob')->build();
-        $this->verifyRollout($user, 61691, ['bucketBy' => 'name']);
+        $context = LDContext::builder('userkey')->name('Bob')->build();
+        $this->verifyRollout($context, 61691, ['bucketBy' => 'name']);
     }
 
-    private function verifyRollout($user, $expectedBucketValue, $rolloutAttrs = [])
+    private function verifyRollout($context, $expectedBucketValue, $rolloutAttrs = [])
     {
-        $segment0 = makeSegmentMatchingUser($user, array_merge(['weight' => $expectedBucketValue + 1], $rolloutAttrs));
-        $this->assertTrue($segment0->matchesUser($user));
-        $segment1 = makeSegmentMatchingUser($user, array_merge(['weight' => $expectedBucketValue], $rolloutAttrs));
-        $this->assertFalse($segment1->matchesUser($user));
+        $segment0 = makeSegmentMatchingContext($context, array_merge(['weight' => $expectedBucketValue + 1], $rolloutAttrs));
+        $this->assertTrue($segment0->matchesContext($context));
+        $segment1 = makeSegmentMatchingContext($context, array_merge(['weight' => $expectedBucketValue], $rolloutAttrs));
+        $this->assertFalse($segment1->matchesContext($context));
     }
 
     public function testMatchingRuleWithMultipleClauses()
@@ -151,10 +138,8 @@ class SegmentTest extends TestCase
             'deleted' => false
         ];
         $segment = Segment::decode($json);
-        $ub = new LDUserBuilder('foo');
-        $ub->email('test@example.com');
-        $ub->name('bob');
-        $this->assertTrue($segment->matchesUser($ub->build()));
+        $context = LDContext::builder('foo')->name('bob')->set('email', 'test@example.com')->build();
+        $this->assertTrue($segment->matchesContext($context));
     }
 
     public function testNonMatchingRuleWithMultipleClauses()
@@ -187,9 +172,7 @@ class SegmentTest extends TestCase
             'deleted' => false
         ];
         $segment = Segment::decode($json);
-        $ub = new LDUserBuilder('foo');
-        $ub->email('test@example.com');
-        $ub->name('bob');
-        $this->assertFalse($segment->matchesUser($ub->build()));
+        $context = LDContext::builder('foo')->name('bob')->set('email', 'test@example.com')->build();
+        $this->assertFalse($segment->matchesContext($context));
     }
 }

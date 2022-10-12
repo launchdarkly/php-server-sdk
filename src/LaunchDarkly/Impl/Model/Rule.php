@@ -3,7 +3,7 @@
 namespace LaunchDarkly\Impl\Model;
 
 use LaunchDarkly\FeatureRequester;
-use LaunchDarkly\LDUser;
+use LaunchDarkly\LDContext;
 
 /**
  * Internal data model class that describes a feature flag rule.
@@ -48,10 +48,10 @@ class Rule extends VariationOrRollout
         };
     }
 
-    public function matchesUser(LDUser $user, ?FeatureRequester $featureRequester): bool
+    public function matchesContext(LDContext $context, ?FeatureRequester $featureRequester): bool
     {
         foreach ($this->_clauses as $clause) {
-            if (!$clause->matchesUser($user, $featureRequester)) {
+            if (!$clause->matchesContext($context, $featureRequester)) {
                 return false;
             }
         }

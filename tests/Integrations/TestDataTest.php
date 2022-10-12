@@ -5,7 +5,7 @@ namespace LaunchDarkly\Tests\Integrations;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Integrations\TestData;
 use LaunchDarkly\LDClient;
-use LaunchDarkly\LDUserBuilder;
+use LaunchDarkly\LDContext;
 use LaunchDarkly\Tests;
 use PHPUnit\Framework\TestCase;
 
@@ -509,15 +509,13 @@ class TestDataTest extends TestCase
         ];
         $client = new LDClient("someKey", $options);
 
-        $userBuilder = new LDUserBuilder("someKey");
+        $context1 = LDContext::builder("x")->set("firstName", "Janet")->set("lastName", "Cline")->build();
+        $this->assertFalse($client->variation("flag", $context1));
 
-        $userBuilder->firstName("Janet")->lastName("Cline");
-        $this->assertFalse($client->variation("flag", $userBuilder->build()));
+        $context2 = LDContext::builder("x")->set("firstName", "Patsy")->set("lastName", "Cline")->build();
+        $this->assertFalse($client->variation("flag", $context2));
 
-        $userBuilder->firstName("Patsy")->lastName("Cline");
-        $this->assertFalse($client->variation("flag", $userBuilder->build()));
-
-        $userBuilder->firstName("Patsy")->lastName("Smith");
-        $this->assertTrue($client->variation("flag", $userBuilder->build()));
+        $context3 = LDContext::builder("x")->set("firstName", "Patsy")->set("lastName", "Smith")->build();
+        $this->assertTrue($client->variation("flag", $context3));
     }
 }

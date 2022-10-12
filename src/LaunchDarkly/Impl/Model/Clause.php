@@ -3,7 +3,7 @@
 namespace LaunchDarkly\Impl\Model;
 
 use LaunchDarkly\FeatureRequester;
-use LaunchDarkly\LDUser;
+use LaunchDarkly\LDContext;
 
 /**
  * Internal data model class that describes a clause within a feature flag rule or segment rule.
@@ -42,38 +42,41 @@ class Clause
         };
     }
 
-    public function matchesUser(LDUser $user, ?FeatureRequester $featureRequester): bool
+    public function matchesContext(LDContext $context, ?FeatureRequester $featureRequester): bool
     {
         if ($this->_op === 'segmentMatch') {
             foreach ($this->_values as $value) {
                 $segment = $featureRequester ? $featureRequester->getSegment($value) : null;
                 if ($segment) {
-                    if ($segment->matchesUser($user)) {
+                    if ($segment->matchesContext($context)) {
                         return $this->_maybeNegate(true);
                     }
                 }
             }
             return $this->_maybeNegate(false);
         } else {
-            return $this->matchesUserNoSegments($user);
+            return $this->matchesContextNoSegments($context);
         }
     }
 
-    public function matchesUserNoSegments(LDUser $user): bool
+    public function matchesContextNoSegments(LDContext $context): bool
     {
-        $userValue = $user->getValueForEvaluation($this->_attribute);
-        if ($userValue === null) {
+        if ($this->_attribute === null) {
             return false;
         }
-        if (is_array($userValue)) {
-            foreach ($userValue as $element) {
+        $contextValue = $context->get($this->_attribute);
+        if ($contextValue === null) {
+            return false;
+        }
+        if (is_array($contextValue)) {
+            foreach ($contextValue as $element) {
                 if ($this->matchAny($element)) {
                     return $this->_maybeNegate(true);
                 }
             }
             return $this->_maybeNegate(false);
         } else {
-            return $this->_maybeNegate($this->matchAny($userValue));
+            return $this->_maybeNegate($this->matchAny($contextValue));
         }
     }
 
@@ -98,14 +101,14 @@ class Clause
     }
 
     /**
-     * @param mixed|null $userValue
+     * @param mixed|null $contextValue
      *
      * @return bool
      */
-    private function matchAny($userValue): bool
+    private function matchAny($contextValue): bool
     {
         foreach ($this->_values as $v) {
-            $result = Operators::apply($this->_op, $userValue, $v);
+            $result = Operators::apply($this->_op, $contextValue, $v);
             if ($result === true) {
                 return true;
             }

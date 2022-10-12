@@ -177,71 +177,79 @@ class LDClient
     }
 
     /**
-     * Calculates the value of a feature flag for a given user.
+     * Calculates the value of a feature flag for a given context.
      *
-     * @param string $key The unique key for the feature flag
-     * @param LDUser $user The end user requesting the flag
-     * @param mixed $default The default value of the flag
+     * If an error makes it impossible to evaluate the flag (for instance, the feature flag key
+     * does not match any existing flag), `$defaultValue` is returned.
      *
-     * @return mixed The result of the Feature Flag evaluation, or $default if any errors occurred.
+     * @param string $key the unique key for the feature flag
+     * @param LDContext $context the evaluation context
+     * @param mixed $defaultValue the default value of the flag
+     * @return mixed the variation for the given context, or `$defaultValue` if the flag cannot be evaluated
+     * @see \LaunchDarkly\LDClient::variationDetail()
      */
-    public function variation(string $key, LDUser $user, $default = false)
+    public function variation(string $key, LDContext $context, $defaultValue = false)
     {
-        $detail = $this->variationDetailInternal($key, $user, $default, $this->_eventFactoryDefault);
+        $detail = $this->variationDetailInternal($key, $context, $defaultValue, $this->_eventFactoryDefault);
         return $detail->getValue();
     }
 
     /**
-     * Calculates the value of a feature flag, and returns an object that describes the way the
-     * value was determined.
+     * Calculates the value of a feature flag for a given context, and returns an object that
+     * describes the way the value was determined.
      *
      * The "reason" property in the result will also be included in analytics events, if you are capturing
      * detailed event data for this flag.
      *
-     * @param string $key The unique key for the feature flag
-     * @param LDUser $user The end user requesting the flag
-     * @param mixed $default The default value of the flag
+     * @param string $key the unique key for the feature flag
+     * @param LDContext $context the evaluation context
+     * @param mixed $defaultValue the default value of the flag
      *
-     * @return EvaluationDetail An EvaluationDetail object that includes the feature flag value
-     * and evaluation reason.
+     * @return EvaluationDetail an EvaluationDetail object that includes the feature flag value
+     * and evaluation reason
      */
-    public function variationDetail(string $key, LDUser $user, $default = false): EvaluationDetail
+    public function variationDetail(string $key, LDContext $context, $defaultValue = false): EvaluationDetail
     {
-        return $this->variationDetailInternal($key, $user, $default, $this->_eventFactoryWithReasons);
+        return $this->variationDetailInternal($key, $context, $defaultValue, $this->_eventFactoryWithReasons);
     }
 
     /**
      * @param string $key
-     * @param LDUser $user
+     * @param LDContext $context
      * @param mixed $default
      * @param EventFactory $eventFactory
      *
      * @return EvaluationDetail
      */
-    private function variationDetailInternal(string $key, LDUser $user, $default, EventFactory $eventFactory): EvaluationDetail
+    private function variationDetailInternal(string $key, LDContext $context, $default, EventFactory $eventFactory): EvaluationDetail
     {
         $default = $this->_get_default($key, $default);
 
         $errorResult = function (string $errorKind) use ($default): EvaluationDetail {
             return new EvaluationDetail($default, null, EvaluationReason::error($errorKind));
         };
-        $sendEvent = function (EvaluationDetail $detail, ?FeatureFlag $flag) use ($key, $user, $default, $eventFactory): void {
-            if ($flag) {
-                $event = $eventFactory->newEvalEvent($flag, $user, $detail, $default);
-            } else {
-                $event = $eventFactory->newUnknownFlagEvent($key, $user, $detail);
-            }
-            $this->_eventProcessor->enqueue($event);
+        $sendEvent = function (EvaluationDetail $detail, ?FeatureFlag $flag) use ($key, $context, $default, $eventFactory): void {
+            // if ($flag) {
+            //     $event = $eventFactory->newEvalEvent($flag, $context, $detail, $default);
+            // } else {
+            //     $event = $eventFactory->newUnknownFlagEvent($key, $context, $detail);
+            // }
+            // $this->_eventProcessor->enqueue($event);
         };
+
+        if (!$context->isValid()) {
+            $result = $errorResult(EvaluationReason::USER_NOT_SPECIFIED_ERROR);
+            $sendEvent($result, null);
+            $error = $context->getError();
+            $this->_logger->warning("Context was invalid for flag evaluation ($error); returning default value");
+            return $result;
+        }
 
         if ($this->_offline) {
             return $errorResult(EvaluationReason::CLIENT_NOT_READY_ERROR);
         }
 
         try {
-            if ($user->isKeyBlank()) {
-                $this->_logger->warning("User key is blank. Flag evaluation will proceed, but the user will not be stored in LaunchDarkly.");
-            }
             try {
                 $flag = $this->_featureRequester->getFeature($key);
             } catch (UnrecoverableHTTPStatusException $e) {
@@ -254,13 +262,7 @@ class LDClient
                 $sendEvent($result, null);
                 return $result;
             }
-            if (is_null($user->getKey())) {
-                $result = $errorResult(EvaluationReason::USER_NOT_SPECIFIED_ERROR);
-                $sendEvent($result, $flag);
-                $this->_logger->warning("Variation called with null user key! Returning default value");
-                return $result;
-            }
-            $evalResult = $flag->evaluate($user, $this->_featureRequester, $eventFactory);
+            $evalResult = $flag->evaluate($context, $this->_featureRequester, $eventFactory);
             foreach ($evalResult->getPrerequisiteEvents() as $e) {
                 $this->_eventProcessor->enqueue($e);
             }
@@ -328,7 +330,7 @@ class LDClient
     }
 
     /**
-     * Returns an object that encapsulates the state of all feature flags for a given user.
+     * Returns an object that encapsulates the state of all feature flags for a given context.
      *
      * This includes the flag values as well as other flag metadata that may be needed by front-end code,
      * since the most common use case for this method is [bootstrapping](https://docs.launchdarkly.com/sdk/features/bootstrapping)
@@ -336,7 +338,7 @@ class LDClient
      *
      * This method does not send analytics events back to LaunchDarkly.
      *
-     * @param LDUser $user The end user requesting the feature flags
+     * @param LDContext $context the evalation context
      * @param array $options Optional properties affecting how the state is computed:
      * - `clientSideOnly`: Set this to true to specify that only flags marked for client-side use
      * should be included; by default, all flags are included
@@ -348,10 +350,11 @@ class LDClient
      *
      * @return FeatureFlagsState a FeatureFlagsState object (will never be null)
      */
-    public function allFlagsState(LDUser $user, array $options = []): FeatureFlagsState
+    public function allFlagsState(LDContext $context, array $options = []): FeatureFlagsState
     {
-        if (is_null($user->getKey())) {
-            $this->_logger->warning("allFlagsState called with null/empty user key! Returning empty state");
+        if (!$context->isValid()) {
+            $error = $context->getError();
+            $this->_logger->warning("Invalid context for allFlagsState ($error); returning empty state");
             return new FeatureFlagsState(false);
         }
 
@@ -379,7 +382,7 @@ class LDClient
             if ($clientOnly && !$flag->isClientSide()) {
                 continue;
             }
-            $result = $flag->evaluate($user, $preloadedRequester, $this->_eventFactoryDefault);
+            $result = $flag->evaluate($context, $preloadedRequester, $this->_eventFactoryDefault);
             $state->addFlag($flag, $result->getDetail(), $withReasons, $detailsOnlyIfTracked);
         }
         return $state;
@@ -389,13 +392,16 @@ class LDClient
      * Generates an HMAC sha256 hash for use in Secure mode.
      *
      * See: [Secure mode](https://docs.launchdarkly.com/sdk/features/secure-mode)
+     *
+     * @param LDContext $context the evaluation context
+     * @return string the hash value
      */
-    public function secureModeHash(LDUser $user): string
+    public function secureModeHash(LDContext $context): string
     {
-        if (strlen($user->getKey()) === 0) {
+        if (!$context->isValid()) {
             return "";
         }
-        return hash_hmac("sha256", $user->getKey(), $this->_sdkKey, false);
+        return hash_hmac("sha256", $context->getFullyQualifiedKey(), $this->_sdkKey, false);
     }
 
     /**

@@ -2,7 +2,7 @@
 
 namespace LaunchDarkly\Impl\Model;
 
-use LaunchDarkly\LDUser;
+use LaunchDarkly\LDContext;
 
 /**
  * Internal data model class that describes a user segment rule.
@@ -39,10 +39,10 @@ class SegmentRule
         };
     }
 
-    public function matchesUser(LDUser $user, string $segmentKey, string $segmentSalt): bool
+    public function matchesContext(LDContext $context, string $segmentKey, string $segmentSalt): bool
     {
         foreach ($this->_clauses as $clause) {
-            if (!$clause->matchesUserNoSegments($user)) {
+            if (!$clause->matchesContextNoSegments($context)) {
                 return false;
             }
         }
@@ -52,7 +52,7 @@ class SegmentRule
         }
         // All of the clauses are met. See if the user buckets in
         $bucketBy = ($this->_bucketBy === null) ? "key" : $this->_bucketBy;
-        $bucket = VariationOrRollout::bucketUser($user, $segmentKey, $bucketBy, $segmentSalt, null);
+        $bucket = VariationOrRollout::bucketContext($context, $segmentKey, $bucketBy, $segmentSalt, null);
         $weight = $this->_weight / 100000.0;
         return $bucket < $weight;
     }

@@ -8,7 +8,7 @@ use LaunchDarkly\Impl\EvalResult;
 use LaunchDarkly\Impl\Events\EventFactory;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Impl\Model\VariationOrRollout;
-use LaunchDarkly\LDUserBuilder;
+use LaunchDarkly\LDContext;
 use LaunchDarkly\Tests\MockFeatureRequester;
 use PHPUnit\Framework\TestCase;
 
@@ -64,7 +64,7 @@ class RolloutRandomizationConsistencyTest extends TestCase
         return $decodedFlag;
     }
     
-    public function testVariationIndexForUser()
+    public function testVariationIndexForContext()
     {
         $flag = $this->buildFlag();
         $eventFactory = new EventFactory(false);
@@ -87,23 +87,20 @@ class RolloutRandomizationConsistencyTest extends TestCase
             []
         );
 
-        $ub1 = new LDUserBuilder('userKeyA');
-        $user1 = $ub1->build();
-        $result1 = $flag->evaluate($user1, static::$requester, $eventFactory);
+        $context1 = LDContext::create('userKeyA');
+        $result1 = $flag->evaluate($context1, static::$requester, $eventFactory);
         $this->assertEquals($expectedEvalResult1, $result1);
 
-        $ub2 = new LDUserBuilder('userKeyB');
-        $user2 = $ub2->build();
-        $result2 = $flag->evaluate($user2, static::$requester, $eventFactory);
+        $context2 = LDContext::create('userKeyB');
+        $result2 = $flag->evaluate($context2, static::$requester, $eventFactory);
         $this->assertEquals($expectedEvalResult2, $result2);
 
-        $ub3 = new LDUserBuilder('userKeyC');
-        $user3 = $ub3->build();
-        $result3 = $flag->evaluate($user3, static::$requester, $eventFactory);
+        $context3 = LDContext::create('userKeyC');
+        $result3 = $flag->evaluate($context3, static::$requester, $eventFactory);
         $this->assertEquals($expectedEvalResult3, $result3);
     }
 
-    public function testBucketUserByKey()
+    public function testBucketContextByKey()
     {
         $vr = ['rollout' => [
             'variations' => [
@@ -114,26 +111,23 @@ class RolloutRandomizationConsistencyTest extends TestCase
 
         $decodedVr = call_user_func(VariationOrRollout::getDecoder(), $vr);
 
-        $ub1 = new LDUserBuilder('userKeyA');
-        $user1 = $ub1->build();
-        $point1 = $decodedVr->bucketUser($user1, 'hashKey', 'key', 'saltyA', null);
+        $context1 = LDContext::create('userKeyA');
+        $point1 = $decodedVr->bucketContext($context1, 'hashKey', 'key', 'saltyA', null);
         $difference1 = abs($point1 - 0.42157587);
         $this->assertTrue($difference1 <= 0.0000001);
 
-        $ub2 = new LDUserBuilder('userKeyB');
-        $user2 = $ub2->build();
-        $point2 = $decodedVr->bucketUser($user2, 'hashKey', 'key', 'saltyA', null);
+        $context2 = LDContext::create('userKeyB');
+        $point2 = $decodedVr->bucketContext($context2, 'hashKey', 'key', 'saltyA', null);
         $difference2 = abs($point2 - 0.6708485);
         $this->assertTrue($difference2 <= 0.0000001);
 
-        $ub3 = new LDUserBuilder('userKeyC');
-        $user3 = $ub3->build();
-        $point3 = $decodedVr->bucketUser($user3, 'hashKey', 'key', 'saltyA', null);
+        $context3 = LDContext::create('userKeyC');
+        $point3 = $decodedVr->bucketContext($context3, 'hashKey', 'key', 'saltyA', null);
         $difference3 = abs($point3 - 0.10343106);
         $this->assertTrue($difference3 <= 0.0000001);
     }
 
-    public function testBucketUserBySeed()
+    public function testBucketContextBySeed()
     {
         $seed = 61;
         $vr = ['rollout' => [
@@ -145,21 +139,18 @@ class RolloutRandomizationConsistencyTest extends TestCase
 
         $decodedVr = call_user_func(VariationOrRollout::getDecoder(), $vr);
 
-        $ub1 = new LDUserBuilder('userKeyA');
-        $user1 = $ub1->build();
-        $point1 = $decodedVr->bucketUser($user1, 'hashKey', 'key', 'saltyA', $seed);
+        $context1 = LDContext::create('userKeyA');
+        $point1 = $decodedVr->bucketContext($context1, 'hashKey', 'key', 'saltyA', $seed);
         $difference1 = abs($point1 - 0.09801207);
         $this->assertTrue($difference1 <= 0.0000001);
 
-        $ub2 = new LDUserBuilder('userKeyB');
-        $user2 = $ub2->build();
-        $point2 = $decodedVr->bucketUser($user2, 'hashKey', 'key', 'saltyA', $seed);
+        $context2 = LDContext::create('userKeyB');
+        $point2 = $decodedVr->bucketContext($context2, 'hashKey', 'key', 'saltyA', $seed);
         $difference2 = abs($point2 - 0.14483777);
         $this->assertTrue($difference2 <= 0.0000001);
 
-        $ub3 = new LDUserBuilder('userKeyC');
-        $user3 = $ub3->build();
-        $point3 = $decodedVr->bucketUser($user3, 'hashKey', 'key', 'saltyA', $seed);
+        $context3 = LDContext::create('userKeyC');
+        $point3 = $decodedVr->bucketContext($context3, 'hashKey', 'key', 'saltyA', $seed);
         $difference3 = abs($point3 - 0.9242641);
         $this->assertTrue($difference3 <= 0.0000001);
     }
