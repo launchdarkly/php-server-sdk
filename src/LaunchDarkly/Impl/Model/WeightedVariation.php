@@ -18,7 +18,7 @@ class WeightedVariation
     private int $_weight;
     private bool $_untracked = false;
 
-    private function __construct(int $variation, int $weight, bool $untracked)
+    public function __construct(int $variation, int $weight, bool $untracked)
     {
         $this->_variation = $variation;
         $this->_weight = $weight;

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace LaunchDarkly\Impl\Model;
 
-use LaunchDarkly\LDContext;
-
 /**
  * Internal data model class that describes a user segment rule.
  *
@@ -21,7 +19,7 @@ class SegmentRule
     private ?int $_weight = null;
     private ?string $_bucketBy = null;
 
-    protected function __construct(array $clauses, ?int $weight, ?string $bucketBy)
+    public function __construct(array $clauses, ?int $weight, ?string $bucketBy)
     {
         $this->_clauses = $clauses;
         $this->_weight = $weight;
@@ -37,24 +35,6 @@ class SegmentRule
         );
     }
 
-    public function matchesContext(LDContext $context, string $segmentKey, string $segmentSalt): bool
-    {
-        foreach ($this->_clauses as $clause) {
-            if (!$clause->matchesContextNoSegments($context)) {
-                return false;
-            }
-        }
-        // If the weight is absent, this rule matches
-        if ($this->_weight === null) {
-            return true;
-        }
-        // All of the clauses are met. See if the user buckets in
-        $bucketBy = ($this->_bucketBy === null) ? "key" : $this->_bucketBy;
-        $bucket = VariationOrRollout::bucketContext($context, $segmentKey, $bucketBy, $segmentSalt, null);
-        $weight = $this->_weight / 100000.0;
-        return $bucket < $weight;
-    }
-
     /**
      * @return Clause[]
      */
@@ -66,5 +46,10 @@ class SegmentRule
     public function getBucketBy(): ?string
     {
         return $this->_bucketBy;
+    }
+
+    public function getWeight(): ?int
+    {
+        return $this->_weight;
     }
 }

@@ -418,7 +418,7 @@ class TestDataTest extends TestCase
             'variations' => [true, false],
 
             /* Required FeatureFlag fields */
-            'salt' => null,
+            'salt' => '',
             'prerequisites' => [],
         ];
         $expectedFeatureFlag = FeatureFlag::decode($expectedFlagJson);
@@ -445,7 +445,7 @@ class TestDataTest extends TestCase
             'variations' => ['red', 'amber', 'green'],
 
             /* Required FeatureFlag fields */
-            'salt' => null,
+            'salt' => '',
             'prerequisites' => [],
         ];
         $expectedUpdatedFeatureFlag = FeatureFlag::decode($expectedUpdatedFlagJson);

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace LaunchDarkly\Impl\Model;
 
-use LaunchDarkly\LDContext;
-
 /**
  * Internal data model class that describes a user segment.
  *
@@ -27,7 +25,7 @@ class Segment
     protected array $_rules = [];
     protected bool $_deleted = false;
 
-    protected function __construct(
+    public function __construct(
         string $key,
         int $version,
         array $included,
@@ -64,29 +62,19 @@ class Segment
         return static::getDecoder()($v);
     }
 
-    public function matchesContext(LDContext $context): bool
+    public function isDeleted(): bool
     {
-        $key = $context->getKey();
-        if (!$key) {
-            return false;
-        }
-        if (in_array($key, $this->_included, true)) {
-            return true;
-        }
-        if (in_array($key, $this->_excluded, true)) {
-            return false;
-        }
-        foreach ($this->_rules as $rule) {
-            if ($rule->matchesContext($context, $this->_key, $this->_salt)) {
-                return true;
-            }
-        }
-        return false;
+        return $this->_deleted;
     }
 
-    public function getVersion(): ?int
+    public function getExcluded(): array
     {
-        return $this->_version;
+        return $this->_excluded;
+    }
+
+    public function getIncluded(): array
+    {
+        return $this->_included;
     }
 
     public function getKey(): string
@@ -94,8 +82,18 @@ class Segment
         return $this->_key;
     }
 
-    public function isDeleted(): bool
+    public function getRules(): array
     {
-        return $this->_deleted;
+        return $this->_rules;
+    }
+
+    public function getSalt(): string
+    {
+        return $this->_salt;
+    }
+
+    public function getVersion(): ?int
+    {
+        return $this->_version;
     }
 }

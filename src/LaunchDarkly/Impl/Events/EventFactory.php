@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace LaunchDarkly\Impl\Events;
 
 use LaunchDarkly\EvaluationDetail;
+use LaunchDarkly\Impl\Evaluation\EvalResult;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Impl\Util;
 use LaunchDarkly\LDUser;
@@ -25,7 +26,7 @@ class EventFactory
     /**
      * @param FeatureFlag $flag
      * @param LDUser $user
-     * @param EvaluationDetail $detail
+     * @param EvalResult $result
      * @param mixed $default
      * @param FeatureFlag|null $prereqOfFlag
      * @return mixed[]
@@ -33,11 +34,12 @@ class EventFactory
     public function newEvalEvent(
         FeatureFlag $flag,
         LDUser $user,
-        EvaluationDetail $detail,
+        EvalResult $result,
         mixed $default,
         ?FeatureFlag $prereqOfFlag = null
     ): array {
-        $addExperimentData = $flag->isExperiment($detail->getReason());
+        $detail = $result->getDetail();
+        $forceReasonTracking = $result->isForceReasonTracking();
         $e = [
             'kind' => 'feature',
             'creationDate' => Util::currentTimeUnixMillis(),
@@ -49,7 +51,7 @@ class EventFactory
             'version' => $flag->getVersion()
         ];
         // the following properties are handled separately so we don't waste bandwidth on unused keys
-        if ($addExperimentData || $flag->isTrackEvents()) {
+        if ($forceReasonTracking || $flag->isTrackEvents()) {
             $e['trackEvents'] = true;
         }
         if ($flag->getDebugEventsUntilDate()) {
@@ -58,7 +60,7 @@ class EventFactory
         if ($prereqOfFlag) {
             $e['prereqOf'] = $prereqOfFlag->getKey();
         }
-        if (($addExperimentData || $this->_withReasons)) {
+        if (($forceReasonTracking || $this->_withReasons)) {
             $e['reason'] = $detail->getReason()->jsonSerialize();
         }
         if ($user->getAnonymous()) {

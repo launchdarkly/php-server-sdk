@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace LaunchDarkly;
 
+use LaunchDarkly\Impl\Evaluation\Evaluator;
+use LaunchDarkly\Impl\Evaluation\PrerequisiteEvaluationRecord;
 use LaunchDarkly\Impl\Events\EventFactory;
 use LaunchDarkly\Impl\Events\EventProcessor;
 use LaunchDarkly\Impl\Events\NullEventProcessor;
@@ -33,6 +35,7 @@ class LDClient
     protected string $_sdkKey;
     protected string $_baseUri;
     protected string $_eventsUri;
+    protected Evaluator $_evaluator;
     protected EventProcessor $_eventProcessor;
     protected bool $_offline = false;
     protected bool $_send_events = true;
@@ -134,6 +137,8 @@ class LDClient
         }
 
         $this->_featureRequester = $this->getFeatureRequester($sdkKey, $options);
+
+        $this->_evaluator = new Evaluator($this->_featureRequester);
     }
 
     /**
@@ -252,10 +257,21 @@ class LDClient
                 $sendEvent($result, null);
                 return $result;
             }
-            $evalResult = $flag->evaluate($context, $this->_featureRequester, $eventFactory);
-            foreach ($evalResult->getPrerequisiteEvents() as $e) {
-                $this->_eventProcessor->enqueue($e);
-            }
+            $evalResult = $this->_evaluator->evaluate(
+                $flag,
+                $context,
+                function (PrerequisiteEvaluationRecord $pe) {
+                    // TODO: events temporarily disabled till they support contexts
+                    // $event = $eventFactory->newEvalEvent(
+                    //     $pe->getFlag(),
+                    //     $context,
+                    //     $pe->getResult(),
+                    //     null,
+                    //     $pe->getPrereqOfFlag()
+                    // );
+                    // $this->_eventProcessor->enqueue($event);
+                }
+            );
             $detail = $evalResult->getDetail();
             if ($detail->isDefaultValue()) {
                 $detail = new EvaluationDetail($default, null, $detail->getReason());
@@ -363,6 +379,7 @@ class LDClient
 
         $preloadedRequester = new PreloadedFeatureRequester($this->_featureRequester, $flags);
         // This saves us from doing repeated queries for prerequisite flags during evaluation
+        $tempEvaluator = new Evaluator($preloadedRequester);
 
         $state = new FeatureFlagsState(true);
         $clientOnly = !!($options['clientSideOnly'] ?? false);
@@ -372,8 +389,8 @@ class LDClient
             if ($clientOnly && !$flag->isClientSide()) {
                 continue;
             }
-            $result = $flag->evaluate($context, $preloadedRequester, $this->_eventFactoryDefault);
-            $state->addFlag($flag, $result->getDetail(), $withReasons, $detailsOnlyIfTracked);
+            $result = $tempEvaluator->evaluate($flag, $context, null);
+            $state->addFlag($flag, $result->getDetail(), $result->isForceReasonTracking(), $withReasons, $detailsOnlyIfTracked);
         }
         return $state;
     }

@@ -382,7 +382,7 @@ class FlagBuilder
             // Fields necessary to be able to pass the result
             // of build() into FeatureFlag::decode
             'prerequisites' => [],
-            'salt' => null,
+            'salt' => '',
         ];
 
         $baseFlagObject['offVariation'] = $this->_offVariation;

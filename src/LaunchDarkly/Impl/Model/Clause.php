@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace LaunchDarkly\Impl\Model;
 
-use LaunchDarkly\FeatureRequester;
-use LaunchDarkly\LDContext;
-
 /**
  * Internal data model class that describes a clause within a feature flag rule or segment rule.
  *
@@ -22,7 +19,7 @@ class Clause
     private array $_values = [];
     private bool $_negate = false;
 
-    private function __construct(?string $attribute, ?string $op, array $values, bool $negate)
+    public function __construct(?string $attribute, ?string $op, array $values, bool $negate)
     {
         $this->_attribute = $attribute;
         $this->_op = $op;
@@ -36,42 +33,6 @@ class Clause
     public static function getDecoder(): \Closure
     {
         return fn ($v) => new Clause($v['attribute'], $v['op'], $v['values'], $v['negate']);
-    }
-
-    public function matchesContext(LDContext $context, ?FeatureRequester $featureRequester): bool
-    {
-        if ($this->_op === 'segmentMatch') {
-            foreach ($this->_values as $value) {
-                $segment = $featureRequester?->getSegment($value);
-                if ($segment?->matchesContext($context)) {
-                    return $this->_maybeNegate(true);
-                }
-            }
-            return $this->_maybeNegate(false);
-        } else {
-            return $this->matchesContextNoSegments($context);
-        }
-    }
-
-    public function matchesContextNoSegments(LDContext $context): bool
-    {
-        if ($this->_attribute === null) {
-            return false;
-        }
-        $contextValue = $context->get($this->_attribute);
-        if ($contextValue === null) {
-            return false;
-        }
-        if (is_array($contextValue)) {
-            foreach ($contextValue as $element) {
-                if ($this->matchAny($element)) {
-                    return $this->_maybeNegate(true);
-                }
-            }
-            return $this->_maybeNegate(false);
-        } else {
-            return $this->_maybeNegate($this->matchAny($contextValue));
-        }
     }
 
     public function getAttribute(): ?string
@@ -92,25 +53,5 @@ class Clause
     public function isNegate(): bool
     {
         return $this->_negate;
-    }
-
-    private function matchAny(mixed $contextValue): bool
-    {
-        foreach ($this->_values as $v) {
-            $result = Operators::apply($this->_op, $contextValue, $v);
-            if ($result === true) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private function _maybeNegate(bool $b): bool
-    {
-        if ($this->_negate) {
-            return !$b;
-        } else {
-            return $b;
-        }
     }
 }

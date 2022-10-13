@@ -1,13 +1,13 @@
 <?php
 
-namespace LaunchDarkly\Tests\Impl\Model;
+namespace LaunchDarkly\Tests\Impl\Evaluation;
 
 use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
-use LaunchDarkly\Impl\EvalResult;
-use LaunchDarkly\Impl\Events\EventFactory;
+use LaunchDarkly\Impl\Evaluation\EvalResult;
+use LaunchDarkly\Impl\Evaluation\Evaluator;
+use LaunchDarkly\Impl\Evaluation\EvaluatorBucketing;
 use LaunchDarkly\Impl\Model\FeatureFlag;
-use LaunchDarkly\Impl\Model\VariationOrRollout;
 use LaunchDarkly\LDContext;
 use LaunchDarkly\Tests\MockFeatureRequester;
 use PHPUnit\Framework\TestCase;
@@ -67,62 +67,54 @@ class RolloutRandomizationConsistencyTest extends TestCase
     public function testVariationIndexForContext()
     {
         $flag = $this->buildFlag();
-        $eventFactory = new EventFactory(false);
 
         $evaluationReasonInExperiment = EvaluationReason::fallthrough(true);
         $evaluationReasonNotInExperiment = EvaluationReason::fallthrough(false);
 
         $expectedEvalResult1 = new EvalResult(
             new EvaluationDetail('fall', 0, $evaluationReasonInExperiment),
-            []
+            true
         );
 
         $expectedEvalResult2 = new EvalResult(
             new EvaluationDetail('off', 1, $evaluationReasonInExperiment),
-            []
+            true
         );
 
         $expectedEvalResult3 = new EvalResult(
             new EvaluationDetail('fall', 0, $evaluationReasonNotInExperiment),
-            []
+            false
         );
 
+        $evaluator = new Evaluator(static::$requester);
+    
         $context1 = LDContext::create('userKeyA');
-        $result1 = $flag->evaluate($context1, static::$requester, $eventFactory);
+        $result1 = $evaluator->evaluate($flag, $context1, EvaluatorTestUtil::expectNoPrerequisiteEvals());
         $this->assertEquals($expectedEvalResult1, $result1);
 
         $context2 = LDContext::create('userKeyB');
-        $result2 = $flag->evaluate($context2, static::$requester, $eventFactory);
+        $result2 = $evaluator->evaluate($flag, $context2, EvaluatorTestUtil::expectNoPrerequisiteEvals());
         $this->assertEquals($expectedEvalResult2, $result2);
 
         $context3 = LDContext::create('userKeyC');
-        $result3 = $flag->evaluate($context3, static::$requester, $eventFactory);
+        $result3 = $evaluator->evaluate($flag, $context3, EvaluatorTestUtil::expectNoPrerequisiteEvals());
         $this->assertEquals($expectedEvalResult3, $result3);
     }
 
     public function testBucketContextByKey()
     {
-        $vr = ['rollout' => [
-            'variations' => [
-                ['variation' => 1, 'weight' => 50000],
-                ['variation' => 2, 'weight' => 50000]
-            ]
-        ]];
-
-        $decodedVr = call_user_func(VariationOrRollout::getDecoder(), $vr);
-
         $context1 = LDContext::create('userKeyA');
-        $point1 = $decodedVr->bucketContext($context1, 'hashKey', 'key', 'saltyA', null);
+        $point1 = EvaluatorBucketing::getBucketValueForContext($context1, 'hashKey', 'key', 'saltyA', null);
         $difference1 = abs($point1 - 0.42157587);
         $this->assertTrue($difference1 <= 0.0000001);
 
         $context2 = LDContext::create('userKeyB');
-        $point2 = $decodedVr->bucketContext($context2, 'hashKey', 'key', 'saltyA', null);
+        $point2 = EvaluatorBucketing::getBucketValueForContext($context2, 'hashKey', 'key', 'saltyA', null);
         $difference2 = abs($point2 - 0.6708485);
         $this->assertTrue($difference2 <= 0.0000001);
 
         $context3 = LDContext::create('userKeyC');
-        $point3 = $decodedVr->bucketContext($context3, 'hashKey', 'key', 'saltyA', null);
+        $point3 = EvaluatorBucketing::getBucketValueForContext($context3, 'hashKey', 'key', 'saltyA', null);
         $difference3 = abs($point3 - 0.10343106);
         $this->assertTrue($difference3 <= 0.0000001);
     }
@@ -130,27 +122,18 @@ class RolloutRandomizationConsistencyTest extends TestCase
     public function testBucketContextBySeed()
     {
         $seed = 61;
-        $vr = ['rollout' => [
-            'variations' => [
-                ['variation' => 1, 'weight' => 50000],
-                ['variation' => 2, 'weight' => 50000]
-            ]
-        ]];
-
-        $decodedVr = call_user_func(VariationOrRollout::getDecoder(), $vr);
-
         $context1 = LDContext::create('userKeyA');
-        $point1 = $decodedVr->bucketContext($context1, 'hashKey', 'key', 'saltyA', $seed);
+        $point1 = EvaluatorBucketing::getBucketValueForContext($context1, 'hashKey', 'key', 'saltyA', $seed);
         $difference1 = abs($point1 - 0.09801207);
         $this->assertTrue($difference1 <= 0.0000001);
 
         $context2 = LDContext::create('userKeyB');
-        $point2 = $decodedVr->bucketContext($context2, 'hashKey', 'key', 'saltyA', $seed);
+        $point2 = EvaluatorBucketing::getBucketValueForContext($context2, 'hashKey', 'key', 'saltyA', $seed);
         $difference2 = abs($point2 - 0.14483777);
         $this->assertTrue($difference2 <= 0.0000001);
 
         $context3 = LDContext::create('userKeyC');
-        $point3 = $decodedVr->bucketContext($context3, 'hashKey', 'key', 'saltyA', $seed);
+        $point3 = EvaluatorBucketing::getBucketValueForContext($context3, 'hashKey', 'key', 'saltyA', $seed);
         $difference3 = abs($point3 - 0.9242641);
         $this->assertTrue($difference3 <= 0.0000001);
     }

@@ -22,7 +22,7 @@ class Rollout
     private string $_kind;
     private ?int $_seed = null;
 
-    protected function __construct(
+    public function __construct(
         array $variations,
         ?string $bucketBy,
         ?string $kind = null,

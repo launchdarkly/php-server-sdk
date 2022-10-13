@@ -41,16 +41,15 @@ class FeatureFlagsState implements \JsonSerializable
     public function addFlag(
         FeatureFlag $flag,
         EvaluationDetail $detail,
+        bool $forceReasonTracking = false,
         bool $withReason = false,
         bool $detailsOnlyIfTracked = false
     ): void {
-        $requireExperimentData = $flag->isExperiment($detail->getReason());
-
         $this->_flagValues[$flag->getKey()] = $detail->getValue();
         $meta = [];
 
-        $trackEvents = $flag->isTrackEvents() || $requireExperimentData;
-        $trackReason = $requireExperimentData;
+        $trackEvents = $flag->isTrackEvents() || $forceReasonTracking;
+        $trackReason = $forceReasonTracking;
 
         $omitDetails = false;
         if ($detailsOnlyIfTracked) {

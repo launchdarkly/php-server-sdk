@@ -1,8 +1,8 @@
 <?php
 
-namespace LaunchDarkly\Tests\Impl\Model;
+namespace LaunchDarkly\Tests\Impl\Evaluation;
 
-use LaunchDarkly\Impl\Model\Operators;
+use LaunchDarkly\Impl\Evaluation\Operators;
 use PHPUnit\Framework\TestCase;
 
 class OperatorsTest extends TestCase

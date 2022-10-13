@@ -18,7 +18,7 @@ class Target
     private array $_values = [];
     private int $_variation;
 
-    protected function __construct(array $values, int $variation)
+    public function __construct(array $values, int $variation)
     {
         $this->_values = $values;
         $this->_variation = $variation;

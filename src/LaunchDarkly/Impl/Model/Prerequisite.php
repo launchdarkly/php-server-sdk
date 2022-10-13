@@ -17,7 +17,7 @@ class Prerequisite
     private string $_key;
     private int $_variation;
 
-    protected function __construct(string $key, int $variation)
+    public function __construct(string $key, int $variation)
     {
         $this->_key = $key;
         $this->_variation = $variation;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LaunchDarkly\Impl\Model;
+namespace LaunchDarkly\Impl\Evaluation;
 
 use DateTime;
 use DateTimeInterface;

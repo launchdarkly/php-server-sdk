@@ -4,7 +4,9 @@ namespace LaunchDarkly\Tests;
 
 use InvalidArgumentException;
 use LaunchDarkly\EvaluationReason;
+use LaunchDarkly\FeatureRequester;
 use LaunchDarkly\Impl\Model\FeatureFlag;
+use LaunchDarkly\Impl\Model\Segment;
 use LaunchDarkly\LDClient;
 use LaunchDarkly\LDContext;
 use LaunchDarkly\LDUser;
@@ -57,7 +59,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
     private function makeClient($overrideOptions = [])
     {
         $options = [
-            'feature_requester_class' => MockFeatureRequester::class,
+            'feature_requester_class' => StaticMockFeatureRequester::class,
             'event_processor' => new MockEventProcessor()
         ];
         return new LDClient("someKey", array_merge($options, $overrideOptions));
@@ -66,7 +68,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
     public function testVariationReturnsFlagValue()
     {
         $flag = $this->makeOffFlagWithValue('feature', 'value');
-        MockFeatureRequester::$flags = ['feature' => $flag];
+        StaticMockFeatureRequester::$flags = ['feature' => $flag];
         $client = $this->makeClient();
 
         $value = $client->variation('feature', LDContext::create('userkey'), 'default');
@@ -76,7 +78,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
     public function testVariationDetailReturnsFlagValue()
     {
         $flag = $this->makeOffFlagWithValue('feature', 'value');
-        MockFeatureRequester::$flags = ['feature' => $flag];
+        StaticMockFeatureRequester::$flags = ['feature' => $flag];
         $client = $this->makeClient();
 
         $detail = $client->variationDetail('feature', LDContext::create('userkey'), 'default');
@@ -89,7 +91,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
     public function testVariationReturnsDefaultIfFlagEvaluatesToNull()
     {
         $flag = $this->makeFlagThatEvaluatesToNull('feature');
-        MockFeatureRequester::$flags = ['feature' => $flag];
+        StaticMockFeatureRequester::$flags = ['feature' => $flag];
         $client = $this->makeClient();
 
         $value = $client->variation('feature', LDContext::create('userkey'), 'default');
@@ -99,7 +101,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
     public function testVariationDetailReturnsDefaultIfFlagEvaluatesToNull()
     {
         $flag = $this->makeFlagThatEvaluatesToNull('feature');
-        MockFeatureRequester::$flags = ['feature' => $flag];
+        StaticMockFeatureRequester::$flags = ['feature' => $flag];
         $client = $this->makeClient();
 
         $detail = $client->variationDetail('feature', LDContext::create('userkey'), 'default');
@@ -111,7 +113,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
 
     public function testVariationReturnsDefaultForUnknownFlag()
     {
-        MockFeatureRequester::$flags = [];
+        StaticMockFeatureRequester::$flags = [];
         $client = $this->makeClient();
 
         $this->assertEquals('argdef', $client->variation('foo', LDContext::create('userkey'), 'argdef'));
@@ -119,7 +121,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
 
     public function testVariationDetailReturnsDefaultForUnknownFlag()
     {
-        MockFeatureRequester::$flags = [];
+        StaticMockFeatureRequester::$flags = [];
         $client = $this->makeClient();
 
         $detail = $client->variationDetail('foo', LDContext::create('userkey'), 'default');
@@ -131,7 +133,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
 
     public function testVariationReturnsDefaultFromConfigurationForUnknownFlag()
     {
-        MockFeatureRequester::$flags = [];
+        StaticMockFeatureRequester::$flags = [];
         $client = $this->makeClient(['defaults' => ['foo' => 'fromarray']]);
 
         $this->assertEquals('fromarray', $client->variation('foo', LDContext::create('userkey'), 'argdef'));
@@ -140,7 +142,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
     // public function testVariationSendsEvent()
     // {
     //     $flag = $this->makeOffFlagWithValue('flagkey', 'flagvalue');
-    //     MockFeatureRequester::$flags = ['flagkey' => $flag];
+    //     StaticMockFeatureRequester::$flags = ['flagkey' => $flag];
     //     $ep = new MockEventProcessor();
     //     $client = $this->makeClient(['event_processor' => $ep]);
 
@@ -163,7 +165,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
     // public function testVariationDetailSendsEvent()
     // {
     //     $flag = $this->makeOffFlagWithValue('flagkey', 'flagvalue');
-    //     MockFeatureRequester::$flags = ['flagkey' => $flag];
+    //     StaticMockFeatureRequester::$flags = ['flagkey' => $flag];
     //     $ep = new MockEventProcessor();
     //     $client = $this->makeClient(['event_processor' => $ep]);
 
@@ -214,7 +216,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
     //     ];
     //     $flag = FeatureFlag::decode($flagJson);
 
-    //     MockFeatureRequester::$flags = ['flagkey' => $flag];
+    //     StaticMockFeatureRequester::$flags = ['flagkey' => $flag];
     //     $ep = new MockEventProcessor();
     //     $client = $this->makeClient(['event_processor' => $ep]);
 
@@ -252,7 +254,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
     //     ];
     //     $flag = FeatureFlag::decode($flagJson);
 
-    //     MockFeatureRequester::$flags = ['flagkey' => $flag];
+    //     StaticMockFeatureRequester::$flags = ['flagkey' => $flag];
     //     $ep = new MockEventProcessor();
     //     $client = $this->makeClient(['event_processor' => $ep]);
 
@@ -274,7 +276,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
 
     // public function testVariationSendsEventForUnknownFlag()
     // {
-    //     MockFeatureRequester::$flags = [];
+    //     StaticMockFeatureRequester::$flags = [];
     //     $ep = new MockEventProcessor();
     //     $client = $this->makeClient(['event_processor' => $ep]);
 
@@ -295,7 +297,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
 
     // public function testVariationDetailSendsEventForUnknownFlag()
     // {
-    //     MockFeatureRequester::$flags = [];
+    //     StaticMockFeatureRequester::$flags = [];
     //     $ep = new MockEventProcessor();
     //     $client = $this->makeClient(['event_processor' => $ep]);
 
@@ -354,7 +356,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         ];
         $flag = FeatureFlag::decode($flagJson);
 
-        MockFeatureRequester::$flags = ['feature' => $flag];
+        StaticMockFeatureRequester::$flags = ['feature' => $flag];
         $client = $this->makeClient();
 
         $context = LDContext::create('userkey');
@@ -397,7 +399,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         ];
         $flag = FeatureFlag::decode($flagJson);
 
-        MockFeatureRequester::$flags = ['feature' => $flag];
+        StaticMockFeatureRequester::$flags = ['feature' => $flag];
         $client = $this->makeClient();
 
         $context = LDContext::create('userkey');
@@ -443,7 +445,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         ];
         $flag = FeatureFlag::decode($flagJson);
 
-        MockFeatureRequester::$flags = ['feature' => $flag];
+        StaticMockFeatureRequester::$flags = ['feature' => $flag];
         $client = $this->makeClient();
 
         $context = LDContext::create('userkey');
@@ -482,7 +484,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $flagJson['key'] = 'client-side-2';
         $flagJson['variations'] = ['value2'];
         $flag4 = FeatureFlag::decode($flagJson);
-        MockFeatureRequester::$flags = [
+        StaticMockFeatureRequester::$flags = [
             $flag1->getKey() => $flag1, $flag2->getKey() => $flag2, $flag3->getKey() => $flag3, $flag4->getKey() => $flag4
         ];
         $client = $this->makeClient();
@@ -543,7 +545,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $flag2 = FeatureFlag::decode($flag2Json);
         $flag3 = FeatureFlag::decode($flag3Json);
 
-        MockFeatureRequester::$flags = ['flag1' => $flag1, 'flag2' => $flag2, 'flag3' => $flag3];
+        StaticMockFeatureRequester::$flags = ['flag1' => $flag1, 'flag2' => $flag2, 'flag3' => $flag3];
         $client = $this->makeClient();
 
         $context = LDContext::create('userkey');
@@ -655,7 +657,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         // EventProcessor would forward events to it if send_events were not disabled.
         $mockPublisher = new MockEventPublisher("", []);
         $options = [
-            'feature_requester_class' => MockFeatureRequester::class,
+            'feature_requester_class' => StaticMockFeatureRequester::class,
             'event_publisher' => $mockPublisher,
             'send_events' => false,
         ];
@@ -696,5 +698,29 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $invalidContext = LDContext::create('');
 
         $client->variation('MyFeature', $invalidContext);
+    }
+}
+
+class StaticMockFeatureRequester implements FeatureRequester
+{
+    public static $flags = [];
+
+    public function __construct($baseurl = '', $key = '', $options = [])
+    {
+    }
+
+    public function getFeature(string $key): ?FeatureFlag
+    {
+        return self::$flags[$key] ?? null;
+    }
+
+    public function getSegment(string $key): ?Segment
+    {
+        return null;
+    }
+
+    public function getAllFeatures(): ?array
+    {
+        return self::$flags;
     }
 }

@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace LaunchDarkly\Impl\Model;
 
-use LaunchDarkly\FeatureRequester;
-use LaunchDarkly\LDContext;
-
 /**
  * Internal data model class that describes a feature flag rule.
  *
@@ -22,7 +19,7 @@ class Rule extends VariationOrRollout
     private array $_clauses = [];
     private bool $_trackEvents;
 
-    protected function __construct(
+    public function __construct(
         ?int $variation,
         ?Rollout $rollout,
         ?string $id,
@@ -45,16 +42,6 @@ class Rule extends VariationOrRollout
                 array_map(Clause::getDecoder(), $v['clauses']),
                 !!($v['trackEvents'] ?? false)
             );
-    }
-
-    public function matchesContext(LDContext $context, ?FeatureRequester $featureRequester): bool
-    {
-        foreach ($this->_clauses as $clause) {
-            if (!$clause->matchesContext($context, $featureRequester)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     public function getId(): ?string
