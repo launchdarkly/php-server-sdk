@@ -9,7 +9,7 @@ workflows:
       - test-on-linux:
           matrix:
               parameters:
-                  php-version: ["7.3", "7.4", "8.0", "8.1"]
+                  php-version: ["8.0", "8.1"]
                   composer-dependencies: ["lowest", "highest"]
       - test-on-windows
 
@@ -78,21 +78,11 @@ jobs:
                 command: composer update --prefer-lowest --prefer-stable
 
       - run:
-          name: psalm linting
-          command: ./vendor/bin/psalm --no-cache
-      - when:
-          condition:
-              not:
-                equal: [ "8.1", <<parameters.php-version>> ]
-          steps:
-            - run:
-                name: php-cs-fixer check
-                command: composer cs-check
-      - run:
           name: run tests
-          command: php -d xdebug.mode=coverage vendor/bin/phpunit
-          environment:
-            XDEBUG_MODE: coverage
+          command: make test
+      - run:
+          name: lint
+          command: make lint
 
       - run:
           name: build contract test service

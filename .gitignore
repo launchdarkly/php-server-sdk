@@ -4,6 +4,7 @@
 *.iml
 composer.phar
 .php_cs.cache
+.php-cs-fixer.cache
 .vagrant
 integration-tests/vendor
 composer.lock

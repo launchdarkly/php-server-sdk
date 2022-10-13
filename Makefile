@@ -1,4 +1,12 @@
 
+test:
+	php -d xdebug.mode=coverage vendor/bin/phpunit
+
+lint:
+	./vendor/bin/psalm --no-cache
+	composer cs-check
+
+
 TEMP_TEST_OUTPUT=/tmp/sse-contract-test-service.log
 
 # TEST_HARNESS_PARAMS can be set to add -skip parameters for any contract tests that cannot yet pass
