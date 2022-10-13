@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl\Model;
 
 /**
@@ -12,12 +14,9 @@ namespace LaunchDarkly\Impl\Model;
  */
 class WeightedVariation
 {
-    /** @var int */
-    private $_variation;
-    /** @var int */
-    private $_weight;
-    /** @var boolean */
-    private $_untracked = false;
+    private int $_variation;
+    private int $_weight;
+    private bool $_untracked = false;
 
     private function __construct(int $variation, int $weight, bool $untracked)
     {
@@ -33,8 +32,8 @@ class WeightedVariation
     {
         return function (array $v) {
             return new WeightedVariation(
-                $v['variation'],
-                $v['weight'],
+                (int)$v['variation'],
+                (int)$v['weight'],
                 $v['untracked'] ?? false
             );
         };

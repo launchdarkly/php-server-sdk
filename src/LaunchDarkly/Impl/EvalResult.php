@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl;
 
 use LaunchDarkly\EvaluationDetail;
@@ -12,10 +14,8 @@ use LaunchDarkly\EvaluationDetail;
  */
 class EvalResult
 {
-    /** @var EvaluationDetail */
-    private $_detail;
-    /** @var array */
-    private $_prerequisiteEvents = [];
+    private EvaluationDetail $_detail;
+    private array $_prerequisiteEvents = [];
 
     public function __construct(EvaluationDetail $detail, array $prerequisiteEvents)
     {

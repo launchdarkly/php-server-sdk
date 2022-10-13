@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly;
 
 /**
@@ -81,23 +83,12 @@ class EvaluationReason implements \JsonSerializable
      */
     const EXCEPTION_ERROR = 'EXCEPTION';
 
-    /** @var string */
-    private $_kind;
-
-    /** @var string|null */
-    private $_errorKind;
-
-    /** @var int|null */
-    private $_ruleIndex;
-
-    /** @var string|null */
-    private $_ruleId;
-
-    /** @var string|null */
-    private $_prerequisiteKey;
-
-    /** @var bool */
-    private $_inExperiment;
+    private string $_kind;
+    private ?string $_errorKind;
+    private ?int $_ruleIndex;
+    private ?string $_ruleId;
+    private ?string $_prerequisiteKey;
+    private bool $_inExperiment;
 
     /**
      * Creates a new instance of the OFF reason.
@@ -228,7 +219,7 @@ class EvaluationReason implements \JsonSerializable
     /**
      * Returns true if the evaluation resulted in an experiment rollout *and* served
      * one of the variations in the experiment.  Otherwise it returns false.
-     * @return boolean
+     * @return bool
      */
     public function isInExperiment(): bool
     {

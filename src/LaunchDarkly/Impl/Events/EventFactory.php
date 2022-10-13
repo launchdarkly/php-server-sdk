@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl\Events;
 
 use LaunchDarkly\EvaluationDetail;
@@ -13,8 +15,7 @@ use LaunchDarkly\LDUser;
  */
 class EventFactory
 {
-    /** @var boolean */
-    private $_withReasons;
+    private bool $_withReasons;
 
     public function __construct(bool $withReasons)
     {
@@ -25,16 +26,16 @@ class EventFactory
      * @param FeatureFlag $flag
      * @param LDUser $user
      * @param EvaluationDetail $detail
-     * @param mixed|null $default
+     * @param mixed $default
      * @param FeatureFlag|null $prereqOfFlag
-     * @return (mixed|null)[]
+     * @return mixed[]
      */
     public function newEvalEvent(
         FeatureFlag $flag,
         LDUser $user,
         EvaluationDetail $detail,
-        $default,
-        $prereqOfFlag = null
+        mixed $default,
+        ?FeatureFlag $prereqOfFlag = null
     ): array {
         $addExperimentData = $flag->isExperiment($detail->getReason());
         $e = [
@@ -67,7 +68,7 @@ class EventFactory
     }
 
     /**
-     * @return (mixed|null)[]
+     * @return mixed[]
      */
     public function newDefaultEvent(FeatureFlag $flag, LDUser $user, EvaluationDetail $detail): array
     {
@@ -97,7 +98,7 @@ class EventFactory
     }
 
     /**
-     * @return (mixed|null)[]
+     * @return mixed[]
      */
     public function newUnknownFlagEvent(string $key, LDUser $user, EvaluationDetail $detail): array
     {
@@ -120,7 +121,7 @@ class EventFactory
     }
 
     /**
-     * @return (mixed|null)[]
+     * @return mixed[]
      */
     public function newIdentifyEvent(LDUser $user): array
     {
@@ -135,12 +136,12 @@ class EventFactory
     /**
      * @param string $eventName
      * @param LDUser $user
-     * @param mixed|null $data
-     * @param null|numeric $metricValue
+     * @param mixed $data
+     * @param int|float|null $metricValue
      *
-     * @return (mixed|null)[]
+     * @return mixed[]
      */
-    public function newCustomEvent(string $eventName, LDUser $user, $data, $metricValue): array
+    public function newCustomEvent(string $eventName, LDUser $user, mixed $data, int|float|null $metricValue): array
     {
         $e = [
             'kind' => 'custom',

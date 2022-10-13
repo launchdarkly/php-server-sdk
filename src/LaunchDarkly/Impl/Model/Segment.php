@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl\Model;
 
 use LaunchDarkly\LDContext;
@@ -14,20 +16,16 @@ use LaunchDarkly\LDContext;
  */
 class Segment
 {
-    /** @var string */
-    protected $_key;
-    /** @var int */
-    protected $_version;
+    protected string $_key;
+    protected int $_version;
     /** @var string[] */
-    protected $_included = [];
+    protected array $_included = [];
     /** @var string[] */
-    protected $_excluded = [];
-    /** @var string */
-    protected $_salt;
+    protected array $_excluded = [];
+    protected string $_salt;
     /** @var SegmentRule[] */
-    protected $_rules = [];
-    /** @var bool */
-    protected $_deleted = false;
+    protected array $_rules = [];
+    protected bool $_deleted = false;
 
     protected function __construct(
         string $key,

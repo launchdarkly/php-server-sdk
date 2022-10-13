@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly;
 
 use LaunchDarkly\Impl\Events\EventFactory;
@@ -28,28 +30,17 @@ class LDClient
      */
     const VERSION = '4.2.4';
 
-    /** @var string */
-    protected $_sdkKey;
-    /** @var string */
-    protected $_baseUri;
-    /** @var string */
-    protected $_eventsUri;
-    /** @var EventProcessor */
-    protected $_eventProcessor;
-    /** @var  bool */
-    protected $_offline = false;
-    /** @var bool */
-    protected $_send_events = true;
-    /** @var array */
-    protected $_defaults = [];
-    /** @var LoggerInterface */
-    protected $_logger;
-    /** @var FeatureRequester */
-    protected $_featureRequester;
-    /** @var EventFactory */
-    protected $_eventFactoryDefault;
-    /** @var EventFactory */
-    protected $_eventFactoryWithReasons;
+    protected string $_sdkKey;
+    protected string $_baseUri;
+    protected string $_eventsUri;
+    protected EventProcessor $_eventProcessor;
+    protected bool $_offline = false;
+    protected bool $_send_events = true;
+    protected array $_defaults = [];
+    protected LoggerInterface $_logger;
+    protected FeatureRequester $_featureRequester;
+    protected EventFactory $_eventFactoryDefault;
+    protected EventFactory $_eventFactoryWithReasons;
 
     /**
      * Creates a new client instance that connects to LaunchDarkly.
@@ -188,7 +179,7 @@ class LDClient
      * @return mixed the variation for the given context, or `$defaultValue` if the flag cannot be evaluated
      * @see \LaunchDarkly\LDClient::variationDetail()
      */
-    public function variation(string $key, LDContext $context, $defaultValue = false)
+    public function variation(string $key, LDContext $context, mixed $defaultValue = false): mixed
     {
         $detail = $this->variationDetailInternal($key, $context, $defaultValue, $this->_eventFactoryDefault);
         return $detail->getValue();
@@ -208,7 +199,7 @@ class LDClient
      * @return EvaluationDetail an EvaluationDetail object that includes the feature flag value
      * and evaluation reason
      */
-    public function variationDetail(string $key, LDContext $context, $defaultValue = false): EvaluationDetail
+    public function variationDetail(string $key, LDContext $context, mixed $defaultValue = false): EvaluationDetail
     {
         return $this->variationDetailInternal($key, $context, $defaultValue, $this->_eventFactoryWithReasons);
     }
@@ -221,7 +212,7 @@ class LDClient
      *
      * @return EvaluationDetail
      */
-    private function variationDetailInternal(string $key, LDContext $context, $default, EventFactory $eventFactory): EvaluationDetail
+    private function variationDetailInternal(string $key, LDContext $context, mixed $default, EventFactory $eventFactory): EvaluationDetail
     {
         $default = $this->_get_default($key, $default);
 
@@ -298,11 +289,11 @@ class LDClient
      * @param string $eventName The name of the event
      * @param LDUser $user The user that performed the event
      * @param mixed $data Optional additional information to associate with the event
-     * @param numeric $metricValue A numeric value used by the LaunchDarkly experimentation feature in
+     * @param int|float|null $metricValue A numeric value used by the LaunchDarkly experimentation feature in
      *   numeric custom metrics. Can be omitted if this event is used by only non-numeric metrics. This
      *   field will also be returned as part of the custom event for Data Export.
      */
-    public function track(string $eventName, LDUser $user, $data = null, $metricValue = null): void
+    public function track(string $eventName, LDUser $user, mixed $data = null, int|float|null $metricValue = null): void
     {
         if ($user->isKeyBlank()) {
             $this->_logger->warning("Track called with null/empty user key!");
@@ -420,12 +411,7 @@ class LDClient
         }
     }
 
-    /**
-     * @param string $key
-     * @param mixed|null $default
-     * @return mixed|null
-     */
-    protected function _get_default(string $key, $default)
+    protected function _get_default(string $key, mixed $default): mixed
     {
         if (array_key_exists($key, $this->_defaults)) {
             return $this->_defaults[$key];

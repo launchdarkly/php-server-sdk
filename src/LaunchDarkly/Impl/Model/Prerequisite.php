@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl\Model;
 
 /**
@@ -12,10 +14,8 @@ namespace LaunchDarkly\Impl\Model;
  */
 class Prerequisite
 {
-    /** @var string */
-    private $_key;
-    /** @var int */
-    private $_variation;
+    private string $_key;
+    private int $_variation;
 
     protected function __construct(string $key, int $variation)
     {

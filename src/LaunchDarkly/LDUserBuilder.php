@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly;
 
 /**
@@ -12,42 +14,18 @@ namespace LaunchDarkly;
  */
 class LDUserBuilder
 {
-    /** @var string */
-    protected $_key;
-    
-    /** @var string|null */
-    protected $_secondary = null;
-    
-    /** @var string|null */
-    protected $_ip = null;
-
-    /** @var string|null */
-    protected $_country = null;
-
-    /** @var string|null */
-
-    protected $_email = null;
-    /** @var string|null */
-
-    protected $_name = null;
-    /** @var string|null */
-    
-    protected $_avatar = null;
-    /** @var string|null */
-
-    protected $_firstName = null;
-    /** @var string|null */
-
-    protected $_lastName = null;
-    
-    /** @var bool|null */
-    protected $_anonymous = null;
-
-    /** @var array */
-    protected $_custom = [];
-
-    /** @var array */
-    protected $_privateAttributeNames = [];
+    protected string $_key;
+    protected ?string $_secondary = null;
+    protected ?string $_ip = null;
+    protected ?string $_country = null;
+    protected ?string $_email = null;
+    protected ?string $_name = null;
+    protected ?string $_avatar = null;
+    protected ?string $_firstName = null;
+    protected ?string $_lastName = null;
+    protected ?bool $_anonymous = null;
+    protected array $_custom = [];
+    protected array $_privateAttributeNames = [];
     
     /**
      * Creates a builder with the specified key.
@@ -270,7 +248,7 @@ class LDUserBuilder
      * @param mixed $customValue The attribute value
      * @return LDUserBuilder the same builder
      */
-    public function customAttribute(string $customKey, $customValue): LDUserBuilder
+    public function customAttribute(string $customKey, mixed $customValue): LDUserBuilder
     {
         $this->_custom[$customKey] = $customValue;
         return $this;
@@ -283,7 +261,7 @@ class LDUserBuilder
      * @param mixed $customValue The attribute value
      * @return LDUserBuilder the same builder
      */
-    public function privateCustomAttribute(string $customKey, $customValue): LDUserBuilder
+    public function privateCustomAttribute(string $customKey, mixed $customValue): LDUserBuilder
     {
         $this->_privateAttributeNames[] = $customKey;
         return $this->customAttribute($customKey, $customValue);

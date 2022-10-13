@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl\Model;
 
 use LaunchDarkly\FeatureRequester;
@@ -15,14 +17,10 @@ use LaunchDarkly\LDContext;
  */
 class Clause
 {
-    /** @var string|null */
-    private $_attribute = null;
-    /** @var string|null */
-    private $_op = null;
-    /** @var array  */
-    private $_values = [];
-    /** @var bool  */
-    private $_negate = false;
+    private ?string $_attribute = null;
+    private ?string $_op = null;
+    private array $_values = [];
+    private bool $_negate = false;
 
     private function __construct(?string $attribute, ?string $op, array $values, bool $negate)
     {
@@ -100,12 +98,7 @@ class Clause
         return $this->_negate;
     }
 
-    /**
-     * @param mixed|null $contextValue
-     *
-     * @return bool
-     */
-    private function matchAny($contextValue): bool
+    private function matchAny(mixed $contextValue): bool
     {
         foreach ($this->_values as $v) {
             $result = Operators::apply($this->_op, $contextValue, $v);

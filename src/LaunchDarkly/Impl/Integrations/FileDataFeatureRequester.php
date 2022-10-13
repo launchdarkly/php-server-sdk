@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl\Integrations;
 
 use LaunchDarkly\FeatureRequester;
@@ -12,17 +14,14 @@ use LaunchDarkly\Impl\Model\Segment;
  */
 class FileDataFeatureRequester implements FeatureRequester
 {
-    /** @var array  */
-    private $_filePaths;
-    /** @var array */
-    private $_flags;
-    /** @var array  */
-    private $_segments;
+    private array $_filePaths;
+    private array $_flags;
+    private array $_segments;
 
     /**
      * @param array|string $filePaths
      */
-    public function __construct($filePaths)
+    public function __construct(array|string $filePaths)
     {
         $this->_filePaths = is_array($filePaths) ? $filePaths : [$filePaths];
         $this->_flags = [];
@@ -114,13 +113,7 @@ class FileDataFeatureRequester implements FeatureRequester
         }
     }
 
-    /**
-     * @param array $array
-     * @param string $key
-     * @param mixed $item
-     * @param string $kind
-     */
-    private function tryToAdd(array &$array, string $key, $item, string $kind): void
+    private function tryToAdd(array &$array, string $key, mixed $item, string $kind): void
     {
         if (isset($array[$key])) {
             throw new \InvalidArgumentException("File data contains more than one " . $kind . " with key: " . $key);

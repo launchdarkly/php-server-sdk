@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl\Events;
 
 use LaunchDarkly\LDUser;
@@ -12,11 +14,8 @@ use LaunchDarkly\LDUser;
  */
 class EventSerializer
 {
-    /** @var bool */
-    private $_allAttrsPrivate;
-
-    /** @var array */
-    private $_privateAttrNames;
+    private bool $_allAttrsPrivate;
+    private array $_privateAttrNames;
 
     public function __construct(array $options)
     {

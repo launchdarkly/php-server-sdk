@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl;
 
 use LaunchDarkly\FeatureRequester;
@@ -14,11 +16,8 @@ use LaunchDarkly\Impl\Model\Segment;
  */
 class PreloadedFeatureRequester implements FeatureRequester
 {
-    /** @var FeatureRequester */
-    private $_baseRequester;
-
-    /** @var array */
-    private $_knownFeatures;
+    private FeatureRequester $_baseRequester;
+    private array $_knownFeatures;
 
     public function __construct(FeatureRequester $baseRequester, array $knownFeatures)
     {

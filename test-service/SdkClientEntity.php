@@ -1,20 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
+namespace Tests;
+
+use LaunchDarkly\Integrations\Guzzle;
 use LaunchDarkly\LDClient;
 use LaunchDarkly\LDContext;
+use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 
 class SdkClientEntity
 {
-    private $_client;
-    private $_logger;
+    private LDClient $_client;
+    private Logger $_logger;
 
     public function __construct($params)
     {
         $tag = $params['tag'];
 
-        $logger = new Monolog\Logger('sdkclient');
-        $stream = new Monolog\Handler\StreamHandler('php://stderr', Monolog\Logger::DEBUG);
-        $stream->setFormatter(new Monolog\Formatter\LineFormatter(
+        $logger = new Logger('sdkclient');
+        $stream = new StreamHandler('php://stderr', Logger::DEBUG);
+        $stream->setFormatter(new LineFormatter(
             "[%datetime%] %channel%.%level_name%: [$tag] %message%\n"
         ));
         $logger->pushHandler($stream);
@@ -23,13 +31,13 @@ class SdkClientEntity
         $this->_client = self::createSdkClient($params, $logger);
     }
 
-    public static function createSdkClient($params, $logger)
+    public static function createSdkClient($params, $logger): LDClient
     {
         $config = $params['configuration'];
 
         $sdkKey = $config['credential'];
         $options = [
-            'event_publisher' => LaunchDarkly\Integrations\Guzzle::eventPublisher(),
+            'event_publisher' => Guzzle::eventPublisher(),
             'logger' => $logger
         ];
 
@@ -51,7 +59,7 @@ class SdkClientEntity
         $this->_logger->info('Test ended');
     }
 
-    public function doCommand($reqParams)
+    public function doCommand(mixed $reqParams): mixed
     {
         $command = $reqParams['command'];
         $commandParams = $reqParams[$command] ?? null;
@@ -88,7 +96,7 @@ class SdkClientEntity
         }
     }
 
-    private function doCustomEvent($params)
+    private function doCustomEvent(array $params): void
     {
         $this->_client->track(
             $params['eventKey'],
@@ -98,7 +106,7 @@ class SdkClientEntity
         );
     }
 
-    private function doEvaluate($params)
+    private function doEvaluate(array $params): array
     {
         $flagKey = $params['flagKey'];
         $context = LDContext::fromJson($params['context']);
@@ -120,7 +128,7 @@ class SdkClientEntity
         }
     }
 
-    private function doEvaluateAll($params)
+    private function doEvaluateAll(array $params): array
     {
         $options = [];
         foreach (['clientSideOnly', 'detailsOnlyForTrackedFlags', 'withReasons'] as $option) {
@@ -135,12 +143,12 @@ class SdkClientEntity
         ];
     }
 
-    private function doIdentifyEvent($params)
+    private function doIdentifyEvent(array $params): void
     {
         $this->_client->identify($this->makeUser($params['user']));
     }
 
-    private function doSecureModeHash($params)
+    private function doSecureModeHash(array $params): array
     {
         $user = $this->makeUser($params['user']);
         $result = $this->_client->secureModeHash($user);
@@ -149,7 +157,7 @@ class SdkClientEntity
         ];
     }
 
-    private function doContextBuild($params)
+    private function doContextBuild(array $params): array
     {
         try {
             if ($params['multi'] ?? null) {
@@ -162,12 +170,12 @@ class SdkClientEntity
                 $c = $this->buildSingleKind($params['single']);
             }
             return $this->makeContextResponse($c);
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             return ['error' => "$e"];
         }
     }
 
-    private function buildSingleKind($params)
+    private function buildSingleKind(array $params): LDContext
     {
         $b = LDContext::builder($params['key'] ?? null);
         if (($params['kind'] ?? null) != null) {
@@ -186,21 +194,21 @@ class SdkClientEntity
         return $b->build();
     }
 
-    private function makeContextResponse($c)
+    private function makeContextResponse(LDContext $c): array
     {
         return $c->isValid() ? ['output' => json_encode($c)] : ['error' => $c->getError()];
     }
 
-    private function doContextConvert($params)
+    private function doContextConvert(array $params): array
     {
         try {
             return $this->makeContextResponse(LDContext::fromJson($params['input']));
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             return ['error' => "$e"];
         }
     }
 
-    private function makeContext($data)
+    private function makeContext(array $data): LDContext
     {
         return LDContext::fromJson($data);
     }

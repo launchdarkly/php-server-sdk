@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Integrations;
 
 /**
@@ -29,10 +31,10 @@ class Files
      * For more information about using this component, and the format of data files, see
      * the SDK reference guide on ["Reading flags from a file"](https://docs.launchdarkly.com/sdk/features/flags-from-files#php).
      *
-     * @param array $filePaths relative or absolute paths to the data files
+     * @param string|string[] $filePaths relative or absolute paths to the data files
      * @return mixed  an object to be stored in the `feature_requester` configuration property
      */
-    public static function featureRequester($filePaths)
+    public static function featureRequester(string|array $filePaths): mixed
     {
         return new \LaunchDarkly\Impl\Integrations\FileDataFeatureRequester($filePaths);
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly;
 
 /**
@@ -25,18 +27,7 @@ namespace LaunchDarkly;
  */
 class LDContextMultiBuilder
 {
-    /** @var array */
-    private $_contexts;
-
-    /**
-     * Creates an instance of the builder.
-     *
-     * @return LDContextBuilder
-     */
-    public function __construct()
-    {
-        $this->_contexts = [];
-    }
+    private array $_contexts = [];
 
     /**
      * Creates an LDContext from the current builder properties.

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl\Model;
 
 use LaunchDarkly\LDContext;
@@ -14,13 +16,10 @@ use LaunchDarkly\LDContext;
  */
 class VariationOrRollout
 {
-    /** @var int */
-    private static $LONG_SCALE = 0xFFFFFFFFFFFFFFF;
+    private static int $LONG_SCALE = 0xFFFFFFFFFFFFFFF;
 
-    /** @var int | null */
-    private $_variation = null;
-    /** @var Rollout | null */
-    private $_rollout = null;
+    private ?int $_variation = null;
+    private ?Rollout $_rollout = null;
 
     protected function __construct(?int $variation, ?Rollout $rollout)
     {

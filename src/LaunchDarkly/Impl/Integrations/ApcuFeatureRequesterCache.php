@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl\Integrations;
 
 /**
@@ -11,8 +13,7 @@ namespace LaunchDarkly\Impl\Integrations;
  */
 class ApcuFeatureRequesterCache implements FeatureRequesterCache
 {
-    /** @var int */
-    private $_expiration;
+    private int $_expiration;
 
     public function __construct(int $expiration)
     {

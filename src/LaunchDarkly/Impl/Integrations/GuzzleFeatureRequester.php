@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl\Integrations;
 
 use GuzzleHttp\Client;
@@ -23,12 +25,9 @@ class GuzzleFeatureRequester implements FeatureRequester
 {
     const SDK_FLAGS = "sdk/flags";
     const SDK_SEGMENTS = "sdk/segments";
-    /** @var Client  */
-    private $_client;
-    /** @var LoggerInterface */
-    private $_logger;
-    /** @var boolean */
-    private $_loggedCacheNotice = false;
+    private Client $_client;
+    private LoggerInterface $_logger;
+    private bool $_loggedCacheNotice = false;
 
     public function __construct(string $baseUri, string $sdkKey, array $options)
     {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly;
 
 /**
@@ -12,41 +14,18 @@ namespace LaunchDarkly;
  */
 class LDUser
 {
-    /** @var string */
-    protected $_key;
-
-    /** @var string|null */
-    protected $_secondary = null;
-
-    /** @var string|null */
-    protected $_ip = null;
-
-    /** @var string|null */
-    protected $_country = null;
-
-    /** @var string|null */
-    protected $_email = null;
-
-    /** @var string|null */
-    protected $_name = null;
-
-    /** @var string|null */
-    protected $_avatar = null;
-
-    /** @var string|null */
-    protected $_firstName = null;
-
-    /** @var string|null */
-    protected $_lastName = null;
-
-    /** @var bool|null */
-    protected $_anonymous = false;
-
-    /** @var array|null */
-    protected $_custom = [];
-
-    /** @var array|null */
-    protected $_privateAttributeNames = [];
+    protected string $_key;
+    protected ?string $_secondary = null;
+    protected ?string $_ip = null;
+    protected ?string $_country = null;
+    protected ?string $_email = null;
+    protected ?string $_name = null;
+    protected ?string $_avatar = null;
+    protected ?string $_firstName = null;
+    protected ?string $_lastName = null;
+    protected ?bool $_anonymous = false;
+    protected ?array $_custom = [];
+    protected ?array $_privateAttributeNames = [];
 
     /**
      * Constructor for directly creating an instance.
@@ -62,7 +41,7 @@ class LDUser
      * @param string|null $avatar A URL pointing to the user's avatar image (optional)
      * @param string|null $firstName The user's first name (optional)
      * @param string|null $lastName The user's last name (optional)
-     * @param boolean|null $anonymous Whether this is an anonymous user
+     * @param bool|null $anonymous Whether this is an anonymous user
      * @param array|null $custom Other custom attributes that can be used to create custom rules
      * @return LDUser
      */
@@ -97,9 +76,9 @@ class LDUser
     /**
      * Used internally in flag evaluation.
      * @ignore
-     * @return mixed|null
+     * @return mixed
      */
-    public function getValueForEvaluation(?string $attr)
+    public function getValueForEvaluation(?string $attr): mixed
     {
         if (is_null($attr)) {
             return null;

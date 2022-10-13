@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl\Model;
 
 /**
@@ -15,13 +17,10 @@ class Rollout
     const KIND_EXPERIMENT = 'experiment';
 
     /** @var WeightedVariation[] */
-    private $_variations = [];
-    /** @var string|null */
-    private $_bucketBy = null;
-    /** @var string */
-    private $_kind;
-    /** @var int|null */
-    private $_seed = null;
+    private array $_variations = [];
+    private ?string $_bucketBy = null;
+    private string $_kind;
+    private ?int $_seed = null;
 
     protected function __construct(
         array $variations,

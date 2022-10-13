@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl\Integrations;
 
 use LaunchDarkly\FeatureRequester;
@@ -19,16 +21,11 @@ class FeatureRequesterBase implements FeatureRequester
     const ALL_ITEMS_KEY = '$all';
     const CACHE_PREFIX = 'launchdarkly:';
 
-    /** @var string */
-    protected $_baseUri;
-    /** @var string */
-    protected $_sdkKey;
-    /** @var array */
-    protected $_options;
-    /** @var FeatureRequesterCache|null */
-    protected $_cache;
-    /** @var LoggerInterface */
-    protected $_logger;
+    protected string $_baseUri;
+    protected string $_sdkKey;
+    protected array $_options;
+    protected ?FeatureRequesterCache $_cache;
+    protected LoggerInterface $_logger;
 
     protected function __construct(string $baseUri, string $sdkKey, array $options)
     {

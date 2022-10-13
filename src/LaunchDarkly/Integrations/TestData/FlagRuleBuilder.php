@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Integrations\TestData;
 
 /**
@@ -18,12 +20,9 @@ namespace LaunchDarkly\Integrations\TestData;
  */
 class FlagRuleBuilder
 {
-    /** @var FlagBuilder */
-    protected $_flagBuilder;
-    /** @var array */
-    protected $_clauses;
-    /** @var int|null */
-    protected $_variation;
+    protected FlagBuilder $_flagBuilder;
+    protected array $_clauses;
+    protected ?int $_variation;
 
     public function __construct(FlagBuilder $flagBuilder)
     {
@@ -44,10 +43,10 @@ class FlagRuleBuilder
      *              ->thenReturn(true);
      *
      * @param string $attribute the user attribute to match against
-     * @param mixed $values values to compare to
+     * @param mixed[] $values values to compare to
      * @return FlagRuleBuilder the rule builder
      */
-    public function andMatch(string $attribute, $values)
+    public function andMatch(string $attribute, mixed ...$values)
     {
         $newClause = [
             "attribute" => $attribute,
@@ -71,10 +70,10 @@ class FlagRuleBuilder
      *             ->thenReturn(true);
      *
      * @param string $attribute the user attribute to match against
-     * @param mixed $values values to compare to
+     * @param mixed[] $values values to compare to
      * @return FlagRuleBuilder the rule builder
      */
-    public function andNotMatch(string $attribute, ...$values)
+    public function andNotMatch(string $attribute, mixed ...$values)
     {
         $newClause = [
             "attribute" => $attribute,
@@ -93,7 +92,7 @@ class FlagRuleBuilder
      * @param bool|int $variation the value to return if the rule matches the user
      * @return FlagBuilder the flag builder
      */
-    public function thenReturn($variation)
+    public function thenReturn(bool|int $variation): FlagBuilder
     {
         if (is_bool($variation)) {
             $this->_flagBuilder->booleanFlag();
@@ -111,7 +110,7 @@ class FlagRuleBuilder
      * @param int $id the rule id
      * @return array the array representation of the flag
      */
-    public function build(int $id)
+    public function build(int $id): array
     {
         return [
             "id" => "rule{$id}",

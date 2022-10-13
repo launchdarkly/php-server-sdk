@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl\Model;
 
 use LaunchDarkly\EvaluationDetail;
@@ -19,39 +21,26 @@ use LaunchDarkly\LDContext;
  */
 class FeatureFlag
 {
-    /** @var int */
-    protected static $LONG_SCALE = 0xFFFFFFFFFFFFFFF;
+    protected static int $LONG_SCALE = 0xFFFFFFFFFFFFFFF;
 
-    /** @var string */
-    protected $_key;
-    /** @var int */
-    protected $_version;
-    /** @var bool */
-    protected $_on = false;
+    protected string $_key;
+    protected int $_version;
+    protected bool $_on = false;
     /** @var Prerequisite[] */
-    protected $_prerequisites = [];
-    /** @var string|null */
-    protected $_salt = null;
+    protected array $_prerequisites = [];
+    protected ?string $_salt = null;
     /** @var Target[] */
-    protected $_targets = [];
+    protected array $_targets = [];
     /** @var Rule[] */
-    protected $_rules = [];
-    /** @var VariationOrRollout */
-    protected $_fallthrough;
-    /** @var int | null */
-    protected $_offVariation = null;
-    /** @var array */
-    protected $_variations = [];
-    /** @var bool */
-    protected $_deleted = false;
-    /** @var bool */
-    protected $_trackEvents = false;
-    /** @var bool */
-    protected $_trackEventsFallthrough = false;
-    /** @var int | null */
-    protected $_debugEventsUntilDate = null;
-    /** @var bool */
-    protected $_clientSide = false;
+    protected array $_rules = [];
+    protected VariationOrRollout $_fallthrough;
+    protected ?int $_offVariation = null;
+    protected array $_variations = [];
+    protected bool $_deleted = false;
+    protected bool $_trackEvents = false;
+    protected bool $_trackEventsFallthrough = false;
+    protected ?int $_debugEventsUntilDate = null;
+    protected bool $_clientSide = false;
 
     // Note, trackEvents and debugEventsUntilDate are not used in EventProcessor, because
     // the PHP client doesn't do summary events. However, we need to capture them in case

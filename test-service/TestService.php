@@ -1,19 +1,24 @@
 <?php
 
-require_once 'SdkClientEntity.php';
+declare(strict_types=1);
+
+namespace Tests;
+
+use flight\Engine;
+use Monolog\Logger;
 
 class TestService
 {
-    private $_store;
-    private $_logger;
-    private $_app;
+    private TestDataStore $_store;
+    private Logger $_logger;
+    private Engine $_app;
 
-    public function __construct($store, $logger)
+    public function __construct(TestDataStore $store, Logger $logger)
     {
         $this->_store = $store;
         $this->_logger = $logger;
 
-        $this->_app = new flight\Engine();
+        $this->_app = new Engine();
         $this->_app->set('flight.log_errors', true);
 
         $this->_app->route('GET /', function () {
@@ -47,12 +52,12 @@ class TestService
         });
     }
 
-    public function start()
+    public function start(): void
     {
         $this->_app->start();
     }
 
-    public function getStatus()
+    public function getStatus(): array
     {
         return [
             'name' => 'php-server-sdk',
@@ -69,7 +74,7 @@ class TestService
         ];
     }
 
-    public function createClient($params)
+    public function createClient(mixed $params): string
     {
         $this->_logger->info("Creating client with parameters: " . json_encode($params));
 
@@ -78,7 +83,7 @@ class TestService
         return $this->_store->addClientParams($params);
     }
 
-    public function deleteClient($id)
+    public function deleteClient(string $id): bool
     {
         $c = $this->getClient($id);
         if ($c) {
@@ -89,7 +94,7 @@ class TestService
         return false;
     }
 
-    private function getClient($id)
+    private function getClient(string $id): ?SdkClientEntity
     {
         $params = $this->_store->getClientParams($id);
         if ($params === null) {

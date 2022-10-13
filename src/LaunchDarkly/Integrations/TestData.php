@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Integrations;
 
 use LaunchDarkly\FeatureRequester;
@@ -9,10 +11,8 @@ use LaunchDarkly\Integrations\TestData\FlagBuilder;
 
 class TestData implements FeatureRequester
 {
-    /** @var array */
-    protected $_flagBuilders;
-    /** @var array */
-    protected $_currentFlags;
+    protected array $_flagBuilders;
+    protected array $_currentFlags;
 
     public function __construct()
     {

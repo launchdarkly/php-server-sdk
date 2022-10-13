@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly;
 
 /**
@@ -37,29 +39,14 @@ class LDContext implements \JsonSerializable
     private const ERR_KIND_MULTI_DUPLICATES = 'multi-kind context cannot have same kind more than once';
     private const ERR_KIND_NON_STRING = 'context kind must be a string';
 
-    /** @var string */
-    private $_kind;
-
-    /** @var string */
-    private $_key;
-
-    /** @var ?string */
-    private $_name;
-
-    /** @var bool */
-    private $_anonymous;
-
-    /** @var ?array */
-    private $_attributes;
-
-    /** @var ?array */
-    private $_privateAttributes;
-
-    /** @var ?array */
-    private $_multiContexts;
-
-    /** @var ?string */
-    private $_error;
+    private string $_kind;
+    private string $_key;
+    private ?string $_name = null;
+    private bool $_anonymous = false;
+    private ?array $_attributes = null;
+    private ?array $_privateAttributes = null;
+    private ?array $_multiContexts = null;
+    private ?string $_error = null;
 
     /**
      * Constructs an instance, setting all properties. Avoid using this constructor directly.
@@ -123,9 +110,8 @@ class LDContext implements \JsonSerializable
             $this->_multiContexts = $sorted;
             $this->_kind = self::MULTI_KIND;
             // No other properties can be set for a multi-context, but we'll still ensure that all
-            // properties that are normally non-null have non-null values, as above.
+            // properties that are normally non-null have non-null values.
             $this->_key = '';
-            $this->_anonymous = false;
             return;
         }
         if ($kind === null || $kind === '') {
@@ -460,10 +446,10 @@ class LDContext implements \JsonSerializable
      * null value.
      *
      * @param string $attributeName the desired attribute name
-     * @return mixed|null the attribute value, or null if there is no such attribute
+     * @return mixed the attribute value, or null if there is no such attribute
      * @see \LaunchDarkly\LDContextBuilder::set()
      */
-    public function get(string $attributeName)
+    public function get(string $attributeName): mixed
     {
         switch ($attributeName) {
             case 'key':

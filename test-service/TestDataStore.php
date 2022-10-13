@@ -1,17 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
+namespace Tests;
+
 class TestDataStore
 {
-    private $_basePath;
+    private string $_basePath;
 
     private const PREFIX = "client-params-";
 
-    public function __construct($basePath)
+    public function __construct(string $basePath)
     {
         $this->_basePath = $basePath;
     }
 
-    public function addClientParams($params)
+    public function addClientParams(mixed $params): string
     {
         $data = json_encode($params);
 
@@ -24,7 +28,7 @@ class TestDataStore
         return $id;
     }
 
-    public function getClientParams($id)
+    public function getClientParams(string $id): array
     {
         $data = file_get_contents($this->getClientParamsFilePath($id));
         if ($data === false) {
@@ -33,12 +37,12 @@ class TestDataStore
         return json_decode($data, true);
     }
 
-    public function deleteClientParams($id)
+    public function deleteClientParams(string $id): void
     {
         unlink($this->getClientParamsFilePath($id));
     }
 
-    private function getClientParamsFilePath($id)
+    private function getClientParamsFilePath(string $id): string
     {
         return $this->_basePath . '/' . self::PREFIX . $id;
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl\Model;
 
 /**
@@ -13,9 +15,8 @@ namespace LaunchDarkly\Impl\Model;
 class Target
 {
     /** @var string[] */
-    private $_values = [];
-    /** @var int */
-    private $_variation;
+    private array $_values = [];
+    private int $_variation;
 
     protected function __construct(array $values, int $variation)
     {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly;
 
 use LaunchDarkly\Impl\Model\FeatureFlag;
@@ -15,14 +17,9 @@ use LaunchDarkly\Impl\Model\FeatureFlag;
  */
 class FeatureFlagsState implements \JsonSerializable
 {
-    /** @var bool */
-    protected $_valid = false;
-
-    /** @var array */
-    protected $_flagValues;
-
-    /** @var array<string, array{debugEventsUntilDate?: int|null, reason?: EvaluationReason, trackEvents?: true, variation?: int|null, version?: int}> **/
-    protected $_flagMetadata;
+    protected bool $_valid = false;
+    protected array $_flagValues;
+    protected array $_flagMetadata;
 
     /**
      * @ignore
@@ -100,7 +97,7 @@ class FeatureFlagsState implements \JsonSerializable
      * @param string $key the feature flag key
      * @return mixed the flag's value; null if the flag returned the default value, or if there was no such flag
      */
-    public function getFlagValue(string $key)
+    public function getFlagValue(string $key): mixed
     {
         return isset($this->_flagValues[$key]) ? $this->_flagValues[$key] : null;
     }

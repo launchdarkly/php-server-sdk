@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly;
 
 /**
@@ -25,23 +27,12 @@ namespace LaunchDarkly;
  */
 class LDContextBuilder
 {
-    /** @var string */
-    private $_key;
-
-    /** @var ?string */
-    private $_kind = null;
-
-    /** @var ?string */
-    private $_name = null;
-
-    /** @var bool */
-    private $_anonymous = false;
-
-    /** @var ?array */
-    private $_attributes = null;
-
-    /** @var ?array */
-    private $_privateAttributes = null;
+    private string $_key;
+    private ?string $_kind = null;
+    private ?string $_name = null;
+    private bool $_anonymous = false;
+    private ?array $_attributes = null;
+    private ?array $_privateAttributes = null;
 
     /**
      * Constructs a new builder.
@@ -209,7 +200,7 @@ class LDContextBuilder
      * @see \LaunchDarkly\LDContext::get()
      * @see \LaunchDarkly\LDContextBuilder::trySet()
      */
-    public function set(string $attributeName, $value): LDContextBuilder
+    public function set(string $attributeName, mixed $value): LDContextBuilder
     {
         $this->trySet($attributeName, $value);
         return $this;
@@ -224,7 +215,7 @@ class LDContextBuilder
      *   allowed type for that attribute
      * @see \LaunchDarkly\LDContextBuilder::set()
      */
-    public function trySet(string $attributeName, $value): bool
+    public function trySet(string $attributeName, mixed $value): bool
     {
         switch ($attributeName) {
             case 'key':

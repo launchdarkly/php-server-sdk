@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl\Model;
 
 use LaunchDarkly\FeatureRequester;
@@ -15,12 +17,10 @@ use LaunchDarkly\LDContext;
  */
 class Rule extends VariationOrRollout
 {
-    /** @var string|null */
-    private $_id = null;
+    private ?string $_id = null;
     /** @var Clause[] */
-    private $_clauses = [];
-    /** @var boolean */
-    private $_trackEvents;
+    private array $_clauses = [];
+    private bool $_trackEvents;
 
     protected function __construct(
         ?int $variation,

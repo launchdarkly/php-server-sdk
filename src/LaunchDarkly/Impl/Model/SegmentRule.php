@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl\Model;
 
 use LaunchDarkly\LDContext;
@@ -15,11 +17,9 @@ use LaunchDarkly\LDContext;
 class SegmentRule
 {
     /** @var Clause[] */
-    private $_clauses = [];
-    /** @var int|null */
-    private $_weight = null;
-    /** @var string|null */
-    private $_bucketBy = null;
+    private array $_clauses = [];
+    private ?int $_weight = null;
+    private ?string $_bucketBy = null;
 
     protected function __construct(array $clauses, ?int $weight, ?string $bucketBy)
     {

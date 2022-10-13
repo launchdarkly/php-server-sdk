@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly;
 
 use LaunchDarkly\Impl\Model\FeatureFlag;

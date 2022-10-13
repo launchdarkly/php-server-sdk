@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl\Integrations;
 
 use LaunchDarkly\EventPublisher;
@@ -13,29 +15,14 @@ use LaunchDarkly\LDClient;
  */
 class CurlEventPublisher implements EventPublisher
 {
-    /** @var string */
-    private $_sdkKey;
-
-    /** @var string */
-    private $_host;
-
-    /** @var int */
-    private $_port;
-
-    /** @var string */
-    private $_path;
-
-    /** @var bool */
-    private $_ssl;
-
-    /** @var string */
-    private $_curl = '/usr/bin/env curl';
-
-    /** @var int */
-    private $_connectTimeout;
-
-    /** @var bool */
-    private $_isWindows;
+    private string $_sdkKey;
+    private string $_host;
+    private int $_port;
+    private string $_path;
+    private bool $_ssl;
+    private string $_curl = '/usr/bin/env curl';
+    private int $_connectTimeout;
+    private bool $_isWindows;
 
     public function __construct(string $sdkKey, array $options = [])
     {
