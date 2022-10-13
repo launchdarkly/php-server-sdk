@@ -233,11 +233,11 @@ class EvaluationReason implements \JsonSerializable
     {
         switch ($this->_kind) {
             case self::RULE_MATCH:
-                return $this->_kind . '(' . ($this->_ruleIndex ?? 0) . ',' . ($this->_ruleId ?? '') . ')';
+                return $this->_kind . '(' . ($this->_ruleIndex ?: 0) . ',' . ($this->_ruleId ?: '') . ')';
             case self::PREREQUISITE_FAILED:
-                return $this->_kind . '(' . ($this->_prerequisiteKey ?? '') . ')';
+                return $this->_kind . '(' . ($this->_prerequisiteKey ?: '') . ')';
             case self::ERROR:
-                return $this->_kind . '(' . ($this->_errorKind ?? '') . ')';
+                return $this->_kind . '(' . ($this->_errorKind ?: '') . ')';
             default:
                 return $this->_kind;
         }

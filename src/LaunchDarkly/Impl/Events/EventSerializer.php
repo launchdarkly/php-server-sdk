@@ -19,8 +19,8 @@ class EventSerializer
 
     public function __construct(array $options)
     {
-        $this->_allAttrsPrivate = isset($options['all_attributes_private']) && $options['all_attributes_private'];
-        $this->_privateAttrNames = isset($options['private_attribute_names']) ? $options['private_attribute_names'] : [];
+        $this->_allAttrsPrivate = !!($options['all_attributes_private'] ?? false);
+        $this->_privateAttrNames = $options['private_attribute_names'] ?? [];
     }
 
     public function serializeEvents(array $events): string

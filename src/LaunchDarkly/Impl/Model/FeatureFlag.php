@@ -87,8 +87,8 @@ class FeatureFlag
      */
     public static function getDecoder(): \Closure
     {
-        return function ($v) {
-            return new FeatureFlag(
+        return fn ($v) =>
+            new FeatureFlag(
                 $v['key'],
                 $v['version'],
                 $v['on'],
@@ -100,12 +100,11 @@ class FeatureFlag
                 $v['offVariation'],
                 $v['variations'] ?: [],
                 $v['deleted'],
-                isset($v['trackEvents']) && $v['trackEvents'],
-                isset($v['trackEventsFallthrough']) && $v['trackEventsFallthrough'],
-                isset($v['debugEventsUntilDate']) ? $v['debugEventsUntilDate'] : null,
-                isset($v['clientSide']) && $v['clientSide']
+                !!($v['trackEvents'] ?? false),
+                !!($v['trackEventsFallthrough'] ?? false),
+                $v['debugEventsUntilDate'] ?? null,
+                !!($v['clientSide'] ?? false)
             );
-        };
     }
 
     public static function decode(array $v): self
@@ -136,7 +135,7 @@ class FeatureFlag
             case 'RULE_MATCH':
                 $i = $reason->getRuleIndex();
                 $rules = $this->getRules();
-                return isset($i) && $i >= 0 && $i < count($rules) && $rules[$i]->isTrackEvents();
+                return $i !== null && $i >= 0 && $i < count($rules) && $rules[$i]->isTrackEvents();
             case 'FALLTHROUGH':
                 return $this->isTrackEventsFallthrough();
             default:

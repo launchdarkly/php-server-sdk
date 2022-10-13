@@ -62,7 +62,7 @@ class VariationOrRollout
         }
         $variations = $rollout->getVariations();
         if ($variations) {
-            $bucketBy = $rollout->getBucketBy() ?? "key";
+            $bucketBy = $rollout->getBucketBy() ?: "key";
             $bucket = self::bucketContext($context, $_key, $bucketBy, $_salt, $rollout->getSeed());
             $sum = 0.0;
             foreach ($variations as $wv) {
@@ -97,7 +97,7 @@ class VariationOrRollout
         if (isset($seed)) {
             $prefix = (string) $seed;
         } else {
-            $prefix = $_key . "." . ($_salt ?? '');
+            $prefix = $_key . "." . ($_salt ?: '');
         }
         $hash = substr(sha1($prefix . "." . $idHash), 0, 15);
         $longVal = (int)base_convert($hash, 16, 10);

@@ -26,13 +26,12 @@ class Guzzle
      */
     public static function featureRequester(array $options = []): mixed
     {
-        return function (string $baseUri, string $sdkKey, array $baseOptions) use ($options) {
-            return new \LaunchDarkly\Impl\Integrations\GuzzleFeatureRequester(
+        return fn (string $baseUri, string $sdkKey, array $baseOptions) =>
+            new \LaunchDarkly\Impl\Integrations\GuzzleFeatureRequester(
                 $baseUri,
                 $sdkKey,
                 array_merge($baseOptions, $options)
             );
-        };
     }
 
     /**
@@ -59,11 +58,10 @@ class Guzzle
      */
     public static function eventPublisher(array $options = []): mixed
     {
-        return function (string $sdkKey, array $baseOptions) use ($options) {
-            return new \LaunchDarkly\Impl\Integrations\GuzzleEventPublisher(
+        return fn (string $sdkKey, array $baseOptions) =>
+            new \LaunchDarkly\Impl\Integrations\GuzzleEventPublisher(
                 $sdkKey,
                 array_merge($baseOptions, $options)
             );
-        };
     }
 }

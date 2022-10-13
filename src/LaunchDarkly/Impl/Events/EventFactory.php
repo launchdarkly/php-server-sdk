@@ -149,10 +149,10 @@ class EventFactory
             'key' => $eventName,
             'user' => $user
         ];
-        if (isset($data)) {
+        if ($data !== null) {
             $e['data'] = $data;
         }
-        if (isset($metricValue)) {
+        if ($metricValue !== null) {
             $e['metricValue'] = $metricValue;
         }
         if ($user->getAnonymous()) {

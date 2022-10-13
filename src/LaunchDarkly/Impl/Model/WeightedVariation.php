@@ -30,13 +30,11 @@ class WeightedVariation
      */
     public static function getDecoder(): \Closure
     {
-        return function (array $v) {
-            return new WeightedVariation(
-                (int)$v['variation'],
-                (int)$v['weight'],
-                $v['untracked'] ?? false
-            );
-        };
+        return fn (array $v) => new WeightedVariation(
+            (int)$v['variation'],
+            (int)$v['weight'],
+            $v['untracked'] ?? false
+        );
     }
 
     public function getVariation(): int

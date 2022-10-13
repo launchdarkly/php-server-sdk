@@ -99,7 +99,7 @@ class FeatureFlagsState implements \JsonSerializable
      */
     public function getFlagValue(string $key): mixed
     {
-        return isset($this->_flagValues[$key]) ? $this->_flagValues[$key] : null;
+        return $this->_flagValues[$key] ?? null;
     }
 
     /**
@@ -112,11 +112,7 @@ class FeatureFlagsState implements \JsonSerializable
      */
     public function getFlagReason(string $key): ?EvaluationReason
     {
-        if (isset($this->_flagMetadata[$key])) {
-            $meta = $this->_flagMetadata[$key];
-            return isset($meta['reason']) ? $meta['reason'] : null;
-        }
-        return null;
+        return ($this->_flagMetadata[$key] ?? [])['reason'] ?? null;
     }
 
     /**
@@ -152,7 +148,7 @@ class FeatureFlagsState implements \JsonSerializable
             $metaMap = [];
             foreach ($this->_flagMetadata as $key => $meta) {
                 $meta = array_replace([], $meta);
-                if (isset($meta['reason'])) {
+                if ($meta['reason'] ?? null) {
                     $meta['reason'] = $meta['reason']->jsonSerialize();
                 }
                 $metaMap[$key] = $meta;

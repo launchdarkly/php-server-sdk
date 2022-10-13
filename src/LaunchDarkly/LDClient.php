@@ -216,9 +216,8 @@ class LDClient
     {
         $default = $this->_get_default($key, $default);
 
-        $errorResult = function (string $errorKind) use ($default): EvaluationDetail {
-            return new EvaluationDetail($default, null, EvaluationReason::error($errorKind));
-        };
+        $errorResult = fn (string $errorKind): EvaluationDetail =>
+            new EvaluationDetail($default, null, EvaluationReason::error($errorKind));
         $sendEvent = function (EvaluationDetail $detail, ?FeatureFlag $flag) use ($key, $context, $default, $eventFactory): void {
             // if ($flag) {
             //     $event = $eventFactory->newEvalEvent($flag, $context, $detail, $default);
@@ -366,9 +365,9 @@ class LDClient
         // This saves us from doing repeated queries for prerequisite flags during evaluation
 
         $state = new FeatureFlagsState(true);
-        $clientOnly = isset($options['clientSideOnly']) && $options['clientSideOnly'];
-        $withReasons = isset($options['withReasons']) && $options['withReasons'];
-        $detailsOnlyIfTracked = isset($options['detailsOnlyForTrackedFlags']) && $options['detailsOnlyForTrackedFlags'];
+        $clientOnly = !!($options['clientSideOnly'] ?? false);
+        $withReasons = !!($options['withReasons'] ?? false);
+        $detailsOnlyIfTracked = !!($options['detailsOnlyForTrackedFlags'] ?? false);
         foreach ($flags as $flag) {
             if ($clientOnly && !$flag->isClientSide()) {
                 continue;

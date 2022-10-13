@@ -25,9 +25,7 @@ class Prerequisite
 
     public static function getDecoder(): \Closure
     {
-        return function (array $v) {
-            return new Prerequisite($v['key'], $v['variation']);
-        };
+        return fn (array $v) => new Prerequisite($v['key'], $v['variation']);
     }
 
     public function getKey(): string

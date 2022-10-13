@@ -34,7 +34,7 @@ class FeatureRequesterBase implements FeatureRequester
         $this->_options = $options;
         $this->_cache = $this->createCache($options);
 
-        if (isset($options['logger']) && $options['logger']) {
+        if ($options['logger'] ?? null) {
             $this->_logger = $options['logger'];
         } else {
             $this->_logger = new NullLogger();
@@ -140,12 +140,10 @@ class FeatureRequesterBase implements FeatureRequester
     protected function getJsonItem(string $namespace, string $key): ?array
     {
         $cacheKey = $this->makeCacheKey($namespace, $key);
-        $raw = $this->_cache ? $this->_cache->getCachedString($cacheKey) : null;
+        $raw = $this->_cache?->getCachedString($cacheKey);
         if ($raw === null) {
             $raw = $this->readItemString($namespace, $key);
-            if ($this->_cache) {
-                $this->_cache->putCachedString($cacheKey, $raw);
-            }
+            $this->_cache?->putCachedString($cacheKey, $raw);
         }
         return ($raw === null) ? null : json_decode($raw, true);
     }
@@ -153,7 +151,7 @@ class FeatureRequesterBase implements FeatureRequester
     protected function getJsonItemList(string $namespace): array
     {
         $cacheKey = $this->makeCacheKey($namespace, self::ALL_ITEMS_KEY);
-        $raw = $this->_cache ? $this->_cache->getCachedString($cacheKey) : null;
+        $raw = $this->_cache?->getCachedString($cacheKey);
         if ($raw) {
             $values = json_decode($raw, true);
         } else {
@@ -161,9 +159,7 @@ class FeatureRequesterBase implements FeatureRequester
             if (!$values) {
                 $values = [];
             }
-            if ($this->_cache) {
-                $this->_cache->putCachedString($cacheKey, json_encode($values));
-            }
+            $this->_cache?->putCachedString($cacheKey, json_encode($values));
         }
         foreach ($values as $i => $s) {
             $values[$i] = json_decode($s, true);

@@ -104,9 +104,7 @@ class LDContext implements \JsonSerializable
             // Sort them by kind; they need to be sorted for computing a fully-qualified key, but even
             // if getFullyQualifiedKey() is never called, this is helpful for equals() and determinacy.
             $sorted = $multiContexts;
-            usort($sorted, function (LDContext $c1, LDContext $c2) {
-                return $c1->_kind <=> $c2->_kind;
-            });
+            usort($sorted, fn (LDContext $c1, LDContext $c2) => $c1->_kind <=> $c2->_kind);
             $this->_multiContexts = $sorted;
             $this->_kind = self::MULTI_KIND;
             // No other properties can be set for a multi-context, but we'll still ensure that all

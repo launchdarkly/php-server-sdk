@@ -229,28 +229,16 @@ class LDContextTest extends \PHPUnit\Framework\TestCase
 
     public function testEquals()
     {
-        self::assertContextsFromFactoryEqual(function () {
-            return LDContext::create('a');
-        });
-        self::assertContextsFromFactoryEqual(function () {
-            return LDContext::create('a', 'kind1');
-        });
-        self::assertContextsFromFactoryEqual(function () {
-            return LDContext::builder('a')->name('b')->build();
-        });
-        self::assertContextsFromFactoryEqual(function () {
-            return LDContext::builder('a')->anonymous(true)->build();
-        });
-        self::assertContextsFromFactoryEqual(function () {
-            return LDContext::builder('a')->set('b', true)->set('c', 3)->build();
-        });
+        self::assertContextsFromFactoryEqual(fn () => LDContext::create('a'));
+        self::assertContextsFromFactoryEqual(fn () => LDContext::create('a', 'kind1'));
+        self::assertContextsFromFactoryEqual(fn () => LDContext::builder('a')->name('b')->build());
+        self::assertContextsFromFactoryEqual(fn () => LDContext::builder('a')->anonymous(true)->build());
+        self::assertContextsFromFactoryEqual(fn () => LDContext::builder('a')->set('b', true)->set('c', 3)->build());
         self::assertContextsEqual(
             LDContext::builder('a')->set('b', true)->set('c', 3)->build(),
             LDContext::builder('a')->set('c', 3)->set('b', true)->build()
         );
-        self::assertContextsFromFactoryEqual(function () {
-            return LDContext::create('invalid', 'kind');
-        });
+        self::assertContextsFromFactoryEqual(fn () => LDContext::create('invalid', 'kind'));
         
         self::assertContextsUnequal(LDContext::create('a', 'kind1'), LDContext::create('a', 'kind2'));
         self::assertContextsUnequal(LDContext::create('b', 'kind1'), LDContext::create('a', 'kind1'));
@@ -271,9 +259,9 @@ class LDContextTest extends \PHPUnit\Framework\TestCase
             LDContext::builder('a')->set('b', true)->set('c', false)->build()
         );
 
-        self::assertContextsFromFactoryEqual(function () {
-            return LDContext::createMulti(LDContext::create('a', 'kind1'), LDContext::create('b', 'kind2'));
-        });
+        self::assertContextsFromFactoryEqual(
+            fn () => LDContext::createMulti(LDContext::create('a', 'kind1'), LDContext::create('b', 'kind2'))
+        );
         self::assertContextsEqual(
             LDContext::createMulti(LDContext::create('a', 'kind1'), LDContext::create('b', 'kind2')),
             LDContext::createMulti(LDContext::create('b', 'kind2'), LDContext::create('a', 'kind1'))

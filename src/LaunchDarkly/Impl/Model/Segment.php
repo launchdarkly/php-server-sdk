@@ -47,8 +47,8 @@ class Segment
 
     public static function getDecoder(): \Closure
     {
-        return function (array $v) {
-            return new Segment(
+        return fn (array $v) =>
+            new Segment(
                 $v['key'],
                 $v['version'],
                 $v['included'] ?: [],
@@ -57,7 +57,6 @@ class Segment
                 array_map(SegmentRule::getDecoder(), $v['rules'] ?: []),
                 $v['deleted']
             );
-        };
     }
 
     public static function decode(array $v): Segment

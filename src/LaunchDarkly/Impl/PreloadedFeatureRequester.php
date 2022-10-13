@@ -33,10 +33,7 @@ class PreloadedFeatureRequester implements FeatureRequester
      */
     public function getFeature(string $key): ?FeatureFlag
     {
-        if (isset($this->_knownFeatures[$key])) {
-            return $this->_knownFeatures[$key];
-        }
-        return null;
+        return $this->_knownFeatures[$key] ?? null;
     }
 
     /**

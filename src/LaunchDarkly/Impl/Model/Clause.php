@@ -35,20 +35,16 @@ class Clause
      */
     public static function getDecoder(): \Closure
     {
-        return function ($v) {
-            return new Clause($v['attribute'], $v['op'], $v['values'], $v['negate']);
-        };
+        return fn ($v) => new Clause($v['attribute'], $v['op'], $v['values'], $v['negate']);
     }
 
     public function matchesContext(LDContext $context, ?FeatureRequester $featureRequester): bool
     {
         if ($this->_op === 'segmentMatch') {
             foreach ($this->_values as $value) {
-                $segment = $featureRequester ? $featureRequester->getSegment($value) : null;
-                if ($segment) {
-                    if ($segment->matchesContext($context)) {
-                        return $this->_maybeNegate(true);
-                    }
+                $segment = $featureRequester?->getSegment($value);
+                if ($segment?->matchesContext($context)) {
+                    return $this->_maybeNegate(true);
                 }
             }
             return $this->_maybeNegate(false);

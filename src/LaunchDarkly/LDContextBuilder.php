@@ -62,7 +62,7 @@ class LDContextBuilder
     public function build(): LDContext
     {
         return new LDContext(
-            $this->_kind ?? LDContext::DEFAULT_KIND,
+            $this->_kind ?: LDContext::DEFAULT_KIND,
             $this->_key,
             $this->_name,
             $this->_anonymous,

@@ -26,11 +26,7 @@ class Target
 
     public static function getDecoder(): \Closure
     {
-        return function (array $v) {
-            $values = $v['values'];
-            $variation = $v['variation'];
-            return new Target($values, $variation);
-        };
+        return fn (array $v) => new Target($v['values'], $v['variation']);
     }
 
     /**

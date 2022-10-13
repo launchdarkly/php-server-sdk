@@ -79,37 +79,31 @@ class FileDataFeatureRequester implements FeatureRequester
         if ($data == null) {
             throw new \InvalidArgumentException("File is not valid JSON: " . $filePath);
         }
-        if (isset($data['flags'])) {
-            foreach ($data['flags'] as $key => $value) {
-                $flag = FeatureFlag::decode($value);
-                $this->tryToAdd($flags, $key, $flag, "feature flag");
-            }
+        foreach ($data['flags'] ?? [] as $key => $value) {
+            $flag = FeatureFlag::decode($value);
+            $this->tryToAdd($flags, $key, $flag, "feature flag");
         }
-        if (isset($data['flagValues'])) {
-            foreach ($data['flagValues'] as $key => $value) {
-                $flag = FeatureFlag::decode([
-                    "key" => $key,
-                    "version" => 1,
-                    "on" => false,
-                    "prerequisites" => [],
-                    "salt" => "",
-                    "targets" => [],
-                    "rules" => [],
-                    "fallthrough" => [],
-                    "offVariation" => 0,
-                    "variations" => [$value],
-                    "deleted" => false,
-                    "trackEvents" => false,
-                    "clientSide" => false
-                ]);
-                $this->tryToAdd($flags, $key, $flag, "feature flag");
-            }
+        foreach ($data['flagValues'] ?? [] as $key => $value) {
+            $flag = FeatureFlag::decode([
+                "key" => $key,
+                "version" => 1,
+                "on" => false,
+                "prerequisites" => [],
+                "salt" => "",
+                "targets" => [],
+                "rules" => [],
+                "fallthrough" => [],
+                "offVariation" => 0,
+                "variations" => [$value],
+                "deleted" => false,
+                "trackEvents" => false,
+                "clientSide" => false
+            ]);
+            $this->tryToAdd($flags, $key, $flag, "feature flag");
         }
-        if (isset($data['segments'])) {
-            foreach ($data['segments'] as $key => $value) {
-                $segment = Segment::decode($value);
-                $this->tryToAdd($segments, $key, $segment, "user segment");
-            }
+        foreach ($data['segments'] ?? [] as $key => $value) {
+            $segment = Segment::decode($value);
+            $this->tryToAdd($segments, $key, $segment, "user segment");
         }
     }
 

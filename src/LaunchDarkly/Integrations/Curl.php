@@ -31,11 +31,10 @@ class Curl
      */
     public static function eventPublisher(array $options = []): mixed
     {
-        return function (string $sdkKey, array $baseOptions) use ($options) {
-            return new \LaunchDarkly\Impl\Integrations\CurlEventPublisher(
+        return fn (string $sdkKey, array $baseOptions) =>
+            new \LaunchDarkly\Impl\Integrations\CurlEventPublisher(
                 $sdkKey,
                 array_merge($baseOptions, $options)
             );
-        };
     }
 }

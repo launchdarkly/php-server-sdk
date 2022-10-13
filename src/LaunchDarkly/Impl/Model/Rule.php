@@ -37,15 +37,14 @@ class Rule extends VariationOrRollout
 
     public static function getDecoder(): \Closure
     {
-        return function (array $v) {
-            return new Rule(
+        return fn (array $v) =>
+            new Rule(
                 $v['variation'] ?? null,
                 isset($v['rollout']) ? call_user_func(Rollout::getDecoder(), $v['rollout']) : null,
                 $v['id'] ?? null,
                 array_map(Clause::getDecoder(), $v['clauses']),
-                $v['trackEvents']?? false
+                !!($v['trackEvents'] ?? false)
             );
-        };
     }
 
     public function matchesContext(LDContext $context, ?FeatureRequester $featureRequester): bool

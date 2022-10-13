@@ -30,7 +30,7 @@ class Rollout
     ) {
         $this->_variations = $variations;
         $this->_bucketBy = $bucketBy;
-        $this->_kind = $kind ?? 'rollout';
+        $this->_kind = $kind ?: 'rollout';
         $this->_seed = $seed;
     }
 

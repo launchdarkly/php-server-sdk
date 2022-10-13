@@ -30,13 +30,11 @@ class SegmentRule
 
     public static function getDecoder(): \Closure
     {
-        return function (array $v) {
-            return new SegmentRule(
-                array_map(Clause::getDecoder(), $v['clauses'] ?: []),
-                $v['weight'] ?? null,
-                $v['bucketBy'] ?? null
-            );
-        };
+        return fn (array $v) => new SegmentRule(
+            array_map(Clause::getDecoder(), $v['clauses'] ?: []),
+            $v['weight'] ?? null,
+            $v['bucketBy'] ?? null
+        );
     }
 
     public function matchesContext(LDContext $context, string $segmentKey, string $segmentSalt): bool
