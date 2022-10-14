@@ -13,7 +13,7 @@ namespace LaunchDarkly\Impl\Evaluation;
  */
 class EvaluationException extends \Exception
 {
-    private $_errorKind;
+    private string $_errorKind;
 
     public function __construct(string $message, string $errorKind)
     {

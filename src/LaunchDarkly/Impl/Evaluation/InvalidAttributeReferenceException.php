@@ -12,12 +12,8 @@ use LaunchDarkly\EvaluationReason;
  */
 class InvalidAttributeReferenceException extends EvaluationException
 {
-    private $_errorKind;
-
     public function __construct(string $message)
     {
         parent::__construct($message, EvaluationReason::MALFORMED_FLAG_ERROR);
     }
 }
-
-?>

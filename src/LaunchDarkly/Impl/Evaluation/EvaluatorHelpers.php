@@ -59,7 +59,7 @@ class EvaluatorHelpers
         $value = $context->get($parsed[0]);
         for ($i = 1; $i < count($parsed); $i++) {
             if (is_object($value)) {
-                $value = object_vars($value)[$parsed[$i]] ?? null;
+                $value = get_object_vars($value)[$parsed[$i]] ?? null;
             } elseif (is_array($value)) {
                 // Note that either a JSON array or a JSON object could be represented as a PHP array.
                 // There is no good way to distinguish between ["a", "b"] and {"0": "a", "1": "b"}.
