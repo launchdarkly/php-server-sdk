@@ -29,30 +29,47 @@ class EvaluatorBucketing
             return [null, false];
         }
         $variations = $rollout->getVariations();
-        if ($variations) {
-            $bucketBy = $rollout->getBucketBy() ?: "key";
-            $bucket = self::getBucketValueForContext($context, $_key, $bucketBy, $_salt, $rollout->getSeed());
-            $sum = 0.0;
-            foreach ($variations as $wv) {
-                $sum += $wv->getWeight() / 100000.0;
-                if ($bucket < $sum) {
-                    return [$wv->getVariation(), $rollout->isExperiment() && !$wv->isUntracked()];
-                }
-            }
-            $lastVariation = $variations[count($variations) - 1];
-            return [$lastVariation->getVariation(), $rollout->isExperiment() && !$lastVariation->isUntracked()];
+        if (count($variations) === 0) {
+            return [null, false];
         }
-        return [null, false];
+
+        $bucketBy = ($rollout->isExperiment() ? null : $rollout->getBucketBy()) ?: 'key';
+        $bucket = self::getBucketValueForContext(
+            $context,
+            $rollout->getContextKind(),
+            $_key,
+            $bucketBy,
+            $_salt,
+            $rollout->getSeed()
+        );
+        $experiment = $rollout->isExperiment() && $bucket >= 0;
+        // getBucketValueForContext returns a negative value if the context didn't exist, in which case we
+        // still end up returning the first bucket, but we will force the "in experiment" state to be false.
+
+        $sum = 0.0;
+        foreach ($variations as $wv) {
+            $sum += $wv->getWeight() / 100000.0;
+            if ($bucket < $sum) {
+                return [$wv->getVariation(), $experiment && !$wv->isUntracked()];
+            }
+        }
+        $lastVariation = $variations[count($variations) - 1];
+        return [$lastVariation->getVariation(), $experiment && !$lastVariation->isUntracked()];
     }
 
     public static function getBucketValueForContext(
         LDContext $context,
-        string $_key,
+        ?string $contextKind,
+        string $key,
         string $attr,
-        ?string $_salt,
+        ?string $salt,
         ?int $seed
     ): float {
-        $contextValue = $context->get($attr);
+        $matchContext = $context->getIndividualContext($contextKind ?? LDContext::DEFAULT_KIND);
+        if ($matchContext === null) {
+            return -1;
+        }
+        $contextValue = $matchContext->get($attr);
         if ($contextValue === null) {
             return 0.0;
         }
@@ -65,7 +82,7 @@ class EvaluatorBucketing
         if (isset($seed)) {
             $prefix = (string) $seed;
         } else {
-            $prefix = $_key . "." . ($_salt ?: '');
+            $prefix = $key . "." . ($salt ?: '');
         }
         $hash = substr(sha1($prefix . "." . $idHash), 0, 15);
         $longVal = (int)base_convert($hash, 16, 10);

@@ -104,17 +104,17 @@ class RolloutRandomizationConsistencyTest extends TestCase
     public function testBucketContextByKey()
     {
         $context1 = LDContext::create('userKeyA');
-        $point1 = EvaluatorBucketing::getBucketValueForContext($context1, 'hashKey', 'key', 'saltyA', null);
+        $point1 = EvaluatorBucketing::getBucketValueForContext($context1, null, 'hashKey', 'key', 'saltyA', null);
         $difference1 = abs($point1 - 0.42157587);
         $this->assertTrue($difference1 <= 0.0000001);
 
         $context2 = LDContext::create('userKeyB');
-        $point2 = EvaluatorBucketing::getBucketValueForContext($context2, 'hashKey', 'key', 'saltyA', null);
+        $point2 = EvaluatorBucketing::getBucketValueForContext($context2, null, 'hashKey', 'key', 'saltyA', null);
         $difference2 = abs($point2 - 0.6708485);
         $this->assertTrue($difference2 <= 0.0000001);
 
         $context3 = LDContext::create('userKeyC');
-        $point3 = EvaluatorBucketing::getBucketValueForContext($context3, 'hashKey', 'key', 'saltyA', null);
+        $point3 = EvaluatorBucketing::getBucketValueForContext($context3, null, 'hashKey', 'key', 'saltyA', null);
         $difference3 = abs($point3 - 0.10343106);
         $this->assertTrue($difference3 <= 0.0000001);
     }
@@ -123,17 +123,17 @@ class RolloutRandomizationConsistencyTest extends TestCase
     {
         $seed = 61;
         $context1 = LDContext::create('userKeyA');
-        $point1 = EvaluatorBucketing::getBucketValueForContext($context1, 'hashKey', 'key', 'saltyA', $seed);
+        $point1 = EvaluatorBucketing::getBucketValueForContext($context1, null, 'hashKey', 'key', 'saltyA', $seed);
         $difference1 = abs($point1 - 0.09801207);
         $this->assertTrue($difference1 <= 0.0000001);
 
         $context2 = LDContext::create('userKeyB');
-        $point2 = EvaluatorBucketing::getBucketValueForContext($context2, 'hashKey', 'key', 'saltyA', $seed);
+        $point2 = EvaluatorBucketing::getBucketValueForContext($context2, null, 'hashKey', 'key', 'saltyA', $seed);
         $difference2 = abs($point2 - 0.14483777);
         $this->assertTrue($difference2 <= 0.0000001);
 
         $context3 = LDContext::create('userKeyC');
-        $point3 = EvaluatorBucketing::getBucketValueForContext($context3, 'hashKey', 'key', 'saltyA', $seed);
+        $point3 = EvaluatorBucketing::getBucketValueForContext($context3, null, 'hashKey', 'key', 'saltyA', $seed);
         $difference3 = abs($point3 - 0.9242641);
         $this->assertTrue($difference3 <= 0.0000001);
     }

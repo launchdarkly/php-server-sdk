@@ -190,9 +190,6 @@ class Evaluator
     private function segmentMatchesContext(Segment $segment, LDContext $context): bool
     {
         $key = $context->getKey();
-        if (!$key) {
-            return false;
-        }
         if (in_array($key, $segment->getIncluded(), true)) {
             return true;
         }
@@ -224,7 +221,14 @@ class Evaluator
         }
         // All of the clauses are met. See if the user buckets in
         $bucketBy = $rule->getBucketBy() ?: 'key';
-        $bucket = EvaluatorBucketing::getBucketValueForContext($context, $segmentKey, $bucketBy, $segmentSalt, null);
+        $bucket = EvaluatorBucketing::getBucketValueForContext(
+            $context,
+            $rule->getRolloutContextKind(),
+            $segmentKey,
+            $bucketBy,
+            $segmentSalt,
+            null
+        );
         $weight = $rule->getWeight() / 100000.0;
         return $bucket < $weight;
     }

@@ -242,7 +242,7 @@ class EvaluatorFlagTest extends TestCase
         
         // First verify that with our test inputs, the bucket value will be greater than zero and less than 100000,
         // so we can construct a rollout whose second bucket just barely contains that value
-        $bucketValue = floor(EvaluatorBucketing::getBucketValueForContext($context, $flagKey, "key", $salt, null) * 100000);
+        $bucketValue = floor(EvaluatorBucketing::getBucketValueForContext($context, null, $flagKey, "key", $salt, null) * 100000);
         self::assertGreaterThan(0, $bucketValue);
         self::assertLessThan(100000, $bucketValue);
 
@@ -272,7 +272,7 @@ class EvaluatorFlagTest extends TestCase
         $flagKey = 'flagkey';
         $salt = 'salt';
         
-        $bucketValue = floor(EvaluatorBucketing::getBucketValueForContext($context, $flagKey, "key", $salt, null) * 100000);
+        $bucketValue = floor(EvaluatorBucketing::getBucketValueForContext($context, null, $flagKey, "key", $salt, null) * 100000);
 
         // We'll construct a list of variations that stops right at the target bucket value
         $rollout = ModelBuilders::rolloutWithVariations(
