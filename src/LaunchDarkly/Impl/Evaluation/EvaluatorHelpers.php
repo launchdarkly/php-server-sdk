@@ -73,7 +73,14 @@ class EvaluatorHelpers
         if ($attr === null) {
             return false;
         }
-        $contextValue = $context->get($attr);
+        if ($attr === 'kind') {
+            return self::maybeNegate($clause, self::matchClauseByKind($clause, $context));
+        }
+        $actualContext = $context->getIndividualContext($clause->getContextKind() ?? LDContext::DEFAULT_KIND);
+        if ($actualContext === null) {
+            return false;
+        }
+        $contextValue = $actualContext->get($attr);
         if ($contextValue === null) {
             return false;
         }
@@ -87,6 +94,20 @@ class EvaluatorHelpers
         } else {
             return self::maybeNegate($clause, self::matchAnyClauseValue($clause, $contextValue));
         }
+    }
+
+    private static function matchClauseByKind(Clause $clause, LDContext $context): bool
+    {
+        // If attribute is "kind", then we treat operator and values as a match expression against a list
+        // of all individual kinds in the context. That is, for a multi-kind context with kinds of "org"
+        // and "user", it is a match if either of those strings is a match with Operator and Values.
+        for ($i = 0; $i < $context->getIndividualContextCount(); $i++) {
+            $c = $context->getIndividualContext($i);
+            if ($c !== null && self::matchAnyClauseValue($clause, $c->getKind())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static function matchAnyClauseValue(Clause $clause, mixed $contextValue): bool

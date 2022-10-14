@@ -44,19 +44,19 @@ class ModelBuilders
         return self::booleanFlagWithRules(self::flagRuleBuilder()->variation(1)->clauses($clauses)->build());
     }
 
-    public static function clause(string $attribute, string $op, ...$values): Clause
+    public static function clause(?string $contextKind, string $attribute, string $op, ...$values): Clause
     {
-        return new Clause($attribute, $op, $values, false);
+        return new Clause($contextKind, $attribute, $op, $values, false);
     }
 
     public static function clauseMatchingContext($context): Clause
     {
-        return new Clause('key', 'in', [$context->getKey()], false);
+        return new Clause($context->getKind(), 'key', 'in', [$context->getKey()], false);
     }
 
     public static function clauseMatchingSegment($segment): Clause
     {
-        return new Clause('', 'segmentMatch', [$segment->getKey()], false);
+        return new Clause(null, '', 'segmentMatch', [$segment->getKey()], false);
     }
 
     public static function flagRuleMatchingContext(int $variation, LDContext $context): Rule
@@ -71,7 +71,7 @@ class ModelBuilders
     
     public static function negate(Clause $clause): Clause
     {
-        return new Clause($clause->getAttribute(), $clause->getOp(), $clause->getValues(), true);
+        return new Clause($clause->getContextKind(), $clause->getAttribute(), $clause->getOp(), $clause->getValues(), true);
     }
 
     public static function rolloutWithVariations(WeightedVariation ...$variations)

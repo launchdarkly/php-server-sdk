@@ -110,8 +110,8 @@ class EvaluatorSegmentTest extends TestCase
         $segment = ModelBuilders::segmentBuilder('test')
             ->rule(
                 ModelBuilders::segmentRuleBuilder()
-                    ->clause(ModelBuilders::clause('email', 'in', 'test@example.com'))
-                    ->clause(ModelBuilders::clause('name', 'in', 'bob'))
+                    ->clause(ModelBuilders::clause(null, 'email', 'in', 'test@example.com'))
+                    ->clause(ModelBuilders::clause(null, 'name', 'in', 'bob'))
                     ->build()
             )
             ->build();
@@ -124,8 +124,8 @@ class EvaluatorSegmentTest extends TestCase
         $segment = ModelBuilders::segmentBuilder('test')
             ->rule(
                 ModelBuilders::segmentRuleBuilder()
-                    ->clause(ModelBuilders::clause('email', 'in', 'test@example.com'))
-                    ->clause(ModelBuilders::clause('name', 'in', 'bill'))
+                    ->clause(ModelBuilders::clause(null, 'email', 'in', 'test@example.com'))
+                    ->clause(ModelBuilders::clause(null, 'name', 'in', 'bill'))
                     ->build()
             )
             ->build();
