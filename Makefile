@@ -11,18 +11,18 @@ TEMP_TEST_OUTPUT=/tmp/sse-contract-test-service.log
 
 # TEST_HARNESS_PARAMS can be set to add -skip parameters for any contract tests that cannot yet pass
 # Explanation of current skips:
-# - "evaluation" subtests involving attribute references: Haven't yet implemented attribute references.
 # - "evaluation/bucketing/secondary": The "secondary" behavior needs to be removed from contract tests.
+# - "evaluation/parameterized/attribute references/array index is not supported": Due to how PHP
+#   arrays work, there's no way to disallow an array index lookup without breaking object property
+#   lookups for properties that are numeric strings.
 # - "evaluation/parameterized/prerequisites": Can't pass yet because prerequisite cycle detection is not implemented.
 # - "evaluation/parameterized/segment match": Haven't yet implemented context kinds in segments.
 # - "evaluation/parameterized/segment recursion": Haven't yet implemented segment recursion.
 # - various other "evaluation" subtests: These tests require context kind support.
 # - "events": These test suites will be unavailable until more of the U2C implementation is done.
 TEST_HARNESS_PARAMS := $(TEST_HARNESS_PARAMS) \
-	-skip 'evaluation/bucketing/bucket by non-key attribute/in rollouts/string value/complex attribute reference' \
 	-skip 'evaluation/bucketing/secondary' \
-	-skip 'evaluation/parameterized/attribute references' \
-	-skip 'evaluation/parameterized/bad attribute reference errors' \
+	-skip 'evaluation/parameterized/attribute references/array index is not supported' \
 	-skip 'evaluation/parameterized/prerequisites' \
 	-skip 'evaluation/parameterized/segment recursion' \
 	-skip 'events'

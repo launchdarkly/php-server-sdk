@@ -41,6 +41,38 @@ class EvaluatorHelpers
         return new EvaluationDetail($vars[$index], $index, $reason);
     }
 
+    public static function getContextValueForAttributeReference(
+        LDContext $context,
+        string $attributeRef,
+        ?string $forContextKind
+    ): mixed {
+        if ($attributeRef === '') {
+            throw new InvalidAttributeReferenceException(AttributeReference::ERR_ATTR_EMPTY);
+        }
+        if ($forContextKind === null || $forContextKind === '') {
+            return $context->get($attributeRef);
+        }
+        $parsed = AttributeReference::parse($attributeRef);
+        if (!is_array($parsed)) {
+            return $context->get($parsed);
+        }
+        $value = $context->get($parsed[0]);
+        for ($i = 1; $i < count($parsed); $i++) {
+            if (is_object($value)) {
+                $value = object_vars($value)[$parsed[$i]] ?? null;
+            } elseif (is_array($value)) {
+                // Note that either a JSON array or a JSON object could be represented as a PHP array.
+                // There is no good way to distinguish between ["a", "b"] and {"0": "a", "1": "b"}.
+                // Therefore, our lookup logic here is slightly more permissive than other SDKs, where
+                // an attempt to get /attr/0 would only work in the second case and not in the first.
+                $value = $value[$parsed[$i]] ?? null;
+            } else {
+                return null;
+            }
+        }
+        return $value;
+    }
+
     public static function getOffResult(FeatureFlag $flag, EvaluationReason $reason): EvalResult
     {
         $offVar = $flag->getOffVariation();
@@ -57,7 +89,11 @@ class EvaluatorHelpers
         LDContext $context,
         EvaluationReason $reason
     ): EvalResult {
-        list($index, $inExperiment) = EvaluatorBucketing::variationIndexForContext($r, $context, $flag->getKey(), $flag->getSalt());
+        try {
+            list($index, $inExperiment) = EvaluatorBucketing::variationIndexForContext($r, $context, $flag->getKey(), $flag->getSalt());
+        } catch (InvalidAttributeReferenceException $e) {
+            return new EvalResult(new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR)));
+        }
         if ($index === null) {
             return new EvalResult(
                 new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR)),
@@ -90,7 +126,7 @@ class EvaluatorHelpers
         if ($actualContext === null) {
             return false;
         }
-        $contextValue = $actualContext->get($attr);
+        $contextValue = self::getContextValueForAttributeReference($actualContext, $attr, $clause->getContextKind());
         if ($contextValue === null) {
             return false;
         }

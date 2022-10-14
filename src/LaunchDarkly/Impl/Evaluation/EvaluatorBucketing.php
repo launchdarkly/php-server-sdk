@@ -69,7 +69,7 @@ class EvaluatorBucketing
         if ($matchContext === null) {
             return -1;
         }
-        $contextValue = $matchContext->get($attr);
+        $contextValue = EvaluatorHelpers::getContextValueForAttributeReference($matchContext, $attr, $contextKind);
         if ($contextValue === null) {
             return 0.0;
         }

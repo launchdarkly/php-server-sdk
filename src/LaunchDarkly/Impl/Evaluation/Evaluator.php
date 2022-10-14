@@ -2,6 +2,7 @@
 
 namespace LaunchDarkly\Impl\Evaluation;
 
+use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
 use LaunchDarkly\FeatureRequester;
 use LaunchDarkly\Impl\Model\Clause;
@@ -41,7 +42,11 @@ class Evaluator
      */
     public function evaluate(FeatureFlag $flag, LDContext $context, ?callable $prereqEvalSink): EvalResult
     {
-        return $this->evaluateInternal($flag, $context, $prereqEvalSink);
+        try {
+            return $this->evaluateInternal($flag, $context, $prereqEvalSink);
+        } catch (EvaluationException $e) {
+            return new EvalResult(new EvaluationDetail(null, null, EvaluationReason::error($e->getErrorKind())));
+        }
     }
 
     private function evaluateInternal(
@@ -231,14 +236,18 @@ class Evaluator
         }
         // All of the clauses are met. See if the user buckets in
         $bucketBy = $rule->getBucketBy() ?: 'key';
-        $bucket = EvaluatorBucketing::getBucketValueForContext(
-            $context,
-            $rule->getRolloutContextKind(),
-            $segmentKey,
-            $bucketBy,
-            $segmentSalt,
-            null
-        );
+        try {
+            $bucket = EvaluatorBucketing::getBucketValueForContext(
+                $context,
+                $rule->getRolloutContextKind(),
+                $segmentKey,
+                $bucketBy,
+                $segmentSalt,
+                null
+            );
+        } catch (InvalidAttributeReferenceException $e) {
+            return false;
+        }
         $weight = $rule->getWeight() / 100000.0;
         return $bucket < $weight;
     }
