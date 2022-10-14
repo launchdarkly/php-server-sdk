@@ -132,7 +132,7 @@ class EvaluatorClauseTest extends TestCase
     public function testSegmentMatchClauseRetrievesSegmentFromStore()
     {
         $context = LDContext::create('key');
-        $segment = ModelBuilders::segmentBuilder('segkey')->included([$context->getKey()])->build();
+        $segment = ModelBuilders::segmentBuilder('segkey')->included($context->getKey())->build();
         $requester = new MockFeatureRequester();
         $requester->addSegment($segment);
         $evaluator = new Evaluator($requester);

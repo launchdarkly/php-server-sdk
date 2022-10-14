@@ -189,12 +189,21 @@ class Evaluator
 
     private function segmentMatchesContext(Segment $segment, LDContext $context): bool
     {
-        $key = $context->getKey();
-        if (in_array($key, $segment->getIncluded(), true)) {
+        if (EvaluatorHelpers::contextKeyIsInTargetList($context, null, $segment->getIncluded())) {
             return true;
         }
-        if (in_array($key, $segment->getExcluded(), true)) {
+        foreach ($segment->getIncludedContexts() as $t) {
+            if (EvaluatorHelpers::contextKeyIsInTargetList($context, $t->getContextKind(), $t->getValues())) {
+                return true;
+            }
+        }
+        if (EvaluatorHelpers::contextKeyIsInTargetList($context, null, $segment->getExcluded())) {
             return false;
+        }
+        foreach ($segment->getExcludedContexts() as $t) {
+            if (EvaluatorHelpers::contextKeyIsInTargetList($context, $t->getContextKind(), $t->getValues())) {
+                return false;
+            }
         }
         foreach ($segment->getRules() as $rule) {
             if ($this->segmentRuleMatchesContext($rule, $context, $segment->getKey(), $segment->getSalt())) {
@@ -210,6 +219,7 @@ class Evaluator
         string $segmentKey,
         string $segmentSalt
     ): bool {
+        $rulej = print_r($rule, true);
         foreach ($rule->getClauses() as $clause) {
             if (!EvaluatorHelpers::matchClauseWithoutSegments($clause, $context)) {
                 return false;

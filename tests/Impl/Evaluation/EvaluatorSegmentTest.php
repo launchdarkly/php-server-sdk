@@ -17,7 +17,7 @@ class EvaluatorSegmentTest extends TestCase
     public function testExplicitIncludeContext()
     {
         global $defaultContext;
-        $segment = ModelBuilders::segmentBuilder('test')->included([$defaultContext->getKey()])->build();
+        $segment = ModelBuilders::segmentBuilder('test')->included($defaultContext->getKey())->build();
         $this->assertTrue(self::segmentMatchesContext($segment, $defaultContext));
     }
 
@@ -26,7 +26,7 @@ class EvaluatorSegmentTest extends TestCase
         global $defaultContext;
         $segment = ModelBuilders::segmentBuilder('test')
             ->rule(ModelBuilders::segmentRuleMatchingContext($defaultContext))
-            ->excluded([$defaultContext->getKey()])
+            ->excluded($defaultContext->getKey())
             ->build();
         $this->assertFalse(self::segmentMatchesContext($segment, $defaultContext));
     }
@@ -35,11 +35,39 @@ class EvaluatorSegmentTest extends TestCase
     {
         global $defaultContext;
         $segment = ModelBuilders::segmentBuilder('test')
-            ->included([$defaultContext->getKey()])->excluded([$defaultContext->getKey()])
+            ->included($defaultContext->getKey())->excluded($defaultContext->getKey())
             ->build();
         $this->assertTrue(self::segmentMatchesContext($segment, $defaultContext));
     }
 
+    public function testIncludedKeyForContextKind()
+    {
+        $c1 = LDContext::create('key1', 'kind1');
+        $c2 = LDContext::create('key2', 'kind2');
+        $multi = LDContext::createMulti($c1, $c2);
+        $segment = ModelBuilders::segmentBuilder('test')
+            ->includedContexts('kind1', 'key1')
+            ->build();
+        $this->assertTrue(self::segmentMatchesContext($segment, $c1));
+        $this->assertFalse(self::segmentMatchesContext($segment, $c2));
+        $this->assertTrue(self::segmentMatchesContext($segment, $multi));
+    }
+
+    public function excludedKeyForContextKind()
+    {
+        $c1 = LDContext::create('key1', 'kind1');
+        $c2 = LDContext::create('key2', 'kind2');
+        $multi = LDContext::createMulti($c1, $c2);
+        $segment = ModelBuilders::segmentBuilder('test')
+            ->excludedContexts('kind1', 'key1')
+            ->rule(ModelBuilders::segmentRuleMatchingContext($c1))
+            ->rule(ModelBuilders::segmentRuleMatchingContext($c2))
+            ->build();
+        $this->assertFalse(self::segmentMatchesContext($segment, $c1));
+        $this->assertTrue(self::segmentMatchesContext($segment, $c2));
+        $this->assertFalse(self::segmentMatchesContext($segment, $multi));
+    }
+    
     public function testMatchingRuleWithFullRollout()
     {
         global $defaultContext;

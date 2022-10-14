@@ -4,6 +4,7 @@ namespace LaunchDarkly\Tests;
 
 use LaunchDarkly\Impl\Model\Segment;
 use LaunchDarkly\Impl\Model\SegmentRule;
+use LaunchDarkly\Impl\Model\SegmentTarget;
 
 class SegmentBuilder
 {
@@ -13,6 +14,10 @@ class SegmentBuilder
     private array $_included = [];
     /** @var string[] */
     private array $_excluded = [];
+    /** @var SegmentTarget[] */
+    private array $_includedContexts = [];
+    /** @var SegmentTarget[] */
+    private array $_excludedContexts = [];
     private string $_salt = '';
     /** @var SegmentRule[] */
     private array $_rules = [];
@@ -30,21 +35,35 @@ class SegmentBuilder
             $this->_version,
             $this->_included,
             $this->_excluded,
+            $this->_includedContexts,
+            $this->_excludedContexts,
             $this->_salt,
             $this->_rules,
             $this->_deleted
         );
     }
 
-    public function excluded(array $excluded): SegmentBuilder
+    public function excluded(string ...$excluded): SegmentBuilder
     {
         $this->_excluded = $excluded;
         return $this;
     }
 
-    public function included(array $included): SegmentBuilder
+    public function excludedContexts(string $contextKind, string ...$excluded): SegmentBuilder
+    {
+        $this->_excludedContexts[] = new SegmentTarget($contextKind, $excluded);
+        return $this;
+    }
+
+    public function included(string ...$included): SegmentBuilder
     {
         $this->_included = $included;
+        return $this;
+    }
+
+    public function includedContexts(string $contextKind, string ...$included): SegmentBuilder
+    {
+        $this->_includedContexts[] = new SegmentTarget($contextKind, $included);
         return $this;
     }
 
