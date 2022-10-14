@@ -6,6 +6,7 @@ use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
 use LaunchDarkly\Impl\Model\Clause;
 use LaunchDarkly\Impl\Model\FeatureFlag;
+use LaunchDarkly\Impl\Model\Target;
 use LaunchDarkly\Impl\Model\VariationOrRollout;
 use LaunchDarkly\LDContext;
 
@@ -19,6 +20,15 @@ use LaunchDarkly\LDContext;
  */
 class EvaluatorHelpers
 {
+    public static function contextKeyIsInTargetList(LDContext $context, ?string $contextKind, array $keys): bool
+    {
+        if (count($keys) === 0) {
+            return false;
+        }
+        $matchContext = $context->getIndividualContext($contextKind ?: LDContext::DEFAULT_KIND);
+        return $matchContext !== null && in_array($matchContext->getKey(), $keys);
+    }
+  
     public static function evaluationDetailForVariation(
         FeatureFlag $flag,
         int $index,
@@ -125,5 +135,13 @@ class EvaluatorHelpers
     public static function maybeNegate(Clause $clause, bool $b): bool
     {
         return $clause->isNegate() ? !$b : $b;
+    }
+
+    public static function targetMatchResult(FeatureFlag $flag, Target $t): EvalResult
+    {
+        return new EvalResult(
+            self::evaluationDetailForVariation($flag, $t->getVariation(), EvaluationReason::targetMatch()),
+            false
+        );
     }
 }

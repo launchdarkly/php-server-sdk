@@ -59,17 +59,9 @@ class Evaluator
         }
 
         // Check to see if targets match
-        foreach ($flag->getTargets() as $target) {
-            foreach ($target->getValues() as $value) {
-                if ($value === $context->getKey()) {
-                    $detail = EvaluatorHelpers::evaluationDetailForVariation(
-                        $flag,
-                        $target->getVariation(),
-                        EvaluationReason::targetMatch()
-                    );
-                    return new EvalResult($detail, false);
-                }
-            }
+        $targetResult = $this->checkTargets($flag, $context);
+        if ($targetResult) {
+            return $targetResult;
         }
 
         // Now walk through the rules and see if any match
@@ -121,6 +113,51 @@ class Evaluator
                 return EvaluationReason::prerequisiteFailed($prereq->getKey());
             }
         }
+        return null;
+    }
+
+    private function checkTargets(FeatureFlag $flag, LDContext $context): ?EvalResult
+    {
+        $userTargets = $flag->getTargets();
+        $contextTargets = $flag->getContextTargets();
+        if (count($contextTargets) === 0) {
+            // old-style data has only targets for users
+            if (count($userTargets) !== 0) {
+                $userContext = $context->getIndividualContext(LDContext::DEFAULT_KIND);
+                if ($userContext === null) {
+                    return null;
+                }
+                foreach ($userTargets as $t) {
+                    if (in_array($userContext->getKey(), $t->getValues())) {
+                        return EvaluatorHelpers::targetMatchResult($flag, $t);
+                    }
+                }
+            }
+            return null;
+        }
+
+        foreach ($contextTargets as $t) {
+            if (($t->getContextKind() ?: LDContext::DEFAULT_KIND) === LDContext::DEFAULT_KIND) {
+                $userContext = $context->getIndividualContext(LDContext::DEFAULT_KIND);
+                if ($userContext === null) {
+                    continue;
+                }
+                $userKey = $userContext->getKey();
+                foreach ($userTargets as $ut) {
+                    if ($ut->getVariation() === $t->getVariation()) {
+                        if (in_array($userKey, $ut->getValues())) {
+                            return EvaluatorHelpers::targetMatchResult($flag, $ut);
+                        }
+                        break;
+                    }
+                }
+            } else {
+                if (EvaluatorHelpers::contextKeyIsInTargetList($context, $t->getContextKind(), $t->getValues())) {
+                    return EvaluatorHelpers::targetMatchResult($flag, $t);
+                }
+            }
+        }
+
         return null;
     }
 

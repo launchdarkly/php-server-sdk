@@ -19,6 +19,8 @@ class FlagBuilder
     private string $_salt = '';
     /** @var Target[] */
     private array $_targets = [];
+    /** @var Target[] */
+    private array $_contextTargets = [];
     /** @var Rule[] */
     private array $_rules = [];
     private VariationOrRollout $_fallthrough;
@@ -44,6 +46,7 @@ class FlagBuilder
             $this->_prerequisites,
             $this->_salt,
             $this->_targets,
+            $this->_contextTargets,
             $this->_rules,
             $this->_fallthrough,
             $this->_offVariation,
@@ -54,6 +57,12 @@ class FlagBuilder
             $this->_debugEventsUntilDate,
             $this->_clientSide
         );
+    }
+
+    public function contextTarget(string $contextKind, int $variation, string ...$values): FlagBuilder
+    {
+        $this->_contextTargets[] = new Target($contextKind, $values, $variation);
+        return $this;
     }
 
     public function fallthroughRollout(Rollout $rollout): FlagBuilder
@@ -112,7 +121,7 @@ class FlagBuilder
 
     public function target(int $variation, string ...$values): FlagBuilder
     {
-        $this->_targets[] = new Target($values, $variation);
+        $this->_targets[] = new Target(null, $values, $variation);
         return $this;
     }
 

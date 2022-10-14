@@ -172,19 +172,6 @@ class EvaluatorFlagTest extends TestCase
         self::assertEquals($flag0, $eval->getPrereqOfFlag());
     }
 
-    public function testFlagMatchesContextFromTargets()
-    {
-        $flag = ModelBuilders::flagBuilder('feature')->variations('fall', 'off', 'on')
-            ->on(true)->offVariation(1)->fallthroughVariation(0)
-            ->target(2, 'whoever', 'userkey')
-            ->build();
-        $context = LDContext::create('userkey');
-
-        $result = static::$basicEvaluator->evaluate($flag, $context, EvaluatorTestUtil::expectNoPrerequisiteEvals());
-        $detail = new EvaluationDetail('on', 2, EvaluationReason::targetMatch());
-        self::assertEquals($detail, $result->getDetail());
-    }
-
     public function testFlagMatchesContextFromRules()
     {
         global $defaultContext;

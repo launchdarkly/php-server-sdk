@@ -22,6 +22,8 @@ class FeatureFlag
     protected string $_salt;
     /** @var Target[] */
     protected array $_targets = [];
+    /** @var Target[] */
+    protected array $_contextTargets = [];
     /** @var Rule[] */
     protected array $_rules = [];
     protected VariationOrRollout $_fallthrough;
@@ -44,6 +46,7 @@ class FeatureFlag
         array $prerequisites,
         string $salt,
         array $targets,
+        array $contextTargets,
         array $rules,
         VariationOrRollout $fallthrough,
         ?int $offVariation,
@@ -60,6 +63,7 @@ class FeatureFlag
         $this->_prerequisites = $prerequisites;
         $this->_salt = $salt;
         $this->_targets = $targets;
+        $this->_contextTargets = $contextTargets;
         $this->_rules = $rules;
         $this->_fallthrough = $fallthrough;
         $this->_offVariation = $offVariation;
@@ -86,6 +90,7 @@ class FeatureFlag
                 array_map(Prerequisite::getDecoder(), $v['prerequisites'] ?: []),
                 $v['salt'],
                 array_map(Target::getDecoder(), $v['targets'] ?: []),
+                array_map(Target::getDecoder(), ($v['contextTargets'] ?? null) ?: []),
                 array_map(Rule::getDecoder(), $v['rules'] ?: []),
                 call_user_func(VariationOrRollout::getDecoder(), $v['fallthrough']),
                 $v['offVariation'],
@@ -107,6 +112,12 @@ class FeatureFlag
     public function isClientSide(): bool
     {
         return $this->_clientSide;
+    }
+
+    /** @return Target[] */
+    public function getContextTargets(): array
+    {
+        return $this->_contextTargets;
     }
 
     public function getDebugEventsUntilDate(): ?int
@@ -139,11 +150,13 @@ class FeatureFlag
         return $this->_on;
     }
 
+    /** @return Prerequisite[] */
     public function getPrerequisites(): array
     {
         return $this->_prerequisites;
     }
 
+    /** @return Rule[] */
     public function getRules(): array
     {
         return $this->_rules;
@@ -154,6 +167,7 @@ class FeatureFlag
         return $this->_salt;
     }
 
+    /** @return Target[] */
     public function getTargets(): array
     {
         return $this->_targets;
