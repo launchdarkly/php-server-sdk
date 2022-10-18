@@ -89,7 +89,7 @@ class AttributeReference
     public function getComponent(int $index): string
     {
         if ($this->_components === null) {
-            return $index === 0 ? $this->_singleComponent : '';
+            return $index === 0 ? ($this->_singleComponent ?: '') : '';
         }
         return $index < 0 || $index >= count($this->_components) ? '' : $this->_components[$index];
     }

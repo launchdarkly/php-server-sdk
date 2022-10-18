@@ -55,8 +55,8 @@ class EvaluatorHelpers
             return $context->get($attributeRef);
         }
         $parsed = AttributeReference::parse($attributeRef);
-        if ($parsed->getError() !== null) {
-            throw new InvalidAttributeReferenceException($parsed->getError());
+        if (($err = $parsed->getError()) !== null) {
+            throw new InvalidAttributeReferenceException($err);
         }
         $depth = $parsed->getDepth();
         $value = $context->get($parsed->getComponent(0));
