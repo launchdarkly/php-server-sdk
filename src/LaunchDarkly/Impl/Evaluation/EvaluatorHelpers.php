@@ -4,6 +4,7 @@ namespace LaunchDarkly\Impl\Evaluation;
 
 use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
+use LaunchDarkly\Impl\Model\AttributeReference;
 use LaunchDarkly\Impl\Model\Clause;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Impl\Model\Target;
@@ -50,22 +51,28 @@ class EvaluatorHelpers
             throw new InvalidAttributeReferenceException(AttributeReference::ERR_ATTR_EMPTY);
         }
         if ($forContextKind === null || $forContextKind === '') {
+            // Treat the attribute as just an attribute name, not a reference path
             return $context->get($attributeRef);
         }
         $parsed = AttributeReference::parse($attributeRef);
-        if (!is_array($parsed)) {
-            return $context->get($parsed);
+        if ($parsed->getError() !== null) {
+            throw new InvalidAttributeReferenceException($parsed->getError());
         }
-        $value = $context->get($parsed[0]);
-        for ($i = 1; $i < count($parsed); $i++) {
+        $depth = $parsed->getDepth();
+        $value = $context->get($parsed->getComponent(0));
+        if ($depth <= 1) {
+            return $value;
+        }
+        for ($i = 1; $i < $depth; $i++) {
+            $propName = $parsed->getComponent($i);
             if (is_object($value)) {
-                $value = get_object_vars($value)[$parsed[$i]] ?? null;
+                $value = get_object_vars($value)[$propName] ?? null;
             } elseif (is_array($value)) {
                 // Note that either a JSON array or a JSON object could be represented as a PHP array.
                 // There is no good way to distinguish between ["a", "b"] and {"0": "a", "1": "b"}.
                 // Therefore, our lookup logic here is slightly more permissive than other SDKs, where
                 // an attempt to get /attr/0 would only work in the second case and not in the first.
-                $value = $value[$parsed[$i]] ?? null;
+                $value = $value[$propName] ?? null;
             } else {
                 return null;
             }
