@@ -59,6 +59,11 @@ class Evaluator
         ?callable $prereqEvalSink
     ): EvalResult {
         try {
+            // The reason there's an extra try block here is that if something fails during evaluation of the
+            // prerequisites, we don't want that to short-circuit evaluation of the base flag in the way that
+            // an error normally would, where the whole evaluation would return an error result with a default
+            // value. Instead we want the base flag to return its off variation, as it always does if any
+            // prerequisites have failed.
             if (!$flag->isOn()) {
                 return EvaluatorHelpers::getOffResult($flag, EvaluationReason::off());
             }
