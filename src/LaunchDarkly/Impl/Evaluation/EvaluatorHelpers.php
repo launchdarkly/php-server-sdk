@@ -4,6 +4,7 @@ namespace LaunchDarkly\Impl\Evaluation;
 
 use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
+use LaunchDarkly\Impl\Model\AttributeReference;
 use LaunchDarkly\Impl\Model\Clause;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Impl\Model\Target;
@@ -41,6 +42,44 @@ class EvaluatorHelpers
         return new EvaluationDetail($vars[$index], $index, $reason);
     }
 
+    public static function getContextValueForAttributeReference(
+        LDContext $context,
+        string $attributeRef,
+        ?string $forContextKind
+    ): mixed {
+        if ($attributeRef === '') {
+            throw new InvalidAttributeReferenceException(AttributeReference::ERR_ATTR_EMPTY);
+        }
+        if ($forContextKind === null || $forContextKind === '') {
+            // Treat the attribute as just an attribute name, not a reference path
+            return $context->get($attributeRef);
+        }
+        $parsed = AttributeReference::parse($attributeRef);
+        if (($err = $parsed->getError()) !== null) {
+            throw new InvalidAttributeReferenceException($err);
+        }
+        $depth = $parsed->getDepth();
+        $value = $context->get($parsed->getComponent(0));
+        if ($depth <= 1) {
+            return $value;
+        }
+        for ($i = 1; $i < $depth; $i++) {
+            $propName = $parsed->getComponent($i);
+            if (is_object($value)) {
+                $value = get_object_vars($value)[$propName] ?? null;
+            } elseif (is_array($value)) {
+                // Note that either a JSON array or a JSON object could be represented as a PHP array.
+                // There is no good way to distinguish between ["a", "b"] and {"0": "a", "1": "b"}.
+                // Therefore, our lookup logic here is slightly more permissive than other SDKs, where
+                // an attempt to get /attr/0 would only work in the second case and not in the first.
+                $value = $value[$propName] ?? null;
+            } else {
+                return null;
+            }
+        }
+        return $value;
+    }
+
     public static function getOffResult(FeatureFlag $flag, EvaluationReason $reason): EvalResult
     {
         $offVar = $flag->getOffVariation();
@@ -57,7 +96,11 @@ class EvaluatorHelpers
         LDContext $context,
         EvaluationReason $reason
     ): EvalResult {
-        list($index, $inExperiment) = EvaluatorBucketing::variationIndexForContext($r, $context, $flag->getKey(), $flag->getSalt());
+        try {
+            list($index, $inExperiment) = EvaluatorBucketing::variationIndexForContext($r, $context, $flag->getKey(), $flag->getSalt());
+        } catch (InvalidAttributeReferenceException $e) {
+            return new EvalResult(new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR)));
+        }
         if ($index === null) {
             return new EvalResult(
                 new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR)),
@@ -90,7 +133,7 @@ class EvaluatorHelpers
         if ($actualContext === null) {
             return false;
         }
-        $contextValue = $actualContext->get($attr);
+        $contextValue = self::getContextValueForAttributeReference($actualContext, $attr, $clause->getContextKind());
         if ($contextValue === null) {
             return false;
         }
