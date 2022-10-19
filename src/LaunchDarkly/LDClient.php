@@ -281,8 +281,8 @@ class LDClient
             return $detail;
         } catch (\Exception $e) {
             Util::logExceptionAtErrorLevel($this->_logger, $e, "Unexpected error evaluating flag $key");
-            $result = $errorDetail(EvaluationReason::EXCEPTION_ERROR);
-            $sendEvent(new EvalResult($result, false), null);
+            $result = $errorResult(EvaluationReason::EXCEPTION_ERROR);
+            $sendEvent($result, null);
             return $result;
         }
     }
