@@ -10,7 +10,9 @@ use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Impl\Model\Rule;
 use LaunchDarkly\Impl\Model\Segment;
 use LaunchDarkly\Impl\Model\SegmentRule;
+use LaunchDarkly\Impl\Util;
 use LaunchDarkly\LDContext;
+use Psr\Log\LoggerInterface;
 
 /**
  * Encapsulates the feature flag evaluation logic. The Evaluator has no direct access to the
@@ -23,10 +25,12 @@ use LaunchDarkly\LDContext;
 class Evaluator
 {
     private FeatureRequester $_featureRequester;
+    private LoggerInterface $_logger;
 
-    public function __construct(FeatureRequester $featureRequester)
+    public function __construct(FeatureRequester $featureRequester, ?LoggerInterface $logger = null)
     {
         $this->_featureRequester = $featureRequester;
+        $this->_logger = $logger ?: Util::makeNullLogger();
     }
 
     /**
@@ -42,11 +46,7 @@ class Evaluator
      */
     public function evaluate(FeatureFlag $flag, LDContext $context, ?callable $prereqEvalSink): EvalResult
     {
-        try {
-            return $this->evaluateInternal($flag, $context, $prereqEvalSink);
-        } catch (EvaluationException $e) {
-            return new EvalResult(new EvaluationDetail(null, null, EvaluationReason::error($e->getErrorKind())));
-        }
+        return $this->evaluateInternal($flag, $context, $prereqEvalSink);
     }
 
     private function evaluateInternal(
@@ -54,40 +54,47 @@ class Evaluator
         LDContext $context,
         ?callable $prereqEvalSink
     ): EvalResult {
-        if (!$flag->isOn()) {
-            return EvaluatorHelpers::getOffResult($flag, EvaluationReason::off());
-        }
-
-        $prereqFailureReason = $this->checkPrerequisites($flag, $context, $prereqEvalSink);
-        if ($prereqFailureReason !== null) {
-            return EvaluatorHelpers::getOffResult($flag, $prereqFailureReason);
-        }
-
-        // Check to see if targets match
-        $targetResult = $this->checkTargets($flag, $context);
-        if ($targetResult) {
-            return $targetResult;
-        }
-
-        // Now walk through the rules and see if any match
-        foreach ($flag->getRules() as $i => $rule) {
-            if ($this->ruleMatchesContext($rule, $context)) {
-                return EvaluatorHelpers::getResultForVariationOrRollout(
-                    $flag,
-                    $rule,
-                    $rule->isTrackEvents(),
-                    $context,
-                    EvaluationReason::ruleMatch($i, $rule->getId())
-                );
+        try {
+            if (!$flag->isOn()) {
+                return EvaluatorHelpers::getOffResult($flag, EvaluationReason::off());
             }
+
+            $prereqFailureReason = $this->checkPrerequisites($flag, $context, $prereqEvalSink);
+            if ($prereqFailureReason !== null) {
+                return EvaluatorHelpers::getOffResult($flag, $prereqFailureReason);
+            }
+
+            // Check to see if targets match
+            $targetResult = $this->checkTargets($flag, $context);
+            if ($targetResult) {
+                return $targetResult;
+            }
+
+            // Now walk through the rules and see if any match
+            foreach ($flag->getRules() as $i => $rule) {
+                if ($this->ruleMatchesContext($rule, $context)) {
+                    return EvaluatorHelpers::getResultForVariationOrRollout(
+                        $flag,
+                        $rule,
+                        $rule->isTrackEvents(),
+                        $context,
+                        EvaluationReason::ruleMatch($i, $rule->getId())
+                    );
+                }
+            }
+            return EvaluatorHelpers::getResultForVariationOrRollout(
+                $flag,
+                $flag->getFallthrough(),
+                $flag->isTrackEventsFallthrough(),
+                $context,
+                EvaluationReason::fallthrough()
+            );
+        } catch (EvaluationException $e) {
+            return new EvalResult(new EvaluationDetail(null, null, EvaluationReason::error($e->getErrorKind())));
+        } catch (\Throwable $e) {
+            Util::logExceptionAtErrorLevel($this->_logger, $e, 'Unexpected error when evaluating flag ' . $flag->getKey());
+            return new EvalResult(new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::EXCEPTION_ERROR)));
         }
-        return EvaluatorHelpers::getResultForVariationOrRollout(
-            $flag,
-            $flag->getFallthrough(),
-            $flag->isTrackEventsFallthrough(),
-            $context,
-            EvaluationReason::fallthrough()
-        );
     }
 
     private function checkPrerequisites(
@@ -99,19 +106,28 @@ class Evaluator
             $prereqOk = true;
             try {
                 $prereqFeatureFlag = $this->_featureRequester->getFeature($prereq->getKey());
-                if ($prereqFeatureFlag == null) {
+                if ($prereqFeatureFlag === null) {
                     $prereqOk = false;
                 } else {
+                    // Note that if the prerequisite flag is off, we don't consider it a match no matter what its
+                    // off variation was. But we still need to evaluate it in order to generate an event.
                     $prereqEvalResult = $this->evaluateInternal($prereqFeatureFlag, $context, $prereqEvalSink);
-                    $variation = $prereq->getVariation();
-                    if (!$prereqFeatureFlag->isOn() || $prereqEvalResult->getDetail()->getVariationIndex() !== $variation) {
+                    if ($prereqFeatureFlag->isOn()) {
+                        $variation = $prereq->getVariation();
+                        $prereqOk = ($variation === $prereqEvalResult->getDetail()->getVariationIndex());
+                    } else {
                         $prereqOk = false;
                     }
                     if ($prereqEvalSink !== null) {
                         $prereqEvalSink(new PrerequisiteEvaluationRecord($prereqFeatureFlag, $flag, $prereqEvalResult));
                     }
                 }
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
+                Util::logExceptionAtErrorLevel(
+                    $this->_logger,
+                    $e,
+                    'Unexpected error when evaluating prerequisite flag ' . $prereq->getKey()
+                );
                 $prereqOk = false;
             }
             if (!$prereqOk) {

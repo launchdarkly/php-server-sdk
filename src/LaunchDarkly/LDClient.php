@@ -12,6 +12,7 @@ use LaunchDarkly\Impl\Events\NullEventProcessor;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Impl\PreloadedFeatureRequester;
 use LaunchDarkly\Impl\UnrecoverableHTTPStatusException;
+use LaunchDarkly\Impl\Util;
 use LaunchDarkly\Integrations\Guzzle;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
@@ -138,7 +139,7 @@ class LDClient
 
         $this->_featureRequester = $this->getFeatureRequester($sdkKey, $options);
 
-        $this->_evaluator = new Evaluator($this->_featureRequester);
+        $this->_evaluator = new Evaluator($this->_featureRequester, $this->_logger);
     }
 
     /**
@@ -279,13 +280,9 @@ class LDClient
             $sendEvent($detail, $flag);
             return $detail;
         } catch (\Exception $e) {
-            $this->_logger->error("Caught $e");
-            $result = $errorResult(EvaluationReason::EXCEPTION_ERROR);
-            try {
-                $sendEvent($result, null);
-            } catch (\Exception $e) {
-                $this->_logger->error("Caught $e");
-            }
+            Util::logExceptionAtErrorLevel($this->_logger, $e, "Unexpected error evaluating flag $key");
+            $result = $errorDetail(EvaluationReason::EXCEPTION_ERROR);
+            $sendEvent(new EvalResult($result, false), null);
             return $result;
         }
     }

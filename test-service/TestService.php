@@ -26,7 +26,7 @@ class TestService
         });
 
         $this->_app->route('POST /', function () {
-            $params = $this->_app->request()->data;
+            $params = self::parseRequestJson($this->_app->request()->getBody());
             $id = $this->createClient($params);
             header("Location:/clients/$id");
         });
@@ -37,7 +37,8 @@ class TestService
                 http_response_code(404);
                 return;
             }
-            $resp = $c->doCommand($this->_app->request()->data);
+            $params = self::parseRequestJson($this->_app->request()->getBody());
+            $resp = $c->doCommand($params);
             if ($resp === false) {
                 http_response_code(400);
             } elseif (is_array($resp)) {
@@ -101,5 +102,40 @@ class TestService
             return null;
         }
         return new SdkClientEntity($params);
+    }
+
+    // The following methods for normalizing parsed JSON are a workaround for PHP's inability to distinguish
+    // between an empty JSON array [] and an empty JSON object {} if you parse JSON into associative arrays.
+    // In order for some contract tests to work which involve empty object values, we need to be able to
+    // make such a distinction. But, we don't want to parse all of the JSON parameters as objects, because
+    // associative arrays are much more convenient for most of our logic. The solution is to parse everything
+    // as an object first, then convert every object to an array UNLESS it is an empty object.
+
+    private static function parseRequestJson(string $json): array
+    {
+        return self::normalizeParsedData(json_decode($json));
+    }
+
+    private static function normalizeParsedData(mixed $value): mixed
+    {
+        if (is_array($value)) {
+            $ret = [];
+            foreach ($value as $element) {
+                $ret[] = self::normalizeParsedData($element);
+            }
+            return $ret;
+        }
+        if (!is_object($value)) {
+            return $value;
+        }
+        $props = get_object_vars($value);
+        if (count($props) === 0) {
+            return $value;
+        }
+        $ret = [];
+        foreach ($props as $k => $v) {
+            $ret[$k] = self::normalizeParsedData($v);
+        }
+        return $ret;
     }
 }

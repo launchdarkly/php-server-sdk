@@ -16,9 +16,7 @@ TEMP_TEST_OUTPUT=/tmp/sse-contract-test-service.log
 #   arrays work, there's no way to disallow an array index lookup without breaking object property
 #   lookups for properties that are numeric strings.
 # - "evaluation/parameterized/prerequisites": Can't pass yet because prerequisite cycle detection is not implemented.
-# - "evaluation/parameterized/segment match": Haven't yet implemented context kinds in segments.
 # - "evaluation/parameterized/segment recursion": Haven't yet implemented segment recursion.
-# - various other "evaluation" subtests: These tests require context kind support.
 # - "events": These test suites will be unavailable until more of the U2C implementation is done.
 TEST_HARNESS_PARAMS := $(TEST_HARNESS_PARAMS) \
 	-skip 'evaluation/bucketing/secondary' \
