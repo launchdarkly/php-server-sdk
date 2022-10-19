@@ -46,7 +46,11 @@ class Evaluator
      */
     public function evaluate(FeatureFlag $flag, LDContext $context, ?callable $prereqEvalSink): EvalResult
     {
-        return $this->evaluateInternal($flag, $context, $prereqEvalSink);
+        try {
+            return $this->evaluateInternal($flag, $context, $prereqEvalSink);
+        } catch (EvaluationException $e) {
+            return new EvalResult(new EvaluationDetail(null, null, EvaluationReason::error($e->getErrorKind())));
+        }
     }
 
     private function evaluateInternal(
