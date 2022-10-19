@@ -121,10 +121,8 @@ class Evaluator
                     // Note that if the prerequisite flag is off, we don't consider it a match no matter what its
                     // off variation was. But we still need to evaluate it in order to generate an event.
                     $prereqEvalResult = $this->evaluateInternal($prereqFeatureFlag, $context, $prereqEvalSink);
-                    if ($prereqFeatureFlag->isOn()) {
-                        $variation = $prereq->getVariation();
-                        $prereqOk = ($variation === $prereqEvalResult->getDetail()->getVariationIndex());
-                    } else {
+                    $variation = $prereq->getVariation();
+                    if (!$prereqFeatureFlag->isOn() || $prereqEvalResult->getDetail()->getVariationIndex() !== $variation) {
                         $prereqOk = false;
                     }
                     if ($prereqEvalSink !== null) {
