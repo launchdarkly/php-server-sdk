@@ -59,8 +59,8 @@ class Segment
                 $v['version'],
                 $v['included'] ?: [],
                 $v['excluded'] ?: [],
-                array_map(SegmentTarget::getDecoder(), ($v['includedContexts'] ?? null) ?: []),
-                array_map(SegmentTarget::getDecoder(), ($v['excludedContexts'] ?? null) ?: []),
+                array_map(SegmentTarget::getDecoder(), $v['includedContexts'] ?? []),
+                array_map(SegmentTarget::getDecoder(), $v['excludedContexts'] ?? []),
                 $v['salt'],
                 array_map(SegmentRule::getDecoder(), $v['rules'] ?: []),
                 $v['deleted']

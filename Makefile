@@ -17,13 +17,11 @@ TEMP_TEST_OUTPUT=/tmp/sse-contract-test-service.log
 #   lookups for properties that are numeric strings.
 # - "evaluation/parameterized/prerequisites": Can't pass yet because prerequisite cycle detection is not implemented.
 # - "evaluation/parameterized/segment recursion": Haven't yet implemented segment recursion.
-# - "events": These test suites will be unavailable until more of the U2C implementation is done.
 TEST_HARNESS_PARAMS := $(TEST_HARNESS_PARAMS) \
 	-skip 'evaluation/bucketing/secondary' \
 	-skip 'evaluation/parameterized/attribute references/array index is not supported' \
 	-skip 'evaluation/parameterized/prerequisites' \
-	-skip 'evaluation/parameterized/segment recursion' \
-	-skip 'events'
+	-skip 'evaluation/parameterized/segment recursion'
 
 build-contract-tests:
 	@cd test-service && composer install --no-progress

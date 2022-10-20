@@ -9,8 +9,6 @@ use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Impl\Model\Segment;
 use LaunchDarkly\LDClient;
 use LaunchDarkly\LDContext;
-use LaunchDarkly\LDUser;
-use LaunchDarkly\LDUserBuilder;
 use Psr\Log\LoggerInterface;
 
 class LDClientTest extends \PHPUnit\Framework\TestCase
@@ -139,203 +137,182 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('fromarray', $client->variation('foo', LDContext::create('userkey'), 'argdef'));
     }
 
-    // public function testVariationSendsEvent()
-    // {
-    //     $flag = $this->makeOffFlagWithValue('flagkey', 'flagvalue');
-    //     StaticMockFeatureRequester::$flags = ['flagkey' => $flag];
-    //     $ep = new MockEventProcessor();
-    //     $client = $this->makeClient(['event_processor' => $ep]);
+    public function testVariationSendsEvent()
+    {
+        $flag = $this->makeOffFlagWithValue('flagkey', 'flagvalue');
+        StaticMockFeatureRequester::$flags = ['flagkey' => $flag];
+        $ep = new MockEventProcessor();
+        $client = $this->makeClient(['event_processor' => $ep]);
 
-    //     $context = LDContext::create('userkey');
-    //     $client->variation('flagkey', $context, 'default');
-    //     $queue = $ep->getEvents();
-    //     $this->assertEquals(1, sizeof($queue));
-    //     $event = $queue[0];
-    //     $this->assertEquals('feature', $event['kind']);
-    //     $this->assertEquals('flagkey', $event['key']);
-    //     $this->assertEquals($flag->getVersion(), $event['version']);
-    //     $this->assertEquals('flagvalue', $event['value']);
-    //     $this->assertEquals(1, $event['variation']);
-    //     $this->assertEquals($user, $event['user']);
-    //     $this->assertEquals('default', $event['default']);
-    //     $this->assertFalse(isset($event['trackEvents']));
-    //     $this->assertFalse(isset($event['reason']));
-    // }
+        $context = LDContext::create('userkey');
+        $client->variation('flagkey', $context, 'default');
+        $queue = $ep->getEvents();
+        $this->assertEquals(1, sizeof($queue));
+        $event = $queue[0];
+        $this->assertEquals('feature', $event['kind']);
+        $this->assertEquals('flagkey', $event['key']);
+        $this->assertEquals($flag->getVersion(), $event['version']);
+        $this->assertEquals('flagvalue', $event['value']);
+        $this->assertEquals(1, $event['variation']);
+        $this->assertEquals($context, $event['context']);
+        $this->assertEquals('default', $event['default']);
+        $this->assertFalse(isset($event['trackEvents']));
+        $this->assertFalse(isset($event['reason']));
+    }
 
-    // public function testVariationDetailSendsEvent()
-    // {
-    //     $flag = $this->makeOffFlagWithValue('flagkey', 'flagvalue');
-    //     StaticMockFeatureRequester::$flags = ['flagkey' => $flag];
-    //     $ep = new MockEventProcessor();
-    //     $client = $this->makeClient(['event_processor' => $ep]);
+    public function testVariationDetailSendsEvent()
+    {
+        $flag = $this->makeOffFlagWithValue('flagkey', 'flagvalue');
+        StaticMockFeatureRequester::$flags = ['flagkey' => $flag];
+        $ep = new MockEventProcessor();
+        $client = $this->makeClient(['event_processor' => $ep]);
 
-    //     $context = LDContext::create('userkey');
-    //     $client->variationDetail('flagkey', $context, 'default');
-    //     $queue = $ep->getEvents();
-    //     $this->assertEquals(1, sizeof($queue));
-    //     $event = $queue[0];
-    //     $this->assertEquals('feature', $event['kind']);
-    //     $this->assertEquals('flagkey', $event['key']);
-    //     $this->assertEquals($flag->getVersion(), $event['version']);
-    //     $this->assertEquals('flagvalue', $event['value']);
-    //     $this->assertEquals(1, $event['variation']);
-    //     $this->assertEquals($user, $event['user']);
-    //     $this->assertEquals('default', $event['default']);
-    //     $this->assertFalse(isset($event['trackEvents']));
-    //     $this->assertEquals(['kind' => 'OFF'], $event['reason']);
-    // }
+        $context = LDContext::create('userkey');
+        $client->variationDetail('flagkey', $context, 'default');
+        $queue = $ep->getEvents();
+        $this->assertEquals(1, sizeof($queue));
+        $event = $queue[0];
+        $this->assertEquals('feature', $event['kind']);
+        $this->assertEquals('flagkey', $event['key']);
+        $this->assertEquals($flag->getVersion(), $event['version']);
+        $this->assertEquals('flagvalue', $event['value']);
+        $this->assertEquals(1, $event['variation']);
+        $this->assertEquals($context, $event['context']);
+        $this->assertEquals('default', $event['default']);
+        $this->assertFalse(isset($event['trackEvents']));
+        $this->assertEquals(['kind' => 'OFF'], $event['reason']);
+    }
 
-    // public function testVariationForcesTrackingWhenMatchedRuleHasTrackEventsSet()
-    // {
-    //     $flagJson = [
-    //         'key' => 'flagkey',
-    //         'version' => 100,
-    //         'deleted' => false,
-    //         'on' => true,
-    //         'targets' => [],
-    //         'prerequisites' => [],
-    //         'rules' => [
-    //             [
-    //                 'clauses' => [
-    //                     [
-    //                         'attribute' => 'key',
-    //                         'op' => 'in',
-    //                         'values' => ['userkey'],
-    //                         'negate' => false
-    //                     ]
-    //                 ],
-    //                 'id' => 'rule-id',
-    //                 'variation' => 1,
-    //                 'trackEvents' => true
-    //             ]
-    //         ],
-    //         'offVariation' => 1,
-    //         'fallthrough' => ['variation' => 0],
-    //         'variations' => ['fellthrough', 'flagvalue'],
-    //         'salt' => ''
-    //     ];
-    //     $flag = FeatureFlag::decode($flagJson);
+    public function testVariationForcesTrackingWhenMatchedRuleHasTrackEventsSet()
+    {
+        $flagJson = [
+            'key' => 'flagkey',
+            'version' => 100,
+            'deleted' => false,
+            'on' => true,
+            'targets' => [],
+            'prerequisites' => [],
+            'rules' => [
+                [
+                    'clauses' => [
+                        [
+                            'attribute' => 'key',
+                            'op' => 'in',
+                            'values' => ['userkey'],
+                            'negate' => false
+                        ]
+                    ],
+                    'id' => 'rule-id',
+                    'variation' => 1,
+                    'trackEvents' => true
+                ]
+            ],
+            'offVariation' => 1,
+            'fallthrough' => ['variation' => 0],
+            'variations' => ['fellthrough', 'flagvalue'],
+            'salt' => ''
+        ];
+        $flag = FeatureFlag::decode($flagJson);
 
-    //     StaticMockFeatureRequester::$flags = ['flagkey' => $flag];
-    //     $ep = new MockEventProcessor();
-    //     $client = $this->makeClient(['event_processor' => $ep]);
+        StaticMockFeatureRequester::$flags = ['flagkey' => $flag];
+        $ep = new MockEventProcessor();
+        $client = $this->makeClient(['event_processor' => $ep]);
 
-    //     $user = LDContext::create('userkey');
-    //     $client->variation('flagkey', LDContext::create('userkey'), 'default');
-    //     $queue = $ep->getEvents();
-    //     $this->assertEquals(1, sizeof($queue));
-    //     $event = $queue[0];
-    //     $this->assertEquals('feature', $event['kind']);
-    //     $this->assertEquals('flagkey', $event['key']);
-    //     $this->assertEquals($flag->getVersion(), $event['version']);
-    //     $this->assertEquals('flagvalue', $event['value']);
-    //     $this->assertEquals(1, $event['variation']);
-    //     $this->assertEquals($user, $event['user']);
-    //     $this->assertEquals('default', $event['default']);
-    //     $this->assertTrue($event['trackEvents']);
-    //     $this->assertEquals(['kind' => 'RULE_MATCH', 'ruleIndex' => 0, 'ruleId' => 'rule-id'], $event['reason']);
-    // }
+        $context = LDContext::create('userkey');
+        $client->variation('flagkey', $context, 'default');
+        $queue = $ep->getEvents();
+        $this->assertEquals(1, sizeof($queue));
+        $event = $queue[0];
+        $this->assertEquals('feature', $event['kind']);
+        $this->assertEquals('flagkey', $event['key']);
+        $this->assertEquals($flag->getVersion(), $event['version']);
+        $this->assertEquals('flagvalue', $event['value']);
+        $this->assertEquals(1, $event['variation']);
+        $this->assertEquals($context, $event['context']);
+        $this->assertEquals('default', $event['default']);
+        $this->assertTrue($event['trackEvents']);
+        $this->assertEquals(['kind' => 'RULE_MATCH', 'ruleIndex' => 0, 'ruleId' => 'rule-id'], $event['reason']);
+    }
 
-    // public function testVariationForcesTrackingForFallthroughWhenTrackEventsFallthroughIsSet()
-    // {
-    //     $flagJson = [
-    //         'key' => 'flagkey',
-    //         'version' => 100,
-    //         'deleted' => false,
-    //         'on' => true,
-    //         'targets' => [],
-    //         'prerequisites' => [],
-    //         'rules' => [],
-    //         'offVariation' => 1,
-    //         'fallthrough' => ['variation' => 0],
-    //         'variations' => ['fellthrough', 'flagvalue'],
-    //         'salt' => '',
-    //         'trackEventsFallthrough' => true
-    //     ];
-    //     $flag = FeatureFlag::decode($flagJson);
+    public function testVariationForcesTrackingForFallthroughWhenTrackEventsFallthroughIsSet()
+    {
+        $flagJson = [
+            'key' => 'flagkey',
+            'version' => 100,
+            'deleted' => false,
+            'on' => true,
+            'targets' => [],
+            'prerequisites' => [],
+            'rules' => [],
+            'offVariation' => 1,
+            'fallthrough' => ['variation' => 0],
+            'variations' => ['fellthrough', 'flagvalue'],
+            'salt' => '',
+            'trackEventsFallthrough' => true
+        ];
+        $flag = FeatureFlag::decode($flagJson);
 
-    //     StaticMockFeatureRequester::$flags = ['flagkey' => $flag];
-    //     $ep = new MockEventProcessor();
-    //     $client = $this->makeClient(['event_processor' => $ep]);
+        StaticMockFeatureRequester::$flags = ['flagkey' => $flag];
+        $ep = new MockEventProcessor();
+        $client = $this->makeClient(['event_processor' => $ep]);
 
-    //     $user = LDContext::create('userkey');
-    //     $client->variation('flagkey', LDContext::create('userkey'), 'default');
-    //     $queue = $ep->getEvents();
-    //     $this->assertEquals(1, sizeof($queue));
-    //     $event = $queue[0];
-    //     $this->assertEquals('feature', $event['kind']);
-    //     $this->assertEquals('flagkey', $event['key']);
-    //     $this->assertEquals($flag->getVersion(), $event['version']);
-    //     $this->assertEquals('fellthrough', $event['value']);
-    //     $this->assertEquals(0, $event['variation']);
-    //     $this->assertEquals($user, $event['user']);
-    //     $this->assertEquals('default', $event['default']);
-    //     $this->assertTrue($event['trackEvents']);
-    //     $this->assertEquals(['kind' => 'FALLTHROUGH'], $event['reason']);
-    // }
+        $context = LDContext::create('userkey');
+        $client->variation('flagkey', $context, 'default');
+        $queue = $ep->getEvents();
+        $this->assertEquals(1, sizeof($queue));
+        $event = $queue[0];
+        $this->assertEquals('feature', $event['kind']);
+        $this->assertEquals('flagkey', $event['key']);
+        $this->assertEquals($flag->getVersion(), $event['version']);
+        $this->assertEquals('fellthrough', $event['value']);
+        $this->assertEquals(0, $event['variation']);
+        $this->assertEquals($context, $event['context']);
+        $this->assertEquals('default', $event['default']);
+        $this->assertTrue($event['trackEvents']);
+        $this->assertEquals(['kind' => 'FALLTHROUGH'], $event['reason']);
+    }
 
-    // public function testVariationSendsEventForUnknownFlag()
-    // {
-    //     StaticMockFeatureRequester::$flags = [];
-    //     $ep = new MockEventProcessor();
-    //     $client = $this->makeClient(['event_processor' => $ep]);
+    public function testVariationSendsEventForUnknownFlag()
+    {
+        StaticMockFeatureRequester::$flags = [];
+        $ep = new MockEventProcessor();
+        $client = $this->makeClient(['event_processor' => $ep]);
 
-    //     $user = LDContext::create('userkey');
-    //     $client->variation('flagkey', LDContext::create('userkey'), 'default');
-    //     $queue = $ep->getEvents();
-    //     $this->assertEquals(1, sizeof($queue));
-    //     $event = $queue[0];
-    //     $this->assertEquals('feature', $event['kind']);
-    //     $this->assertEquals('flagkey', $event['key']);
-    //     $this->assertFalse(isset($event['version']));
-    //     $this->assertEquals('default', $event['value']);
-    //     $this->assertFalse(isset($event['variation']));
-    //     $this->assertEquals($user, $event['user']);
-    //     $this->assertEquals('default', $event['default']);
-    //     $this->assertFalse(isset($event['reason']));
-    // }
+        $context = LDContext::create('userkey');
+        $client->variation('flagkey', $context, 'default');
+        $queue = $ep->getEvents();
+        $this->assertEquals(1, sizeof($queue));
+        $event = $queue[0];
+        $this->assertEquals('feature', $event['kind']);
+        $this->assertEquals('flagkey', $event['key']);
+        $this->assertFalse(isset($event['version']));
+        $this->assertEquals('default', $event['value']);
+        $this->assertFalse(isset($event['variation']));
+        $this->assertEquals($context, $event['context']);
+        $this->assertEquals('default', $event['default']);
+        $this->assertFalse(isset($event['reason']));
+    }
 
-    // public function testVariationDetailSendsEventForUnknownFlag()
-    // {
-    //     StaticMockFeatureRequester::$flags = [];
-    //     $ep = new MockEventProcessor();
-    //     $client = $this->makeClient(['event_processor' => $ep]);
+    public function testVariationDetailSendsEventForUnknownFlag()
+    {
+        StaticMockFeatureRequester::$flags = [];
+        $ep = new MockEventProcessor();
+        $client = $this->makeClient(['event_processor' => $ep]);
 
-    //     $user = LDContext::create('userkey');
-    //     $client->variationDetail('flagkey', LDContext::create('userkey'), 'default');
-    //     $queue = $ep->getEvents();
-    //     $this->assertEquals(1, sizeof($queue));
-    //     $event = $queue[0];
-    //     $this->assertEquals('feature', $event['kind']);
-    //     $this->assertEquals('flagkey', $event['key']);
-    //     $this->assertFalse(isset($event['version']));
-    //     $this->assertEquals('default', $event['value']);
-    //     $this->assertFalse(isset($event['variation']));
-    //     $this->assertEquals($user, $event['user']);
-    //     $this->assertEquals('default', $event['default']);
-    //     $this->assertEquals(['kind' => 'ERROR', 'errorKind' => 'FLAG_NOT_FOUND'], $event['reason']);
-    // }
-
-
-    // public function testVariationWithAnonymousUserSendsEventWithAnonymousContextKind()
-    // {
-    //     $ep = new MockEventProcessor();
-    //     $client = $this->makeClient(['event_processor' => $ep]);
-
-    //     $flag = $this->makeOffFlagWithValue('feature', 'value');
-
-    //     $anon_builder = new LDUserBuilder("anon@email.com");
-    //     $anon = $anon_builder->anonymous(true)->build();
-
-    //     $client->variation('feature', $anon, 'default');
-
-    //     $queue = $ep->getEvents();
-    //     $this->assertEquals(1, sizeof($queue));
-
-    //     $event = $queue[0];
-
-    //     $this->assertEquals('anonymousUser', $event['contextKind']);
-    // }
+        $context = LDContext::create('userkey');
+        $client->variationDetail('flagkey', $context, 'default');
+        $queue = $ep->getEvents();
+        $this->assertEquals(1, sizeof($queue));
+        $event = $queue[0];
+        $this->assertEquals('feature', $event['kind']);
+        $this->assertEquals('flagkey', $event['key']);
+        $this->assertFalse(isset($event['version']));
+        $this->assertEquals('default', $event['value']);
+        $this->assertFalse(isset($event['variation']));
+        $this->assertEquals($context, $event['context']);
+        $this->assertEquals('default', $event['default']);
+        $this->assertEquals(['kind' => 'ERROR', 'errorKind' => 'FLAG_NOT_FOUND'], $event['reason']);
+    }
 
     public function testAllFlagsStateReturnsState()
     {
@@ -584,14 +561,14 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $ep = new MockEventProcessor();
         $client = $this->makeClient(['event_processor' => $ep]);
 
-        $user = new LDUser('userkey');
-        $client->track('eventkey', $user);
+        $context = LDContext::create('userkey');
+        $client->track('eventkey', $context);
         $queue = $ep->getEvents();
         $this->assertEquals(1, sizeof($queue));
         $event = $queue[0];
         $this->assertEquals('custom', $event['kind']);
         $this->assertEquals('eventkey', $event['key']);
-        $this->assertEquals($user, $event['user']);
+        $this->assertEquals($context, $event['context']);
         $this->assertFalse(isset($event['data']));
         $this->assertFalse(isset($event['metricValue']));
     }
@@ -602,14 +579,14 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $client = $this->makeClient(['event_processor' => $ep]);
         $data = ['thing' => 'stuff'];
 
-        $user = new LDUser('userkey');
-        $client->track('eventkey', $user, $data);
+        $context = LDContext::create('userkey');
+        $client->track('eventkey', $context, $data);
         $queue = $ep->getEvents();
         $this->assertEquals(1, sizeof($queue));
         $event = $queue[0];
         $this->assertEquals('custom', $event['kind']);
         $this->assertEquals('eventkey', $event['key']);
-        $this->assertEquals($user, $event['user']);
+        $this->assertEquals($context, $event['context']);
         $this->assertEquals($data, $event['data']);
         $this->assertFalse(isset($event['metricValue']));
     }
@@ -621,32 +598,16 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $data = ['thing' => 'stuff'];
         $metricValue = 1.5;
 
-        $user = new LDUser('userkey');
-        $client->track('eventkey', $user, $data, $metricValue);
+        $context = LDContext::create('userkey');
+        $client->track('eventkey', $context, $data, $metricValue);
         $queue = $ep->getEvents();
         $this->assertEquals(1, sizeof($queue));
         $event = $queue[0];
         $this->assertEquals('custom', $event['kind']);
         $this->assertEquals('eventkey', $event['key']);
-        $this->assertEquals($user, $event['user']);
+        $this->assertEquals($context, $event['context']);
         $this->assertEquals($data, $event['data']);
         $this->assertEquals($metricValue, $event['metricValue']);
-    }
-
-    public function testTrackWithAnonymousUserSendsEventWithAnonymousContextKind()
-    {
-        $ep = new MockEventProcessor();
-        $client = $this->makeClient(['event_processor' => $ep]);
-
-        $anon_builder = new LDUserBuilder("anon@email.com");
-        $anon = $anon_builder->anonymous(true)->build();
-
-        $client->track('eventkey', $anon);
-        $queue = $ep->getEvents();
-        $this->assertEquals(1, sizeof($queue));
-        $event = $queue[0];
-        $this->assertEquals('custom', $event['kind']);
-        $this->assertEquals('anonymousUser', $event['contextKind']);
     }
 
     public function testEventsAreNotPublishedIfSendEventsIsFalse()
@@ -662,7 +623,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
             'send_events' => false,
         ];
         $client = new LDClient("someKey", $options);
-        $client->track('eventkey', new LDUser('userkey'));
+        $client->track('eventkey', LDContext::create('userkey'));
 
         // We don't flush the event processor until __destruct is called. Let's
         // force that by unsetting this variable.

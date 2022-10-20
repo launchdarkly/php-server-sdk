@@ -90,7 +90,7 @@ class FeatureFlag
                 array_map(Prerequisite::getDecoder(), $v['prerequisites'] ?: []),
                 $v['salt'],
                 array_map(Target::getDecoder(), $v['targets'] ?: []),
-                array_map(Target::getDecoder(), ($v['contextTargets'] ?? null) ?: []),
+                array_map(Target::getDecoder(), $v['contextTargets'] ?? []),
                 array_map(Rule::getDecoder(), $v['rules'] ?: []),
                 call_user_func(VariationOrRollout::getDecoder(), $v['fallthrough']),
                 $v['offVariation'],

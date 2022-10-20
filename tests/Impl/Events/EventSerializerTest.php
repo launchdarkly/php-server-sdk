@@ -3,268 +3,165 @@
 namespace LaunchDarkly\Tests\Impl\Events;
 
 use LaunchDarkly\Impl\Events\EventSerializer;
-use LaunchDarkly\LDUserBuilder;
+use LaunchDarkly\LDContext;
 use PHPUnit\Framework\TestCase;
 
 class EventSerializerTest extends TestCase
 {
-    private function getUser()
+    private function getContext(): LDContext
     {
-        return (new LDUserBuilder('abc'))
-            ->firstName('Sue')
-            ->custom(['bizzle' => 'def', 'dizzle' => 'ghi'])
+        return LDContext::builder('abc')
+            ->set('bizzle', 'def')
+            ->set('dizzle', 'ghi')
+            ->set('firstName', 'Sue')
             ->build();
     }
     
-    private function getUserSpecifyingOwnPrivateAttr()
+    private function getContextSpecifyingOwnPrivateAttr()
     {
-        return (new LDUserBuilder('abc'))
-            ->firstName('Sue')
-            ->customAttribute('bizzle', 'def')
-            ->privateCustomAttribute('dizzle', 'ghi')
+        return LDContext::builder('abc')
+            ->set('bizzle', 'def')
+            ->set('dizzle', 'ghi')
+            ->set('firstName', 'Sue')
+            ->private('dizzle')
             ->build();
     }
     
-    private function getFullUserResult()
+    private function getFullContextResult()
     {
         return [
+            'kind' => 'user',
             'key' => 'abc',
             'firstName' => 'Sue',
-            'custom' => ['bizzle' => 'def', 'dizzle' => 'ghi']
+            'bizzle' => 'def',
+            'dizzle' => 'ghi'
         ];
     }
     
-    private function getUserResultWithAllAttrsHidden()
+    private function getContextResultWithAllAttrsHidden()
     {
         return [
+            'kind' => 'user',
             'key' => 'abc',
-            'privateAttrs' => ['bizzle', 'dizzle', 'firstName']
+            '_meta' => [
+                'redactedAttributes' => ['bizzle', 'dizzle', 'firstName']
+            ]
         ];
     }
     
-    private function getUserResultWithSomeAttrsHidden()
+    private function getContextResultWithSomeAttrsHidden()
     {
         return [
+            'kind' => 'user',
             'key' => 'abc',
-            'custom' => ['dizzle' => 'ghi'],
-            'privateAttrs' => ['bizzle', 'firstName']
+            'dizzle' => 'ghi',
+            '_meta' => [
+                'redactedAttributes' => ['bizzle', 'firstName']
+            ]
         ];
     }
     
-    private function getUserResultWithOwnSpecifiedAttrHidden()
+    private function getContextResultWithOwnSpecifiedAttrHidden()
     {
         return [
+            'kind' => 'user',
             'key' => 'abc',
             'firstName' => 'Sue',
-            'custom' => ['bizzle' => 'def'],
-            'privateAttrs' => ['dizzle']
+            'bizzle' => 'def',
+            '_meta' => [
+                'redactedAttributes' => ['dizzle']
+            ]
         ];
     }
     
-    private function makeEvent($user)
+    private function makeEvent($context)
     {
         return [
             'creationDate' => 1000000,
             'key' => 'abc',
-            'kind' => 'thing',
-            'user' => $user
+            'kind' => 'identify',
+            'context' => $context
         ];
     }
     
-    private function getJsonForUserBySerializingEvent($user)
+    private function getJsonForContextBySerializingEvent($user)
     {
         $es = new EventSerializer([]);
         $event = $this->makeEvent($user);
-        return json_decode($es->serializeEvents([$event]), true)[0]['user'];
+        return json_decode($es->serializeEvents([$event]), true)[0]['context'];
     }
     
-    public function testAllUserAttrsSerialized()
+    public function testAllContextAttrsSerialized()
     {
         $es = new EventSerializer([]);
-        $event = $this->makeEvent($this->getUser());
+        $event = $this->makeEvent($this->getContext());
         $json = $es->serializeEvents([$event]);
-        $expected = $this->makeEvent($this->getFullUserResult());
+        $expected = $this->makeEvent($this->getFullContextResult());
         $this->assertEquals([$expected], json_decode($json, true));
     }
 
-    public function testAllUserAttrsPrivate()
+    public function testAllContextAttrsPrivate()
     {
         $es = new EventSerializer(['all_attributes_private' => true]);
-        $event = $this->makeEvent($this->getUser());
+        $event = $this->makeEvent($this->getContext());
         $json = $es->serializeEvents([$event]);
-        $expected = $this->makeEvent($this->getUserResultWithAllAttrsHidden());
+        $expected = $this->makeEvent($this->getContextResultWithAllAttrsHidden());
         $this->assertEquals([$expected], json_decode($json, true));
     }
     
-    public function testSomeUserAttrsPrivate()
+    public function testSomeContextAttrsPrivate()
     {
         $es = new EventSerializer(['private_attribute_names' => ['firstName', 'bizzle']]);
-        $event = $this->makeEvent($this->getUser());
+        $event = $this->makeEvent($this->getContext());
         $json = $es->serializeEvents([$event]);
-        $expected = $this->makeEvent($this->getUserResultWithSomeAttrsHidden());
+        $expected = $this->makeEvent($this->getContextResultWithSomeAttrsHidden());
         $this->assertEquals([$expected], json_decode($json, true));
     }
     
-    public function testPerUserPrivateAttr()
+    public function testPerContextPrivateAttr()
     {
         $es = new EventSerializer([]);
-        $event = $this->makeEvent($this->getUserSpecifyingOwnPrivateAttr());
+        $event = $this->makeEvent($this->getContextSpecifyingOwnPrivateAttr());
         $json = $es->serializeEvents([$event]);
-        $expected = $this->makeEvent($this->getUserResultWithOwnSpecifiedAttrHidden());
+        $expected = $this->makeEvent($this->getContextResultWithOwnSpecifiedAttrHidden());
         $this->assertEquals([$expected], json_decode($json, true));
     }
 
-    public function testPerUserPrivateAttrPlusGlobalPrivateAttrs()
+    public function testPerContextPrivateAttrPlusGlobalPrivateAttrs()
     {
         $es = new EventSerializer(['private_attribute_names' => ['firstName', 'bizzle']]);
-        $event = $this->makeEvent($this->getUserSpecifyingOwnPrivateAttr());
+        $event = $this->makeEvent($this->getContextSpecifyingOwnPrivateAttr());
         $json = $es->serializeEvents([$event]);
-        $expected = $this->makeEvent($this->getUserResultWithAllAttrsHidden());
+        $expected = $this->makeEvent($this->getContextResultWithAllAttrsHidden());
         $this->assertEquals([$expected], json_decode($json, true));
     }
     
-    public function testUserKey()
+    public function testObjectPropertyRedaction()
     {
-        $builder = new LDUserBuilder("foo@bar.com");
-        $user = $builder->build();
-        $json = $this->getJsonForUserBySerializingEvent($user);
+        $es = new EventSerializer(['private_attribute_names' => ['/b/prop1', '/c/prop2/sub1']]);
+        $context = LDContext::builder('user-key')
+            ->name('a')
+            ->set('b', ['prop1' => true, 'prop2' => 3])
+            ->set('c', ['prop1' => ['sub1' => true], 'prop2' => ['sub1' => 4, 'sub2' => 5]])
+            ->build();
+        $json = $es->serializeEvents([$this->makeEvent($context)]);
+        $expected = $this->makeEvent([
+            'kind' => 'user',
+            'key' => 'user-key',
+            'name' => 'a',
+            'b' => ['prop2' => 3],
+            'c' => ['prop1' => ['sub1' => true], 'prop2' => ['sub2' => 5]],
+            '_meta' => [
+                'redactedAttributes' => ['/b/prop1', '/c/prop2/sub1']
+            ]
+        ]);
+        $this->assertEquals([$expected], json_decode($json, true));
+    }
+
+    public function testContextKey()
+    {
+        $context = LDContext::create("foo@bar.com");
+        $json = $this->getJsonForContextBySerializingEvent($context);
         $this->assertSame("foo@bar.com", $json['key']);
-    }
-    
-    public function testEmptyCustom()
-    {
-        $builder = new LDUserBuilder("foo@bar.com");
-        $user = $builder->build();
-        $json = $this->getJsonForUserBySerializingEvent($user);
-        $this->assertFalse(isset($json['custom']));
-    }
-
-    public function testFiltersAttributesCorrectly()
-    {
-        $builder = new LDUserBuilder("foo@bar.com");
-        $user = $builder
-            ->customAttribute("foo", "")
-            ->customAttribute("bar", 0)
-            ->customAttribute("baz", null)
-            ->customAttribute("qux", false)
-            ->build();
-        $json = $this->getJsonForUserBySerializingEvent($user);
-        $this->assertEquals(["foo" => "", "bar" => 0, "qux" => false], $json['custom']);
-    }
-
-    public function testEmptyPrivateCustom()
-    {
-        $builder = new LDUserBuilder("foo@bar.com");
-        $user = $builder->privateCustomAttribute("my-key", "my-value")->build();
-        $json = $this->getJsonForUserBySerializingEvent($user);
-        $this->assertFalse(isset($json['custom']));
-    }
-
-    public function testUserSecondary()
-    {
-        $builder = new LDUserBuilder("foo@bar.com");
-        $user = $builder->secondary("secondary")->build();
-        $json = $this->getJsonForUserBySerializingEvent($user);
-        $this->assertSame("secondary", $json['secondary']);
-    }
-    
-    public function testUserIP()
-    {
-        $builder = new LDUserBuilder("foo@bar.com");
-        $user = $builder->ip("127.0.0.1")->build();
-        $json = $this->getJsonForUserBySerializingEvent($user);
-        $this->assertSame("127.0.0.1", $json['ip']);
-    }
-    
-    public function testUserCountry()
-    {
-        $builder = new LDUserBuilder("foo@bar.com");
-        $user = $builder->country("US")->build();
-        $json = $this->getJsonForUserBySerializingEvent($user);
-        $this->assertSame("US", $json['country']);
-    }
-    
-    public function testUserEmail()
-    {
-        $builder = new LDUserBuilder("foo@bar.com");
-        $user = $builder->email("foo+test@bar.com")->build();
-        $json = $this->getJsonForUserBySerializingEvent($user);
-        $this->assertSame("foo+test@bar.com", $json['email']);
-    }
-    
-    public function testUserName()
-    {
-        $builder = new LDUserBuilder("foo@bar.com");
-        $user = $builder->name("Foo Bar")->build();
-        $json = $this->getJsonForUserBySerializingEvent($user);
-        $this->assertSame("Foo Bar", $json['name']);
-    }
-    
-    public function testUserAvatar()
-    {
-        $builder = new LDUserBuilder("foo@bar.com");
-        $user = $builder->avatar("http://www.gravatar.com/avatar/1")->build();
-        $json = $this->getJsonForUserBySerializingEvent($user);
-        $this->assertSame("http://www.gravatar.com/avatar/1", $json['avatar']);
-    }
-    
-    public function testUserFirstName()
-    {
-        $builder = new LDUserBuilder("foo@bar.com");
-        $user = $builder->firstName("Foo")->build();
-        $json = $this->getJsonForUserBySerializingEvent($user);
-        $this->assertSame("Foo", $json['firstName']);
-    }
-    
-    public function testUserLastName()
-    {
-        $builder = new LDUserBuilder("foo@bar.com");
-        $user = $builder->lastName("Bar")->build();
-        $json = $this->getJsonForUserBySerializingEvent($user);
-        $this->assertSame("Bar", $json['lastName']);
-    }
-    
-    public function testUserAnonymous()
-    {
-        $builder = new LDUserBuilder("foo@bar.com");
-        $user = $builder->anonymous(true)->build();
-        $json = $this->getJsonForUserBySerializingEvent($user);
-        $this->assertSame(true, $json['anonymous']);
-    }
-
-    public function testUserNotAnonymous()
-    {
-        $builder = new LDUserBuilder("foo@bar.com");
-        $user = $builder->anonymous(false)->build();
-        $json = $this->getJsonForUserBySerializingEvent($user);
-        $this->assertFalse(isset($json['anonymous'])); // omitted rather than set to false, for efficiency
-    }
-
-    public function testNonStringAttributes()
-    {
-        $builder = new LDUserBuilder(1);
-        $user = $builder->secondary(2)
-            ->ip(3)
-            ->country(4)
-            ->email(5)
-            ->name(6)
-            ->avatar(7)
-            ->firstName(8)
-            ->lastName(9)
-            ->anonymous(true)
-            ->customAttribute('foo', 10)
-            ->build();
-        $json = $this->getJsonForUserBySerializingEvent($user);
-        $this->assertSame('1', $json['key']);
-        $this->assertSame('2', $json['secondary']);
-        $this->assertSame('3', $json['ip']);
-        $this->assertSame('4', $json['country']);
-        $this->assertSame('5', $json['email']);
-        $this->assertSame('6', $json['name']);
-        $this->assertSame('7', $json['avatar']);
-        $this->assertSame('8', $json['firstName']);
-        $this->assertSame('9', $json['lastName']);
-        $this->assertSame(true, $json['anonymous']); // We do NOT want "anonymous" to be stringified
-        $this->assertSame(10, $json['custom']['foo']); // We do NOT want custom attribute values to be stringified
     }
 }

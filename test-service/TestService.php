@@ -31,6 +31,10 @@ class TestService
             header("Location:/clients/$id");
         });
 
+        $this->_app->route('DELETE /', function () {
+            $this->_logger->info('Test harness has told us to quit');
+        });
+
         $this->_app->route('POST /clients/@id', function ($id) {
             $c = $this->getClient($id);
             if (!$c) {
