@@ -35,6 +35,7 @@ class FlagBuilder
     public function __construct(string $key)
     {
         $this->_key = $key;
+        $this->_fallthrough = new VariationOrRollout(null, null);
     }
 
     public function build(): FeatureFlag

@@ -15,6 +15,19 @@ use LaunchDarkly\LDContext;
 use Psr\Log\LoggerInterface;
 
 /**
+ * @ignore
+ * @internal
+ */
+class EvaluatorState
+{
+    public ?array $prerequisiteStack = null;
+    
+    public function __construct(public FeatureFlag $originalFlag)
+    {
+    }
+}
+
+/**
  * Encapsulates the feature flag evaluation logic. The Evaluator has no direct access to the
  * rest of the SDK environment; if it needs to retrieve flags or segments that are referenced
  * by a flag, it does so through a FeatureRequester that is provided in the constructor. It also
@@ -46,58 +59,10 @@ class Evaluator
      */
     public function evaluate(FeatureFlag $flag, LDContext $context, ?callable $prereqEvalSink): EvalResult
     {
+        $stateStack = null;
+        $state = new EvaluatorState($flag);
         try {
-            return $this->evaluateInternal($flag, $context, $prereqEvalSink);
-        } catch (EvaluationException $e) {
-            return new EvalResult(new EvaluationDetail(null, null, EvaluationReason::error($e->getErrorKind())));
-        }
-    }
-
-    private function evaluateInternal(
-        FeatureFlag $flag,
-        LDContext $context,
-        ?callable $prereqEvalSink
-    ): EvalResult {
-        try {
-            // The reason there's an extra try block here is that if something fails during evaluation of the
-            // prerequisites, we don't want that to short-circuit evaluation of the base flag in the way that
-            // an error normally would, where the whole evaluation would return an error result with a default
-            // value. Instead we want the base flag to return its off variation, as it always does if any
-            // prerequisites have failed.
-            if (!$flag->isOn()) {
-                return EvaluatorHelpers::getOffResult($flag, EvaluationReason::off());
-            }
-
-            $prereqFailureReason = $this->checkPrerequisites($flag, $context, $prereqEvalSink);
-            if ($prereqFailureReason !== null) {
-                return EvaluatorHelpers::getOffResult($flag, $prereqFailureReason);
-            }
-
-            // Check to see if targets match
-            $targetResult = $this->checkTargets($flag, $context);
-            if ($targetResult) {
-                return $targetResult;
-            }
-
-            // Now walk through the rules and see if any match
-            foreach ($flag->getRules() as $i => $rule) {
-                if ($this->ruleMatchesContext($rule, $context)) {
-                    return EvaluatorHelpers::getResultForVariationOrRollout(
-                        $flag,
-                        $rule,
-                        $rule->isTrackEvents(),
-                        $context,
-                        EvaluationReason::ruleMatch($i, $rule->getId())
-                    );
-                }
-            }
-            return EvaluatorHelpers::getResultForVariationOrRollout(
-                $flag,
-                $flag->getFallthrough(),
-                $flag->isTrackEventsFallthrough(),
-                $context,
-                EvaluationReason::fallthrough()
-            );
+            return $this->evaluateInternal($flag, $context, $prereqEvalSink, $state);
         } catch (EvaluationException $e) {
             return new EvalResult(new EvaluationDetail(null, null, EvaluationReason::error($e->getErrorKind())));
         } catch (\Throwable $e) {
@@ -106,21 +71,84 @@ class Evaluator
         }
     }
 
+    private function evaluateInternal(
+        FeatureFlag $flag,
+        LDContext $context,
+        ?callable $prereqEvalSink,
+        EvaluatorState $state
+    ): EvalResult {
+        if (!$flag->isOn()) {
+            return EvaluatorHelpers::getOffResult($flag, EvaluationReason::off());
+        }
+
+        $prereqFailureReason = $this->checkPrerequisites($flag, $context, $prereqEvalSink, $state);
+        if ($prereqFailureReason !== null) {
+            return EvaluatorHelpers::getOffResult($flag, $prereqFailureReason);
+        }
+
+        // Check to see if targets match
+        $targetResult = $this->checkTargets($flag, $context);
+        if ($targetResult) {
+            return $targetResult;
+        }
+
+        // Now walk through the rules and see if any match
+        foreach ($flag->getRules() as $i => $rule) {
+            if ($this->ruleMatchesContext($rule, $context)) {
+                return EvaluatorHelpers::getResultForVariationOrRollout(
+                    $flag,
+                    $rule,
+                    $rule->isTrackEvents(),
+                    $context,
+                    EvaluationReason::ruleMatch($i, $rule->getId())
+                );
+            }
+        }
+        return EvaluatorHelpers::getResultForVariationOrRollout(
+            $flag,
+            $flag->getFallthrough(),
+            $flag->isTrackEventsFallthrough(),
+            $context,
+            EvaluationReason::fallthrough()
+        );
+    }
+
     private function checkPrerequisites(
         FeatureFlag $flag,
         LDContext $context,
-        ?callable $prereqEvalSink
+        ?callable $prereqEvalSink,
+        EvaluatorState $state
     ): ?EvaluationReason {
-        foreach ($flag->getPrerequisites() as $prereq) {
-            $prereqOk = true;
-            try {
-                $prereqFeatureFlag = $this->_featureRequester->getFeature($prereq->getKey());
+        // We use the state object to guard against circular references in prerequisites. To avoid
+        // the overhead of creating the $state->prerequisiteStack array in the most common case where
+        // there's only a single level of prerequisites, we treat $state->originalFlag as the first
+        // element in the stack.
+        $flagKey = $flag->getKey();
+        if ($flag !== $state->originalFlag) {
+            if ($state->prerequisiteStack === null) {
+                $state->prerequisiteStack = [];
+            }
+            $state->prerequisiteStack[] = $flagKey;
+        }
+        try {
+            foreach ($flag->getPrerequisites() as $prereq) {
+                $prereqKey = $prereq->getKey();
+
+                if ($prereqKey === $state->originalFlag->getKey() ||
+                    ($state->prerequisiteStack !== null && in_array($prereqKey, $state->prerequisiteStack))) {
+                    throw new EvaluationException(
+                        "prerequisite relationship to \"$prereqKey\" caused a circular reference; this is probably a temporary condition due to an incomplete update",
+                        EvaluationReason::MALFORMED_FLAG_ERROR
+                    );
+                }
+                $prereqOk = true;
+                $prereqFeatureFlag = $this->_featureRequester->getFeature($prereqKey);
                 if ($prereqFeatureFlag === null) {
                     $prereqOk = false;
                 } else {
                     // Note that if the prerequisite flag is off, we don't consider it a match no matter what its
                     // off variation was. But we still need to evaluate it in order to generate an event.
-                    $prereqEvalResult = $this->evaluateInternal($prereqFeatureFlag, $context, $prereqEvalSink);
+                    $prereqEvalResult = $this->evaluateInternal($prereqFeatureFlag, $context, $prereqEvalSink, $state);
                     $variation = $prereq->getVariation();
                     if (!$prereqFeatureFlag->isOn() || $prereqEvalResult->getDetail()->getVariationIndex() !== $variation) {
                         $prereqOk = false;
@@ -129,16 +157,13 @@ class Evaluator
                         $prereqEvalSink(new PrerequisiteEvaluationRecord($prereqFeatureFlag, $flag, $prereqEvalResult));
                     }
                 }
-            } catch (\Throwable $e) {
-                Util::logExceptionAtErrorLevel(
-                    $this->_logger,
-                    $e,
-                    'Unexpected error when evaluating prerequisite flag ' . $prereq->getKey()
-                );
-                $prereqOk = false;
+                if (!$prereqOk) {
+                    return EvaluationReason::prerequisiteFailed($prereqKey);
+                }
             }
-            if (!$prereqOk) {
-                return EvaluationReason::prerequisiteFailed($prereq->getKey());
+        } finally {
+            if ($state->prerequisiteStack !== null && count($state->prerequisiteStack) !== 0) {
+                array_pop($state->prerequisiteStack);
             }
         }
         return null;

@@ -8,7 +8,6 @@ use LaunchDarkly\Impl\Evaluation\Evaluator;
 use LaunchDarkly\Impl\Evaluation\EvaluatorBucketing;
 use LaunchDarkly\Impl\Model\Rollout;
 use LaunchDarkly\LDContext;
-use LaunchDarkly\Tests\MockFeatureRequester;
 use LaunchDarkly\Tests\ModelBuilders;
 use PHPUnit\Framework\TestCase;
 
@@ -79,97 +78,6 @@ class EvaluatorFlagTest extends TestCase
         $result = static::$basicEvaluator->evaluate($flag, LDContext::create('user'), EvaluatorTestUtil::expectNoPrerequisiteEvals());
         $detail = new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR));
         self::assertEquals($detail, $result->getDetail());
-    }
-
-    public function testFlagReturnsOffVariationIfPrerequisiteIsNotFound()
-    {
-        $flag = ModelBuilders::flagBuilder('feature0')->variations('fall', 'off', 'on')
-            ->on(true)->offVariation(1)->fallthroughVariation(0)
-            ->prerequisite('feature1', 1)
-            ->build();
-
-        $result = static::$basicEvaluator->evaluate($flag, LDContext::create('user'), EvaluatorTestUtil::expectNoPrerequisiteEvals());
-        $detail = new EvaluationDetail('off', 1, EvaluationReason::prerequisiteFailed('feature1'));
-        self::assertEquals($detail, $result->getDetail());
-    }
-
-    public function testFlagReturnsOffVariationAndEventIfPrerequisiteIsOff()
-    {
-        $flag1 = ModelBuilders::flagBuilder('feature1')->variations('nogo', 'go')
-            ->on(false)->offVariation(1)->fallthroughVariation(0)
-            // note that even though it returns the desired variation, it is still off and therefore not a match
-            ->build();
-        $flag0 = ModelBuilders::flagBuilder('feature0')->variations('fall', 'off', 'on')
-            ->on(true)->offVariation(1)->fallthroughVariation(0)
-            ->prerequisite($flag1->getKey(), 1)
-            ->build();
-
-        $requester = new MockFeatureRequester();
-        $requester->addFlag($flag1);
-        $evaluator = new Evaluator($requester);
-        $recorder = EvaluatorTestUtil::prerequisiteRecorder();
-
-        $result = $evaluator->evaluate($flag0, LDContext::create('user'), $recorder->record());
-        $detail = new EvaluationDetail('off', 1, EvaluationReason::prerequisiteFailed($flag1->getKey()));
-        self::assertEquals($detail, $result->getDetail());
-
-        self::assertEquals(1, count($recorder->evals));
-        $eval = $recorder->evals[0];
-        self::assertEquals($flag1, $eval->getFlag());
-        self::assertEquals('go', $eval->getResult()->getDetail()->getValue());
-        self::assertEquals($flag0, $eval->getPrereqOfFlag());
-    }
-
-    public function testFlagReturnsOffVariationAndEventIfPrerequisiteIsNotMet()
-    {
-        $flag1 = ModelBuilders::flagBuilder('feature1')->variations('nogo', 'go')
-            ->on(true)->offVariation(1)->fallthroughVariation(0)
-            ->build();
-        $flag0 = ModelBuilders::flagBuilder('feature0')->variations('fall', 'off', 'on')
-            ->on(true)->offVariation(1)->fallthroughVariation(0)
-            ->prerequisite($flag1->getKey(), 1)
-            ->build();
-
-        $requester = new MockFeatureRequester();
-        $requester->addFlag($flag1);
-        $evaluator = new Evaluator($requester);
-        $recorder = EvaluatorTestUtil::prerequisiteRecorder();
-
-        $result = $evaluator->evaluate($flag0, LDContext::create('user'), $recorder->record());
-        $detail = new EvaluationDetail('off', 1, EvaluationReason::prerequisiteFailed($flag1->getKey()));
-        self::assertEquals($detail, $result->getDetail());
-
-        self::assertEquals(1, count($recorder->evals));
-        $eval = $recorder->evals[0];
-        self::assertEquals($flag1, $eval->getFlag());
-        self::assertEquals('nogo', $eval->getResult()->getDetail()->getValue());
-        self::assertEquals($flag0, $eval->getPrereqOfFlag());
-    }
-
-    public function testFlagReturnsFallthroughVariationAndEventIfPrerequisiteIsMetAndThereAreNoRules()
-    {
-        $flag1 = ModelBuilders::flagBuilder('feature1')->variations('nogo', 'go')
-            ->on(true)->offVariation(1)->fallthroughVariation(1)
-            ->build();
-        $flag0 = ModelBuilders::flagBuilder('feature0')->variations('fall', 'off', 'on')
-            ->on(true)->fallthroughVariation(0)
-            ->prerequisite($flag1->getKey(), 1)
-            ->build();
-
-        $requester = new MockFeatureRequester();
-        $requester->addFlag($flag1);
-        $evaluator = new Evaluator($requester);
-        $recorder = EvaluatorTestUtil::prerequisiteRecorder();
-
-        $result = $evaluator->evaluate($flag0, LDContext::create('user'), $recorder->record());
-        $detail = new EvaluationDetail('fall', 0, EvaluationReason::fallthrough());
-        self::assertEquals($detail, $result->getDetail());
-
-        self::assertEquals(1, count($recorder->evals));
-        $eval = $recorder->evals[0];
-        self::assertEquals($flag1, $eval->getFlag());
-        self::assertEquals('go', $eval->getResult()->getDetail()->getValue());
-        self::assertEquals($flag0, $eval->getPrereqOfFlag());
     }
 
     public function testFlagMatchesContextFromRules()
