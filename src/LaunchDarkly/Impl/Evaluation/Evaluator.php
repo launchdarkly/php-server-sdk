@@ -21,6 +21,7 @@ use Psr\Log\LoggerInterface;
 class EvaluatorState
 {
     public ?array $prerequisiteStack = null;
+    public ?array $segmentStack = null;
     
     public function __construct(public FeatureFlag $originalFlag)
     {
@@ -94,7 +95,7 @@ class Evaluator
 
         // Now walk through the rules and see if any match
         foreach ($flag->getRules() as $i => $rule) {
-            if ($this->ruleMatchesContext($rule, $context)) {
+            if ($this->ruleMatchesContext($rule, $context, $state)) {
                 return EvaluatorHelpers::getResultForVariationOrRollout(
                     $flag,
                     $rule,
@@ -214,23 +215,29 @@ class Evaluator
         return null;
     }
 
-    private function ruleMatchesContext(Rule $rule, LDContext $context): bool
+    private function ruleMatchesContext(Rule $rule, LDContext $context, EvaluatorState $state): bool
     {
         foreach ($rule->getClauses() as $clause) {
-            if (!$this->clauseMatchesContext($clause, $context)) {
+            if (!$this->clauseMatchesContext($clause, $context, $state)) {
                 return false;
             }
         }
         return true;
     }
 
-    private function clauseMatchesContext(Clause $clause, LDContext $context): bool
+    private function clauseMatchesContext(Clause $clause, LDContext $context, EvaluatorState $state): bool
     {
         if ($clause->getOp() === 'segmentMatch') {
-            foreach ($clause->getValues() as $value) {
-                $segment = $this->_featureRequester->getSegment($value);
+            foreach ($clause->getValues() as $segmentKey) {
+                if ($state->segmentStack !== null && in_array($segmentKey, $state->segmentStack)) {
+                    throw new EvaluationException(
+                        "segment rule referencing segment \"$segmentKey\" caused a circular reference; this is probably a temporary condition due to an incomplete update",
+                        EvaluationReason::MALFORMED_FLAG_ERROR
+                    );
+                }
+                $segment = $this->_featureRequester->getSegment($segmentKey);
                 if ($segment) {
-                    if ($this->segmentMatchesContext($segment, $context)) {
+                    if ($this->segmentMatchesContext($segment, $context, $state)) {
                         return EvaluatorHelpers::maybeNegate($clause, true);
                     }
                 }
@@ -240,7 +247,7 @@ class Evaluator
         return EvaluatorHelpers::matchClauseWithoutSegments($clause, $context);
     }
 
-    private function segmentMatchesContext(Segment $segment, LDContext $context): bool
+    private function segmentMatchesContext(Segment $segment, LDContext $context, EvaluatorState $state): bool
     {
         if (EvaluatorHelpers::contextKeyIsInTargetList($context, null, $segment->getIncluded())) {
             return true;
@@ -258,9 +265,22 @@ class Evaluator
                 return false;
             }
         }
-        foreach ($segment->getRules() as $rule) {
-            if ($this->segmentRuleMatchesContext($rule, $context, $segment->getKey(), $segment->getSalt())) {
-                return true;
+        $rules = $segment->getRules();
+        if (count($rules) !== 0) {
+            // Evaluating rules means we might be doing recursive segment matches, so we'll push the current
+            // segment key onto the stack for cycle detection.
+            if ($state->segmentStack === null) {
+                $state->segmentStack = [];
+            }
+            $state->segmentStack[] = $segment->getKey();
+            try {
+                foreach ($rules as $rule) {
+                    if ($this->segmentRuleMatchesContext($rule, $context, $segment->getKey(), $segment->getSalt(), $state)) {
+                        return true;
+                    }
+                }
+            } finally {
+                array_pop($state->segmentStack);
             }
         }
         return false;
@@ -270,11 +290,12 @@ class Evaluator
         SegmentRule $rule,
         LDContext $context,
         string $segmentKey,
-        string $segmentSalt
+        string $segmentSalt,
+        EvaluatorState $state
     ): bool {
         $rulej = print_r($rule, true);
         foreach ($rule->getClauses() as $clause) {
-            if (!EvaluatorHelpers::matchClauseWithoutSegments($clause, $context)) {
+            if (!$this->clauseMatchesContext($clause, $context, $state)) {
                 return false;
             }
         }

@@ -2,6 +2,7 @@
 
 namespace LaunchDarkly\Tests\Impl\Evaluation;
 
+use LaunchDarkly\EvaluationReason;
 use LaunchDarkly\Impl\Evaluation\Evaluator;
 use LaunchDarkly\Impl\Evaluation\EvaluatorBucketing;
 use LaunchDarkly\Impl\Model\Segment;
@@ -53,7 +54,7 @@ class EvaluatorSegmentTest extends TestCase
         $this->assertTrue(self::segmentMatchesContext($segment, $multi));
     }
 
-    public function excludedKeyForContextKind()
+    public function testExcludedKeyForContextKind()
     {
         $c1 = LDContext::create('key1', 'kind1');
         $c2 = LDContext::create('key2', 'kind2');
@@ -181,14 +182,87 @@ class EvaluatorSegmentTest extends TestCase
         $this->assertFalse(self::segmentMatchesContext($segment, $context));
     }
 
+    public function recursionDepth()
+    {
+        return [[1], [2], [3], [4]];
+    }
+
+    /** @dataProvider recursionDepth */
+    public function testSegmentReferencingSegment($depth)
+    {
+        $context = LDContext::create('foo');
+
+        $segmentKeys = [];
+        for ($i = 0; $i < $depth; $i++) {
+            $segmentKeys[] = "segmentkey$i";
+        }
+        $flags = [];
+        $requester = new MockFeatureRequester();
+        for ($i = 0; $i < $depth; $i++) {
+            $builder = ModelBuilders::segmentBuilder($segmentKeys[$i]);
+            if ($i == $depth - 1) {
+                $builder->included($context->getKey());
+            } else {
+                $builder->rule(
+                    ModelBuilders::segmentRuleBuilder()
+                        ->clause(ModelBuilders::clause(null, '', 'segmentMatch', $segmentKeys[$i + 1]))
+                        ->build()
+                );
+            }
+            $segment = $builder->build();
+            $segments[] = $segment;
+            $requester->addSegment($segment);
+        }
+        $evaluator = new Evaluator($requester);
+
+        $flag = ModelBuilders::booleanFlagWithClauses(ModelBuilders::clauseMatchingSegment($segments[0]));
+
+        $result = $evaluator->evaluate($flag, $context, EvaluatorTestUtil::expectNoPrerequisiteEvals());
+        self::assertTrue($result->getDetail()->getValue());
+    }
+
+    /** @dataProvider recursionDepth */
+    public function testSegmentCycleDetection($depth)
+    {
+        $context = LDContext::create('foo');
+
+        $segmentKeys = [];
+        for ($i = 0; $i < $depth; $i++) {
+            $segmentKeys[] = "segmentkey$i";
+        }
+        $flags = [];
+        $requester = new MockFeatureRequester();
+        for ($i = 0; $i < $depth; $i++) {
+            $builder = ModelBuilders::segmentBuilder($segmentKeys[$i]);
+            $builder->rule(
+                ModelBuilders::segmentRuleBuilder()
+                    ->clause(ModelBuilders::clause(null, '', 'segmentMatch', $segmentKeys[($i + 1) % $depth]))
+                    ->build()
+            );
+            $segment = $builder->build();
+            $segments[] = $segment;
+            $requester->addSegment($segment);
+        }
+        $evaluator = new Evaluator($requester);
+
+        $flag = ModelBuilders::booleanFlagWithClauses(ModelBuilders::clauseMatchingSegment($segments[0]));
+
+        $result = $evaluator->evaluate($flag, $context, EvaluatorTestUtil::expectNoPrerequisiteEvals());
+        self::assertEquals(EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR), $result->getDetail()->getReason());
+    }
+
     private static function segmentMatchesContext(Segment $segment, LDContext $context): bool
     {
         $flag = ModelBuilders::booleanFlagWithClauses(ModelBuilders::clauseMatchingSegment($segment));
 
         $requester = new MockFeatureRequester();
         $requester->addSegment($segment);
-        $evaluator = new Evaluator($requester);
+        $evaluator = new Evaluator($requester, EvaluatorTestUtil::testLogger());
 
-        return $evaluator->evaluate($flag, $context, EvaluatorTestUtil::expectNoPrerequisiteEvals())->getDetail()->getValue();
+        $detail = $evaluator->evaluate($flag, $context, EvaluatorTestUtil::expectNoPrerequisiteEvals())->getDetail();
+        if ($detail->getValue() === null) {
+            self::assertTrue(false, "Evaluation failed with reason: " . json_encode($detail->getReason()));
+        }
+        return $detail->getValue();
     }
 }

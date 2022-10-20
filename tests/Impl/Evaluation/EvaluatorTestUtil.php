@@ -5,6 +5,9 @@ namespace LaunchDarkly\Tests\Impl\Evaluation;
 use LaunchDarkly\Impl\Evaluation\Evaluator;
 use LaunchDarkly\Impl\Evaluation\PrerequisiteEvaluationRecord;
 use LaunchDarkly\Tests\MockFeatureRequester;
+use Monolog\Handler\ErrorLogHandler;
+use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 
 class EvaluatorTestUtil
 {
@@ -24,6 +27,11 @@ class EvaluatorTestUtil
     public static function prerequisiteRecorder(): PrerequisiteRecorder
     {
         return new PrerequisiteRecorder();
+    }
+
+    public static function testLogger(): LoggerInterface
+    {
+        return new Logger("EvaluatorTest", [new ErrorLogHandler()]);
     }
 }
 

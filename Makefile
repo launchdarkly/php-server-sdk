@@ -15,11 +15,9 @@ TEMP_TEST_OUTPUT=/tmp/sse-contract-test-service.log
 # - "evaluation/parameterized/attribute references/array index is not supported": Due to how PHP
 #   arrays work, there's no way to disallow an array index lookup without breaking object property
 #   lookups for properties that are numeric strings.
-# - "evaluation/parameterized/segment recursion": Haven't yet implemented segment recursion.
 TEST_HARNESS_PARAMS := $(TEST_HARNESS_PARAMS) \
 	-skip 'evaluation/bucketing/secondary' \
-	-skip 'evaluation/parameterized/attribute references/array index is not supported' \
-	-skip 'evaluation/parameterized/segment recursion'
+	-skip 'evaluation/parameterized/attribute references/array index is not supported'
 
 build-contract-tests:
 	@cd test-service && composer install --no-progress

@@ -116,12 +116,12 @@ class EvaluatorPrerequisiteTest extends TestCase
         self::assertEquals($flag0, $eval->getPrereqOfFlag());
     }
 
-    public function prerequisiteCycleDepths()
+    public function recursionDepth()
     {
         return [[1], [2], [3], [4]];
     }
 
-    /** @dataProvider prerequisiteCycleDepths */
+    /** @dataProvider recursionDepth */
     public function testPrerequisiteCycleDetection($depth)
     {
         $flagKeys = [];
