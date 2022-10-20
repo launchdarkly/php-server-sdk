@@ -87,7 +87,7 @@ class EventSerializer
         $redacted = [];
         $allPrivate = $this->_privateAttributes;
         if (!$this->_allAttributesPrivate) {
-            foreach (($c->getPrivateAttributes() ?: []) as $attr) {
+            foreach (($c->getPrivateAttributes() ?? []) as $attr) {
                 $parsed = AttributeReference::parse($attr);
                 if ($parsed->getError() === null) {
                     $allPrivate[] = $parsed;
@@ -130,7 +130,7 @@ class EventSerializer
             return $value;
         }
         $ret = [];
-        $currentPath = $parentPath === null ? [] : $parentPath;
+        $currentPath = $parentPath ?? [];
         $currentPath[] = $name;
         foreach ($value as $k => $v) {
             if (is_int($k)) {
