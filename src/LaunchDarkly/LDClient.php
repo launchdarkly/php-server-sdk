@@ -76,7 +76,7 @@ class LDClient
      * Defaults to false.
      * - `private_attribute_names`: An optional array of user attribute names to be marked private. Any users sent to LaunchDarkly
      * with this configuration active will have attributes with these names removed. You can also set private attributes on a
-     * per-user basis in LDUserBuilder.
+     * per-user basis in the LDContext builder.
      * - Other options may be available depending on any features you are using from the `LaunchDarkly\Integrations` namespace.
      *
      * @return LDClient

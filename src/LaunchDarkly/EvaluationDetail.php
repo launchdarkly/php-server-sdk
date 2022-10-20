@@ -29,9 +29,10 @@ class EvaluationDetail
     }
 
     /**
-     * Returns the value of the flag variation for the user.
+     * Returns the result of the flag evaluation. This will be either one of the flag's variations or the default
+     * value that was passed to the {@see \LaunchDarkly\LDClient::variationDetail()} method.
      *
-     * @return mixed
+     * @return mixed the flag value
      */
     public function getValue(): mixed
     {
@@ -39,10 +40,10 @@ class EvaluationDetail
     }
 
     /**
-     * Returns the index of the flag variation for the user, e.g. 0 for the first variation -
-     * or null if it was the default value.
+     * The index of the returned value within the flag's list of variations, e.g. 0 for the first variation--
+     * or null if it was the default value (evaluation failed).
      *
-     * @return int | null
+     * @return ?int the variation index if applicable
      */
     public function getVariationIndex(): ?int
     {
