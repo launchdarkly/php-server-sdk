@@ -6,6 +6,9 @@ namespace LaunchDarkly\Impl;
 
 use DateTime;
 use DateTimeZone;
+use Monolog\Handler\NullHandler;
+use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 
 /**
  * Internal class containing helper methods.
@@ -49,5 +52,16 @@ class Util
             . (($status == 401) ? ' (invalid SDK key)' : '')
             . ' for ' . $context . ' - '
             . (Util::isHttpErrorRecoverable($status) ? $retryMessage : 'giving up permanently');
+    }
+
+    public static function logExceptionAtErrorLevel(LoggerInterface $logger, \Throwable $e, string $message): void
+    {
+        $logger->error($message . ': ' . $e->getMessage());
+        $logger->debug("$e");
+    }
+
+    public static function makeNullLogger(): LoggerInterface
+    {
+        return new Logger('', [new NullHandler()]);
     }
 }
