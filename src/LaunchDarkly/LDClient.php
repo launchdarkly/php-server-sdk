@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LaunchDarkly;
 
+use LaunchDarkly\Impl\Evaluation\EvalResult;
 use LaunchDarkly\Impl\Evaluation\Evaluator;
 use LaunchDarkly\Impl\Evaluation\PrerequisiteEvaluationRecord;
 use LaunchDarkly\Impl\Events\EventFactory;
@@ -222,27 +223,27 @@ class LDClient
     {
         $default = $this->_get_default($key, $default);
 
-        $errorResult = fn (string $errorKind): EvaluationDetail =>
+        $errorDetail = fn (string $errorKind): EvaluationDetail =>
             new EvaluationDetail($default, null, EvaluationReason::error($errorKind));
-        $sendEvent = function (EvaluationDetail $detail, ?FeatureFlag $flag) use ($key, $context, $default, $eventFactory): void {
-            // if ($flag) {
-            //     $event = $eventFactory->newEvalEvent($flag, $context, $detail, $default);
-            // } else {
-            //     $event = $eventFactory->newUnknownFlagEvent($key, $context, $detail);
-            // }
-            // $this->_eventProcessor->enqueue($event);
+        $sendEvent = function (EvalResult $result, ?FeatureFlag $flag) use ($key, $context, $default, $eventFactory): void {
+            if ($flag) {
+                $event = $eventFactory->newEvalEvent($flag, $context, $result, $default);
+            } else {
+                $event = $eventFactory->newUnknownFlagEvent($key, $context, $result->getDetail());
+            }
+            $this->_eventProcessor->enqueue($event);
         };
 
         if (!$context->isValid()) {
-            $result = $errorResult(EvaluationReason::USER_NOT_SPECIFIED_ERROR);
-            $sendEvent($result, null);
+            $result = $errorDetail(EvaluationReason::USER_NOT_SPECIFIED_ERROR);
+            $sendEvent(new EvalResult($result, false), null);
             $error = $context->getError();
             $this->_logger->warning("Context was invalid for flag evaluation ($error); returning default value");
             return $result;
         }
 
         if ($this->_offline) {
-            return $errorResult(EvaluationReason::CLIENT_NOT_READY_ERROR);
+            return $errorDetail(EvaluationReason::CLIENT_NOT_READY_ERROR);
         }
 
         try {
@@ -250,39 +251,39 @@ class LDClient
                 $flag = $this->_featureRequester->getFeature($key);
             } catch (UnrecoverableHTTPStatusException $e) {
                 $this->handleUnrecoverableError();
-                return $errorResult(EvaluationReason::EXCEPTION_ERROR);
+                return $errorDetail(EvaluationReason::EXCEPTION_ERROR);
             }
 
             if (is_null($flag)) {
-                $result = $errorResult(EvaluationReason::FLAG_NOT_FOUND_ERROR);
-                $sendEvent($result, null);
+                $result = $errorDetail(EvaluationReason::FLAG_NOT_FOUND_ERROR);
+                $sendEvent(new EvalResult($result, false), null);
                 return $result;
             }
             $evalResult = $this->_evaluator->evaluate(
                 $flag,
                 $context,
-                function (PrerequisiteEvaluationRecord $pe) {
-                    // TODO: events temporarily disabled till they support contexts
-                    // $event = $eventFactory->newEvalEvent(
-                    //     $pe->getFlag(),
-                    //     $context,
-                    //     $pe->getResult(),
-                    //     null,
-                    //     $pe->getPrereqOfFlag()
-                    // );
-                    // $this->_eventProcessor->enqueue($event);
+                function (PrerequisiteEvaluationRecord $pe) use ($context, $eventFactory) {
+                    $event = $eventFactory->newEvalEvent(
+                        $pe->getFlag(),
+                        $context,
+                        $pe->getResult(),
+                        null,
+                        $pe->getPrereqOfFlag()
+                    );
+                    $this->_eventProcessor->enqueue($event);
                 }
             );
             $detail = $evalResult->getDetail();
             if ($detail->isDefaultValue()) {
                 $detail = new EvaluationDetail($default, null, $detail->getReason());
+                $evalResult = new EvalResult($detail, $evalResult->isForceReasonTracking());
             }
-            $sendEvent($detail, $flag);
+            $sendEvent($evalResult, $flag);
             return $detail;
         } catch (\Exception $e) {
             Util::logExceptionAtErrorLevel($this->_logger, $e, "Unexpected error evaluating flag $key");
-            $result = $errorResult(EvaluationReason::EXCEPTION_ERROR);
-            $sendEvent($result, null);
+            $result = $errorDetail(EvaluationReason::EXCEPTION_ERROR);
+            $sendEvent(new EvalResult($result, false), null);
             return $result;
         }
     }
@@ -299,19 +300,19 @@ class LDClient
      * Tracks that a user performed an event.
      *
      * @param string $eventName The name of the event
-     * @param LDUser $user The user that performed the event
+     * @param LDContext $context The user that performed the event
      * @param mixed $data Optional additional information to associate with the event
      * @param int|float|null $metricValue A numeric value used by the LaunchDarkly experimentation feature in
      *   numeric custom metrics. Can be omitted if this event is used by only non-numeric metrics. This
      *   field will also be returned as part of the custom event for Data Export.
      */
-    public function track(string $eventName, LDUser $user, mixed $data = null, int|float|null $metricValue = null): void
+    public function track(string $eventName, LDContext $context, mixed $data = null, int|float|null $metricValue = null): void
     {
-        if ($user->isKeyBlank()) {
+        if (!$context->isValid()) {
             $this->_logger->warning("Track called with null/empty user key!");
             return;
         }
-        $this->_eventProcessor->enqueue($this->_eventFactoryDefault->newCustomEvent($eventName, $user, $data, $metricValue));
+        $this->_eventProcessor->enqueue($this->_eventFactoryDefault->newCustomEvent($eventName, $context, $data, $metricValue));
     }
 
     /**
@@ -320,16 +321,16 @@ class LDClient
      * This simply registers the given user properties with LaunchDarkly without evaluating a feature flag.
      * This also happens automatically when you evaluate a flag.
      *
-     * @param LDUser $user The user properties
+     * @param LDContext $context The user properties
      * @return void
      */
-    public function identify(LDUser $user): void
+    public function identify(LDContext $context): void
     {
-        if ($user->isKeyBlank()) {
+        if (!$context->isValid()) {
             $this->_logger->warning("Identify called with null/empty user key!");
             return;
         }
-        $this->_eventProcessor->enqueue($this->_eventFactoryDefault->newIdentifyEvent($user));
+        $this->_eventProcessor->enqueue($this->_eventFactoryDefault->newIdentifyEvent($context));
     }
 
     /**

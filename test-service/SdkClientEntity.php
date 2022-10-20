@@ -100,7 +100,7 @@ class SdkClientEntity
     {
         $this->_client->track(
             $params['eventKey'],
-            $this->makeUser($params['user']),
+            $this->makeContext($params['context']),
             $params['data'] ?? null,
             $params['metricValue'] ?? null
         );
@@ -145,13 +145,13 @@ class SdkClientEntity
 
     private function doIdentifyEvent(array $params): void
     {
-        $this->_client->identify($this->makeUser($params['user']));
+        $this->_client->identify($this->makeContext($params['context']));
     }
 
     private function doSecureModeHash(array $params): array
     {
-        $user = $this->makeUser($params['user']);
-        $result = $this->_client->secureModeHash($user);
+        $context = $this->makeContext($params['context']);
+        $result = $this->_client->secureModeHash($context);
         return [
             'result' => $result
         ];
