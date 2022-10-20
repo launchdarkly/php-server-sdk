@@ -24,7 +24,7 @@ class EventSerializer
         $this->_allAttributesPrivate = !!($options['all_attributes_private'] ?? false);
 
         $allParsedPrivate = [];
-        foreach (($options['private_attribute_names'] ?? null) ?: [] as $attr) {
+        foreach ($options['private_attribute_names'] ?? [] as $attr) {
             $parsed = AttributeReference::parse($attr);
             if ($parsed->getError() === null) {
                 $allParsedPrivate[] = $parsed;
