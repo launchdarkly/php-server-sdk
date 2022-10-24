@@ -2,7 +2,7 @@
 
 namespace LaunchDarkly\Tests;
 
-class MockEventPublisher implements \LaunchDarkly\EventPublisher
+class MockEventPublisher implements \LaunchDarkly\Subsystems\EventPublisher
 {
     public $payloads = [];
 

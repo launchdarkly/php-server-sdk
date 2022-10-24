@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace LaunchDarkly\Impl\Events;
 
-use LaunchDarkly\EventPublisher;
 use LaunchDarkly\Integrations\Curl;
+use LaunchDarkly\Subsystems\EventPublisher;
 
 /**
  * Internal class that processes analytics event data.

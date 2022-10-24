@@ -15,6 +15,7 @@ use LaunchDarkly\Impl\PreloadedFeatureRequester;
 use LaunchDarkly\Impl\UnrecoverableHTTPStatusException;
 use LaunchDarkly\Impl\Util;
 use LaunchDarkly\Integrations\Guzzle;
+use LaunchDarkly\Subsystems\FeatureRequester;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
@@ -69,7 +70,7 @@ class LDClient
      * Defaults to {@see \LaunchDarkly\Integrations\Guzzle::featureRequester()}. There are also optional packages providing
      * database integrations; see [Storing data](https://docs.launchdarkly.com/sdk/features/storing-data#php).
      * - `feature_requester_class`: Deprecated, equivalent to feature_requester.
-     * - `event_publisher`: An optional {@see \LaunchDarkly\EventPublisher} implementation, or a class or factory for one.
+     * - `event_publisher`: An optional {@see \LaunchDarkly\Subsystems\EventPublisher} implementation, or a class or factory for one.
      * Defaults to {@see \LaunchDarkly\Integrations\Curl::eventPublisher()}.
      * - `event_publisher_class`: Deprecated, equivalent to event_publisher.
      * - `all_attributes_private`: If set to true, no user attributes (other than the key) will be sent back to LaunchDarkly.

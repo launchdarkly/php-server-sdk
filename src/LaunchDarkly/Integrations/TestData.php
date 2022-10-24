@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace LaunchDarkly\Integrations;
 
-use LaunchDarkly\FeatureRequester;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Impl\Model\Segment;
 use LaunchDarkly\Integrations\TestData\FlagBuilder;
+use LaunchDarkly\Subsystems\FeatureRequester;
 
 class TestData implements FeatureRequester
 {

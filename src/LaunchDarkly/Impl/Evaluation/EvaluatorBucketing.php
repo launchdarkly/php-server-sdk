@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl\Evaluation;
 
 use LaunchDarkly\Impl\Model\VariationOrRollout;

@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl\Evaluation;
 
 use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
-use LaunchDarkly\FeatureRequester;
 use LaunchDarkly\Impl\Model\Clause;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Impl\Model\Rule;
@@ -12,6 +13,7 @@ use LaunchDarkly\Impl\Model\Segment;
 use LaunchDarkly\Impl\Model\SegmentRule;
 use LaunchDarkly\Impl\Util;
 use LaunchDarkly\LDContext;
+use LaunchDarkly\Subsystems\FeatureRequester;
 use Psr\Log\LoggerInterface;
 
 /**

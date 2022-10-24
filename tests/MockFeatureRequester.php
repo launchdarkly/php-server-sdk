@@ -2,9 +2,9 @@
 
 namespace LaunchDarkly\Tests;
 
-use LaunchDarkly\FeatureRequester;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Impl\Model\Segment;
+use LaunchDarkly\Subsystems\FeatureRequester;
 
 /**
  * A mock implementation of FeatureRequester holding preconfigured flags/segments. If

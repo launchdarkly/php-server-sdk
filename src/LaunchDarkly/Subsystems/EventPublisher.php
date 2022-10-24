@@ -2,13 +2,15 @@
 
 declare(strict_types=1);
 
-namespace LaunchDarkly;
+namespace LaunchDarkly\Subsystems;
 
 /**
  * Interface for the component that sends events to the LaunchDarkly service.
  *
- * The default implementation is {@see \LaunchDarkly\Integrations\Curl::eventPublisher()}. The SDK also
- * provides {@see \LaunchDarkly\Integrations\Guzzle::eventPublisher()}.
+ * Application code should not need to implement this interface. LaunchDarkly provides two implementations:
+ *
+ * - {@see \LaunchDarkly\Integrations\Curl::eventPublisher()} (the default)
+ * - {@see \LaunchDarkly\Integrations\Guzzle::eventPublisher()}
  */
 interface EventPublisher
 {

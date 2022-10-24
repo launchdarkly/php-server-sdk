@@ -4,11 +4,11 @@ namespace LaunchDarkly\Tests;
 
 use InvalidArgumentException;
 use LaunchDarkly\EvaluationReason;
-use LaunchDarkly\FeatureRequester;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Impl\Model\Segment;
 use LaunchDarkly\LDClient;
 use LaunchDarkly\LDContext;
+use LaunchDarkly\Subsystems\FeatureRequester;
 use Psr\Log\LoggerInterface;
 
 class LDClientTest extends \PHPUnit\Framework\TestCase

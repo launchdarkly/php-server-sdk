@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace LaunchDarkly\Impl\Integrations;
 
 use GuzzleHttp\Client;
-use LaunchDarkly\EventPublisher;
 use LaunchDarkly\Impl\UnrecoverableHTTPStatusException;
 use LaunchDarkly\Impl\Util;
 use LaunchDarkly\LDClient;
+use LaunchDarkly\Subsystems\EventPublisher;
 use Psr\Log\LoggerInterface;
 
 /**

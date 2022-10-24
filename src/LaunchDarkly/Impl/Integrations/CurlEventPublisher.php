@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace LaunchDarkly\Impl\Integrations;
 
-use LaunchDarkly\EventPublisher;
 use LaunchDarkly\LDClient;
+use LaunchDarkly\Subsystems\EventPublisher;
 
 /**
  * Curl-based implementation of sending events. This is used by default.

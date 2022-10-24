@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace LaunchDarkly\Impl\Integrations;
 
-use LaunchDarkly\FeatureRequester;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Impl\Model\Segment;
+use LaunchDarkly\Subsystems\FeatureRequester;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
