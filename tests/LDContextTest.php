@@ -3,6 +3,7 @@
 namespace LaunchDarkly\Tests;
 
 use LaunchDarkly\LDContext;
+use LaunchDarkly\Types\AttributeReference;
 
 class LDContextTest extends \PHPUnit\Framework\TestCase
 {
@@ -156,8 +157,15 @@ class LDContextTest extends \PHPUnit\Framework\TestCase
     {
         self::assertNull(LDContext::create('a')->getPrivateAttributes());
 
-        $c = LDContext::builder('a')->private('b', 'c')->private('d')->build();
-        self::assertEquals(['b', 'c', 'd'], $c->getPrivateAttributes());
+        $c = LDContext::builder('a')->private('b', '/c/d')->private(AttributeReference::fromPath('e'))->build();
+        self::assertEquals(
+            [
+                AttributeReference::fromPath('b'),
+                AttributeReference::fromPath('/c/d'),
+                AttributeReference::fromPath('e')
+            ],
+            $c->getPrivateAttributes()
+        );
     }
 
     public function testCreateMulti()
@@ -296,6 +304,10 @@ class LDContextTest extends \PHPUnit\Framework\TestCase
         self::assertJsonStringEqualsJsonString(
             '{"kind": "kind1", "key": "a", "b": true, "c": 3}',
             json_encode(LDContext::builder('a')->kind('kind1')->set('b', true)->set('c', 3)->build())
+        );
+        self::assertJsonStringEqualsJsonString(
+            '{"kind": "kind1", "key": "a", "_meta": {"privateAttributes": ["b"]}}',
+            json_encode(LDContext::builder('a')->kind('kind1')->private('b')->build())
         );
         self::assertJsonStringEqualsJsonString(
             '{"kind": "multi", "kind1": {"key": "key1"}, "kind2": {"key": "key2"}}',

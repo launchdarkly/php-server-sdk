@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace LaunchDarkly;
 
+use LaunchDarkly\Types\AttributeReference;
+
 /**
  * A mutable object that uses the builder pattern to specify properties for LDContext.
  *
@@ -32,6 +34,7 @@ class LDContextBuilder
     private ?string $_name = null;
     private bool $_anonymous = false;
     private ?array $_attributes = null;
+    /** @var AttributeReference[]|null */
     private ?array $_privateAttributes = null;
 
     /**
@@ -260,11 +263,15 @@ class LDContextBuilder
      * Designates any number of LDContext attributes, or properties within them, as private: that is,
      * their values will not be sent to LaunchDarkly.
      *
+     * Each parameter can be either a simple attribute name, or a slash-delimited path (in the format
+     * defined by {@see \LaunchDarkly\Types\AttributeReference}) referring to a JSON object property
+     * within an attribute.
+     *
      * @param array $attributeRefs attribute names or references to mark as private
      * @return LDContextBuilder the builder
      * @see \LaunchDarkly\LDContext::getPrivateAttributes()
      */
-    public function private(string ...$attributeRefs): LDContextBuilder
+    public function private(string|AttributeReference ...$attributeRefs): LDContextBuilder
     {
         if (count($attributeRefs) === 0) {
             return $this;
@@ -273,7 +280,16 @@ class LDContextBuilder
             $this->_privateAttributes = [];
         }
         foreach ($attributeRefs as $p) {
-            $this->_privateAttributes[] = $p;
+            if (is_string($p)) {
+                $parsed = AttributeReference::fromPath($p);
+            } elseif ($p instanceof AttributeReference) {
+                $parsed = $p;
+            } else {
+                continue;
+            }
+            if ($parsed->getError() === null) {
+                $this->_privateAttributes[] = $parsed;
+            }
         }
         return $this;
     }

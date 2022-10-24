@@ -4,12 +4,12 @@ namespace LaunchDarkly\Impl\Evaluation;
 
 use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
-use LaunchDarkly\Impl\Model\AttributeReference;
 use LaunchDarkly\Impl\Model\Clause;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Impl\Model\Target;
 use LaunchDarkly\Impl\Model\VariationOrRollout;
 use LaunchDarkly\LDContext;
+use LaunchDarkly\Types\AttributeReference;
 
 /**
  * Low-level helpers for producing various kinds of evaluation results. We also put any
@@ -47,14 +47,11 @@ class EvaluatorHelpers
         string $attributeRef,
         ?string $forContextKind
     ): mixed {
-        if ($attributeRef === '') {
-            throw new InvalidAttributeReferenceException(AttributeReference::ERR_ATTR_EMPTY);
-        }
-        if ($forContextKind === null || $forContextKind === '') {
-            // Treat the attribute as just an attribute name, not a reference path
-            return $context->get($attributeRef);
-        }
-        $parsed = AttributeReference::parse($attributeRef);
+        $parsed = ($forContextKind === null || $forContextKind === '') ?
+            // If no context kind was specified, treat the attribute as just an attribute name, not a reference path
+            AttributeReference::fromLiteral($attributeRef) :
+            // If a context kind was specified, parse it as a path
+            AttributeReference::fromPath($attributeRef);
         if (($err = $parsed->getError()) !== null) {
             throw new InvalidAttributeReferenceException($err);
         }

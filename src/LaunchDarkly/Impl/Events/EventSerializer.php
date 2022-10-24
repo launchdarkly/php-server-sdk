@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace LaunchDarkly\Impl\Events;
 
-use LaunchDarkly\Impl\Model\AttributeReference;
 use LaunchDarkly\LDContext;
+use LaunchDarkly\Types\AttributeReference;
 
 /**
  * Internal class that translates analytics events into the format used for sending them to LaunchDarkly.
@@ -25,7 +25,7 @@ class EventSerializer
 
         $allParsedPrivate = [];
         foreach ($options['private_attribute_names'] ?? [] as $attr) {
-            $parsed = AttributeReference::parse($attr);
+            $parsed = AttributeReference::fromPath($attr);
             if ($parsed->getError() === null) {
                 $allParsedPrivate[] = $parsed;
             }
@@ -85,15 +85,7 @@ class EventSerializer
             $ret['anonymous'] = true;
         }
         $redacted = [];
-        $allPrivate = $this->_privateAttributes;
-        if (!$this->_allAttributesPrivate) {
-            foreach (($c->getPrivateAttributes() ?? []) as $attr) {
-                $parsed = AttributeReference::parse($attr);
-                if ($parsed->getError() === null) {
-                    $allPrivate[] = $parsed;
-                }
-            }
-        }
+        $allPrivate = array_merge($this->_privateAttributes, $c->getPrivateAttributes() ?? []);
         if ($c->getName() !== null && !$this->checkWholeAttributePrivate('name', $allPrivate, $redacted)) {
             $ret['name'] = $c->getName();
         }

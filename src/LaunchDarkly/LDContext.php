@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace LaunchDarkly;
 
+use LaunchDarkly\Types\AttributeReference;
+
 /**
  * A collection of attributes that can be referenced in flag evaluations and analytics events.
  * This entity is also called an "evaluation context."
@@ -44,7 +46,9 @@ class LDContext implements \JsonSerializable
     private ?string $_name = null;
     private bool $_anonymous = false;
     private ?array $_attributes = null;
+    /** @var AttributeReference[]|null */
     private ?array $_privateAttributes = null;
+    /** @var LDContext[]|null */
     private ?array $_multiContexts = null;
     private ?string $_error = null;
 
@@ -54,6 +58,15 @@ class LDContext implements \JsonSerializable
      * Applications should not normally use this constructor; the intended pattern is to use
      * factory methods or builders. Calling this constructor directly may result in some context
      * validation being skipped.
+     *
+     * @param ?string $kind the context kind
+     * @param string $key the context key
+     * @param ?string $name the optional name attribute
+     * @param bool $anonymous the anonymous attribute
+     * @param mixed[]|null $attributes associative array of additional attributes
+     * @param AttributeReference[]|null $privateAttributes private attribute references
+     * @param LDContext[]|null $multiContexts contexts within this if this is a multi-context
+     * @param ?string $error error string or null if valid
      */
     public function __construct(
         ?string $kind,
@@ -547,7 +560,7 @@ class LDContext implements \JsonSerializable
      * This includes all attribute names/paths that were specified with
      * {@see \LaunchDarkly\LDContextBuilder::private()}. If there are none, it is null.
      *
-     * @return array|null the list of private attributes, if any
+     * @return AttributeReference[]|null the list of private attributes, if any
      */
     public function getPrivateAttributes(): ?array
     {
@@ -677,7 +690,7 @@ class LDContext implements \JsonSerializable
         }
         if ($this->_privateAttributes !== null) {
             $ret['_meta'] = [
-                'privateAttributes' => $this->_privateAttributes
+                'privateAttributes' => array_map(fn (AttributeReference $a) => $a->getPath(), $this->_privateAttributes)
             ];
         }
         return $ret;
