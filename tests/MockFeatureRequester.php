@@ -71,6 +71,6 @@ class MockFeatureRequester implements FeatureRequester
                 $ret[$k] = $v;
             }
         }
-        return $v;
+        return $ret;
     }
 }

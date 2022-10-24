@@ -66,6 +66,12 @@ class FlagBuilder
         return $this;
     }
 
+    public function debugEventsUntilDate(?int $debugEventsUntilDate): FlagBuilder
+    {
+        $this->_debugEventsUntilDate = $debugEventsUntilDate;
+        return $this;
+    }
+
     public function fallthroughRollout(Rollout $rollout): FlagBuilder
     {
         $this->_fallthrough = new VariationOrRollout(null, $rollout);
@@ -126,9 +132,27 @@ class FlagBuilder
         return $this;
     }
 
+    public function trackEvents(bool $trackEvents): FlagBuilder
+    {
+        $this->_trackEvents = $trackEvents;
+        return $this;
+    }
+
+    public function trackEventsFallthrough(bool $trackEventsFallthrough): FlagBuilder
+    {
+        $this->_trackEventsFallthrough = $trackEventsFallthrough;
+        return $this;
+    }
+
     public function variations(...$variations): FlagBuilder
     {
         $this->_variations = $variations;
+        return $this;
+    }
+
+    public function version(int $version): FlagBuilder
+    {
+        $this->_version = $version;
         return $this;
     }
 }

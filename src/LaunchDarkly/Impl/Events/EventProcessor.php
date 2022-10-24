@@ -79,9 +79,6 @@ class EventProcessor
     private function getEventPublisher(string $sdkKey, array $options): EventPublisher
     {
         $ep = $options['event_publisher'] ?? null;
-        if (!$ep && isset($options['event_publisher_class'])) {
-            $ep = $options['event_publisher_class'];
-        }
         if (!$ep) {
             $ep = Curl::eventPublisher();
         }

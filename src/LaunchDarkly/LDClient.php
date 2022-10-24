@@ -69,10 +69,8 @@ class LDClient
      * - `feature_requester`: An optional {@see \LaunchDarkly\FeatureRequester} implementation, or a class or factory for one.
      * Defaults to {@see \LaunchDarkly\Integrations\Guzzle::featureRequester()}. There are also optional packages providing
      * database integrations; see [Storing data](https://docs.launchdarkly.com/sdk/features/storing-data#php).
-     * - `feature_requester_class`: Deprecated, equivalent to feature_requester.
      * - `event_publisher`: An optional {@see \LaunchDarkly\Subsystems\EventPublisher} implementation, or a class or factory for one.
      * Defaults to {@see \LaunchDarkly\Integrations\Curl::eventPublisher()}.
-     * - `event_publisher_class`: Deprecated, equivalent to event_publisher.
      * - `all_attributes_private`: If set to true, no user attributes (other than the key) will be sent back to LaunchDarkly.
      * Defaults to false.
      * - `private_attribute_names`: An optional array of user attribute names to be marked private. Any users sent to LaunchDarkly
@@ -155,8 +153,6 @@ class LDClient
     {
         if (isset($options['feature_requester']) && $options['feature_requester']) {
             $fr = $options['feature_requester'];
-        } elseif (isset($options['feature_requester_class']) && $options['feature_requester_class']) {
-            $fr = $options['feature_requester_class'];
         } else {
             $fr = Guzzle::featureRequester();
         }
