@@ -3,6 +3,7 @@
 namespace LaunchDarkly\Tests;
 
 use LaunchDarkly\LDContext;
+use LaunchDarkly\LDUserBuilder;
 use LaunchDarkly\Types\AttributeReference;
 
 class LDContextTest extends \PHPUnit\Framework\TestCase
@@ -337,6 +338,46 @@ class LDContextTest extends \PHPUnit\Framework\TestCase
             LDContext::createMulti(LDContext::create('key1', 'kind1'), LDContext::create('key2', 'kind2')),
             LDContext::fromJson('{"kind": "multi", "kind1": {"key": "key1"}, "kind2": {"key": "key2"}}')
         );
+    }
+
+    public function testContextFromUser()
+    {
+        $u1 = (new LDUserBuilder("key"))
+            ->ip("127.0.0.1")
+            ->firstName("Bob")
+            ->lastName("Loblaw")
+            ->email("bob@example.com")
+            ->privateName("Bob Loblaw")
+            ->avatar("image")
+            ->country("US")
+            ->anonymous(true)
+            ->build();
+        $c1 = LDContext::fromUser($u1);
+        $c1Expected = LDContext::builder($u1->getKey())
+          ->set("ip", $u1->getIP())
+          ->set("firstName", $u1->getFirstName())
+          ->set("lastName", $u1->getLastName())
+          ->set("email", $u1->getEmail())
+          ->set("name", $u1->getName())
+          ->set("avatar", $u1->getAvatar())
+          ->set("country", $u1->getCountry())
+          ->private("name")
+          ->anonymous(true)
+          ->build();
+        self::assertContextsEqual($c1Expected, $c1);
+    
+        // test case where there were no built-in optional attrs, only custom
+        $u2 = (new LDUserBuilder("key"))
+            ->customAttribute("c1", "v1")
+            ->privateCustomAttribute("c2", "v2")
+            ->build();
+        $c2 = LDContext::fromUser($u2);
+        $c2Expected = LDContext::builder($u2->getKey())
+            ->set("c1", "v1")
+            ->set("c2", "v2")
+            ->private("c2")
+            ->build();
+        self::assertContextsEqual($c2Expected, $c2);
     }
 
     private static function assertContextValid($c)

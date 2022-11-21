@@ -11,12 +11,10 @@ TEMP_TEST_OUTPUT=/tmp/sse-contract-test-service.log
 
 # TEST_HARNESS_PARAMS can be set to add -skip parameters for any contract tests that cannot yet pass
 # Explanation of current skips:
-# - "evaluation/bucketing/secondary": The "secondary" behavior needs to be removed from contract tests.
 # - "evaluation/parameterized/attribute references/array index is not supported": Due to how PHP
 #   arrays work, there's no way to disallow an array index lookup without breaking object property
 #   lookups for properties that are numeric strings.
 TEST_HARNESS_PARAMS := $(TEST_HARNESS_PARAMS) \
-	-skip 'evaluation/bucketing/secondary' \
 	-skip 'evaluation/parameterized/attribute references/array index is not supported'
 
 build-contract-tests:

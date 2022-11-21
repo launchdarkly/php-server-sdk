@@ -7,6 +7,8 @@ use LaunchDarkly\EvaluationReason;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\LDClient;
 use LaunchDarkly\LDContext;
+use LaunchDarkly\LDUser;
+use LaunchDarkly\LDUserBuilder;
 use Psr\Log\LoggerInterface;
 
 class LDClientTest extends \PHPUnit\Framework\TestCase
@@ -126,6 +128,26 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $client = $this->makeClient(['defaults' => ['foo' => 'fromarray']]);
 
         $this->assertEquals('fromarray', $client->variation('foo', LDContext::create('userkey'), 'argdef'));
+    }
+
+    public function testVariationPassesContextToEvaluator()
+    {
+        $flag = ModelBuilders::booleanFlagWithClauses(ModelBuilders::clause('kind1', 'attr1', 'in', 'value1'));
+        $this->mockRequester->addFlag($flag);
+        $client = $this->makeClient();
+
+        $context = LDContext::builder('key')->kind('kind1')->set('attr1', 'value1')->build();
+        $this->assertTrue($client->variation($flag->getKey(), $context, false));
+    }
+
+    public function testVariationPassesUserToEvaluator()
+    {
+        $flag = ModelBuilders::booleanFlagWithClauses(ModelBuilders::clause('user', 'attr1', 'in', 'value1'));
+        $this->mockRequester->addFlag($flag);
+        $client = $this->makeClient();
+
+        $user = (new LDUserBuilder('key'))->customAttribute('attr1', 'value1')->build();
+        $this->assertTrue($client->variation($flag->getKey(), $user, false));
     }
 
     public function testVariationSendsEvent()
@@ -317,6 +339,10 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
             '$valid' => true
         ];
         $this->assertEquals($expectedState, $state->jsonSerialize());
+
+        $user = new LDUser('userkey');
+        $state2 = $client->allFlagsState($user);
+        $this->assertEquals($expectedState, $state2->jsonSerialize());
     }
 
     public function testAllFlagsStateHandlesExperimentationReasons()
@@ -476,6 +502,34 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedState, $state->jsonSerialize());
     }
 
+    public function testIdentifySendsEvent()
+    {
+        $ep = new MockEventProcessor();
+        $client = $this->makeClient(['event_processor' => $ep]);
+
+        $context = LDContext::create('userkey');
+        $client->identify($context);
+        $queue = $ep->getEvents();
+        $this->assertEquals(1, sizeof($queue));
+        $event = $queue[0];
+        $this->assertEquals('identify', $event['kind']);
+        $this->assertEquals($context, $event['context']);
+    }
+
+    public function testIdentifyAcceptsUser()
+    {
+        $ep = new MockEventProcessor();
+        $client = $this->makeClient(['event_processor' => $ep]);
+
+        $user = new LDUser('userkey');
+        $client->identify($user);
+        $queue = $ep->getEvents();
+        $this->assertEquals(1, sizeof($queue));
+        $event = $queue[0];
+        $this->assertEquals('identify', $event['kind']);
+        $this->assertEquals(LDContext::create('userkey'), $event['context']);
+    }
+
     public function testTrackSendsEvent()
     {
         $ep = new MockEventProcessor();
@@ -530,6 +584,23 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($metricValue, $event['metricValue']);
     }
 
+    public function testTrackAcceptsUser()
+    {
+        $ep = new MockEventProcessor();
+        $client = $this->makeClient(['event_processor' => $ep]);
+
+        $user = new LDUser('userkey');
+        $client->track('eventkey', $user);
+        $queue = $ep->getEvents();
+        $this->assertEquals(1, sizeof($queue));
+        $event = $queue[0];
+        $this->assertEquals('custom', $event['kind']);
+        $this->assertEquals('eventkey', $event['key']);
+        $this->assertEquals(LDContext::create('userkey'), $event['context']);
+        $this->assertFalse(isset($event['data']));
+        $this->assertFalse(isset($event['metricValue']));
+    }
+
     public function testEventsAreNotPublishedIfSendEventsIsFalse()
     {
         // In order to do this test, we cannot provide a mock object for Event_Processor_,
@@ -560,8 +631,11 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
     public function testSecureModeHash()
     {
         $client = new LDClient("secret", ['offline' => true]);
-        $user = LDContext::create("Message");
-        $this->assertEquals("aa747c502a898200f9e4fa21bac68136f886a0e27aec70ba06daf2e2a5cb5597", $client->secureModeHash($user));
+        $context = LDContext::create("Message");
+        $user = new LDUser($context->getKey());
+        $expected = "aa747c502a898200f9e4fa21bac68136f886a0e27aec70ba06daf2e2a5cb5597";
+        $this->assertEquals($expected, $client->secureModeHash($context));
+        $this->assertEquals($expected, $client->secureModeHash($user));
     }
 
     public function testLoggerInterfaceWarn()
