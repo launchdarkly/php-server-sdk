@@ -844,7 +844,7 @@ class LDContext implements \JsonSerializable
                             throw self::parsingBadTypeError($k);
                         }
                         foreach ((array)$v as $k1 => $v1) {
-                            if (!isAllowableUserCustomAttr($k1)) {
+                            if (isAllowableUserCustomAttr($k1)) {
                                 $b->set($k1, $v1);
                             }
                         }
