@@ -97,7 +97,7 @@ class LDContextBuilder
     /**
      * Sets the context's kind attribute.
      *
-     * Every LDContext has a kind. Setting it to an empty string or null is equivalent to
+     * Every context has a kind. Setting it to an empty string or null is equivalent to
      * {@see \LaunchDarkly\LDContext::DEFAULT_KIND} ("user"). This value is case-sensitive.
      *
      * The meaning of the context kind is completely up to the application. Validation rules are
