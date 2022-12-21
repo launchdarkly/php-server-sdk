@@ -6,6 +6,25 @@ namespace LaunchDarkly;
 
 use LaunchDarkly\Types\AttributeReference;
 
+function isAllowableUserCustomAttr(string $name): bool
+{
+    switch ($name) {
+        case 'anonymous':
+        case 'avatar':
+        case 'country':
+        case 'email':
+        case 'firstName':
+        case 'ip':
+        case 'key':
+        case 'kind':
+        case 'lastName':
+        case 'name':
+            return false;
+        default:
+            return true;
+    }
+}
+
 /**
  * A collection of attributes that can be referenced in flag evaluations and analytics events.
  * This entity is also called an "evaluation context."
@@ -220,7 +239,9 @@ class LDContext implements \JsonSerializable
                 $attrs = [];
             }
             foreach ($userCustom as $k => $v) {
-                $attrs[$k] = $v;
+                if (isAllowableUserCustomAttr($k)) {
+                    $attrs[$k] = $v;
+                }
             }
         }
         $privateAttrs = null;
@@ -810,9 +831,6 @@ class LDContext implements \JsonSerializable
 
     private static function decodeJsonOldUser(array $o, bool $wasParsedAsArray): LDContext
     {
-        $j = json_encode($o);
-        file_put_contents('php://stderr', "decodeJsonOldUser($j, $wasParsedAsArray)\n", FILE_APPEND);
-
         $b = self::builder('');
         $key = null;
         foreach ($o as $k => $v) {
@@ -826,7 +844,9 @@ class LDContext implements \JsonSerializable
                             throw self::parsingBadTypeError($k);
                         }
                         foreach ((array)$v as $k1 => $v1) {
-                            $b->set($k1, $v1);
+                            if (!isAllowableUserCustomAttr($k1)) {
+                                $b->set($k1, $v1);
+                            }
                         }
                     }
                     break;

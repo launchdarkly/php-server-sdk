@@ -378,6 +378,17 @@ class LDContextTest extends \PHPUnit\Framework\TestCase
             ->private("c2")
             ->build();
         self::assertContextsEqual($c2Expected, $c2);
+
+        // make sure custom attrs can't override built-in ones
+        $u3 = (new LDUserBuilder("key"))
+            ->email("good")
+            ->custom(["email" => "bad"])
+            ->build();
+        $c3 = LDContext::fromUser($u3);
+        $c3Expected = LDContext::builder($u3->getKey())
+            ->set("email", "good")
+            ->build();
+        self::assertContextsEqual($c3Expected, $c3);
     }
 
     private static function assertContextValid($c)
