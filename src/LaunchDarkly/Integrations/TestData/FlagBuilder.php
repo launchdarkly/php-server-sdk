@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace LaunchDarkly\Integrations\TestData;
 
+use LaunchDarkly\LDContext;
+
 define('TRUE_VARIATION_INDEX', 0);
 define('FALSE_VARIATION_INDEX', 1);
 
 
 /**
- * A builder for feature flag configurations to be used with {@see \LaunchDarkly\Integrations\TestData}.
+ * A builder for feature flag configurations to be used with TestData.
  *
  * @see \LaunchDarkly\Integrations\TestData::flag()
  * @see \LaunchDarkly\Integrations\TestData::update()
@@ -21,7 +23,11 @@ class FlagBuilder
     protected array $_variations;
     protected ?int $_offVariation;
     protected ?int $_fallthroughVariation;
+
+    // In _targets, each key is a context kind, and the value is another associative array where the key is a
+    // variation index and the value is an array of context keys.
     protected array $_targets;
+
     protected array $_rules;
 
     public function __construct(string $key)
@@ -48,7 +54,7 @@ class FlagBuilder
     /**
      * Creates a deep copy of the flag builder. Subsequent updates to
      * the original FlagBuilder object will not update the copy and
-     * vise versa.
+     * vice versa.
      *
      * @return FlagBuilder A copy of the flag builder object
      */
@@ -60,29 +66,20 @@ class FlagBuilder
         $to->_variations = $this->_variations;
         $to->_offVariation = $this->_offVariation;
         $to->_fallthroughVariation = $this->_fallthroughVariation;
-        $to->_targets = $this->_targets;
+        $to->_targets = [];
+        foreach ($this->_targets as $k => $v) { // this array contains arrays so must be explicitly deep-copied
+            $to->_targets[$k] = $v;
+        }
         $to->_rules = $this->_rules;
 
         return $to;
     }
 
     /**
-     * Determines if the current flag is a boolean flag.
-     *
-     * @return bool true if flag is a boolean flag, false otherwise
-     */
-    private function _isBooleanFlag(): bool
-    {
-        return (count($this->_variations) === 2
-            && $this->_variations[TRUE_VARIATION_INDEX] === true
-            && $this->_variations[FALSE_VARIATION_INDEX] === false);
-    }
-
-    /**
      * A shortcut for setting the flag to use the standard boolean configuration.
      *
-     * This is the default for all new flags created with
-     *      `$ldclient->integrations->test_data->TestData->flag()`.
+     * This is the default for all new flags created with {@see
+     * \LaunchDarkly\Integrations\TestData::flag()}.
      *
      * The flag will have two variations, `true` and `false` (in that order);
      * it will return `false` whenever targeting is off, and `true` when targeting is on
@@ -92,23 +89,23 @@ class FlagBuilder
      */
     public function booleanFlag(): FlagBuilder
     {
-        if ($this->_isBooleanFlag()) {
+        if (count($this->_variations) === 2
+            && $this->_variations[TRUE_VARIATION_INDEX] === true
+            && $this->_variations[FALSE_VARIATION_INDEX] === false) {
             return $this;
-        } else {
-            return ($this->variations(true, false)
-                ->fallthroughVariation(TRUE_VARIATION_INDEX)
-                ->offVariation(FALSE_VARIATION_INDEX));
         }
+        return ($this->variations(true, false)
+            ->fallthroughVariation(TRUE_VARIATION_INDEX)
+            ->offVariation(FALSE_VARIATION_INDEX));
     }
 
     /**
      * Sets targeting to be on or off for this flag.
      *
-     * The effect of this depends on the rest of the flag configuration,
-     * just as it does on the real LaunchDarkly dashboard. In the default
-     * configuration that you get from calling TestData->flag() with a
-     * new flag key, the flag will return false whenever targeting is
-     * off, and true when targeting is on.
+     * The effect of this depends on the rest of the flag configuration, just as it does on the
+     * real LaunchDarkly dashboard. In the default configuration that you get from calling {@see
+     * \LaunchDarkly\Integrations\TestData::flag()} with a new flag key, the flag will return false
+     * whenever targeting is off, and true when targeting is on.
      *
      * @param bool $on true if targeting should be on
      * @return FlagBuilder the flag builder object
@@ -136,10 +133,9 @@ class FlagBuilder
         if (is_bool($variation)) {
             $this->booleanFlag()->_fallthroughVariation = $this->variationForBoolean($variation);
             return $this;
-        } else {
-            $this->_fallthroughVariation = $variation;
-            return $this;
         }
+        $this->_fallthroughVariation = $variation;
+        return $this;
     }
 
     /**
@@ -155,9 +151,21 @@ class FlagBuilder
             $this->booleanFlag()->_offVariation = $this->variationForBoolean($variation);
             return $this;
         }
-
         $this->_offVariation = $variation;
         return $this;
+    }
+
+    /**
+     * Deprecated name for variationForAll.
+     *
+     * @param bool|int $variation `true` or `false` or the desired variation index to return:
+     *                  `0` for the first, `1` for the second, etc.
+     * @return FlagBuilder the flag builder
+     * @deprecated Use {@see \LaunchDarkly\Integrations\TestData\FlagBuilder::variationForAll()}.
+     */
+    public function variationForAllUsers(bool|int $variation): FlagBuilder
+    {
+        return $this->variationForAll($variation);
     }
 
     /**
@@ -172,41 +180,50 @@ class FlagBuilder
      * @param bool|int $variation `true` or `false` or the desired variation index to return:
      *                  `0` for the first, `1` for the second, etc.
      * @return FlagBuilder the flag builder
+     * @see \LaunchDarkly\Integrations\TestData\FlagBuilder::valueForAll()
      */
-    public function variationForAllUsers(bool|int $variation): FlagBuilder
+    public function variationForAll(bool|int $variation): FlagBuilder
     {
         if (is_bool($variation)) {
-            return $this->booleanFlag()->variationForAllUsers($this->variationForBoolean($variation));
-        } else {
-            return $this->on(true)->clearRules()->clearUserTargets()->fallthroughVariation($variation);
+            return $this->booleanFlag()->variationForAll($this->variationForBoolean($variation));
         }
+        return $this->on(true)->clearRules()->clearTargets()->fallthroughVariation($variation);
+    }
+
+    /**
+     * Deprecated name for valueForAll.
+     *
+     * @param mixed $value the desired value to be returned for all users
+     * @return FlagBuilder the flag builder
+     * @deprecated Use {@see \LaunchDarkly\Integrations\TestData\FlagBuilder::valueForAll()}.
+     */
+    public function valueForAllUsers(mixed $value): FlagBuilder
+    {
+        return $this->valueForAll($value);
     }
 
     /**
      * Sets the flag to always return the specified variation value for all users.
      *
-     * The value may be of any JSON type. This method changes the flag to have
-     * only a single variation, which is this value, and to return the same
-     * variation regardless of whether targeting is on or off. Any existing
-     * targets or rules are removed.
+     * The value may be of any JSON-serializable type. This method changes the flag to have
+     * only a single variation, which is this value, and to return the same variation regardless
+     * of whether targeting is on or off. Any existing targets or rules are removed.
      *
      * @param mixed $value the desired value to be returned for all users
      * @return FlagBuilder the flag builder
+     * @see \LaunchDarkly\Integrations\TestData\FlagBuilder::variationForAll()
      */
-    public function valueForAllUsers(mixed $value): FlagBuilder
+    public function valueForAll(mixed $value): FlagBuilder
     {
-        $json = json_decode(json_encode($value), true);
-        if (json_last_error() === JSON_ERROR_NONE) {
-            $this->variations($json);
-            return $this->variationForAllUsers(0);
-        } else {
-            return $this;
-        }
+        return $this->variations($value)->variationForAll(0);
     }
 
     /**
      * Sets the flag to return the specified variation for a specific user key when targeting
      * is on.
+     *
+     * This is a shortcut for calling {@see \LaunchDarkly\Integrations\TestData\FlagBuilder::variationForKey()}
+     * with `LDContext::DEFAULT_KIND` as the context kind.
      *
      * This has no effect when targeting is turned off for the flag.
      *
@@ -214,47 +231,59 @@ class FlagBuilder
      * @param bool|int $variation `true` or `false` or the desired variation index to return:
      *                  `0` for the first, `1` for the second, etc.
      * @return FlagBuilder the flag builder
+     * @see \LaunchDarkly\Integrations\TestData\FlagBuilder::variationForKey()
      */
     public function variationForUser(string $userKey, bool|int $variation): FlagBuilder
     {
+        return $this->variationForKey(LDContext::DEFAULT_KIND, $userKey, $variation);
+    }
+
+    /**
+     * Sets the flag to return the specified boolean variation for a specific context, identified
+     * by context kind and key, when targeting is on.
+     *
+     * This has no effect when targeting is turned off for the flag.
+     *
+     * @param string contextKind the context kind
+     * @param string $key string the context key
+     * @param bool|int $variation `true` or `false` or the desired variation index to return:
+     *                  `0` for the first, `1` for the second, etc.
+     * @return FlagBuilder the flag builder
+     */
+    public function variationForKey(string $contextKind, string $key, bool|int $variation): FlagBuilder
+    {
         if (is_bool($variation)) {
             return $this->booleanFlag()
-                        ->variationForUser($userKey, $this->variationForBoolean($variation));
-        } else {
-            $variationIndex = $variation;
-            $targets = $this->_targets;
+                        ->variationForKey($contextKind, $key, $this->variationForBoolean($variation));
+        }
+        $variationIndex = $variation;
 
-            $variationKeys = array_keys($this->_variations);
-            foreach ($variationKeys as $idx) {
-                if ($idx == $variationIndex) {
-                    $targetForVariation = $targets[$idx] ?? [];
-
-                    if (!in_array($userKey, $targetForVariation)) {
-                        $targetForVariation[] = $userKey;
-                    }
-                    $this->_targets[$idx] = $targetForVariation;
-                } elseif (array_key_exists($idx, $targets)) {
-                    $targetForVariation = $targets[$idx];
-                    $userKeyIdx = array_search($userKey, $targetForVariation);
-                    // $userKeyIdx can be 0,1,2,3 etc or false if not found.
-                    // Needs a strict check to ensure it doesn't eval to true
-                    // when index === 0
-                    if ($userKeyIdx !== false) {
-                        array_splice($targetForVariation, $userKeyIdx, 1);
-                        $this->_targets[$idx] = $targetForVariation;
-                    }
+        $targets = $this->_targets[$contextKind] ?? [];
+        foreach ($this->_variations as $idx => $value) {
+            $targetsForVariation = $targets[$idx] ?? [];
+            if ($idx === $variationIndex) {
+                if (!in_array($key, $targetsForVariation)) {
+                    $targetsForVariation[] = $key;
+                    $targets[$idx] = $targetsForVariation;
+                }
+            } elseif (array_key_exists($idx, $targets)) {
+                $foundIndex = array_search($key, $targetsForVariation);
+                if ($foundIndex !== false) {
+                    array_splice($targetsForVariation, $foundIndex, 1);
+                    $targets[$idx] = $targetsForVariation;
                 }
             }
-            return $this;
         }
+        ksort($targets); // ensures deterministic order of output
+        $this->_targets[$contextKind] = $targets;
+        return $this;
     }
 
     /**
      * Changes the allowable variation values for the flag.
      *
-     * The value may be of any valid JSON type. For instance, a boolean flag
-     * normally has true, false; a string-valued flag might have
-     * 'red', 'green'; etc.
+     * The values may be of any JSON-serializable types. For instance, a boolean flag
+     * normally has true, false; a string-valued flag might have 'red', 'green'; etc.
      *
      * Example: A single variation
      *
@@ -269,12 +298,20 @@ class FlagBuilder
      */
     public function variations(mixed ...$variations): FlagBuilder
     {
-        $this->_variations = $variations;
+        $validatedVariations = [];
+        foreach ($variations as $value) {
+            $json = json_decode(json_encode($value), true);
+            $validatedVariations[] = $json;
+        }
+        $this->_variations = $validatedVariations;
         return $this;
     }
 
     /**
      * Starts defining a flag rule, using the "is one of" operator.
+     *
+     * This is a shortcut for calling {@see \LaunchDarkly\Integrations\TestData\FlagBuilder::ifMatchContext()}
+     * with `LDContext::DEFAULT_KIND` as the context kind.
      *
      * For example, this creates a rule that returns `true` if the name is "Patsy" or "Edina":
      *
@@ -290,21 +327,46 @@ class FlagBuilder
      */
     public function ifMatch(string $attribute, mixed ...$values): FlagRuleBuilder
     {
+        return $this->ifMatchContext(LDContext::DEFAULT_KIND, $attribute, ...$values);
+    }
+
+    /**
+     * Starts defining a flag rule, using the "is one of" operator. This matching expression only
+     * applies to contexts of a specific kind.
+     *
+     * For example, this creates a rule that returns `true` if the name attribute for the
+     * "company" context is "Ella" or "Monsoon":
+     *
+     *     $testData->flag("flag")
+     *         ->ifMatchContext("company", "name", "Ella", "Monsoon")
+     *         ->thenReturn(true);
+     *
+     * @param string $contextKind the context kind
+     * @param string $attribute the context attribute to match against
+     * @param mixed[] $values values to compare to
+     * @return FlagRuleBuilder call `thenReturn(boolean)` or
+     *   `thenReturn(int)` to finish the rule, or add more tests with another
+     *   method like `andMatch()`
+     */
+    public function ifMatchContext(string $contextKind, string $attribute, mixed ...$values): FlagRuleBuilder
+    {
         $flagRuleBuilder = new FlagRuleBuilder($this);
-        return $flagRuleBuilder->andMatch($attribute, ...$values);
+        return $flagRuleBuilder->andMatchContext($contextKind, $attribute, ...$values);
     }
 
     /**
      * Starts defining a flag rule, using the "is not one of" operator.
      *
-     * For example, this creates a rule that returns `true` if the name
-     * is neither "Saffron" nor "Bubble":
+     * This is a shortcut for calling {@see \LaunchDarkly\Integrations\TestData\FlagBuilder::ifNotMatchContext()}
+     * with `LDContext::DEFAULT_KIND` as the context kind.
+     *
+     * For example, this creates a rule that returns `true` if the name is neither "Saffron" nor "Bubble":
      *
      *    $testData->flag("flag")
      *             ->ifNotMatch("name", "Saffron", "Bubble")
      *             ->thenReturn(true);
      *
-     * @param string $attribute the user attribute to match against
+     * @param string $attribute the context attribute to match against
      * @param mixed[] $values values to compare to
      * @return FlagRuleBuilder call `thenReturn(boolean)` or
      *   `thenReturn(int)` to finish the rule, or add more tests with another
@@ -312,8 +374,33 @@ class FlagBuilder
      */
     public function ifNotMatch(string $attribute, mixed ...$values): FlagRuleBuilder
     {
+        return $this->ifNotMatchContext(LDContext::DEFAULT_KIND, $attribute, ...$values);
+    }
+
+    /**
+     * Starts defining a flag rule, using the "is not one of" operator.
+     *
+     * This is a shortcut for calling {@see \LaunchDarkly\Integrations\TestData\FlagRuleBuilder::ifMatchContext()}
+     * with `ContextKind::Default` as the context kind.
+     *
+     * For example, this creates a rule that returns `true` if the name attribute for the
+     * "company" context is neither "Pendant" nor "Sterling Cooper":
+     *
+     *    $testData->flag("flag")
+     *             ->ifNotMatchContext("company", "name", "Pendant", "Sterling Cooper")
+     *             ->thenReturn(true);
+     *
+     * @param string $contextKind the context kind
+     * @param string $attribute the context attribute to match against
+     * @param mixed[] $values values to compare to
+     * @return FlagRuleBuilder call `thenReturn(boolean)` or
+     *   `thenReturn(int)` to finish the rule, or add more tests with another
+     *   method like `andMatch()`
+     */
+    public function ifNotMatchContext(string $contextKind, string $attribute, mixed ...$values): FlagRuleBuilder
+    {
         $flagRuleBuilder = new FlagRuleBuilder($this);
-        return $flagRuleBuilder->andNotMatch($attribute, ...$values);
+        return $flagRuleBuilder->andNotMatchContext($contextKind, $attribute, ...$values);
     }
 
     /**
@@ -339,12 +426,23 @@ class FlagBuilder
     }
 
     /**
-     * Removes any existing user targets from the flag. This undoes the effect of methods like
-     * `variationForUser(string, boolean)`.
+     * Deprecated name for clearTargets.
+     *
+     * @return FlagBuilder the same builder
+     * @deprecated Use {@see \LaunchDarkly\Integrations\TestData\FlagBuilder::clearTargets()}.
+     */
+    public function clearUserTargets(): FlagBuilder
+    {
+        return $this->clearTargets();
+    }
+
+    /**
+     * Removes any existing targets for individual user/context keys from the flag. This undoes the effect of
+     * the `variationForUser` and `variationForKey` methods.
      *
      * @return FlagBuilder the same builder
      */
-    public function clearUserTargets(): FlagBuilder
+    public function clearTargets(): FlagBuilder
     {
         $this->_targets = [];
         return $this;
@@ -391,18 +489,30 @@ class FlagBuilder
         ];
 
         $targets = [];
-        foreach ($this->_targets as $varIndex => $userKeys) {
-            $targets[$varIndex] = [
-                'variation' => $varIndex,
-                'values' => $userKeys
-            ];
+        $contextTargets = [];
+        foreach ($this->_targets as $kind => $targetsForKind) {
+            foreach ($targetsForKind as $varIndex => $keys) {
+                if ($kind === LDContext::DEFAULT_KIND) {
+                    $targets[] = [
+                        'variation' => $varIndex,
+                        'values' => $keys
+                    ];
+                    $contextTargets[] = [
+                        'contextKind' => LDContext::DEFAULT_KIND,
+                        'variation' => $varIndex,
+                        'values' => []
+                    ];
+                } else {
+                    $contextTargets[] = [
+                        'contextKind' => $kind,
+                        'variation' => $varIndex,
+                        'values' => $keys
+                    ];
+                }
+            }
         }
-
-        // used to reset index
-        ksort($targets);
-        $targets = array_values($targets);
-
         $baseFlagObject['targets'] = $targets;
+        $baseFlagObject['contextTargets'] = $contextTargets;
 
         $baseFlagObject['rules'] = [];
 

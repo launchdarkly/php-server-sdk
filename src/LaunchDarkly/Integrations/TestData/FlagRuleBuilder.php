@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace LaunchDarkly\Integrations\TestData;
 
+use LaunchDarkly\LDContext;
+
 /**
- * A builder for feature flag rules to be used with {@see \LaunchDarkly\Integrations\TestData\FlagBuilder}.
+ * A builder for feature flag rules to be used with FlagBuilder.
  *
  * In the LaunchDarkly model, a flag can have any number of rules,
  * and a rule can have any number of clauses. A clause is an individual
@@ -17,6 +19,8 @@ namespace LaunchDarkly\Integrations\TestData;
  * Optionally, you may add more clauses with the rule builder's methods such as
  * `andMatch('age', '20'...)`. Finally, call `thenReturn(boolean)` or
  * `thenReturn(int)` to finish defining the rule.
+ *
+ * @see \LaunchDarkly\Integrations\TestData\FlagBuilder
  */
 class FlagRuleBuilder
 {
@@ -34,12 +38,15 @@ class FlagRuleBuilder
     /**
      * Adds another clause, using the "is one of" operator.
      *
-     * For example, this creates a rule that returns `true` if
-     * the name is "Patsy" and the country is "gb":
+     * This is a shortcut for calling {@see \LaunchDarkly\Integrations\TestData\FlagRuleBuilder::andMatchContext()}
+     * with `LDContext::DEFAULT_KIND` as the context kind.
+     *
+     * For example, this creates a rule that returns `true` if the name is "Patsy" and the
+     * country is "gb":
      *
      *     $testData->flag("flag")
-     *              ->ifMatch("NAME", "Patsy")
-     *              ->andMatch("COUNTRY", "gb")
+     *              ->ifMatch("name", "Patsy")
+     *              ->andMatch("country", "gb")
      *              ->thenReturn(true);
      *
      * @param string $attribute the user attribute to match against
@@ -48,7 +55,29 @@ class FlagRuleBuilder
      */
     public function andMatch(string $attribute, mixed ...$values)
     {
+        return $this->andMatchContext(LDContext::DEFAULT_KIND, $attribute, ...$values);
+    }
+
+    /**
+     * Adds another clause, using the "is one of" operator. This matching expression only
+     * applies to contexts of a specific kind.
+     *
+     * For example, this creates a rule that returns `true` if the name attribute for the
+     * "company" context is "Ella", and the country attribute for the "company" context is "gb":
+     *
+     *     $testData->flag("flag")
+     *              ->ifMatchContext("company", "name", "Ella")
+     *              ->andMatchContext("company", "country", "gb")
+     *              ->thenReturn(true);
+     *
+     * @param string $attribute the user attribute to match against
+     * @param mixed[] $values values to compare to
+     * @return FlagRuleBuilder the rule builder
+     */
+    public function andMatchContext(string $contextKind, string $attribute, mixed ...$values)
+    {
         $newClause = [
+            "contextKind" => $contextKind,
             "attribute" => $attribute,
             "op" => 'in',
             "values" => $values,
@@ -60,6 +89,9 @@ class FlagRuleBuilder
 
     /**
      * Adds another clause, using the "is not one of" operator.
+     *
+     * This is a shortcut for calling {@see \LaunchDarkly\Integrations\TestData\FlagRuleBuilder::andNotMatchContext()}
+     * with`LDContext::DEFAULT_KIND` as the context kind.
      *
      * For example, this creates a rule that returns `true` if
      * the name is "Patsy" and the country is not "gb":
@@ -75,7 +107,29 @@ class FlagRuleBuilder
      */
     public function andNotMatch(string $attribute, mixed ...$values)
     {
+        return $this->andNotMatchContext(LDContext::DEFAULT_KIND, $attribute, ...$values);
+    }
+
+    /**
+     * Adds another clause, using the "is not one of" operator. This matching expression only
+     * applies to contexts of a specific kind.
+     *
+     * For example, this creates a rule that returns `true` if the name attribute for the
+     * "company" context is "Ella", and the country attribute for the "company" context is not "gb":
+     *
+     *    $testData->flag("flag")
+     *             ->ifMatchContext("company", "name", "Ella")
+     *             ->andNotMatchContext("company", "country", "gb")
+     *             ->thenReturn(true);
+     *
+     * @param string $attribute the user attribute to match against
+     * @param mixed[] $values values to compare to
+     * @return FlagRuleBuilder the rule builder
+     */
+    public function andNotMatchContext(string $contextKind, string $attribute, mixed ...$values)
+    {
         $newClause = [
+            "contextKind" => $contextKind,
             "attribute" => $attribute,
             "op" => 'in',
             "values" => $values,
