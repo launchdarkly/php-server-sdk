@@ -178,12 +178,12 @@ class LDClient
      * does not match any existing flag), `$defaultValue` is returned.
      *
      * @param string $key the unique key for the feature flag
-     * @param LDContext $context the evaluation context
+     * @param LDContext|LDUser $context the evaluation context or user
      * @param mixed $defaultValue the default value of the flag
-     * @return mixed the variation for the given context, or `$defaultValue` if the flag cannot be evaluated
+     * @return mixed The variation for the given context, or `$defaultValue` if the flag cannot be evaluated
      * @see \LaunchDarkly\LDClient::variationDetail()
      */
-    public function variation(string $key, LDContext $context, mixed $defaultValue = false): mixed
+    public function variation(string $key, LDContext|LDUser $context, mixed $defaultValue = false): mixed
     {
         $detail = $this->variationDetailInternal($key, $context, $defaultValue, $this->_eventFactoryDefault);
         return $detail->getValue();
@@ -197,27 +197,28 @@ class LDClient
      * detailed event data for this flag.
      *
      * @param string $key the unique key for the feature flag
-     * @param LDContext $context the evaluation context
+     * @param LDContext|LDUser $context the evaluation context or user
      * @param mixed $defaultValue the default value of the flag
      *
-     * @return EvaluationDetail an EvaluationDetail object that includes the feature flag value
+     * @return EvaluationDetail An EvaluationDetail object that includes the feature flag value
      * and evaluation reason
      */
-    public function variationDetail(string $key, LDContext $context, mixed $defaultValue = false): EvaluationDetail
+    public function variationDetail(string $key, LDContext|LDUser $context, mixed $defaultValue = false): EvaluationDetail
     {
         return $this->variationDetailInternal($key, $context, $defaultValue, $this->_eventFactoryWithReasons);
     }
 
     /**
      * @param string $key
-     * @param LDContext $context
+     * @param LDContext|LDUser $contextOrUser
      * @param mixed $default
      * @param EventFactory $eventFactory
      *
      * @return EvaluationDetail
      */
-    private function variationDetailInternal(string $key, LDContext $context, mixed $default, EventFactory $eventFactory): EvaluationDetail
+    private function variationDetailInternal(string $key, LDContext|LDUser $contextOrUser, mixed $default, EventFactory $eventFactory): EvaluationDetail
     {
+        $context = $contextOrUser instanceof LDUser ? LDContext::fromUser($contextOrUser) : $contextOrUser;
         $default = $this->_get_default($key, $default);
 
         $errorDetail = fn (string $errorKind): EvaluationDetail =>
@@ -294,17 +295,24 @@ class LDClient
     }
 
     /**
-     * Tracks that a user performed an event.
+     * Tracks that an application-defined event occurred.
+     *
+     * This method creates a "custom" analytics event containing the specified event name (key)
+     * and context properties. You may attach arbitrary data or a metric value to the event with the
+     * optional `data` and `metricValue` parameters.
+     *
+     * Note that event delivery is asynchronous, so the event may not actually be sent until later;
+     * see {@see \LaunchDarkly\LDClient::flush()}.
      *
      * @param string $eventName The name of the event
-     * @param LDContext $context The user that performed the event
+     * @param LDContext|LDUser $context The evaluation context or user associated with the event
      * @param mixed $data Optional additional information to associate with the event
      * @param int|float|null $metricValue A numeric value used by the LaunchDarkly experimentation feature in
-     *   numeric custom metrics. Can be omitted if this event is used by only non-numeric metrics. This
-     *   field will also be returned as part of the custom event for Data Export.
+     *   numeric custom metrics; can be omitted if this event is used by only non-numeric metrics
      */
-    public function track(string $eventName, LDContext $context, mixed $data = null, int|float|null $metricValue = null): void
+    public function track(string $eventName, LDContext|LDUser $context, mixed $data = null, int|float|null $metricValue = null): void
     {
+        $context = $context instanceof LDUser ? LDContext::fromUser($context) : $context;
         if (!$context->isValid()) {
             $this->_logger->warning("Track called with null/empty user key!");
             return;
@@ -313,16 +321,22 @@ class LDClient
     }
 
     /**
-     * Reports details about a user.
+     * Reports details about an evaluation context or user.
      *
-     * This simply registers the given user properties with LaunchDarkly without evaluating a feature flag.
-     * This also happens automatically when you evaluate a flag.
+     * This method simply creates an analytics event containing the context properties, to
+     * that LaunchDarkly will know about that context if it does not already.
      *
-     * @param LDContext $context The user properties
+     * Evaluating a flag, by calling {@see \LaunchDarkly\LDClient::variation()} or
+     * {@see \LaunchDarkly\LDClient::variationDetail()} :func:`variation_detail()`, also sends
+     * the context information to LaunchDarkly (if events are enabled), so you only need to use
+     * identify() if you want to identify the context without evaluating a flag.
+     *
+     * @param LDContext|LDUser $context The context or user to register
      * @return void
      */
-    public function identify(LDContext $context): void
+    public function identify(LDContext|LDUser $context): void
     {
+        $context = $context instanceof LDUser ? LDContext::fromUser($context) : $context;
         if (!$context->isValid()) {
             $this->_logger->warning("Identify called with null/empty user key!");
             return;
@@ -339,7 +353,7 @@ class LDClient
      *
      * This method does not send analytics events back to LaunchDarkly.
      *
-     * @param LDContext $context the evalation context
+     * @param LDContext|LDUser $context the evalation context or user
      * @param array $options Optional properties affecting how the state is computed:
      * - `clientSideOnly`: Set this to true to specify that only flags marked for client-side use
      * should be included; by default, all flags are included
@@ -351,8 +365,9 @@ class LDClient
      *
      * @return FeatureFlagsState a FeatureFlagsState object (will never be null)
      */
-    public function allFlagsState(LDContext $context, array $options = []): FeatureFlagsState
+    public function allFlagsState(LDContext|LDUser $context, array $options = []): FeatureFlagsState
     {
+        $context = $context instanceof LDUser ? LDContext::fromUser($context) : $context;
         if (!$context->isValid()) {
             $error = $context->getError();
             $this->_logger->warning("Invalid context for allFlagsState ($error); returning empty state");
@@ -395,11 +410,12 @@ class LDClient
      *
      * See: [Secure mode](https://docs.launchdarkly.com/sdk/features/secure-mode)
      *
-     * @param LDContext $context the evaluation context
-     * @return string the hash value
+     * @param LDContext|LDUser $context The evaluation context or user
+     * @return string The hash value
      */
-    public function secureModeHash(LDContext $context): string
+    public function secureModeHash(LDContext|LDUser $context): string
     {
+        $context = $context instanceof LDUser ? LDContext::fromUser($context) : $context;
         if (!$context->isValid()) {
             return "";
         }

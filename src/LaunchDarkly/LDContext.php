@@ -6,9 +6,32 @@ namespace LaunchDarkly;
 
 use LaunchDarkly\Types\AttributeReference;
 
+function isAllowableUserCustomAttr(string $name): bool
+{
+    switch ($name) {
+        case 'anonymous':
+        case 'avatar':
+        case 'country':
+        case 'email':
+        case 'firstName':
+        case 'ip':
+        case 'key':
+        case 'kind':
+        case 'lastName':
+        case 'name':
+            return false;
+        default:
+            return true;
+    }
+}
+
 /**
  * A collection of attributes that can be referenced in flag evaluations and analytics events.
  * This entity is also called an "evaluation context."
+ *
+ * LDContext is the newer replacement for the previous, less flexible {@see \LaunchDarkly\LDUser} type.
+ * The current SDK still supports LDUser, but LDContext is now the preferred model and may entirely
+ * replace User in the future.
  *
  * To create an LDContext of a single kind, such as a user, you may use
  * {@see \LaunchDarkly\LDContext::create()} when only the key and the kind are relevant; or, to
@@ -195,6 +218,60 @@ class LDContext implements \JsonSerializable
             $b->add($c);
         }
         return $b->build();
+    }
+
+    /**
+     * @param LDUser $user
+     * @return LDContext
+     */
+    public static function fromUser(LDUser $user): LDContext
+    {
+        $attrs = null;
+        self::maybeAddAttr($attrs, "avatar", $user->getAvatar());
+        self::maybeAddAttr($attrs, "country", $user->getCountry());
+        self::maybeAddAttr($attrs, "email", $user->getEmail());
+        self::maybeAddAttr($attrs, "firstName", $user->getFirstName());
+        self::maybeAddAttr($attrs, "ip", $user->getIP());
+        self::maybeAddAttr($attrs, "lastName", $user->getLastName());
+        $userCustom = $user->getCustom();
+        if ($userCustom !== null && count($userCustom) !== 0) {
+            if ($attrs === null) {
+                $attrs = [];
+            }
+            foreach ($userCustom as $k => $v) {
+                if (isAllowableUserCustomAttr($k)) {
+                    $attrs[$k] = $v;
+                }
+            }
+        }
+        $privateAttrs = null;
+        $userPrivate = $user->getPrivateAttributeNames();
+        if ($userPrivate !== null && count($userPrivate) !== 0) {
+            $privateAttrs = [];
+            foreach ($userPrivate as $pa) {
+                $privateAttrs[] = AttributeReference::fromLiteral($pa);
+            }
+        }
+        return new LDContext(
+            self::DEFAULT_KIND,
+            $user->getKey(),
+            $user->getName(),
+            $user->getAnonymous() ?? false,
+            $attrs,
+            $privateAttrs,
+            null,
+            null
+        );
+    }
+
+    private static function maybeAddAttr(?array &$attrsOut, string $name, ?string $value): void
+    {
+        if ($value !== null) {
+            if ($attrsOut === null) {
+                $attrsOut = [];
+            }
+            $attrsOut[$name] = $value;
+        }
     }
 
     /**
@@ -754,9 +831,6 @@ class LDContext implements \JsonSerializable
 
     private static function decodeJsonOldUser(array $o, bool $wasParsedAsArray): LDContext
     {
-        $j = json_encode($o);
-        file_put_contents('php://stderr', "decodeJsonOldUser($j, $wasParsedAsArray)\n", FILE_APPEND);
-
         $b = self::builder('');
         $key = null;
         foreach ($o as $k => $v) {
@@ -770,7 +844,9 @@ class LDContext implements \JsonSerializable
                             throw self::parsingBadTypeError($k);
                         }
                         foreach ((array)$v as $k1 => $v1) {
-                            $b->set($k1, $v1);
+                            if (isAllowableUserCustomAttr($k1)) {
+                                $b->set($k1, $v1);
+                            }
                         }
                     }
                     break;
