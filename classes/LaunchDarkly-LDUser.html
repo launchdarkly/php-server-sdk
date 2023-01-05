@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>LaunchDarkly PHP SDK 4.2.4</title>
+    <title>LaunchDarkly PHP SDK 5.0.0</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="../">
     <link rel="icon" href="images/favicon.ico"/>
@@ -23,7 +23,7 @@
     </head>
 <body id="top">
     <header class="phpdocumentor-header phpdocumentor-section">
-    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">LaunchDarkly PHP SDK 4.2.4</a></h1>
+    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">LaunchDarkly PHP SDK 5.0.0</a></h1>
     <input class="phpdocumentor-header__menu-button" type="checkbox" id="menu-button" name="menu-button" />
     <label class="phpdocumentor-header__menu-icon" for="menu-button">
         <i class="fas fa-bars"></i>
@@ -58,6 +58,14 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="namespaces/launchdarkly-integrations.html">Integrations</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/launchdarkly-subsystems.html">Subsystems</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/launchdarkly-types.html">Types</a>
                 
             </li>
             </ul>
@@ -105,13 +113,19 @@
         <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDUser.php"><a href="files/launchdarkly-lduser.html"><abbr title="LaunchDarkly/LDUser.php">LDUser.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">13</span>
+    <span class="phpdocumentor-element-found-in__line">22</span>
 
     </aside>
 
             <p class="phpdocumentor-summary">Contains specific attributes of a user browsing your site.</p>
 
-    <section class="phpdocumentor-description"><p>The only mandatory property property is the key, which must uniquely identify each user. For authenticated users,
+    <section class="phpdocumentor-description"><p>LDUser supports only a subset of the behaviors that are available with the newer <a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a>
+type. An LDUser is equivalent to an individual LDContext that has a <code class="prettyprint">kind</code> of <a href="classes/LaunchDarkly-LDContext.html#constant_DEFAULT_KIND"><abbr title="\LaunchDarkly\LDContext::DEFAULT_KIND">LDContext::DEFAULT_KIND</abbr></a>;
+it also has more constraints on attribute values than LDContext does (for instance, built-in attributes such as
+<a href="classes/LaunchDarkly-LDUserBuilder.html#method_email"><abbr title="\LaunchDarkly\LDUserBuilder::email()">LDUserBuilder::email()</abbr></a> can only have string values). Older LaunchDarkly SDKs only had the
+LDUser model, and the LDUser type has been retained for backward compatibility, but it may be removed in a
+future SDK version. Therefore, developers are recommended to migrate toward using LDContext.</p>
+<p>The only mandatory property property is the key, which must uniquely identify each user. For authenticated users,
 this may be a username or e-mail address. For anonymous users, it could be an IP address or session ID.</p>
 <p>Use <a href="classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a> to construct instances of this class.</p>
 </section>
@@ -214,13 +228,6 @@ this may be a username or e-mail address. For anonymous users, it could be an IP
 <dd></dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
-    <a href="classes/LaunchDarkly-LDUser.html#method_getSecondary">getSecondary()</a>
-    <span>
-                        &nbsp;: string|null    </span>
-</dt>
-<dd></dd>
-
-            <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-LDUser.html#method_isKeyBlank">isKeyBlank()</a>
     <span>
                         &nbsp;: bool    </span>
@@ -253,7 +260,7 @@ this may be a username or e-mail address. For anonymous users, it could be an IP
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDUser.php"><a href="files/launchdarkly-lduser.html"><abbr title="LaunchDarkly/LDUser.php">LDUser.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">69</span>
+    <span class="phpdocumentor-element-found-in__line">54</span>
 
     </aside>
 
@@ -282,7 +289,7 @@ this may be a username or e-mail address. For anonymous users, it could be an IP
                 : <span class="phpdocumentor-signature__argument__return-type">string|null</span>
                  = <span class="phpdocumentor-signature__argument__default-value">null</span>            </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>An optional secondary identifier</p>
+                    <section class="phpdocumentor-description"><p>Obsolete parameter that is ignored if present, retained to avoid breaking code that called this constructor</p>
 </section>
 
             </dd>
@@ -398,7 +405,7 @@ this may be a username or e-mail address. For anonymous users, it could be an IP
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDUser.php"><a href="files/launchdarkly-lduser.html"><abbr title="LaunchDarkly/LDUser.php">LDUser.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">190</span>
+    <span class="phpdocumentor-element-found-in__line">163</span>
 
     </aside>
 
@@ -431,7 +438,7 @@ this may be a username or e-mail address. For anonymous users, it could be an IP
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDUser.php"><a href="files/launchdarkly-lduser.html"><abbr title="LaunchDarkly/LDUser.php">LDUser.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">175</span>
+    <span class="phpdocumentor-element-found-in__line">148</span>
 
     </aside>
 
@@ -464,7 +471,7 @@ this may be a username or e-mail address. For anonymous users, it could be an IP
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDUser.php"><a href="files/launchdarkly-lduser.html"><abbr title="LaunchDarkly/LDUser.php">LDUser.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">140</span>
+    <span class="phpdocumentor-element-found-in__line">118</span>
 
     </aside>
 
@@ -497,7 +504,7 @@ this may be a username or e-mail address. For anonymous users, it could be an IP
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDUser.php"><a href="files/launchdarkly-lduser.html"><abbr title="LaunchDarkly/LDUser.php">LDUser.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">145</span>
+    <span class="phpdocumentor-element-found-in__line">123</span>
 
     </aside>
 
@@ -530,7 +537,7 @@ this may be a username or e-mail address. For anonymous users, it could be an IP
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDUser.php"><a href="files/launchdarkly-lduser.html"><abbr title="LaunchDarkly/LDUser.php">LDUser.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">165</span>
+    <span class="phpdocumentor-element-found-in__line">138</span>
 
     </aside>
 
@@ -563,7 +570,7 @@ this may be a username or e-mail address. For anonymous users, it could be an IP
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDUser.php"><a href="files/launchdarkly-lduser.html"><abbr title="LaunchDarkly/LDUser.php">LDUser.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">180</span>
+    <span class="phpdocumentor-element-found-in__line">153</span>
 
     </aside>
 
@@ -596,7 +603,7 @@ this may be a username or e-mail address. For anonymous users, it could be an IP
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDUser.php"><a href="files/launchdarkly-lduser.html"><abbr title="LaunchDarkly/LDUser.php">LDUser.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">150</span>
+    <span class="phpdocumentor-element-found-in__line">128</span>
 
     </aside>
 
@@ -629,7 +636,7 @@ this may be a username or e-mail address. For anonymous users, it could be an IP
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDUser.php"><a href="files/launchdarkly-lduser.html"><abbr title="LaunchDarkly/LDUser.php">LDUser.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">155</span>
+    <span class="phpdocumentor-element-found-in__line">133</span>
 
     </aside>
 
@@ -662,7 +669,7 @@ this may be a username or e-mail address. For anonymous users, it could be an IP
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDUser.php"><a href="files/launchdarkly-lduser.html"><abbr title="LaunchDarkly/LDUser.php">LDUser.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">185</span>
+    <span class="phpdocumentor-element-found-in__line">158</span>
 
     </aside>
 
@@ -695,7 +702,7 @@ this may be a username or e-mail address. For anonymous users, it could be an IP
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDUser.php"><a href="files/launchdarkly-lduser.html"><abbr title="LaunchDarkly/LDUser.php">LDUser.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">170</span>
+    <span class="phpdocumentor-element-found-in__line">143</span>
 
     </aside>
 
@@ -728,7 +735,7 @@ this may be a username or e-mail address. For anonymous users, it could be an IP
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDUser.php"><a href="files/launchdarkly-lduser.html"><abbr title="LaunchDarkly/LDUser.php">LDUser.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">195</span>
+    <span class="phpdocumentor-element-found-in__line">168</span>
 
     </aside>
 
@@ -754,39 +761,6 @@ this may be a username or e-mail address. For anonymous users, it could be an IP
             -public
                                                         "
 >
-    <h4 class="phpdocumentor-element__name" id="method_getSecondary">
-        getSecondary()
-        <a href="classes/LaunchDarkly-LDUser.html#method_getSecondary" class="headerlink"><i class="fas fa-link"></i></a>
-    </h4>
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDUser.php"><a href="files/launchdarkly-lduser.html"><abbr title="LaunchDarkly/LDUser.php">LDUser.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">160</span>
-
-    </aside>
-
-    
-    <code class="phpdocumentor-code phpdocumentor-signature ">
-    <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getSecondary</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string|null</span></code>
-
-        <section class="phpdocumentor-description"></section>
-
-    
-    
-
-        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-    <span class="phpdocumentor-signature__response_type">string|null</span>
-            &mdash;
-        
-    
-</article>
-                    <article
-        class="phpdocumentor-element
-            -method
-            -public
-                                                        "
->
     <h4 class="phpdocumentor-element__name" id="method_isKeyBlank">
         isKeyBlank()
         <a href="classes/LaunchDarkly-LDUser.html#method_isKeyBlank" class="headerlink"><i class="fas fa-link"></i></a>
@@ -794,7 +768,7 @@ this may be a username or e-mail address. For anonymous users, it could be an IP
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDUser.php"><a href="files/launchdarkly-lduser.html"><abbr title="LaunchDarkly/LDUser.php">LDUser.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">200</span>
+    <span class="phpdocumentor-element-found-in__line">173</span>
 
     </aside>
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>LaunchDarkly PHP SDK 4.2.4</title>
+    <title>LaunchDarkly PHP SDK 5.0.0</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="../">
     <link rel="icon" href="images/favicon.ico"/>
@@ -23,7 +23,7 @@
     </head>
 <body id="top">
     <header class="phpdocumentor-header phpdocumentor-section">
-    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">LaunchDarkly PHP SDK 4.2.4</a></h1>
+    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">LaunchDarkly PHP SDK 5.0.0</a></h1>
     <input class="phpdocumentor-header__menu-button" type="checkbox" id="menu-button" name="menu-button" />
     <label class="phpdocumentor-header__menu-icon" for="menu-button">
         <i class="fas fa-bars"></i>
@@ -58,6 +58,14 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="namespaces/launchdarkly-integrations.html">Integrations</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/launchdarkly-subsystems.html">Subsystems</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/launchdarkly-types.html">Types</a>
                 
             </li>
             </ul>
@@ -105,7 +113,7 @@
         <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/EvaluationDetail.php"><a href="files/launchdarkly-evaluationdetail.html"><abbr title="LaunchDarkly/EvaluationDetail.php">EvaluationDetail.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">10</span>
+    <span class="phpdocumentor-element-found-in__line">12</span>
 
     </aside>
 
@@ -146,15 +154,16 @@
     <span>
                         &nbsp;: mixed    </span>
 </dt>
-<dd>Returns the value of the flag variation for the user.</dd>
+<dd>Returns the result of the flag evaluation. This will be either one of the flag&#039;s variations or the default
+value that was passed to the {@see \LaunchDarkly\LDClient::variationDetail()} method.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-EvaluationDetail.html#method_getVariationIndex">getVariationIndex()</a>
     <span>
-                        &nbsp;: int    </span>
+                        &nbsp;: int|null    </span>
 </dt>
-<dd>Returns the index of the flag variation for the user, e.g. 0 for the first variation -
-or null if it was the default value.</dd>
+<dd>The index of the returned value within the flag&#039;s list of variations, e.g. 0 for the first variation--
+or null if it was the default value (evaluation failed).</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-EvaluationDetail.html#method_isDefaultValue">isDefaultValue()</a>
@@ -189,7 +198,7 @@ or null if it was the default value.</dd>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/EvaluationDetail.php"><a href="files/launchdarkly-evaluationdetail.html"><abbr title="LaunchDarkly/EvaluationDetail.php">EvaluationDetail.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">27</span>
+    <span class="phpdocumentor-element-found-in__line">24</span>
 
     </aside>
 
@@ -197,14 +206,14 @@ or null if it was the default value.</dd>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">__construct</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">mixed|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$value</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$variationIndex</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type"><a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a>&nbsp;</span><span class="phpdocumentor-signature__argument__name">$reason</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                <span class="phpdocumentor-signature__name">__construct</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$value</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$variationIndex</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type"><a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a>&nbsp;</span><span class="phpdocumentor-signature__argument__name">$reason</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
 
     
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
     <dl class="phpdocumentor-argument-list">
                     <dt class="phpdocumentor-argument-list__entry">
                 <span class="phpdocumentor-signature__argument__name">$value</span>
-                : <span class="phpdocumentor-signature__argument__return-type">mixed|null</span>
+                : <span class="phpdocumentor-signature__argument__return-type">mixed</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
                     <section class="phpdocumentor-description"><p>the value of the flag variation</p>
@@ -252,7 +261,7 @@ or null if it was the default value.</dd>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/EvaluationDetail.php"><a href="files/launchdarkly-evaluationdetail.html"><abbr title="LaunchDarkly/EvaluationDetail.php">EvaluationDetail.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">60</span>
+    <span class="phpdocumentor-element-found-in__line">58</span>
 
     </aside>
 
@@ -285,11 +294,12 @@ or null if it was the default value.</dd>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/EvaluationDetail.php"><a href="files/launchdarkly-evaluationdetail.html"><abbr title="LaunchDarkly/EvaluationDetail.php">EvaluationDetail.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">39</span>
+    <span class="phpdocumentor-element-found-in__line">37</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Returns the value of the flag variation for the user.</p>
+        <p class="phpdocumentor-summary">Returns the result of the flag evaluation. This will be either one of the flag&#039;s variations or the default
+value that was passed to the {@see \LaunchDarkly\LDClient::variationDetail()} method.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
@@ -302,7 +312,9 @@ or null if it was the default value.</dd>
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
     <span class="phpdocumentor-signature__response_type">mixed</span>
             &mdash;
-        
+            <section class="phpdocumentor-description"><p>the flag value</p>
+</section>
+
     
 </article>
                     <article
@@ -318,25 +330,25 @@ or null if it was the default value.</dd>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/EvaluationDetail.php"><a href="files/launchdarkly-evaluationdetail.html"><abbr title="LaunchDarkly/EvaluationDetail.php">EvaluationDetail.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">50</span>
+    <span class="phpdocumentor-element-found-in__line">48</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Returns the index of the flag variation for the user, e.g. 0 for the first variation -
-or null if it was the default value.</p>
+        <p class="phpdocumentor-summary">The index of the returned value within the flag&#039;s list of variations, e.g. 0 for the first variation--
+or null if it was the default value (evaluation failed).</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getVariationIndex</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">int</span></code>
+                <span class="phpdocumentor-signature__name">getVariationIndex</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">int|null</span></code>
 
     
     
     
 
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-    <span class="phpdocumentor-signature__response_type">int</span>
+    <span class="phpdocumentor-signature__response_type">int|null</span>
             &mdash;
-            <section class="phpdocumentor-description"><p>| null</p>
+            <section class="phpdocumentor-description"><p>the variation index if applicable</p>
 </section>
 
     
@@ -354,7 +366,7 @@ or null if it was the default value.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/EvaluationDetail.php"><a href="files/launchdarkly-evaluationdetail.html"><abbr title="LaunchDarkly/EvaluationDetail.php">EvaluationDetail.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">70</span>
+    <span class="phpdocumentor-element-found-in__line">68</span>
 
     </aside>
 

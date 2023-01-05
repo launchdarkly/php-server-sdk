@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>LaunchDarkly PHP SDK 4.2.4</title>
+    <title>LaunchDarkly PHP SDK 5.0.0</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="../">
     <link rel="icon" href="images/favicon.ico"/>
@@ -23,7 +23,7 @@
     </head>
 <body id="top">
     <header class="phpdocumentor-header phpdocumentor-section">
-    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">LaunchDarkly PHP SDK 4.2.4</a></h1>
+    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">LaunchDarkly PHP SDK 5.0.0</a></h1>
     <input class="phpdocumentor-header__menu-button" type="checkbox" id="menu-button" name="menu-button" />
     <label class="phpdocumentor-header__menu-icon" for="menu-button">
         <i class="fas fa-bars"></i>
@@ -60,6 +60,14 @@
                 <a href="namespaces/launchdarkly-integrations.html">Integrations</a>
                 
             </li>
+                    <li>
+                <a href="namespaces/launchdarkly-subsystems.html">Subsystems</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/launchdarkly-types.html">Types</a>
+                
+            </li>
             </ul>
 
                         </section>
@@ -87,32 +95,60 @@
             <li class="phpdocumentor-breadcrumb"><a href="namespaces/launchdarkly.html">LaunchDarkly</a></li>
     </ul>
 
-    <article class="phpdocumentor-element -interface">
+    <article class="phpdocumentor-element -class">
         <h2 class="phpdocumentor-content__title">
-    FeatureRequester
-                <div class="phpdocumentor-element__package">
-            in
+    LDContextMultiBuilder
+
+    
+            <div class="phpdocumentor-element__package">
+            in package
             <ul class="phpdocumentor-breadcrumbs">
-                                    <li><a href="packages/LaunchDarklyPHPSDK.html">LaunchDarklyPHPSDK</a></li>
+                                    <li class="phpdocumentor-breadcrumb"><a href="packages/LaunchDarklyPHPSDK.html">LaunchDarklyPHPSDK</a></li>
                             </ul>
         </div>
+    
+    
     </h2>
 
         <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/FeatureRequester.php"><a href="files/launchdarkly-featurerequester.html"><abbr title="LaunchDarkly/FeatureRequester.php">FeatureRequester.php</abbr></a></abbr>
+    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContextMultiBuilder.php"><a href="files/launchdarkly-ldcontextmultibuilder.html"><abbr title="LaunchDarkly/LDContextMultiBuilder.php">LDContextMultiBuilder.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">15</span>
+    <span class="phpdocumentor-element-found-in__line">28</span>
 
     </aside>
 
-            <p class="phpdocumentor-summary">Interface for the component that retrieves feature flag data.</p>
+            <p class="phpdocumentor-summary">A mutable object that uses the builder pattern to specify properties for a multi-context.</p>
 
-    <section class="phpdocumentor-description"><p>The default implementation is <a href="classes/LaunchDarkly-Integrations-Guzzle.html#method_featureRequester"><abbr title="\LaunchDarkly\Integrations\Guzzle::featureRequester()">Guzzle::featureRequester()</abbr></a>, which requests
-flags inefficiently via HTTP on demand. For other implementations, including database integrations, see the
-LaunchDarkly\Integrations namespace.</p>
+    <section class="phpdocumentor-description"><p>Use this builder if you need to construct an \LaunchDarkly\LDContext) that contains
+multiple contexts, each for a different context kind. To define a regular context for a
+single kind, use {@see \LaunchDarkly\LDContext::create()} or
+{@see \LaunchDarkly\LDContext::builder()}.</p>
+<p>Obtain an instance of LDContextMultiBuilder by calling {@see \LaunchDarkly\LDContext::multiBuilder()};
+then, call {@see \LaunchDarkly\LDContextMultiBuilder::add() to specify the individual
+context for each kind. The method returns a reference to the same builder, so calls can be
+chained:</p>
+<pre class="prettyprint"><code class="language-php">    $context = LDContext::multiBuilder()
+      -&gt;add(LDContext::create('my-user-key'))
+      -&gt;add(LDContext::create('my-org-key', 'organization'))
+      -&gt;build();
+</code></pre>
 </section>
 
 
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">see</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                                    <span class="phpdocumentor-tag-link"><a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a></span>
+                                        
+                                             
+                                    </dd>
+                        </dl>
 
 
 
@@ -126,25 +162,18 @@ LaunchDarkly\Integrations namespace.</p>
 
 <dl class="phpdocumentor-table-of-contents">
                     <dt class="phpdocumentor-table-of-contents__entry -method -public">
-    <a href="classes/LaunchDarkly-FeatureRequester.html#method_getAllFeatures">getAllFeatures()</a>
+    <a href="classes/LaunchDarkly-LDContextMultiBuilder.html#method_add">add()</a>
     <span>
-                        &nbsp;: array&lt;string, <abbr title="\LaunchDarkly\Impl\Model\FeatureFlag">FeatureFlag</abbr>&gt;|null    </span>
+                        &nbsp;: <a href="classes/LaunchDarkly-LDContextMultiBuilder.html"><abbr title="\LaunchDarkly\LDContextMultiBuilder">LDContextMultiBuilder</abbr></a>    </span>
 </dt>
-<dd>Gets all feature flags.</dd>
+<dd>Adds an individual LDContext for a specific kind to the builer.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
-    <a href="classes/LaunchDarkly-FeatureRequester.html#method_getFeature">getFeature()</a>
+    <a href="classes/LaunchDarkly-LDContextMultiBuilder.html#method_build">build()</a>
     <span>
-                        &nbsp;: <abbr title="\LaunchDarkly\Impl\Model\FeatureFlag">FeatureFlag</abbr>|null    </span>
+                        &nbsp;: <a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a>    </span>
 </dt>
-<dd>Gets the configuration for a specific feature flag.</dd>
-
-            <dt class="phpdocumentor-table-of-contents__entry -method -public">
-    <a href="classes/LaunchDarkly-FeatureRequester.html#method_getSegment">getSegment()</a>
-    <span>
-                        &nbsp;: <abbr title="\LaunchDarkly\Impl\Model\Segment">Segment</abbr>|null    </span>
-</dt>
-<dd>Gets the configuration for a specific user segment.</dd>
+<dd>Creates an LDContext from the current builder properties.</dd>
 
         </dl>
 
@@ -152,10 +181,12 @@ LaunchDarkly\Integrations namespace.</p>
 
         
 
+        
+
             <section class="phpdocumentor-methods">
         <h3 class="phpdocumentor-elements__header" id="methods">
             Methods
-            <a href="classes/LaunchDarkly-FeatureRequester.html#methods" class="headerlink"><i class="fas fa-link"></i></a>
+            <a href="classes/LaunchDarkly-LDContextMultiBuilder.html#methods" class="headerlink"><i class="fas fa-link"></i></a>
         </h3>
                     <article
         class="phpdocumentor-element
@@ -163,31 +194,59 @@ LaunchDarkly\Integrations namespace.</p>
             -public
                                                         "
 >
-    <h4 class="phpdocumentor-element__name" id="method_getAllFeatures">
-        getAllFeatures()
-        <a href="classes/LaunchDarkly-FeatureRequester.html#method_getAllFeatures" class="headerlink"><i class="fas fa-link"></i></a>
+    <h4 class="phpdocumentor-element__name" id="method_add">
+        add()
+        <a href="classes/LaunchDarkly-LDContextMultiBuilder.html#method_add" class="headerlink"><i class="fas fa-link"></i></a>
     </h4>
     <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/FeatureRequester.php"><a href="files/launchdarkly-featurerequester.html"><abbr title="LaunchDarkly/FeatureRequester.php">FeatureRequester.php</abbr></a></abbr>
+    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContextMultiBuilder.php"><a href="files/launchdarkly-ldcontextmultibuilder.html"><abbr title="LaunchDarkly/LDContextMultiBuilder.php">LDContextMultiBuilder.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">38</span>
+    <span class="phpdocumentor-element-found-in__line">84</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Gets all feature flags.</p>
+        <p class="phpdocumentor-summary">Adds an individual LDContext for a specific kind to the builer.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getAllFeatures</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;string, <abbr title="\LaunchDarkly\Impl\Model\FeatureFlag">FeatureFlag</abbr>&gt;|null</span></code>
+                <span class="phpdocumentor-signature__name">add</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type"><a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a>&nbsp;</span><span class="phpdocumentor-signature__argument__name">$context</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-LDContextMultiBuilder.html"><abbr title="\LaunchDarkly\LDContextMultiBuilder">LDContextMultiBuilder</abbr></a></span></code>
 
-    
-    
+        <section class="phpdocumentor-description"><p>It is invalid to add more than one LDContext for the same kind, or to add an LDContext
+that is itself invalid. This error is detected when you call
+<a href="classes/LaunchDarkly-LDContextMultiBuilder.html#method_build"><abbr title="\LaunchDarkly\LDContextMultiBuilder::build()">LDContextMultiBuilder::build()</abbr></a>.</p>
+<p>If the nested context is a multi-context, this is exactly equivalent to adding each of the
+individual contexts from it separately. For instance, in the following example, <code class="prettyprint">$multi1</code> and
+<code class="prettyprint">$multi2</code> end up being exactly the same:</p>
+<pre class="prettyprint"><code class="language-php">    $c1 = LDContext::create('key1', 'kind1');
+    $c2 = LDContext::create('key2', 'kind2');
+    $c3 = LDContext::create('key3', 'kind3');'
+
+    $multi1 = LDContext::multiBuilder()-&gt;add($c1)-&gt;add($c2)-&gt;add($c3).build();
+
+    $c1plus2 = LDContext::multiBuilder()-&gt;add($c1)-&gt;add($c2).build();
+    $multi2 = LDContext::multiBuilder()-&gt;add($c1plus2)-&gt;add($c3)-&gt;build();
+</code></pre>
+</section>
+
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$context</span>
+                : <span class="phpdocumentor-signature__argument__return-type"><a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a></span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>the context to add</p>
+</section>
+
+            </dd>
+            </dl>
+
     
 
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-    <span class="phpdocumentor-signature__response_type">array&lt;string, <abbr title="\LaunchDarkly\Impl\Model\FeatureFlag">FeatureFlag</abbr>&gt;|null</span>
+    <span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-LDContextMultiBuilder.html"><abbr title="\LaunchDarkly\LDContextMultiBuilder">LDContextMultiBuilder</abbr></a></span>
             &mdash;
-            <section class="phpdocumentor-description"><p>The decoded FeatureFlags, or null if missing</p>
+            <section class="phpdocumentor-description"><p>the builder</p>
 </section>
 
     
@@ -198,90 +257,43 @@ LaunchDarkly\Integrations namespace.</p>
             -public
                                                         "
 >
-    <h4 class="phpdocumentor-element__name" id="method_getFeature">
-        getFeature()
-        <a href="classes/LaunchDarkly-FeatureRequester.html#method_getFeature" class="headerlink"><i class="fas fa-link"></i></a>
+    <h4 class="phpdocumentor-element__name" id="method_build">
+        build()
+        <a href="classes/LaunchDarkly-LDContextMultiBuilder.html#method_build" class="headerlink"><i class="fas fa-link"></i></a>
     </h4>
     <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/FeatureRequester.php"><a href="files/launchdarkly-featurerequester.html"><abbr title="LaunchDarkly/FeatureRequester.php">FeatureRequester.php</abbr></a></abbr>
+    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContextMultiBuilder.php"><a href="files/launchdarkly-ldcontextmultibuilder.html"><abbr title="LaunchDarkly/LDContextMultiBuilder.php">LDContextMultiBuilder.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">23</span>
+    <span class="phpdocumentor-element-found-in__line">51</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Gets the configuration for a specific feature flag.</p>
+        <p class="phpdocumentor-summary">Creates an LDContext from the current builder properties.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getFeature</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$key</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\LaunchDarkly\Impl\Model\FeatureFlag">FeatureFlag</abbr>|null</span></code>
+                <span class="phpdocumentor-signature__name">build</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a></span></code>
 
-    
-        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
-    <dl class="phpdocumentor-argument-list">
-                    <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-signature__argument__name">$key</span>
-                : <span class="phpdocumentor-signature__argument__return-type">string</span>
-                            </dt>
-            <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>feature key</p>
+        <section class="phpdocumentor-description"><p>The LDContext is immutable and will not be affected by any subsequent actions on the
+builder.</p>
+<p>It is possible for an LDContextMultiBuilder to represent an invalid state. Instead of
+throwing an exception, the LDContextMultiBuilder always returns an LDContext, and you
+can check <a href="classes/LaunchDarkly-LDContext.html#method_isValid"><abbr title="\LaunchDarkly\LDContext::isValid()">LDContext::isValid()</abbr></a> or
+<a href="classes/LaunchDarkly-LDContext.html#method_getError"><abbr title="\LaunchDarkly\LDContext::getError()">LDContext::getError()</abbr></a> to see if it has an error. See
+<a href="classes/LaunchDarkly-LDContext.html#method_isValid"><abbr title="\LaunchDarkly\LDContext::isValid()">LDContext::isValid()</abbr></a> for more information about invalid context
+conditions. If you pass an invalid context to an SDK method, the SDK will
+detect this and will log a description of the error.</p>
+<p>If only one context was added to the builder, this method returns that context rather
+than a multi-context.</p>
 </section>
 
-            </dd>
-            </dl>
-
+    
     
 
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-    <span class="phpdocumentor-signature__response_type"><abbr title="\LaunchDarkly\Impl\Model\FeatureFlag">FeatureFlag</abbr>|null</span>
+    <span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a></span>
             &mdash;
-            <section class="phpdocumentor-description"><p>The decoded FeatureFlag, or null if missing</p>
-</section>
-
-    
-</article>
-                    <article
-        class="phpdocumentor-element
-            -method
-            -public
-                                                        "
->
-    <h4 class="phpdocumentor-element__name" id="method_getSegment">
-        getSegment()
-        <a href="classes/LaunchDarkly-FeatureRequester.html#method_getSegment" class="headerlink"><i class="fas fa-link"></i></a>
-    </h4>
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/FeatureRequester.php"><a href="files/launchdarkly-featurerequester.html"><abbr title="LaunchDarkly/FeatureRequester.php">FeatureRequester.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">31</span>
-
-    </aside>
-
-        <p class="phpdocumentor-summary">Gets the configuration for a specific user segment.</p>
-
-    <code class="phpdocumentor-code phpdocumentor-signature ">
-    <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getSegment</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$key</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\LaunchDarkly\Impl\Model\Segment">Segment</abbr>|null</span></code>
-
-    
-        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
-    <dl class="phpdocumentor-argument-list">
-                    <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-signature__argument__name">$key</span>
-                : <span class="phpdocumentor-signature__argument__return-type">string</span>
-                            </dt>
-            <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>segment key</p>
-</section>
-
-            </dd>
-            </dl>
-
-    
-
-        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-    <span class="phpdocumentor-signature__response_type"><abbr title="\LaunchDarkly\Impl\Model\Segment">Segment</abbr>|null</span>
-            &mdash;
-            <section class="phpdocumentor-description"><p>The decoded Segment, or null if missing</p>
+            <section class="phpdocumentor-description"><p>a new LDContext</p>
 </section>
 
     
@@ -364,7 +376,7 @@ LaunchDarkly\Integrations namespace.</p>
 </section>
             </div>
         </div>
-        <a href="classes/LaunchDarkly-FeatureRequester.html#top" class="phpdocumentor-back-to-top"><i class="fas fa-chevron-circle-up"></i></a>
+        <a href="classes/LaunchDarkly-LDContextMultiBuilder.html#top" class="phpdocumentor-back-to-top"><i class="fas fa-chevron-circle-up"></i></a>
 
     </main>
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>LaunchDarkly PHP SDK 4.2.4</title>
+    <title>LaunchDarkly PHP SDK 5.0.0</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="../">
     <link rel="icon" href="images/favicon.ico"/>
@@ -23,7 +23,7 @@
     </head>
 <body id="top">
     <header class="phpdocumentor-header phpdocumentor-section">
-    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">LaunchDarkly PHP SDK 4.2.4</a></h1>
+    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">LaunchDarkly PHP SDK 5.0.0</a></h1>
     <input class="phpdocumentor-header__menu-button" type="checkbox" id="menu-button" name="menu-button" />
     <label class="phpdocumentor-header__menu-icon" for="menu-button">
         <i class="fas fa-bars"></i>
@@ -58,6 +58,14 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="namespaces/launchdarkly-integrations.html">Integrations</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/launchdarkly-subsystems.html">Subsystems</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/launchdarkly-types.html">Types</a>
                 
             </li>
             </ul>
@@ -107,11 +115,11 @@
         <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagRuleBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagrulebuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagRuleBuilder.php">FlagRuleBuilder.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">19</span>
+    <span class="phpdocumentor-element-found-in__line">25</span>
 
     </aside>
 
-            <p class="phpdocumentor-summary">A builder for feature flag rules to be used with {@see \LaunchDarkly\Integrations\TestData\FlagBuilder}.</p>
+            <p class="phpdocumentor-summary">A builder for feature flag rules to be used with FlagBuilder.</p>
 
     <section class="phpdocumentor-description"><p>In the LaunchDarkly model, a flag can have any number of rules,
 and a rule can have any number of clauses. A clause is an individual
@@ -125,6 +133,20 @@ Optionally, you may add more clauses with the rule builder's methods such as
 </section>
 
 
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">see</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                                    <span class="phpdocumentor-tag-link"><a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a></span>
+                                        
+                                             
+                                    </dd>
+                        </dl>
 
 
 
@@ -152,11 +174,27 @@ Optionally, you may add more clauses with the rule builder's methods such as
 <dd>Adds another clause, using the &quot;is one of&quot; operator.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html#method_andMatchContext">andMatchContext()</a>
+    <span>
+                        &nbsp;: <a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagRuleBuilder">FlagRuleBuilder</abbr></a>    </span>
+</dt>
+<dd>Adds another clause, using the &quot;is one of&quot; operator. This matching expression only
+applies to contexts of a specific kind.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html#method_andNotMatch">andNotMatch()</a>
     <span>
                         &nbsp;: <a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagRuleBuilder">FlagRuleBuilder</abbr></a>    </span>
 </dt>
 <dd>Adds another clause, using the &quot;is not one of&quot; operator.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html#method_andNotMatchContext">andNotMatchContext()</a>
+    <span>
+                        &nbsp;: <a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagRuleBuilder">FlagRuleBuilder</abbr></a>    </span>
+</dt>
+<dd>Adds another clause, using the &quot;is not one of&quot; operator. This matching expression only
+applies to contexts of a specific kind.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html#method_build">build()</a>
@@ -199,7 +237,7 @@ value as a boolean or variation index.</dd>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagRuleBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagrulebuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagRuleBuilder.php">FlagRuleBuilder.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">28</span>
+    <span class="phpdocumentor-element-found-in__line">31</span>
 
     </aside>
 
@@ -243,7 +281,7 @@ value as a boolean or variation index.</dd>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagRuleBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagrulebuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagRuleBuilder.php">FlagRuleBuilder.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">50</span>
+    <span class="phpdocumentor-element-found-in__line">56</span>
 
     </aside>
 
@@ -251,13 +289,15 @@ value as a boolean or variation index.</dd>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">andMatch</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$attribute</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$values</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagRuleBuilder">FlagRuleBuilder</abbr></a></span></code>
+                <span class="phpdocumentor-signature__name">andMatch</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$attribute</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, mixed&gt;&nbsp;</span><span class="phpdocumentor-signature__argument__variadic-operator">...</span><span class="phpdocumentor-signature__argument__name">$values</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagRuleBuilder">FlagRuleBuilder</abbr></a></span></code>
 
-        <section class="phpdocumentor-description"><p>For example, this creates a rule that returns <code class="prettyprint">true</code> if
-the name is &quot;Patsy&quot; and the country is &quot;gb&quot;:</p>
+        <section class="phpdocumentor-description"><p>This is a shortcut for calling <a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html#method_andMatchContext"><abbr title="\LaunchDarkly\Integrations\TestData\FlagRuleBuilder::andMatchContext()">FlagRuleBuilder::andMatchContext()</abbr></a>
+with <code class="prettyprint">LDContext::DEFAULT_KIND</code> as the context kind.</p>
+<p>For example, this creates a rule that returns <code class="prettyprint">true</code> if the name is &quot;Patsy&quot; and the
+country is &quot;gb&quot;:</p>
 <pre class="prettyprint"><code class="prettyprint">$testData-&gt;flag(&quot;flag&quot;)
-         -&gt;ifMatch(&quot;NAME&quot;, &quot;Patsy&quot;)
-         -&gt;andMatch(&quot;COUNTRY&quot;, &quot;gb&quot;)
+         -&gt;ifMatch(&quot;name&quot;, &quot;Patsy&quot;)
+         -&gt;andMatch(&quot;country&quot;, &quot;gb&quot;)
          -&gt;thenReturn(true);
 </code></pre>
 </section>
@@ -275,7 +315,80 @@ the name is &quot;Patsy&quot; and the country is &quot;gb&quot;:</p>
             </dd>
                     <dt class="phpdocumentor-argument-list__entry">
                 <span class="phpdocumentor-signature__argument__name">$values</span>
-                : <span class="phpdocumentor-signature__argument__return-type">mixed</span>
+                : <span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, mixed&gt;</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>values to compare to</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagRuleBuilder">FlagRuleBuilder</abbr></a></span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>the rule builder</p>
+</section>
+
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_andMatchContext">
+        andMatchContext()
+        <a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html#method_andMatchContext" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagRuleBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagrulebuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagRuleBuilder.php">FlagRuleBuilder.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">77</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Adds another clause, using the &quot;is one of&quot; operator. This matching expression only
+applies to contexts of a specific kind.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                <span class="phpdocumentor-signature__name">andMatchContext</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$contextKind</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$attribute</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, mixed&gt;&nbsp;</span><span class="phpdocumentor-signature__argument__variadic-operator">...</span><span class="phpdocumentor-signature__argument__name">$values</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagRuleBuilder">FlagRuleBuilder</abbr></a></span></code>
+
+        <section class="phpdocumentor-description"><p>For example, this creates a rule that returns <code class="prettyprint">true</code> if the name attribute for the
+&quot;company&quot; context is &quot;Ella&quot;, and the country attribute for the &quot;company&quot; context is &quot;gb&quot;:</p>
+<pre class="prettyprint"><code class="prettyprint">$testData-&gt;flag(&quot;flag&quot;)
+         -&gt;ifMatchContext(&quot;company&quot;, &quot;name&quot;, &quot;Ella&quot;)
+         -&gt;andMatchContext(&quot;company&quot;, &quot;country&quot;, &quot;gb&quot;)
+         -&gt;thenReturn(true);
+</code></pre>
+</section>
+
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$contextKind</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"></section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$attribute</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>the user attribute to match against</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$values</span>
+                : <span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, mixed&gt;</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
                     <section class="phpdocumentor-description"><p>values to compare to</p>
@@ -307,7 +420,7 @@ the name is &quot;Patsy&quot; and the country is &quot;gb&quot;:</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagRuleBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagrulebuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagRuleBuilder.php">FlagRuleBuilder.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">77</span>
+    <span class="phpdocumentor-element-found-in__line">108</span>
 
     </aside>
 
@@ -315,9 +428,11 @@ the name is &quot;Patsy&quot; and the country is &quot;gb&quot;:</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">andNotMatch</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$attribute</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__variadic-operator">...</span><span class="phpdocumentor-signature__argument__name">$values</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagRuleBuilder">FlagRuleBuilder</abbr></a></span></code>
+                <span class="phpdocumentor-signature__name">andNotMatch</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$attribute</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, mixed&gt;&nbsp;</span><span class="phpdocumentor-signature__argument__variadic-operator">...</span><span class="phpdocumentor-signature__argument__name">$values</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagRuleBuilder">FlagRuleBuilder</abbr></a></span></code>
 
-        <section class="phpdocumentor-description"><p>For example, this creates a rule that returns <code class="prettyprint">true</code> if
+        <section class="phpdocumentor-description"><p>This is a shortcut for calling <a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html#method_andNotMatchContext"><abbr title="\LaunchDarkly\Integrations\TestData\FlagRuleBuilder::andNotMatchContext()">FlagRuleBuilder::andNotMatchContext()</abbr></a>
+with<code class="prettyprint">LDContext::DEFAULT_KIND</code> as the context kind.</p>
+<p>For example, this creates a rule that returns <code class="prettyprint">true</code> if
 the name is &quot;Patsy&quot; and the country is not &quot;gb&quot;:</p>
 <p>$testData-&gt;flag(&quot;flag&quot;)
 -&gt;ifMatch(&quot;name&quot;, &quot;Patsy&quot;)
@@ -338,7 +453,79 @@ the name is &quot;Patsy&quot; and the country is not &quot;gb&quot;:</p>
             </dd>
                     <dt class="phpdocumentor-argument-list__entry">
                 <span class="phpdocumentor-signature__argument__name">$values</span>
-                : <span class="phpdocumentor-signature__argument__return-type">mixed</span>
+                : <span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, mixed&gt;</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>values to compare to</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagRuleBuilder">FlagRuleBuilder</abbr></a></span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>the rule builder</p>
+</section>
+
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_andNotMatchContext">
+        andNotMatchContext()
+        <a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html#method_andNotMatchContext" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagRuleBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagrulebuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagRuleBuilder.php">FlagRuleBuilder.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">129</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Adds another clause, using the &quot;is not one of&quot; operator. This matching expression only
+applies to contexts of a specific kind.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                <span class="phpdocumentor-signature__name">andNotMatchContext</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$contextKind</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$attribute</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, mixed&gt;&nbsp;</span><span class="phpdocumentor-signature__argument__variadic-operator">...</span><span class="phpdocumentor-signature__argument__name">$values</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagRuleBuilder">FlagRuleBuilder</abbr></a></span></code>
+
+        <section class="phpdocumentor-description"><p>For example, this creates a rule that returns <code class="prettyprint">true</code> if the name attribute for the
+&quot;company&quot; context is &quot;Ella&quot;, and the country attribute for the &quot;company&quot; context is not &quot;gb&quot;:</p>
+<p>$testData-&gt;flag(&quot;flag&quot;)
+-&gt;ifMatchContext(&quot;company&quot;, &quot;name&quot;, &quot;Ella&quot;)
+-&gt;andNotMatchContext(&quot;company&quot;, &quot;country&quot;, &quot;gb&quot;)
+-&gt;thenReturn(true);</p>
+</section>
+
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$contextKind</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"></section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$attribute</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>the user attribute to match against</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$values</span>
+                : <span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, mixed&gt;</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
                     <section class="phpdocumentor-description"><p>values to compare to</p>
@@ -370,7 +557,7 @@ the name is &quot;Patsy&quot; and the country is not &quot;gb&quot;:</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagRuleBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagrulebuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagRuleBuilder.php">FlagRuleBuilder.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">114</span>
+    <span class="phpdocumentor-element-found-in__line">167</span>
 
     </aside>
 
@@ -417,7 +604,7 @@ the name is &quot;Patsy&quot; and the country is not &quot;gb&quot;:</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagRuleBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagrulebuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagRuleBuilder.php">FlagRuleBuilder.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">96</span>
+    <span class="phpdocumentor-element-found-in__line">149</span>
 
     </aside>
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>LaunchDarkly PHP SDK 4.2.4</title>
+    <title>LaunchDarkly PHP SDK 5.0.0</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="../">
     <link rel="icon" href="images/favicon.ico"/>
@@ -23,7 +23,7 @@
     </head>
 <body id="top">
     <header class="phpdocumentor-header phpdocumentor-section">
-    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">LaunchDarkly PHP SDK 4.2.4</a></h1>
+    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">LaunchDarkly PHP SDK 5.0.0</a></h1>
     <input class="phpdocumentor-header__menu-button" type="checkbox" id="menu-button" name="menu-button" />
     <label class="phpdocumentor-header__menu-icon" for="menu-button">
         <i class="fas fa-bars"></i>
@@ -60,6 +60,14 @@
                 <a href="namespaces/launchdarkly-integrations.html">Integrations</a>
                 
             </li>
+                    <li>
+                <a href="namespaces/launchdarkly-subsystems.html">Subsystems</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/launchdarkly-types.html">Types</a>
+                
+            </li>
             </ul>
 
                         </section>
@@ -85,11 +93,12 @@
             <div class="phpdocumentor-column -eight phpdocumentor-content">
                     <ul class="phpdocumentor-breadcrumbs">
             <li class="phpdocumentor-breadcrumb"><a href="namespaces/launchdarkly.html">LaunchDarkly</a></li>
+            <li class="phpdocumentor-breadcrumb"><a href="namespaces/launchdarkly-subsystems.html">Subsystems</a></li>
     </ul>
 
     <article class="phpdocumentor-element -interface">
         <h2 class="phpdocumentor-content__title">
-    EventPublisher
+    FeatureRequester
                 <div class="phpdocumentor-element__package">
             in
             <ul class="phpdocumentor-breadcrumbs">
@@ -99,16 +108,24 @@
     </h2>
 
         <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/EventPublisher.php"><a href="files/launchdarkly-eventpublisher.html"><abbr title="LaunchDarkly/EventPublisher.php">EventPublisher.php</abbr></a></abbr>
+    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Subsystems/FeatureRequester.php"><a href="files/launchdarkly-subsystems-featurerequester.html"><abbr title="LaunchDarkly/Subsystems/FeatureRequester.php">FeatureRequester.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">11</span>
+    <span class="phpdocumentor-element-found-in__line">21</span>
 
     </aside>
 
-            <p class="phpdocumentor-summary">Interface for the component that sends events to the LaunchDarkly service.</p>
+            <p class="phpdocumentor-summary">Interface for the component that retrieves feature flag data.</p>
 
-    <section class="phpdocumentor-description"><p>The default implementation is <a href="classes/LaunchDarkly-Integrations-Curl.html#method_eventPublisher"><abbr title="\LaunchDarkly\Integrations\Curl::eventPublisher()">Curl::eventPublisher()</abbr></a>. The SDK also
-provides <a href="classes/LaunchDarkly-Integrations-Guzzle.html#method_eventPublisher"><abbr title="\LaunchDarkly\Integrations\Guzzle::eventPublisher()">Guzzle::eventPublisher()</abbr></a>.</p>
+    <section class="phpdocumentor-description"><p>Application code should not need to implement this interface. LaunchDarkly provides several implementations:</p>
+<ul>
+<li>The default, <a href="classes/LaunchDarkly-Integrations-Guzzle.html#method_featureRequester"><abbr title="\LaunchDarkly\Integrations\Guzzle::featureRequester()">Guzzle::featureRequester()</abbr></a>, which requests
+flags inefficiently via HTTP on demand.</li>
+<li>Database integrations provided in separate packages. See: https://docs.launchdarkly.com/sdk/features/storing-data#php</li>
+<li>A mechanism for reading data from the filesystem: <a href="classes/LaunchDarkly-Integrations-Files.html"><abbr title="\LaunchDarkly\Integrations\Files">Files</abbr></a>
+</li>
+<li>A mechanism for injecting test data: <a href="classes/LaunchDarkly-Integrations-TestData.html"><abbr title="\LaunchDarkly\Integrations\TestData">TestData</abbr></a>
+</li>
+</ul>
 </section>
 
 
@@ -125,18 +142,25 @@ provides <a href="classes/LaunchDarkly-Integrations-Guzzle.html#method_eventPubl
 
 <dl class="phpdocumentor-table-of-contents">
                     <dt class="phpdocumentor-table-of-contents__entry -method -public">
-    <a href="classes/LaunchDarkly-EventPublisher.html#method___construct">__construct()</a>
+    <a href="classes/LaunchDarkly-Subsystems-FeatureRequester.html#method_getAllFeatures">getAllFeatures()</a>
     <span>
-                        &nbsp;: mixed    </span>
+                        &nbsp;: array&lt;string, <abbr title="\LaunchDarkly\Impl\Model\FeatureFlag">FeatureFlag</abbr>&gt;|null    </span>
 </dt>
-<dd></dd>
+<dd>Gets all feature flags.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
-    <a href="classes/LaunchDarkly-EventPublisher.html#method_publish">publish()</a>
+    <a href="classes/LaunchDarkly-Subsystems-FeatureRequester.html#method_getFeature">getFeature()</a>
     <span>
-                        &nbsp;: bool    </span>
+                        &nbsp;: <abbr title="\LaunchDarkly\Impl\Model\FeatureFlag">FeatureFlag</abbr>|null    </span>
 </dt>
-<dd>Publishes events to LaunchDarkly.</dd>
+<dd>Gets the configuration for a specific feature flag.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/LaunchDarkly-Subsystems-FeatureRequester.html#method_getSegment">getSegment()</a>
+    <span>
+                        &nbsp;: <abbr title="\LaunchDarkly\Impl\Model\Segment">Segment</abbr>|null    </span>
+</dt>
+<dd>Gets the configuration for a specific user segment.</dd>
 
         </dl>
 
@@ -147,7 +171,7 @@ provides <a href="classes/LaunchDarkly-Integrations-Guzzle.html#method_eventPubl
             <section class="phpdocumentor-methods">
         <h3 class="phpdocumentor-elements__header" id="methods">
             Methods
-            <a href="classes/LaunchDarkly-EventPublisher.html#methods" class="headerlink"><i class="fas fa-link"></i></a>
+            <a href="classes/LaunchDarkly-Subsystems-FeatureRequester.html#methods" class="headerlink"><i class="fas fa-link"></i></a>
         </h3>
                     <article
         class="phpdocumentor-element
@@ -155,51 +179,33 @@ provides <a href="classes/LaunchDarkly-Integrations-Guzzle.html#method_eventPubl
             -public
                                                         "
 >
-    <h4 class="phpdocumentor-element__name" id="method___construct">
-        __construct()
-        <a href="classes/LaunchDarkly-EventPublisher.html#method___construct" class="headerlink"><i class="fas fa-link"></i></a>
+    <h4 class="phpdocumentor-element__name" id="method_getAllFeatures">
+        getAllFeatures()
+        <a href="classes/LaunchDarkly-Subsystems-FeatureRequester.html#method_getAllFeatures" class="headerlink"><i class="fas fa-link"></i></a>
     </h4>
     <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/EventPublisher.php"><a href="files/launchdarkly-eventpublisher.html"><abbr title="LaunchDarkly/EventPublisher.php">EventPublisher.php</abbr></a></abbr>
+    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Subsystems/FeatureRequester.php"><a href="files/launchdarkly-subsystems-featurerequester.html"><abbr title="LaunchDarkly/Subsystems/FeatureRequester.php">FeatureRequester.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">23</span>
+    <span class="phpdocumentor-element-found-in__line">44</span>
 
     </aside>
 
-    
+        <p class="phpdocumentor-summary">Gets all feature flags.</p>
+
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">__construct</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$sdkKey</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, mixed&gt;&nbsp;</span><span class="phpdocumentor-signature__argument__name">$options</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                <span class="phpdocumentor-signature__name">getAllFeatures</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;string, <abbr title="\LaunchDarkly\Impl\Model\FeatureFlag">FeatureFlag</abbr>&gt;|null</span></code>
 
     
-        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
-    <dl class="phpdocumentor-argument-list">
-                    <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-signature__argument__name">$sdkKey</span>
-                : <span class="phpdocumentor-signature__argument__return-type">string</span>
-                            </dt>
-            <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>The SDK key for your account</p>
-</section>
-
-            </dd>
-                    <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-signature__argument__name">$options</span>
-                : <span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, mixed&gt;</span>
-                            </dt>
-            <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>Client configuration settings</p>
-</section>
-
-            </dd>
-            </dl>
-
+    
     
 
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-    <span class="phpdocumentor-signature__response_type">mixed</span>
+    <span class="phpdocumentor-signature__response_type">array&lt;string, <abbr title="\LaunchDarkly\Impl\Model\FeatureFlag">FeatureFlag</abbr>&gt;|null</span>
             &mdash;
-        
+            <section class="phpdocumentor-description"><p>The decoded FeatureFlags, or null if missing</p>
+</section>
+
     
 </article>
                     <article
@@ -208,32 +214,32 @@ provides <a href="classes/LaunchDarkly-Integrations-Guzzle.html#method_eventPubl
             -public
                                                         "
 >
-    <h4 class="phpdocumentor-element__name" id="method_publish">
-        publish()
-        <a href="classes/LaunchDarkly-EventPublisher.html#method_publish" class="headerlink"><i class="fas fa-link"></i></a>
+    <h4 class="phpdocumentor-element__name" id="method_getFeature">
+        getFeature()
+        <a href="classes/LaunchDarkly-Subsystems-FeatureRequester.html#method_getFeature" class="headerlink"><i class="fas fa-link"></i></a>
     </h4>
     <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/EventPublisher.php"><a href="files/launchdarkly-eventpublisher.html"><abbr title="LaunchDarkly/EventPublisher.php">EventPublisher.php</abbr></a></abbr>
+    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Subsystems/FeatureRequester.php"><a href="files/launchdarkly-subsystems-featurerequester.html"><abbr title="LaunchDarkly/Subsystems/FeatureRequester.php">FeatureRequester.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">31</span>
+    <span class="phpdocumentor-element-found-in__line">29</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Publishes events to LaunchDarkly.</p>
+        <p class="phpdocumentor-summary">Gets the configuration for a specific feature flag.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">publish</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$payload</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
+                <span class="phpdocumentor-signature__name">getFeature</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$key</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\LaunchDarkly\Impl\Model\FeatureFlag">FeatureFlag</abbr>|null</span></code>
 
     
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
     <dl class="phpdocumentor-argument-list">
                     <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-signature__argument__name">$payload</span>
+                <span class="phpdocumentor-signature__argument__name">$key</span>
                 : <span class="phpdocumentor-signature__argument__return-type">string</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>Event payload</p>
+                    <section class="phpdocumentor-description"><p>feature key</p>
 </section>
 
             </dd>
@@ -242,9 +248,56 @@ provides <a href="classes/LaunchDarkly-Integrations-Guzzle.html#method_eventPubl
     
 
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-    <span class="phpdocumentor-signature__response_type">bool</span>
+    <span class="phpdocumentor-signature__response_type"><abbr title="\LaunchDarkly\Impl\Model\FeatureFlag">FeatureFlag</abbr>|null</span>
             &mdash;
-            <section class="phpdocumentor-description"><p>Whether the events were successfully published</p>
+            <section class="phpdocumentor-description"><p>The decoded FeatureFlag, or null if missing</p>
+</section>
+
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_getSegment">
+        getSegment()
+        <a href="classes/LaunchDarkly-Subsystems-FeatureRequester.html#method_getSegment" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Subsystems/FeatureRequester.php"><a href="files/launchdarkly-subsystems-featurerequester.html"><abbr title="LaunchDarkly/Subsystems/FeatureRequester.php">FeatureRequester.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">37</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Gets the configuration for a specific user segment.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                <span class="phpdocumentor-signature__name">getSegment</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$key</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\LaunchDarkly\Impl\Model\Segment">Segment</abbr>|null</span></code>
+
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$key</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>segment key</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type"><abbr title="\LaunchDarkly\Impl\Model\Segment">Segment</abbr>|null</span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>The decoded Segment, or null if missing</p>
 </section>
 
     
@@ -327,7 +380,7 @@ provides <a href="classes/LaunchDarkly-Integrations-Guzzle.html#method_eventPubl
 </section>
             </div>
         </div>
-        <a href="classes/LaunchDarkly-EventPublisher.html#top" class="phpdocumentor-back-to-top"><i class="fas fa-chevron-circle-up"></i></a>
+        <a href="classes/LaunchDarkly-Subsystems-FeatureRequester.html#top" class="phpdocumentor-back-to-top"><i class="fas fa-chevron-circle-up"></i></a>
 
     </main>
 

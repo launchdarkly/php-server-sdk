@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>LaunchDarkly PHP SDK 4.2.4</title>
+    <title>LaunchDarkly PHP SDK 5.0.0</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="../">
     <link rel="icon" href="images/favicon.ico"/>
@@ -23,7 +23,7 @@
     </head>
 <body id="top">
     <header class="phpdocumentor-header phpdocumentor-section">
-    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">LaunchDarkly PHP SDK 4.2.4</a></h1>
+    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">LaunchDarkly PHP SDK 5.0.0</a></h1>
     <input class="phpdocumentor-header__menu-button" type="checkbox" id="menu-button" name="menu-button" />
     <label class="phpdocumentor-header__menu-icon" for="menu-button">
         <i class="fas fa-bars"></i>
@@ -58,6 +58,14 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="namespaces/launchdarkly-integrations.html">Integrations</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/launchdarkly-subsystems.html">Subsystems</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/launchdarkly-types.html">Types</a>
                 
             </li>
             </ul>
@@ -107,11 +115,11 @@
         <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagbuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagBuilder.php">FlagBuilder.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">15</span>
+    <span class="phpdocumentor-element-found-in__line">19</span>
 
     </aside>
 
-            <p class="phpdocumentor-summary">A builder for feature flag configurations to be used with {@see \LaunchDarkly\Integrations\TestData}.</p>
+            <p class="phpdocumentor-summary">A builder for feature flag configurations to be used with TestData.</p>
 
 
 
@@ -186,12 +194,19 @@
 `ifMatch()`.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_clearTargets">clearTargets()</a>
+    <span>
+                        &nbsp;: <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a>    </span>
+</dt>
+<dd>Removes any existing targets for individual user/context keys from the flag. This undoes the effect of
+the `variationForUser` and `variationForKey` methods.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_clearUserTargets">clearUserTargets()</a>
     <span>
                         &nbsp;: <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a>    </span>
 </dt>
-<dd>Removes any existing user targets from the flag. This undoes the effect of methods like
-`variationForUser(string, boolean)`.</dd>
+<dd>Deprecated name for clearTargets.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_copy">copy()</a>
@@ -200,7 +215,7 @@
 </dt>
 <dd>Creates a deep copy of the flag builder. Subsequent updates to
 the original FlagBuilder object will not update the copy and
-vise versa.</dd>
+vice versa.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_fallthroughVariation">fallthroughVariation()</a>
@@ -226,7 +241,22 @@ target or rule.</dd>
 <dd>Starts defining a flag rule, using the &quot;is one of&quot; operator.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_ifMatchContext">ifMatchContext()</a>
+    <span>
+                        &nbsp;: <a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagRuleBuilder">FlagRuleBuilder</abbr></a>    </span>
+</dt>
+<dd>Starts defining a flag rule, using the &quot;is one of&quot; operator. This matching expression only
+applies to contexts of a specific kind.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_ifNotMatch">ifNotMatch()</a>
+    <span>
+                        &nbsp;: <a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagRuleBuilder">FlagRuleBuilder</abbr></a>    </span>
+</dt>
+<dd>Starts defining a flag rule, using the &quot;is not one of&quot; operator.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_ifNotMatchContext">ifNotMatchContext()</a>
     <span>
                         &nbsp;: <a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagRuleBuilder">FlagRuleBuilder</abbr></a>    </span>
 </dt>
@@ -247,18 +277,32 @@ target or rule.</dd>
 <dd>Sets targeting to be on or off for this flag.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
-    <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_valueForAllUsers">valueForAllUsers()</a>
+    <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_valueForAll">valueForAll()</a>
     <span>
                         &nbsp;: <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a>    </span>
 </dt>
 <dd>Sets the flag to always return the specified variation value for all users.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
-    <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_variationForAllUsers">variationForAllUsers()</a>
+    <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_valueForAllUsers">valueForAllUsers()</a>
+    <span>
+                        &nbsp;: <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a>    </span>
+</dt>
+<dd>Deprecated name for valueForAll.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_variationForAll">variationForAll()</a>
     <span>
                         &nbsp;: <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a>    </span>
 </dt>
 <dd>Sets the flag to always return the specified variation for all users.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_variationForAllUsers">variationForAllUsers()</a>
+    <span>
+                        &nbsp;: <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a>    </span>
+</dt>
+<dd>Deprecated name for variationForAll.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_variationForBoolean">variationForBoolean()</a>
@@ -266,6 +310,14 @@ target or rule.</dd>
                         &nbsp;: int    </span>
 </dt>
 <dd>Converts a boolean to the corresponding variation index.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_variationForKey">variationForKey()</a>
+    <span>
+                        &nbsp;: <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a>    </span>
+</dt>
+<dd>Sets the flag to return the specified boolean variation for a specific context, identified
+by context kind and key, when targeting is on.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_variationForUser">variationForUser()</a>
@@ -308,7 +360,7 @@ is on.</dd>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagbuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagBuilder.php">FlagBuilder.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">32</span>
+    <span class="phpdocumentor-element-found-in__line">33</span>
 
     </aside>
 
@@ -352,7 +404,7 @@ is on.</dd>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagbuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagBuilder.php">FlagBuilder.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">331</span>
+    <span class="phpdocumentor-element-found-in__line">410</span>
 
     </aside>
 
@@ -396,7 +448,7 @@ is on.</dd>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagbuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagBuilder.php">FlagBuilder.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">98</span>
+    <span class="phpdocumentor-element-found-in__line">90</span>
 
     </aside>
 
@@ -406,8 +458,7 @@ is on.</dd>
     <span class="phpdocumentor-signature__visibility">public</span>
                 <span class="phpdocumentor-signature__name">booleanFlag</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a></span></code>
 
-        <section class="phpdocumentor-description"><p>This is the default for all new flags created with
-<code class="prettyprint">$ldclient-&gt;integrations-&gt;test_data-&gt;TestData-&gt;flag()</code>.</p>
+        <section class="phpdocumentor-description"><p>This is the default for all new flags created with <a href="classes/LaunchDarkly-Integrations-TestData.html#method_flag"><abbr title="\LaunchDarkly\Integrations\TestData::flag()">TestData::flag()</abbr></a>.</p>
 <p>The flag will have two variations, <code class="prettyprint">true</code> and <code class="prettyprint">false</code> (in that order);
 it will return <code class="prettyprint">false</code> whenever targeting is off, and <code class="prettyprint">true</code> when targeting is on
 if no other settings specify otherwise.</p>
@@ -437,7 +488,7 @@ if no other settings specify otherwise.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagbuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagBuilder.php">FlagBuilder.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">382</span>
+    <span class="phpdocumentor-element-found-in__line">472</span>
 
     </aside>
 
@@ -483,7 +534,7 @@ if no other settings specify otherwise.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagbuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagBuilder.php">FlagBuilder.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">343</span>
+    <span class="phpdocumentor-element-found-in__line">422</span>
 
     </aside>
 
@@ -512,6 +563,42 @@ if no other settings specify otherwise.</p>
             -public
                                                         "
 >
+    <h4 class="phpdocumentor-element__name" id="method_clearTargets">
+        clearTargets()
+        <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_clearTargets" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagbuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagBuilder.php">FlagBuilder.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">445</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Removes any existing targets for individual user/context keys from the flag. This undoes the effect of
+the `variationForUser` and `variationForKey` methods.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                <span class="phpdocumentor-signature__name">clearTargets</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a></span></code>
+
+    
+    
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a></span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>the same builder</p>
+</section>
+
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+            -deprecated                                            "
+>
     <h4 class="phpdocumentor-element__name" id="method_clearUserTargets">
         clearUserTargets()
         <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_clearUserTargets" class="headerlink"><i class="fas fa-link"></i></a>
@@ -519,20 +606,34 @@ if no other settings specify otherwise.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagbuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagBuilder.php">FlagBuilder.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">355</span>
+    <span class="phpdocumentor-element-found-in__line">434</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Removes any existing user targets from the flag. This undoes the effect of methods like
-`variationForUser(string, boolean)`.</p>
+        <p class="phpdocumentor-summary">Deprecated name for clearTargets.</p>
 
-    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <code class="phpdocumentor-code phpdocumentor-signature -deprecated">
     <span class="phpdocumentor-signature__visibility">public</span>
                 <span class="phpdocumentor-signature__name">clearUserTargets</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a></span></code>
 
     
     
     
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">deprecated</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                                
+                                                 <section class="phpdocumentor-description"><p>Use <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_clearTargets"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder::clearTargets()">FlagBuilder::clearTargets()</abbr></a>.</p>
+</section>
+
+                                    </dd>
+                        </dl>
 
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
     <span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a></span>
@@ -555,13 +656,13 @@ if no other settings specify otherwise.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagbuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagBuilder.php">FlagBuilder.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">60</span>
+    <span class="phpdocumentor-element-found-in__line">61</span>
 
     </aside>
 
         <p class="phpdocumentor-summary">Creates a deep copy of the flag builder. Subsequent updates to
 the original FlagBuilder object will not update the copy and
-vise versa.</p>
+vice versa.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
@@ -592,7 +693,7 @@ vise versa.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagbuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagBuilder.php">FlagBuilder.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">139</span>
+    <span class="phpdocumentor-element-found-in__line">131</span>
 
     </aside>
 
@@ -645,7 +746,7 @@ variation index <code class="prettyprint">0</code> for the first, <code class="p
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagbuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagBuilder.php">FlagBuilder.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">48</span>
+    <span class="phpdocumentor-element-found-in__line">49</span>
 
     </aside>
 
@@ -680,7 +781,7 @@ variation index <code class="prettyprint">0</code> for the first, <code class="p
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagbuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagBuilder.php">FlagBuilder.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">299</span>
+    <span class="phpdocumentor-element-found-in__line">328</span>
 
     </aside>
 
@@ -688,12 +789,15 @@ variation index <code class="prettyprint">0</code> for the first, <code class="p
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">ifMatch</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$attribute</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__variadic-operator">...</span><span class="phpdocumentor-signature__argument__name">$values</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagRuleBuilder">FlagRuleBuilder</abbr></a></span></code>
+                <span class="phpdocumentor-signature__name">ifMatch</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$attribute</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, mixed&gt;&nbsp;</span><span class="phpdocumentor-signature__argument__variadic-operator">...</span><span class="phpdocumentor-signature__argument__name">$values</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagRuleBuilder">FlagRuleBuilder</abbr></a></span></code>
 
-        <section class="phpdocumentor-description"><p>For example, this creates a rule that returns <code class="prettyprint">true</code> if the name is &quot;Patsy&quot; or &quot;Edina&quot;:</p>
-<p>$testData-&gt;flag(&quot;flag&quot;)
--&gt;ifMatch(&quot;name&quot;, &quot;Patsy&quot;, &quot;Edina&quot;)
--&gt;thenReturn(true);</p>
+        <section class="phpdocumentor-description"><p>This is a shortcut for calling <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_ifMatchContext"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder::ifMatchContext()">FlagBuilder::ifMatchContext()</abbr></a>
+with <code class="prettyprint">LDContext::DEFAULT_KIND</code> as the context kind.</p>
+<p>For example, this creates a rule that returns <code class="prettyprint">true</code> if the name is &quot;Patsy&quot; or &quot;Edina&quot;:</p>
+<pre class="prettyprint"><code class="prettyprint">$testData-&gt;flag(&quot;flag&quot;)
+    -&gt;ifMatch(&quot;name&quot;, &quot;Patsy&quot;, &quot;Edina&quot;)
+    -&gt;thenReturn(true);
+</code></pre>
 </section>
 
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
@@ -709,7 +813,82 @@ variation index <code class="prettyprint">0</code> for the first, <code class="p
             </dd>
                     <dt class="phpdocumentor-argument-list__entry">
                 <span class="phpdocumentor-signature__argument__name">$values</span>
-                : <span class="phpdocumentor-signature__argument__return-type">mixed</span>
+                : <span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, mixed&gt;</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>values to compare to</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagRuleBuilder">FlagRuleBuilder</abbr></a></span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>call <code class="prettyprint">thenReturn(boolean)</code> or
+<code class="prettyprint">thenReturn(int)</code> to finish the rule, or add more tests with another
+method like <code class="prettyprint">andMatch()</code></p>
+</section>
+
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_ifMatchContext">
+        ifMatchContext()
+        <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_ifMatchContext" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagbuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagBuilder.php">FlagBuilder.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">351</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Starts defining a flag rule, using the &quot;is one of&quot; operator. This matching expression only
+applies to contexts of a specific kind.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                <span class="phpdocumentor-signature__name">ifMatchContext</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$contextKind</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$attribute</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, mixed&gt;&nbsp;</span><span class="phpdocumentor-signature__argument__variadic-operator">...</span><span class="phpdocumentor-signature__argument__name">$values</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagRuleBuilder">FlagRuleBuilder</abbr></a></span></code>
+
+        <section class="phpdocumentor-description"><p>For example, this creates a rule that returns <code class="prettyprint">true</code> if the name attribute for the
+&quot;company&quot; context is &quot;Ella&quot; or &quot;Monsoon&quot;:</p>
+<pre class="prettyprint"><code class="prettyprint">$testData-&gt;flag(&quot;flag&quot;)
+    -&gt;ifMatchContext(&quot;company&quot;, &quot;name&quot;, &quot;Ella&quot;, &quot;Monsoon&quot;)
+    -&gt;thenReturn(true);
+</code></pre>
+</section>
+
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$contextKind</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>the context kind</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$attribute</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>the context attribute to match against</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$values</span>
+                : <span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, mixed&gt;</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
                     <section class="phpdocumentor-description"><p>values to compare to</p>
@@ -743,7 +922,7 @@ method like <code class="prettyprint">andMatch()</code></p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagbuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagBuilder.php">FlagBuilder.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">321</span>
+    <span class="phpdocumentor-element-found-in__line">375</span>
 
     </aside>
 
@@ -751,10 +930,11 @@ method like <code class="prettyprint">andMatch()</code></p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">ifNotMatch</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$attribute</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$values</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagRuleBuilder">FlagRuleBuilder</abbr></a></span></code>
+                <span class="phpdocumentor-signature__name">ifNotMatch</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$attribute</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, mixed&gt;&nbsp;</span><span class="phpdocumentor-signature__argument__variadic-operator">...</span><span class="phpdocumentor-signature__argument__name">$values</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagRuleBuilder">FlagRuleBuilder</abbr></a></span></code>
 
-        <section class="phpdocumentor-description"><p>For example, this creates a rule that returns <code class="prettyprint">true</code> if the name
-is neither &quot;Saffron&quot; nor &quot;Bubble&quot;:</p>
+        <section class="phpdocumentor-description"><p>This is a shortcut for calling <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_ifNotMatchContext"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder::ifNotMatchContext()">FlagBuilder::ifNotMatchContext()</abbr></a>
+with <code class="prettyprint">LDContext::DEFAULT_KIND</code> as the context kind.</p>
+<p>For example, this creates a rule that returns <code class="prettyprint">true</code> if the name is neither &quot;Saffron&quot; nor &quot;Bubble&quot;:</p>
 <p>$testData-&gt;flag(&quot;flag&quot;)
 -&gt;ifNotMatch(&quot;name&quot;, &quot;Saffron&quot;, &quot;Bubble&quot;)
 -&gt;thenReturn(true);</p>
@@ -767,13 +947,88 @@ is neither &quot;Saffron&quot; nor &quot;Bubble&quot;:</p>
                 : <span class="phpdocumentor-signature__argument__return-type">string</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>the user attribute to match against</p>
+                    <section class="phpdocumentor-description"><p>the context attribute to match against</p>
 </section>
 
             </dd>
                     <dt class="phpdocumentor-argument-list__entry">
                 <span class="phpdocumentor-signature__argument__name">$values</span>
-                : <span class="phpdocumentor-signature__argument__return-type">mixed</span>
+                : <span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, mixed&gt;</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>values to compare to</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagRuleBuilder">FlagRuleBuilder</abbr></a></span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>call <code class="prettyprint">thenReturn(boolean)</code> or
+<code class="prettyprint">thenReturn(int)</code> to finish the rule, or add more tests with another
+method like <code class="prettyprint">andMatch()</code></p>
+</section>
+
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_ifNotMatchContext">
+        ifNotMatchContext()
+        <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_ifNotMatchContext" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagbuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagBuilder.php">FlagBuilder.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">400</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Starts defining a flag rule, using the &quot;is not one of&quot; operator.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                <span class="phpdocumentor-signature__name">ifNotMatchContext</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$contextKind</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$attribute</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, mixed&gt;&nbsp;</span><span class="phpdocumentor-signature__argument__variadic-operator">...</span><span class="phpdocumentor-signature__argument__name">$values</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagRuleBuilder">FlagRuleBuilder</abbr></a></span></code>
+
+        <section class="phpdocumentor-description"><p>This is a shortcut for calling <abbr title="\LaunchDarkly\Integrations\TestData\FlagRuleBuilder::ifMatchContext()">FlagRuleBuilder::ifMatchContext()</abbr>
+with <code class="prettyprint">ContextKind::Default</code> as the context kind.</p>
+<p>For example, this creates a rule that returns <code class="prettyprint">true</code> if the name attribute for the
+&quot;company&quot; context is neither &quot;Pendant&quot; nor &quot;Sterling Cooper&quot;:</p>
+<p>$testData-&gt;flag(&quot;flag&quot;)
+-&gt;ifNotMatchContext(&quot;company&quot;, &quot;name&quot;, &quot;Pendant&quot;, &quot;Sterling Cooper&quot;)
+-&gt;thenReturn(true);</p>
+</section>
+
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$contextKind</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>the context kind</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$attribute</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>the context attribute to match against</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$values</span>
+                : <span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, mixed&gt;</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
                     <section class="phpdocumentor-description"><p>values to compare to</p>
@@ -807,7 +1062,7 @@ method like <code class="prettyprint">andMatch()</code></p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagbuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagBuilder.php">FlagBuilder.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">157</span>
+    <span class="phpdocumentor-element-found-in__line">148</span>
 
     </aside>
 
@@ -856,7 +1111,7 @@ method like <code class="prettyprint">andMatch()</code></p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagbuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagBuilder.php">FlagBuilder.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">121</span>
+    <span class="phpdocumentor-element-found-in__line">113</span>
 
     </aside>
 
@@ -866,11 +1121,9 @@ method like <code class="prettyprint">andMatch()</code></p>
     <span class="phpdocumentor-signature__visibility">public</span>
                 <span class="phpdocumentor-signature__name">on</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">bool&nbsp;</span><span class="phpdocumentor-signature__argument__name">$on</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a></span></code>
 
-        <section class="phpdocumentor-description"><p>The effect of this depends on the rest of the flag configuration,
-just as it does on the real LaunchDarkly dashboard. In the default
-configuration that you get from calling TestData-&gt;flag() with a
-new flag key, the flag will return false whenever targeting is
-off, and true when targeting is on.</p>
+        <section class="phpdocumentor-description"><p>The effect of this depends on the rest of the flag configuration, just as it does on the
+real LaunchDarkly dashboard. In the default configuration that you get from calling <a href="classes/LaunchDarkly-Integrations-TestData.html#method_flag"><abbr title="\LaunchDarkly\Integrations\TestData::flag()">TestData::flag()</abbr></a> with a new flag key, the flag will return false
+whenever targeting is off, and true when targeting is on.</p>
 </section>
 
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
@@ -902,14 +1155,14 @@ off, and true when targeting is on.</p>
             -public
                                                         "
 >
-    <h4 class="phpdocumentor-element__name" id="method_valueForAllUsers">
-        valueForAllUsers()
-        <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_valueForAllUsers" class="headerlink"><i class="fas fa-link"></i></a>
+    <h4 class="phpdocumentor-element__name" id="method_valueForAll">
+        valueForAll()
+        <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_valueForAll" class="headerlink"><i class="fas fa-link"></i></a>
     </h4>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagbuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagBuilder.php">FlagBuilder.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">201</span>
+    <span class="phpdocumentor-element-found-in__line">216</span>
 
     </aside>
 
@@ -917,12 +1170,11 @@ off, and true when targeting is on.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">valueForAllUsers</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$value</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a></span></code>
+                <span class="phpdocumentor-signature__name">valueForAll</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$value</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a></span></code>
 
-        <section class="phpdocumentor-description"><p>The value may be of any JSON type. This method changes the flag to have
-only a single variation, which is this value, and to return the same
-variation regardless of whether targeting is on or off. Any existing
-targets or rules are removed.</p>
+        <section class="phpdocumentor-description"><p>The value may be of any JSON-serializable type. This method changes the flag to have
+only a single variation, which is this value, and to return the same variation regardless
+of whether targeting is on or off. Any existing targets or rules are removed.</p>
 </section>
 
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
@@ -939,6 +1191,82 @@ targets or rules are removed.</p>
             </dl>
 
     
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">see</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                                    <span class="phpdocumentor-tag-link"><a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_variationForAll"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder::variationForAll()">FlagBuilder::variationForAll()</abbr></a></span>
+                                        
+                                             
+                                    </dd>
+                        </dl>
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a></span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>the flag builder</p>
+</section>
+
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+            -deprecated                                            "
+>
+    <h4 class="phpdocumentor-element__name" id="method_valueForAllUsers">
+        valueForAllUsers()
+        <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_valueForAllUsers" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagbuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagBuilder.php">FlagBuilder.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">200</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Deprecated name for valueForAll.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature -deprecated">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                <span class="phpdocumentor-signature__name">valueForAllUsers</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$value</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a></span></code>
+
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$value</span>
+                : <span class="phpdocumentor-signature__argument__return-type">mixed</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>the desired value to be returned for all users</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">deprecated</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                                
+                                                 <section class="phpdocumentor-description"><p>Use <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_valueForAll"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder::valueForAll()">FlagBuilder::valueForAll()</abbr></a>.</p>
+</section>
+
+                                    </dd>
+                        </dl>
 
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
     <span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a></span>
@@ -954,14 +1282,14 @@ targets or rules are removed.</p>
             -public
                                                         "
 >
-    <h4 class="phpdocumentor-element__name" id="method_variationForAllUsers">
-        variationForAllUsers()
-        <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_variationForAllUsers" class="headerlink"><i class="fas fa-link"></i></a>
+    <h4 class="phpdocumentor-element__name" id="method_variationForAll">
+        variationForAll()
+        <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_variationForAll" class="headerlink"><i class="fas fa-link"></i></a>
     </h4>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagbuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagBuilder.php">FlagBuilder.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">181</span>
+    <span class="phpdocumentor-element-found-in__line">185</span>
 
     </aside>
 
@@ -969,9 +1297,9 @@ targets or rules are removed.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">variationForAllUsers</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">bool|int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$variation</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a></span></code>
+                <span class="phpdocumentor-signature__name">variationForAll</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">bool|int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$variation</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a></span></code>
 
-        <section class="phpdocumentor-description"><p>The variation is specified, Targeting is switched on, and any existing targets or rules are removed.
+        <section class="phpdocumentor-description"><p>The variation is specified, targeting is switched on, and any existing targets or rules are removed.
 The fallthrough variation is set to the specified value. The off variation is left unchanged.</p>
 <p>If the flag was previously configured with other variations and the variation specified is a boolean,
 this also changes it to a boolean flag.</p>
@@ -992,6 +1320,83 @@ this also changes it to a boolean flag.</p>
             </dl>
 
     
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">see</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                                    <span class="phpdocumentor-tag-link"><a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_valueForAll"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder::valueForAll()">FlagBuilder::valueForAll()</abbr></a></span>
+                                        
+                                             
+                                    </dd>
+                        </dl>
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a></span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>the flag builder</p>
+</section>
+
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+            -deprecated                                            "
+>
+    <h4 class="phpdocumentor-element__name" id="method_variationForAllUsers">
+        variationForAllUsers()
+        <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_variationForAllUsers" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagbuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagBuilder.php">FlagBuilder.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">166</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Deprecated name for variationForAll.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature -deprecated">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                <span class="phpdocumentor-signature__name">variationForAllUsers</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">bool|int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$variation</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a></span></code>
+
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$variation</span>
+                : <span class="phpdocumentor-signature__argument__return-type">bool|int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p><code class="prettyprint">true</code> or <code class="prettyprint">false</code> or the desired variation index to return:
+<code class="prettyprint">0</code> for the first, <code class="prettyprint">1</code> for the second, etc.</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">deprecated</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                                
+                                                 <section class="phpdocumentor-description"><p>Use <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_variationForAll"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder::variationForAll()">FlagBuilder::variationForAll()</abbr></a>.</p>
+</section>
+
+                                    </dd>
+                        </dl>
 
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
     <span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a></span>
@@ -1014,7 +1419,7 @@ this also changes it to a boolean flag.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagbuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagBuilder.php">FlagBuilder.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">367</span>
+    <span class="phpdocumentor-element-found-in__line">457</span>
 
     </aside>
 
@@ -1054,6 +1459,74 @@ this also changes it to a boolean flag.</p>
             -public
                                                         "
 >
+    <h4 class="phpdocumentor-element__name" id="method_variationForKey">
+        variationForKey()
+        <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_variationForKey" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagbuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagBuilder.php">FlagBuilder.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">253</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Sets the flag to return the specified boolean variation for a specific context, identified
+by context kind and key, when targeting is on.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                <span class="phpdocumentor-signature__name">variationForKey</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$contextKind</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$key</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">bool|int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$variation</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a></span></code>
+
+        <section class="phpdocumentor-description"><p>This has no effect when targeting is turned off for the flag.</p>
+</section>
+
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$contextKind</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"></section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$key</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>string the context key</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$variation</span>
+                : <span class="phpdocumentor-signature__argument__return-type">bool|int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p><code class="prettyprint">true</code> or <code class="prettyprint">false</code> or the desired variation index to return:
+<code class="prettyprint">0</code> for the first, <code class="prettyprint">1</code> for the second, etc.</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a></span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>the flag builder</p>
+</section>
+
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
     <h4 class="phpdocumentor-element__name" id="method_variationForUser">
         variationForUser()
         <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_variationForUser" class="headerlink"><i class="fas fa-link"></i></a>
@@ -1061,7 +1534,7 @@ this also changes it to a boolean flag.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagbuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagBuilder.php">FlagBuilder.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">226</span>
+    <span class="phpdocumentor-element-found-in__line">236</span>
 
     </aside>
 
@@ -1070,11 +1543,11 @@ is on.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">variationForUser</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$userKey</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int|bool&nbsp;</span><span class="phpdocumentor-signature__argument__name">$variation</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a></span></code>
+                <span class="phpdocumentor-signature__name">variationForUser</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$userKey</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">bool|int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$variation</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a></span></code>
 
-        <section class="phpdocumentor-description"><p>This has no effect when targeting is turned off for the flag.</p>
-<p>The variation is specified by number, out of whatever variation values have already been
-defined.</p>
+        <section class="phpdocumentor-description"><p>This is a shortcut for calling <a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_variationForKey"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder::variationForKey()">FlagBuilder::variationForKey()</abbr></a>
+with <code class="prettyprint">LDContext::DEFAULT_KIND</code> as the context kind.</p>
+<p>This has no effect when targeting is turned off for the flag.</p>
 </section>
 
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
@@ -1090,17 +1563,31 @@ defined.</p>
             </dd>
                     <dt class="phpdocumentor-argument-list__entry">
                 <span class="phpdocumentor-signature__argument__name">$variation</span>
-                : <span class="phpdocumentor-signature__argument__return-type">int|bool</span>
+                : <span class="phpdocumentor-signature__argument__return-type">bool|int</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>the desired variation to be returned for this
-user when targeting is on: 0 for the first, 1 for the second, etc.</p>
+                    <section class="phpdocumentor-description"><p><code class="prettyprint">true</code> or <code class="prettyprint">false</code> or the desired variation index to return:
+<code class="prettyprint">0</code> for the first, <code class="prettyprint">1</code> for the second, etc.</p>
 </section>
 
             </dd>
             </dl>
 
     
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">see</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                                    <span class="phpdocumentor-tag-link"><a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_variationForKey"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder::variationForKey()">FlagBuilder::variationForKey()</abbr></a></span>
+                                        
+                                             
+                                    </dd>
+                        </dl>
 
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
     <span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a></span>
@@ -1123,7 +1610,7 @@ user when targeting is on: 0 for the first, 1 for the second, etc.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Integrations/TestData/FlagBuilder.php"><a href="files/launchdarkly-integrations-testdata-flagbuilder.html"><abbr title="LaunchDarkly/Integrations/TestData/FlagBuilder.php">FlagBuilder.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">278</span>
+    <span class="phpdocumentor-element-found-in__line">299</span>
 
     </aside>
 
@@ -1133,9 +1620,8 @@ user when targeting is on: 0 for the first, 1 for the second, etc.</p>
     <span class="phpdocumentor-signature__visibility">public</span>
                 <span class="phpdocumentor-signature__name">variations</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, mixed&gt;&nbsp;</span><span class="phpdocumentor-signature__argument__variadic-operator">...</span><span class="phpdocumentor-signature__argument__name">$variations</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"><abbr title="\LaunchDarkly\Integrations\TestData\FlagBuilder">FlagBuilder</abbr></a></span></code>
 
-        <section class="phpdocumentor-description"><p>The value may be of any valid JSON type. For instance, a boolean flag
-normally has true, false; a string-valued flag might have
-'red', 'green'; etc.</p>
+        <section class="phpdocumentor-description"><p>The values may be of any JSON-serializable types. For instance, a boolean flag
+normally has true, false; a string-valued flag might have 'red', 'green'; etc.</p>
 <p>Example: A single variation</p>
 <pre class="prettyprint"><code class="prettyprint">$td-&gt;flag('new-flag')-&gt;variations(true)
 </code></pre>

@@ -13,12 +13,12 @@ Search.appendIndex(
         },                {
             "fqsen": "\\LaunchDarkly\\EvaluationDetail\u003A\u003AgetValue\u0028\u0029",
             "name": "getValue",
-            "summary": "Returns\u0020the\u0020value\u0020of\u0020the\u0020flag\u0020variation\u0020for\u0020the\u0020user.",
+            "summary": "Returns\u0020the\u0020result\u0020of\u0020the\u0020flag\u0020evaluation.\u0020This\u0020will\u0020be\u0020either\u0020one\u0020of\u0020the\u0020flag\u0027s\u0020variations\u0020or\u0020the\u0020default\nvalue\u0020that\u0020was\u0020passed\u0020to\u0020the\u0020\u007B\u0040see\u0020\\LaunchDarkly\\LDClient\u003A\u003AvariationDetail\u0028\u0029\u007D\u0020method.",
             "url": "classes/LaunchDarkly-EvaluationDetail.html#method_getValue"
         },                {
             "fqsen": "\\LaunchDarkly\\EvaluationDetail\u003A\u003AgetVariationIndex\u0028\u0029",
             "name": "getVariationIndex",
-            "summary": "Returns\u0020the\u0020index\u0020of\u0020the\u0020flag\u0020variation\u0020for\u0020the\u0020user,\u0020e.g.\u00200\u0020for\u0020the\u0020first\u0020variation\u0020\u002D\nor\u0020null\u0020if\u0020it\u0020was\u0020the\u0020default\u0020value.",
+            "summary": "The\u0020index\u0020of\u0020the\u0020returned\u0020value\u0020within\u0020the\u0020flag\u0027s\u0020list\u0020of\u0020variations,\u0020e.g.\u00200\u0020for\u0020the\u0020first\u0020variation\u002D\u002D\nor\u0020null\u0020if\u0020it\u0020was\u0020the\u0020default\u0020value\u0020\u0028evaluation\u0020failed\u0029.",
             "url": "classes/LaunchDarkly-EvaluationDetail.html#method_getVariationIndex"
         },                {
             "fqsen": "\\LaunchDarkly\\EvaluationDetail\u003A\u003AgetReason\u0028\u0029",
@@ -161,21 +161,6 @@ Search.appendIndex(
             "summary": "A\u0020possible\u0020value\u0020for\u0020getErrorKind\u0028\u0029\u003A\u0020indicates\u0020that\u0020an\u0020unexpected\u0020exception\u0020stopped\u0020flag\nevaluation.",
             "url": "classes/LaunchDarkly-EvaluationReason.html#constant_EXCEPTION_ERROR"
         },                {
-            "fqsen": "\\LaunchDarkly\\EventPublisher",
-            "name": "EventPublisher",
-            "summary": "Interface\u0020for\u0020the\u0020component\u0020that\u0020sends\u0020events\u0020to\u0020the\u0020LaunchDarkly\u0020service.",
-            "url": "classes/LaunchDarkly-EventPublisher.html"
-        },                {
-            "fqsen": "\\LaunchDarkly\\EventPublisher\u003A\u003A__construct\u0028\u0029",
-            "name": "__construct",
-            "summary": "",
-            "url": "classes/LaunchDarkly-EventPublisher.html#method___construct"
-        },                {
-            "fqsen": "\\LaunchDarkly\\EventPublisher\u003A\u003Apublish\u0028\u0029",
-            "name": "publish",
-            "summary": "Publishes\u0020events\u0020to\u0020LaunchDarkly.",
-            "url": "classes/LaunchDarkly-EventPublisher.html#method_publish"
-        },                {
             "fqsen": "\\LaunchDarkly\\FeatureFlagsState",
             "name": "FeatureFlagsState",
             "summary": "A\u0020snapshot\u0020of\u0020the\u0020state\u0020of\u0020all\u0020feature\u0020flags\u0020with\u0020regard\u0020to\u0020a\u0020specific\u0020user.",
@@ -205,26 +190,6 @@ Search.appendIndex(
             "name": "jsonSerialize",
             "summary": "Returns\u0020a\u0020JSON\u0020representation\u0020of\u0020the\u0020entire\u0020state\u0020map\u0020\u0028as\u0020an\u0020associative\u0020array\u0029,\u0020in\u0020the\u0020format\u0020used\nby\u0020the\u0020LaunchDarkly\u0020JavaScript\u0020SDK.",
             "url": "classes/LaunchDarkly-FeatureFlagsState.html#method_jsonSerialize"
-        },                {
-            "fqsen": "\\LaunchDarkly\\FeatureRequester",
-            "name": "FeatureRequester",
-            "summary": "Interface\u0020for\u0020the\u0020component\u0020that\u0020retrieves\u0020feature\u0020flag\u0020data.",
-            "url": "classes/LaunchDarkly-FeatureRequester.html"
-        },                {
-            "fqsen": "\\LaunchDarkly\\FeatureRequester\u003A\u003AgetFeature\u0028\u0029",
-            "name": "getFeature",
-            "summary": "Gets\u0020the\u0020configuration\u0020for\u0020a\u0020specific\u0020feature\u0020flag.",
-            "url": "classes/LaunchDarkly-FeatureRequester.html#method_getFeature"
-        },                {
-            "fqsen": "\\LaunchDarkly\\FeatureRequester\u003A\u003AgetSegment\u0028\u0029",
-            "name": "getSegment",
-            "summary": "Gets\u0020the\u0020configuration\u0020for\u0020a\u0020specific\u0020user\u0020segment.",
-            "url": "classes/LaunchDarkly-FeatureRequester.html#method_getSegment"
-        },                {
-            "fqsen": "\\LaunchDarkly\\FeatureRequester\u003A\u003AgetAllFeatures\u0028\u0029",
-            "name": "getAllFeatures",
-            "summary": "Gets\u0020all\u0020feature\u0020flags.",
-            "url": "classes/LaunchDarkly-FeatureRequester.html#method_getAllFeatures"
         },                {
             "fqsen": "\\LaunchDarkly\\Integrations\\Curl",
             "name": "Curl",
@@ -273,7 +238,7 @@ Search.appendIndex(
         },                {
             "fqsen": "\\LaunchDarkly\\Integrations\\TestData\\FlagBuilder",
             "name": "FlagBuilder",
-            "summary": "A\u0020builder\u0020for\u0020feature\u0020flag\u0020configurations\u0020to\u0020be\u0020used\u0020with\u0020\u007B\u0040see\u0020\\LaunchDarkly\\Integrations\\TestData\u007D.",
+            "summary": "A\u0020builder\u0020for\u0020feature\u0020flag\u0020configurations\u0020to\u0020be\u0020used\u0020with\u0020TestData.",
             "url": "classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html"
         },                {
             "fqsen": "\\LaunchDarkly\\Integrations\\TestData\\FlagBuilder\u003A\u003A__construct\u0028\u0029",
@@ -288,7 +253,7 @@ Search.appendIndex(
         },                {
             "fqsen": "\\LaunchDarkly\\Integrations\\TestData\\FlagBuilder\u003A\u003Acopy\u0028\u0029",
             "name": "copy",
-            "summary": "Creates\u0020a\u0020deep\u0020copy\u0020of\u0020the\u0020flag\u0020builder.\u0020Subsequent\u0020updates\u0020to\nthe\u0020original\u0020FlagBuilder\u0020object\u0020will\u0020not\u0020update\u0020the\u0020copy\u0020and\nvise\u0020versa.",
+            "summary": "Creates\u0020a\u0020deep\u0020copy\u0020of\u0020the\u0020flag\u0020builder.\u0020Subsequent\u0020updates\u0020to\nthe\u0020original\u0020FlagBuilder\u0020object\u0020will\u0020not\u0020update\u0020the\u0020copy\u0020and\nvice\u0020versa.",
             "url": "classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_copy"
         },                {
             "fqsen": "\\LaunchDarkly\\Integrations\\TestData\\FlagBuilder\u003A\u003AbooleanFlag\u0028\u0029",
@@ -313,18 +278,33 @@ Search.appendIndex(
         },                {
             "fqsen": "\\LaunchDarkly\\Integrations\\TestData\\FlagBuilder\u003A\u003AvariationForAllUsers\u0028\u0029",
             "name": "variationForAllUsers",
-            "summary": "Sets\u0020the\u0020flag\u0020to\u0020always\u0020return\u0020the\u0020specified\u0020variation\u0020for\u0020all\u0020users.",
+            "summary": "Deprecated\u0020name\u0020for\u0020variationForAll.",
             "url": "classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_variationForAllUsers"
+        },                {
+            "fqsen": "\\LaunchDarkly\\Integrations\\TestData\\FlagBuilder\u003A\u003AvariationForAll\u0028\u0029",
+            "name": "variationForAll",
+            "summary": "Sets\u0020the\u0020flag\u0020to\u0020always\u0020return\u0020the\u0020specified\u0020variation\u0020for\u0020all\u0020users.",
+            "url": "classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_variationForAll"
         },                {
             "fqsen": "\\LaunchDarkly\\Integrations\\TestData\\FlagBuilder\u003A\u003AvalueForAllUsers\u0028\u0029",
             "name": "valueForAllUsers",
-            "summary": "Sets\u0020the\u0020flag\u0020to\u0020always\u0020return\u0020the\u0020specified\u0020variation\u0020value\u0020for\u0020all\u0020users.",
+            "summary": "Deprecated\u0020name\u0020for\u0020valueForAll.",
             "url": "classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_valueForAllUsers"
+        },                {
+            "fqsen": "\\LaunchDarkly\\Integrations\\TestData\\FlagBuilder\u003A\u003AvalueForAll\u0028\u0029",
+            "name": "valueForAll",
+            "summary": "Sets\u0020the\u0020flag\u0020to\u0020always\u0020return\u0020the\u0020specified\u0020variation\u0020value\u0020for\u0020all\u0020users.",
+            "url": "classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_valueForAll"
         },                {
             "fqsen": "\\LaunchDarkly\\Integrations\\TestData\\FlagBuilder\u003A\u003AvariationForUser\u0028\u0029",
             "name": "variationForUser",
             "summary": "Sets\u0020the\u0020flag\u0020to\u0020return\u0020the\u0020specified\u0020variation\u0020for\u0020a\u0020specific\u0020user\u0020key\u0020when\u0020targeting\nis\u0020on.",
             "url": "classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_variationForUser"
+        },                {
+            "fqsen": "\\LaunchDarkly\\Integrations\\TestData\\FlagBuilder\u003A\u003AvariationForKey\u0028\u0029",
+            "name": "variationForKey",
+            "summary": "Sets\u0020the\u0020flag\u0020to\u0020return\u0020the\u0020specified\u0020boolean\u0020variation\u0020for\u0020a\u0020specific\u0020context,\u0020identified\nby\u0020context\u0020kind\u0020and\u0020key,\u0020when\u0020targeting\u0020is\u0020on.",
+            "url": "classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_variationForKey"
         },                {
             "fqsen": "\\LaunchDarkly\\Integrations\\TestData\\FlagBuilder\u003A\u003Avariations\u0028\u0029",
             "name": "variations",
@@ -336,10 +316,20 @@ Search.appendIndex(
             "summary": "Starts\u0020defining\u0020a\u0020flag\u0020rule,\u0020using\u0020the\u0020\u0022is\u0020one\u0020of\u0022\u0020operator.",
             "url": "classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_ifMatch"
         },                {
+            "fqsen": "\\LaunchDarkly\\Integrations\\TestData\\FlagBuilder\u003A\u003AifMatchContext\u0028\u0029",
+            "name": "ifMatchContext",
+            "summary": "Starts\u0020defining\u0020a\u0020flag\u0020rule,\u0020using\u0020the\u0020\u0022is\u0020one\u0020of\u0022\u0020operator.\u0020This\u0020matching\u0020expression\u0020only\napplies\u0020to\u0020contexts\u0020of\u0020a\u0020specific\u0020kind.",
+            "url": "classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_ifMatchContext"
+        },                {
             "fqsen": "\\LaunchDarkly\\Integrations\\TestData\\FlagBuilder\u003A\u003AifNotMatch\u0028\u0029",
             "name": "ifNotMatch",
             "summary": "Starts\u0020defining\u0020a\u0020flag\u0020rule,\u0020using\u0020the\u0020\u0022is\u0020not\u0020one\u0020of\u0022\u0020operator.",
             "url": "classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_ifNotMatch"
+        },                {
+            "fqsen": "\\LaunchDarkly\\Integrations\\TestData\\FlagBuilder\u003A\u003AifNotMatchContext\u0028\u0029",
+            "name": "ifNotMatchContext",
+            "summary": "Starts\u0020defining\u0020a\u0020flag\u0020rule,\u0020using\u0020the\u0020\u0022is\u0020not\u0020one\u0020of\u0022\u0020operator.",
+            "url": "classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_ifNotMatchContext"
         },                {
             "fqsen": "\\LaunchDarkly\\Integrations\\TestData\\FlagBuilder\u003A\u003AaddRule\u0028\u0029",
             "name": "addRule",
@@ -353,8 +343,13 @@ Search.appendIndex(
         },                {
             "fqsen": "\\LaunchDarkly\\Integrations\\TestData\\FlagBuilder\u003A\u003AclearUserTargets\u0028\u0029",
             "name": "clearUserTargets",
-            "summary": "Removes\u0020any\u0020existing\u0020user\u0020targets\u0020from\u0020the\u0020flag.\u0020This\u0020undoes\u0020the\u0020effect\u0020of\u0020methods\u0020like\n\u0060variationForUser\u0028string,\u0020boolean\u0029\u0060.",
+            "summary": "Deprecated\u0020name\u0020for\u0020clearTargets.",
             "url": "classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_clearUserTargets"
+        },                {
+            "fqsen": "\\LaunchDarkly\\Integrations\\TestData\\FlagBuilder\u003A\u003AclearTargets\u0028\u0029",
+            "name": "clearTargets",
+            "summary": "Removes\u0020any\u0020existing\u0020targets\u0020for\u0020individual\u0020user\/context\u0020keys\u0020from\u0020the\u0020flag.\u0020This\u0020undoes\u0020the\u0020effect\u0020of\nthe\u0020\u0060variationForUser\u0060\u0020and\u0020\u0060variationForKey\u0060\u0020methods.",
+            "url": "classes/LaunchDarkly-Integrations-TestData-FlagBuilder.html#method_clearTargets"
         },                {
             "fqsen": "\\LaunchDarkly\\Integrations\\TestData\\FlagBuilder\u003A\u003AvariationForBoolean\u0028\u0029",
             "name": "variationForBoolean",
@@ -368,7 +363,7 @@ Search.appendIndex(
         },                {
             "fqsen": "\\LaunchDarkly\\Integrations\\TestData\\FlagRuleBuilder",
             "name": "FlagRuleBuilder",
-            "summary": "A\u0020builder\u0020for\u0020feature\u0020flag\u0020rules\u0020to\u0020be\u0020used\u0020with\u0020\u007B\u0040see\u0020\\LaunchDarkly\\Integrations\\TestData\\FlagBuilder\u007D.",
+            "summary": "A\u0020builder\u0020for\u0020feature\u0020flag\u0020rules\u0020to\u0020be\u0020used\u0020with\u0020FlagBuilder.",
             "url": "classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html"
         },                {
             "fqsen": "\\LaunchDarkly\\Integrations\\TestData\\FlagRuleBuilder\u003A\u003A__construct\u0028\u0029",
@@ -381,10 +376,20 @@ Search.appendIndex(
             "summary": "Adds\u0020another\u0020clause,\u0020using\u0020the\u0020\u0022is\u0020one\u0020of\u0022\u0020operator.",
             "url": "classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html#method_andMatch"
         },                {
+            "fqsen": "\\LaunchDarkly\\Integrations\\TestData\\FlagRuleBuilder\u003A\u003AandMatchContext\u0028\u0029",
+            "name": "andMatchContext",
+            "summary": "Adds\u0020another\u0020clause,\u0020using\u0020the\u0020\u0022is\u0020one\u0020of\u0022\u0020operator.\u0020This\u0020matching\u0020expression\u0020only\napplies\u0020to\u0020contexts\u0020of\u0020a\u0020specific\u0020kind.",
+            "url": "classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html#method_andMatchContext"
+        },                {
             "fqsen": "\\LaunchDarkly\\Integrations\\TestData\\FlagRuleBuilder\u003A\u003AandNotMatch\u0028\u0029",
             "name": "andNotMatch",
             "summary": "Adds\u0020another\u0020clause,\u0020using\u0020the\u0020\u0022is\u0020not\u0020one\u0020of\u0022\u0020operator.",
             "url": "classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html#method_andNotMatch"
+        },                {
+            "fqsen": "\\LaunchDarkly\\Integrations\\TestData\\FlagRuleBuilder\u003A\u003AandNotMatchContext\u0028\u0029",
+            "name": "andNotMatchContext",
+            "summary": "Adds\u0020another\u0020clause,\u0020using\u0020the\u0020\u0022is\u0020not\u0020one\u0020of\u0022\u0020operator.\u0020This\u0020matching\u0020expression\u0020only\napplies\u0020to\u0020contexts\u0020of\u0020a\u0020specific\u0020kind.",
+            "url": "classes/LaunchDarkly-Integrations-TestData-FlagRuleBuilder.html#method_andNotMatchContext"
         },                {
             "fqsen": "\\LaunchDarkly\\Integrations\\TestData\\FlagRuleBuilder\u003A\u003AthenReturn\u0028\u0029",
             "name": "thenReturn",
@@ -448,12 +453,12 @@ Search.appendIndex(
         },                {
             "fqsen": "\\LaunchDarkly\\LDClient\u003A\u003Avariation\u0028\u0029",
             "name": "variation",
-            "summary": "Calculates\u0020the\u0020value\u0020of\u0020a\u0020feature\u0020flag\u0020for\u0020a\u0020given\u0020user.",
+            "summary": "Calculates\u0020the\u0020value\u0020of\u0020a\u0020feature\u0020flag\u0020for\u0020a\u0020given\u0020context.",
             "url": "classes/LaunchDarkly-LDClient.html#method_variation"
         },                {
             "fqsen": "\\LaunchDarkly\\LDClient\u003A\u003AvariationDetail\u0028\u0029",
             "name": "variationDetail",
-            "summary": "Calculates\u0020the\u0020value\u0020of\u0020a\u0020feature\u0020flag,\u0020and\u0020returns\u0020an\u0020object\u0020that\u0020describes\u0020the\u0020way\u0020the\nvalue\u0020was\u0020determined.",
+            "summary": "Calculates\u0020the\u0020value\u0020of\u0020a\u0020feature\u0020flag\u0020for\u0020a\u0020given\u0020context,\u0020and\u0020returns\u0020an\u0020object\u0020that\ndescribes\u0020the\u0020way\u0020the\u0020value\u0020was\u0020determined.",
             "url": "classes/LaunchDarkly-LDClient.html#method_variationDetail"
         },                {
             "fqsen": "\\LaunchDarkly\\LDClient\u003A\u003AisOffline\u0028\u0029",
@@ -463,23 +468,18 @@ Search.appendIndex(
         },                {
             "fqsen": "\\LaunchDarkly\\LDClient\u003A\u003Atrack\u0028\u0029",
             "name": "track",
-            "summary": "Tracks\u0020that\u0020a\u0020user\u0020performed\u0020an\u0020event.",
+            "summary": "Tracks\u0020that\u0020an\u0020application\u002Ddefined\u0020event\u0020occurred.",
             "url": "classes/LaunchDarkly-LDClient.html#method_track"
         },                {
             "fqsen": "\\LaunchDarkly\\LDClient\u003A\u003Aidentify\u0028\u0029",
             "name": "identify",
-            "summary": "Reports\u0020details\u0020about\u0020a\u0020user.",
+            "summary": "Reports\u0020details\u0020about\u0020an\u0020evaluation\u0020context\u0020or\u0020user.",
             "url": "classes/LaunchDarkly-LDClient.html#method_identify"
         },                {
             "fqsen": "\\LaunchDarkly\\LDClient\u003A\u003AallFlagsState\u0028\u0029",
             "name": "allFlagsState",
-            "summary": "Returns\u0020an\u0020object\u0020that\u0020encapsulates\u0020the\u0020state\u0020of\u0020all\u0020feature\u0020flags\u0020for\u0020a\u0020given\u0020user.",
+            "summary": "Returns\u0020an\u0020object\u0020that\u0020encapsulates\u0020the\u0020state\u0020of\u0020all\u0020feature\u0020flags\u0020for\u0020a\u0020given\u0020context.",
             "url": "classes/LaunchDarkly-LDClient.html#method_allFlagsState"
-        },                {
-            "fqsen": "\\LaunchDarkly\\LDClient\u003A\u003Aalias\u0028\u0029",
-            "name": "alias",
-            "summary": "Associates\u0020two\u0020users\u0020for\u0020analytics\u0020purposes.",
-            "url": "classes/LaunchDarkly-LDClient.html#method_alias"
         },                {
             "fqsen": "\\LaunchDarkly\\LDClient\u003A\u003AsecureModeHash\u0028\u0029",
             "name": "secureModeHash",
@@ -505,6 +505,206 @@ Search.appendIndex(
             "name": "VERSION",
             "summary": "The\u0020current\u0020SDK\u0020version.",
             "url": "classes/LaunchDarkly-LDClient.html#constant_VERSION"
+        },                {
+            "fqsen": "\\LaunchDarkly\\isAllowableUserCustomAttr\u0028\u0029",
+            "name": "isAllowableUserCustomAttr",
+            "summary": "",
+            "url": "namespaces/launchdarkly.html#function_isAllowableUserCustomAttr"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContext",
+            "name": "LDContext",
+            "summary": "A\u0020collection\u0020of\u0020attributes\u0020that\u0020can\u0020be\u0020referenced\u0020in\u0020flag\u0020evaluations\u0020and\u0020analytics\u0020events.",
+            "url": "classes/LaunchDarkly-LDContext.html"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContext\u003A\u003A__construct\u0028\u0029",
+            "name": "__construct",
+            "summary": "Constructs\u0020an\u0020instance,\u0020setting\u0020all\u0020properties.\u0020Avoid\u0020using\u0020this\u0020constructor\u0020directly.",
+            "url": "classes/LaunchDarkly-LDContext.html#method___construct"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContext\u003A\u003Acreate\u0028\u0029",
+            "name": "create",
+            "summary": "Creates\u0020a\u0020single\u002Dkind\u0020LDContext\u0020with\u0020only\u0020the\u0020key\u0020and\u0020the\u0020kind\u0020specified.",
+            "url": "classes/LaunchDarkly-LDContext.html#method_create"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContext\u003A\u003AcreateMulti\u0028\u0029",
+            "name": "createMulti",
+            "summary": "Creates\u0020a\u0020multi\u002Dcontext\u0020out\u0020of\u0020the\u0020specified\u0020single\u002Dkind\u0020LDContexts.",
+            "url": "classes/LaunchDarkly-LDContext.html#method_createMulti"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContext\u003A\u003AfromUser\u0028\u0029",
+            "name": "fromUser",
+            "summary": "",
+            "url": "classes/LaunchDarkly-LDContext.html#method_fromUser"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContext\u003A\u003Abuilder\u0028\u0029",
+            "name": "builder",
+            "summary": "Creates\u0020a\u0020builder\u0020for\u0020building\u0020an\u0020LDContext.",
+            "url": "classes/LaunchDarkly-LDContext.html#method_builder"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContext\u003A\u003AmultiBuilder\u0028\u0029",
+            "name": "multiBuilder",
+            "summary": "Creates\u0020a\u0020builder\u0020for\u0020building\u0020a\u0020multi\u002Dcontext.",
+            "url": "classes/LaunchDarkly-LDContext.html#method_multiBuilder"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContext\u003A\u003AfromJson\u0028\u0029",
+            "name": "fromJson",
+            "summary": "Creates\u0020an\u0020LDContext\u0020from\u0020a\u0020parsed\u0020JSON\u0020representation.",
+            "url": "classes/LaunchDarkly-LDContext.html#method_fromJson"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContext\u003A\u003AisValid\u0028\u0029",
+            "name": "isValid",
+            "summary": "Returns\u0020\u0060true\u0060\u0020for\u0020a\u0020valid\u0020LDContext,\u0020\u0060false\u0060\u0020for\u0020an\u0020invalid\u0020one.",
+            "url": "classes/LaunchDarkly-LDContext.html#method_isValid"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContext\u003A\u003AgetError\u0028\u0029",
+            "name": "getError",
+            "summary": "Returns\u0020\u0060null\u0060\u0020for\u0020a\u0020valid\u0020LDContext,\u0020or\u0020an\u0020error\u0020message\u0020for\u0020an\u0020invalid\u0020one.",
+            "url": "classes/LaunchDarkly-LDContext.html#method_getError"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContext\u003A\u003AisMultiple\u0028\u0029",
+            "name": "isMultiple",
+            "summary": "Returns\u0020true\u0020if\u0020this\u0020is\u0020a\u0020multi\u002Dcontext.",
+            "url": "classes/LaunchDarkly-LDContext.html#method_isMultiple"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContext\u003A\u003AgetKind\u0028\u0029",
+            "name": "getKind",
+            "summary": "Returns\u0020the\u0020context\u0027s\u0020\u0060kind\u0060\u0020attribute.",
+            "url": "classes/LaunchDarkly-LDContext.html#method_getKind"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContext\u003A\u003AgetKey\u0028\u0029",
+            "name": "getKey",
+            "summary": "Returns\u0020the\u0020context\u0027s\u0020\u0060key\u0060\u0020attribute.",
+            "url": "classes/LaunchDarkly-LDContext.html#method_getKey"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContext\u003A\u003AgetName\u0028\u0029",
+            "name": "getName",
+            "summary": "Returns\u0020the\u0020context\u0027s\u0020\u0060name\u0060\u0020attribute.",
+            "url": "classes/LaunchDarkly-LDContext.html#method_getName"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContext\u003A\u003AisAnonymous\u0028\u0029",
+            "name": "isAnonymous",
+            "summary": "Returns\u0020true\u0020if\u0020this\u0020context\u0020is\u0020only\u0020intended\u0020for\u0020flag\u0020evaluations\u0020and\u0020will\u0020not\u0020be\nindexed\u0020by\u0020LaunchDarkly.",
+            "url": "classes/LaunchDarkly-LDContext.html#method_isAnonymous"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContext\u003A\u003Aget\u0028\u0029",
+            "name": "get",
+            "summary": "Looks\u0020up\u0020the\u0020value\u0020of\u0020any\u0020attribute\u0020of\u0020the\u0020context\u0020by\u0020name.",
+            "url": "classes/LaunchDarkly-LDContext.html#method_get"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContext\u003A\u003AgetCustomAttributeNames\u0028\u0029",
+            "name": "getCustomAttributeNames",
+            "summary": "Returns\u0020the\u0020names\u0020of\u0020all\u0020non\u002Dbuilt\u002Din\u0020attributes\u0020that\u0020have\u0020been\u0020set\u0020in\u0020this\u0020context.",
+            "url": "classes/LaunchDarkly-LDContext.html#method_getCustomAttributeNames"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContext\u003A\u003AgetIndividualContextCount\u0028\u0029",
+            "name": "getIndividualContextCount",
+            "summary": "Returns\u0020the\u0020number\u0020of\u0020context\u0020kinds\u0020in\u0020this\u0020context.",
+            "url": "classes/LaunchDarkly-LDContext.html#method_getIndividualContextCount"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContext\u003A\u003AgetIndividualContext\u0028\u0029",
+            "name": "getIndividualContext",
+            "summary": "Returns\u0020the\u0020single\u002Dkind\u0020LDContext\u0020corresponding\u0020to\u0020one\u0020of\u0020the\u0020kinds\u0020in\u0020this\u0020context.",
+            "url": "classes/LaunchDarkly-LDContext.html#method_getIndividualContext"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContext\u003A\u003AgetPrivateAttributes\u0028\u0029",
+            "name": "getPrivateAttributes",
+            "summary": "Gets\u0020the\u0020list\u0020of\u0020all\u0020attribute\u0020references\u0020marked\u0020as\u0020private\u0020for\u0020this\u0020specific\u0020LDContext.",
+            "url": "classes/LaunchDarkly-LDContext.html#method_getPrivateAttributes"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContext\u003A\u003AgetFullyQualifiedKey\u0028\u0029",
+            "name": "getFullyQualifiedKey",
+            "summary": "Returns\u0020a\u0020string\u0020that\u0020describes\u0020the\u0020LDContext\u0020uniquely\u0020based\u0020on\u0020\u0060kind\u0060\u0020and\u0020\u0060key\u0060\u0020values.",
+            "url": "classes/LaunchDarkly-LDContext.html#method_getFullyQualifiedKey"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContext\u003A\u003Aequals\u0028\u0029",
+            "name": "equals",
+            "summary": "Tests\u0020whether\u0020two\u0020contexts\u0020are\u0020logically\u0020equal.",
+            "url": "classes/LaunchDarkly-LDContext.html#method_equals"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContext\u003A\u003AjsonSerialize\u0028\u0029",
+            "name": "jsonSerialize",
+            "summary": "Returns\u0020a\u0020JSON\u0020representation\u0020of\u0020the\u0020context\u0020\u0028as\u0020an\u0020associative\u0020array\u0029,\u0020in\u0020the\u0020format\u0020used\u0020by\nLaunchDarkly\u0020SDKs.",
+            "url": "classes/LaunchDarkly-LDContext.html#method_jsonSerialize"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContext\u003A\u003A__toString\u0028\u0029",
+            "name": "__toString",
+            "summary": "Returns\u0020a\u0020string\u0020representation\u0020of\u0020the\u0020LDContext.",
+            "url": "classes/LaunchDarkly-LDContext.html#method___toString"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContext\u003A\u003ADEFAULT_KIND",
+            "name": "DEFAULT_KIND",
+            "summary": "A\u0020constant\u0020for\u0020the\u0020default\u0020kind\u0020of\u0020\u0022user\u0022.",
+            "url": "classes/LaunchDarkly-LDContext.html#constant_DEFAULT_KIND"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContext\u003A\u003AMULTI_KIND",
+            "name": "MULTI_KIND",
+            "summary": "A\u0020constant\u0020for\u0020the\u0020kind\u0020that\u0020all\u0020multi\u002Dcontexts\u0020have.",
+            "url": "classes/LaunchDarkly-LDContext.html#constant_MULTI_KIND"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContextBuilder",
+            "name": "LDContextBuilder",
+            "summary": "A\u0020mutable\u0020object\u0020that\u0020uses\u0020the\u0020builder\u0020pattern\u0020to\u0020specify\u0020properties\u0020for\u0020LDContext.",
+            "url": "classes/LaunchDarkly-LDContextBuilder.html"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContextBuilder\u003A\u003A__construct\u0028\u0029",
+            "name": "__construct",
+            "summary": "Constructs\u0020a\u0020new\u0020builder.",
+            "url": "classes/LaunchDarkly-LDContextBuilder.html#method___construct"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContextBuilder\u003A\u003Abuild\u0028\u0029",
+            "name": "build",
+            "summary": "Creates\u0020an\u0020LDContext\u0020from\u0020the\u0020current\u0020builder\u0020properties.",
+            "url": "classes/LaunchDarkly-LDContextBuilder.html#method_build"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContextBuilder\u003A\u003Akey\u0028\u0029",
+            "name": "key",
+            "summary": "Sets\u0020the\u0020context\u0027s\u0020key\u0020attribute.",
+            "url": "classes/LaunchDarkly-LDContextBuilder.html#method_key"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContextBuilder\u003A\u003Akind\u0028\u0029",
+            "name": "kind",
+            "summary": "Sets\u0020the\u0020context\u0027s\u0020kind\u0020attribute.",
+            "url": "classes/LaunchDarkly-LDContextBuilder.html#method_kind"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContextBuilder\u003A\u003Aname\u0028\u0029",
+            "name": "name",
+            "summary": "Sets\u0020the\u0020context\u0027s\u0020name\u0020attribute.",
+            "url": "classes/LaunchDarkly-LDContextBuilder.html#method_name"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContextBuilder\u003A\u003Aanonymous\u0028\u0029",
+            "name": "anonymous",
+            "summary": "Sets\u0020whether\u0020the\u0020context\u0020is\u0020only\u0020intended\u0020for\u0020flag\u0020evaluations\u0020and\u0020should\u0020not\u0020be\nindexed\u0020by\u0020LaunchDarkly.",
+            "url": "classes/LaunchDarkly-LDContextBuilder.html#method_anonymous"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContextBuilder\u003A\u003Aset\u0028\u0029",
+            "name": "set",
+            "summary": "Sets\u0020the\u0020value\u0020of\u0020any\u0020attribute\u0020for\u0020the\u0020context.",
+            "url": "classes/LaunchDarkly-LDContextBuilder.html#method_set"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContextBuilder\u003A\u003AtrySet\u0028\u0029",
+            "name": "trySet",
+            "summary": "Same\u0020as\u0020set\u0028\u0029,\u0020but\u0020returns\u0020a\u0020boolean\u0020indicating\u0020whether\u0020the\u0020attribute\u0020was\u0020successfully\u0020set.",
+            "url": "classes/LaunchDarkly-LDContextBuilder.html#method_trySet"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContextBuilder\u003A\u003Aprivate\u0028\u0029",
+            "name": "private",
+            "summary": "Designates\u0020any\u0020number\u0020of\u0020LDContext\u0020attributes,\u0020or\u0020properties\u0020within\u0020them,\u0020as\u0020private\u003A\u0020that\u0020is,\ntheir\u0020values\u0020will\u0020not\u0020be\u0020sent\u0020to\u0020LaunchDarkly.",
+            "url": "classes/LaunchDarkly-LDContextBuilder.html#method_private"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContextMultiBuilder",
+            "name": "LDContextMultiBuilder",
+            "summary": "A\u0020mutable\u0020object\u0020that\u0020uses\u0020the\u0020builder\u0020pattern\u0020to\u0020specify\u0020properties\u0020for\u0020a\u0020multi\u002Dcontext.",
+            "url": "classes/LaunchDarkly-LDContextMultiBuilder.html"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContextMultiBuilder\u003A\u003Abuild\u0028\u0029",
+            "name": "build",
+            "summary": "Creates\u0020an\u0020LDContext\u0020from\u0020the\u0020current\u0020builder\u0020properties.",
+            "url": "classes/LaunchDarkly-LDContextMultiBuilder.html#method_build"
+        },                {
+            "fqsen": "\\LaunchDarkly\\LDContextMultiBuilder\u003A\u003Aadd\u0028\u0029",
+            "name": "add",
+            "summary": "Adds\u0020an\u0020individual\u0020LDContext\u0020for\u0020a\u0020specific\u0020kind\u0020to\u0020the\u0020builer.",
+            "url": "classes/LaunchDarkly-LDContextMultiBuilder.html#method_add"
         },                {
             "fqsen": "\\LaunchDarkly\\LDUser",
             "name": "LDUser",
@@ -535,11 +735,6 @@ Search.appendIndex(
             "name": "getKey",
             "summary": "",
             "url": "classes/LaunchDarkly-LDUser.html#method_getKey"
-        },                {
-            "fqsen": "\\LaunchDarkly\\LDUser\u003A\u003AgetSecondary\u0028\u0029",
-            "name": "getSecondary",
-            "summary": "",
-            "url": "classes/LaunchDarkly-LDUser.html#method_getSecondary"
         },                {
             "fqsen": "\\LaunchDarkly\\LDUser\u003A\u003AgetEmail\u0028\u0029",
             "name": "getEmail",
@@ -590,16 +785,6 @@ Search.appendIndex(
             "name": "__construct",
             "summary": "Creates\u0020a\u0020builder\u0020with\u0020the\u0020specified\u0020key.",
             "url": "classes/LaunchDarkly-LDUserBuilder.html#method___construct"
-        },                {
-            "fqsen": "\\LaunchDarkly\\LDUserBuilder\u003A\u003Asecondary\u0028\u0029",
-            "name": "secondary",
-            "summary": "Sets\u0020the\u0020user\u0027s\u0020secondary\u0020key\u0020attribute.",
-            "url": "classes/LaunchDarkly-LDUserBuilder.html#method_secondary"
-        },                {
-            "fqsen": "\\LaunchDarkly\\LDUserBuilder\u003A\u003AprivateSecondary\u0028\u0029",
-            "name": "privateSecondary",
-            "summary": "Sets\u0020the\u0020user\u0027s\u0020secondary\u0020key\u0020attribute,\u0020and\u0020marks\u0020it\u0020as\u0020private.",
-            "url": "classes/LaunchDarkly-LDUserBuilder.html#method_privateSecondary"
         },                {
             "fqsen": "\\LaunchDarkly\\LDUserBuilder\u003A\u003Aip\u0028\u0029",
             "name": "ip",
@@ -696,6 +881,91 @@ Search.appendIndex(
             "summary": "Creates\u0020the\u0020LDUser\u0020instance\u0020based\u0020on\u0020the\u0020builder\u0027s\u0020current\u0020properties.",
             "url": "classes/LaunchDarkly-LDUserBuilder.html#method_build"
         },                {
+            "fqsen": "\\LaunchDarkly\\Subsystems\\EventPublisher",
+            "name": "EventPublisher",
+            "summary": "Interface\u0020for\u0020the\u0020component\u0020that\u0020sends\u0020events\u0020to\u0020the\u0020LaunchDarkly\u0020service.",
+            "url": "classes/LaunchDarkly-Subsystems-EventPublisher.html"
+        },                {
+            "fqsen": "\\LaunchDarkly\\Subsystems\\EventPublisher\u003A\u003A__construct\u0028\u0029",
+            "name": "__construct",
+            "summary": "",
+            "url": "classes/LaunchDarkly-Subsystems-EventPublisher.html#method___construct"
+        },                {
+            "fqsen": "\\LaunchDarkly\\Subsystems\\EventPublisher\u003A\u003Apublish\u0028\u0029",
+            "name": "publish",
+            "summary": "Publishes\u0020events\u0020to\u0020LaunchDarkly.",
+            "url": "classes/LaunchDarkly-Subsystems-EventPublisher.html#method_publish"
+        },                {
+            "fqsen": "\\LaunchDarkly\\Subsystems\\FeatureRequester",
+            "name": "FeatureRequester",
+            "summary": "Interface\u0020for\u0020the\u0020component\u0020that\u0020retrieves\u0020feature\u0020flag\u0020data.",
+            "url": "classes/LaunchDarkly-Subsystems-FeatureRequester.html"
+        },                {
+            "fqsen": "\\LaunchDarkly\\Subsystems\\FeatureRequester\u003A\u003AgetFeature\u0028\u0029",
+            "name": "getFeature",
+            "summary": "Gets\u0020the\u0020configuration\u0020for\u0020a\u0020specific\u0020feature\u0020flag.",
+            "url": "classes/LaunchDarkly-Subsystems-FeatureRequester.html#method_getFeature"
+        },                {
+            "fqsen": "\\LaunchDarkly\\Subsystems\\FeatureRequester\u003A\u003AgetSegment\u0028\u0029",
+            "name": "getSegment",
+            "summary": "Gets\u0020the\u0020configuration\u0020for\u0020a\u0020specific\u0020user\u0020segment.",
+            "url": "classes/LaunchDarkly-Subsystems-FeatureRequester.html#method_getSegment"
+        },                {
+            "fqsen": "\\LaunchDarkly\\Subsystems\\FeatureRequester\u003A\u003AgetAllFeatures\u0028\u0029",
+            "name": "getAllFeatures",
+            "summary": "Gets\u0020all\u0020feature\u0020flags.",
+            "url": "classes/LaunchDarkly-Subsystems-FeatureRequester.html#method_getAllFeatures"
+        },                {
+            "fqsen": "\\LaunchDarkly\\Types\\AttributeReference",
+            "name": "AttributeReference",
+            "summary": "An\u0020attribute\u0020name\u0020or\u0020path\u0020expression\u0020identifying\u0020a\u0020value\u0020within\u0020an\u0020\u007B\u0040see\u0020\\LaunchDarkly\\LDContext\u007D.",
+            "url": "classes/LaunchDarkly-Types-AttributeReference.html"
+        },                {
+            "fqsen": "\\LaunchDarkly\\Types\\AttributeReference\u003A\u003AfromPath\u0028\u0029",
+            "name": "fromPath",
+            "summary": "Creates\u0020an\u0020AttributeReference\u0020from\u0020a\u0020string.\u0020For\u0020the\u0020supported\u0020syntax\u0020and\u0020examples,\u0020see\ncomments\u0020on\u0020the\u0020\u007B\u0040see\u0020\\LaunchDarkly\\AttributeReference\u007D\u0020type.",
+            "url": "classes/LaunchDarkly-Types-AttributeReference.html#method_fromPath"
+        },                {
+            "fqsen": "\\LaunchDarkly\\Types\\AttributeReference\u003A\u003AfromLiteral\u0028\u0029",
+            "name": "fromLiteral",
+            "summary": "Similar\u0020to\u0020\u007B\u0040see\u0020\\LaunchDarkly\\AttributeReference\u003A\u003AfromPath\u0028\u0029\u007D,\u0020except\u0020that\u0020it\u0020always\ninterprets\u0020the\u0020string\u0020as\u0020a\u0020literal\u0020attribute\u0020name,\u0020never\u0020as\u0020a\u0020slash\u002Ddelimited\u0020path\u0020expression.",
+            "url": "classes/LaunchDarkly-Types-AttributeReference.html#method_fromLiteral"
+        },                {
+            "fqsen": "\\LaunchDarkly\\Types\\AttributeReference\u003A\u003AgetPath\u0028\u0029",
+            "name": "getPath",
+            "summary": "Returns\u0020the\u0020original\u0020attribute\u0020reference\u0020path\u0020string.",
+            "url": "classes/LaunchDarkly-Types-AttributeReference.html#method_getPath"
+        },                {
+            "fqsen": "\\LaunchDarkly\\Types\\AttributeReference\u003A\u003AgetError\u0028\u0029",
+            "name": "getError",
+            "summary": "Returns\u0020null\u0020for\u0020a\u0020valid\u0020reference,\u0020or\u0020an\u0020error\u0020string\u0020for\u0020an\u0020invalid\u0020one.",
+            "url": "classes/LaunchDarkly-Types-AttributeReference.html#method_getError"
+        },                {
+            "fqsen": "\\LaunchDarkly\\Types\\AttributeReference\u003A\u003AgetDepth\u0028\u0029",
+            "name": "getDepth",
+            "summary": "The\u0020number\u0020of\u0020path\u0020components\u0020in\u0020the\u0020AttributeReference.",
+            "url": "classes/LaunchDarkly-Types-AttributeReference.html#method_getDepth"
+        },                {
+            "fqsen": "\\LaunchDarkly\\Types\\AttributeReference\u003A\u003AgetComponent\u0028\u0029",
+            "name": "getComponent",
+            "summary": "Retrieves\u0020a\u0020single\u0020path\u0020component\u0020from\u0020the\u0020attribute\u0020reference.",
+            "url": "classes/LaunchDarkly-Types-AttributeReference.html#method_getComponent"
+        },                {
+            "fqsen": "\\LaunchDarkly\\Types\\AttributeReference\u003A\u003AERR_ATTR_EMPTY",
+            "name": "ERR_ATTR_EMPTY",
+            "summary": "",
+            "url": "classes/LaunchDarkly-Types-AttributeReference.html#constant_ERR_ATTR_EMPTY"
+        },                {
+            "fqsen": "\\LaunchDarkly\\Types\\AttributeReference\u003A\u003AERR_ATTR_EXTRA_SLASH",
+            "name": "ERR_ATTR_EXTRA_SLASH",
+            "summary": "",
+            "url": "classes/LaunchDarkly-Types-AttributeReference.html#constant_ERR_ATTR_EXTRA_SLASH"
+        },                {
+            "fqsen": "\\LaunchDarkly\\Types\\AttributeReference\u003A\u003AERR_ATTR_INVALID_ESCAPE",
+            "name": "ERR_ATTR_INVALID_ESCAPE",
+            "summary": "",
+            "url": "classes/LaunchDarkly-Types-AttributeReference.html#constant_ERR_ATTR_INVALID_ESCAPE"
+        },                {
             "fqsen": "\\",
             "name": "\\",
             "summary": "",
@@ -715,5 +985,15 @@ Search.appendIndex(
             "name": "TestData",
             "summary": "",
             "url": "namespaces/launchdarkly-integrations-testdata.html"
+        },                {
+            "fqsen": "\\LaunchDarkly\\Subsystems",
+            "name": "Subsystems",
+            "summary": "",
+            "url": "namespaces/launchdarkly-subsystems.html"
+        },                {
+            "fqsen": "\\LaunchDarkly\\Types",
+            "name": "Types",
+            "summary": "",
+            "url": "namespaces/launchdarkly-types.html"
         }            ]
 );
