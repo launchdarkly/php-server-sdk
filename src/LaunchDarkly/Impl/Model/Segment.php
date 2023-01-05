@@ -1,8 +1,8 @@
 <?php
 
-namespace LaunchDarkly\Impl\Model;
+declare(strict_types=1);
 
-use LaunchDarkly\LDUser;
+namespace LaunchDarkly\Impl\Model;
 
 /**
  * Internal data model class that describes a user segment.
@@ -14,26 +14,28 @@ use LaunchDarkly\LDUser;
  */
 class Segment
 {
-    /** @var string */
-    protected $_key;
-    /** @var int */
-    protected $_version;
+    protected string $_key;
+    protected int $_version;
     /** @var string[] */
-    protected $_included = [];
+    protected array $_included;
     /** @var string[] */
-    protected $_excluded = [];
-    /** @var string */
-    protected $_salt;
+    protected array $_excluded;
+    /** @var SegmentTarget[] */
+    protected array $_includedContexts;
+    /** @var SegmentTarget[] */
+    protected array $_excludedContexts;
+    protected string $_salt;
     /** @var SegmentRule[] */
-    protected $_rules = [];
-    /** @var bool */
-    protected $_deleted = false;
+    protected array $_rules = [];
+    protected bool $_deleted = false;
 
-    protected function __construct(
+    public function __construct(
         string $key,
         int $version,
         array $included,
         array $excluded,
+        array $includedContexts,
+        array $excludedContexts,
         string $salt,
         array $rules,
         bool $deleted
@@ -42,6 +44,8 @@ class Segment
         $this->_version = $version;
         $this->_included = $included;
         $this->_excluded = $excluded;
+        $this->_includedContexts = $includedContexts;
+        $this->_excludedContexts = $excludedContexts;
         $this->_salt = $salt;
         $this->_rules = $rules;
         $this->_deleted = $deleted;
@@ -49,17 +53,18 @@ class Segment
 
     public static function getDecoder(): \Closure
     {
-        return function (array $v) {
-            return new Segment(
+        return fn (array $v) =>
+            new Segment(
                 $v['key'],
                 $v['version'],
                 $v['included'] ?: [],
                 $v['excluded'] ?: [],
+                array_map(SegmentTarget::getDecoder(), $v['includedContexts'] ?? []),
+                array_map(SegmentTarget::getDecoder(), $v['excludedContexts'] ?? []),
                 $v['salt'],
                 array_map(SegmentRule::getDecoder(), $v['rules'] ?: []),
                 $v['deleted']
             );
-        };
     }
 
     public static function decode(array $v): Segment
@@ -67,29 +72,33 @@ class Segment
         return static::getDecoder()($v);
     }
 
-    public function matchesUser(LDUser $user): bool
+    public function isDeleted(): bool
     {
-        $key = $user->getKey();
-        if (!$key) {
-            return false;
-        }
-        if (in_array($key, $this->_included, true)) {
-            return true;
-        }
-        if (in_array($key, $this->_excluded, true)) {
-            return false;
-        }
-        foreach ($this->_rules as $rule) {
-            if ($rule->matchesUser($user, $this->_key, $this->_salt)) {
-                return true;
-            }
-        }
-        return false;
+        return $this->_deleted;
     }
 
-    public function getVersion(): ?int
+    /** @return string[] */
+    public function getExcluded(): array
     {
-        return $this->_version;
+        return $this->_excluded;
+    }
+
+    /** @return SegmentTarget[] */
+    public function getExcludedContexts(): array
+    {
+        return $this->_excludedContexts;
+    }
+
+    /** @return string[] */
+    public function getIncluded(): array
+    {
+        return $this->_included;
+    }
+
+    /** @return SegmentTarget[] */
+    public function getIncludedContexts(): array
+    {
+        return $this->_includedContexts;
     }
 
     public function getKey(): string
@@ -97,8 +106,19 @@ class Segment
         return $this->_key;
     }
 
-    public function isDeleted(): bool
+    /** @return SegmentRule[] */
+    public function getRules(): array
     {
-        return $this->_deleted;
+        return $this->_rules;
+    }
+
+    public function getSalt(): string
+    {
+        return $this->_salt;
+    }
+
+    public function getVersion(): ?int
+    {
+        return $this->_version;
     }
 }

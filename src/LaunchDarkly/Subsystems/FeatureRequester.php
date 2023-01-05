@@ -1,6 +1,8 @@
 <?php
 
-namespace LaunchDarkly;
+declare(strict_types=1);
+
+namespace LaunchDarkly\Subsystems;
 
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Impl\Model\Segment;
@@ -8,9 +10,13 @@ use LaunchDarkly\Impl\Model\Segment;
 /**
  * Interface for the component that retrieves feature flag data.
  *
- * The default implementation is {@see \LaunchDarkly\Integrations\Guzzle::featureRequester()}, which requests
- * flags inefficiently via HTTP on demand. For other implementations, including database integrations, see the
- * LaunchDarkly\Integrations namespace.
+ * Application code should not need to implement this interface. LaunchDarkly provides several implementations:
+ *
+ * - The default, {@see \LaunchDarkly\Integrations\Guzzle::featureRequester()}, which requests
+ * flags inefficiently via HTTP on demand.
+ * - Database integrations provided in separate packages. See: https://docs.launchdarkly.com/sdk/features/storing-data#php
+ * - A mechanism for reading data from the filesystem: {@see \LaunchDarkly\Integrations\Files}
+ * - A mechanism for injecting test data: {@see \LaunchDarkly\Integrations\TestData}
  */
 interface FeatureRequester
 {

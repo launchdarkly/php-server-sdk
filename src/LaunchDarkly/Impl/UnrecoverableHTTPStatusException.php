@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl;
 
 /**
@@ -10,8 +12,7 @@ namespace LaunchDarkly\Impl;
  */
 class UnrecoverableHTTPStatusException extends \Exception
 {
-    /** @var int */
-    public $status;
+    public int $status;
 
     public function __construct(int $status)
     {

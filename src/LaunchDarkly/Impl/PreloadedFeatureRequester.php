@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl;
 
-use LaunchDarkly\FeatureRequester;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Impl\Model\Segment;
+use LaunchDarkly\Subsystems\FeatureRequester;
 
 /**
  * Internal class used in LDClient.
@@ -14,11 +16,8 @@ use LaunchDarkly\Impl\Model\Segment;
  */
 class PreloadedFeatureRequester implements FeatureRequester
 {
-    /** @var FeatureRequester */
-    private $_baseRequester;
-
-    /** @var array */
-    private $_knownFeatures;
+    private FeatureRequester $_baseRequester;
+    private array $_knownFeatures;
 
     public function __construct(FeatureRequester $baseRequester, array $knownFeatures)
     {
@@ -34,10 +33,7 @@ class PreloadedFeatureRequester implements FeatureRequester
      */
     public function getFeature(string $key): ?FeatureFlag
     {
-        if (isset($this->_knownFeatures[$key])) {
-            return $this->_knownFeatures[$key];
-        }
-        return null;
+        return $this->_knownFeatures[$key] ?? null;
     }
 
     /**

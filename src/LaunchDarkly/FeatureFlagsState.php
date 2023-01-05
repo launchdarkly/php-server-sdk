@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly;
 
 use LaunchDarkly\Impl\Model\FeatureFlag;
@@ -15,14 +17,9 @@ use LaunchDarkly\Impl\Model\FeatureFlag;
  */
 class FeatureFlagsState implements \JsonSerializable
 {
-    /** @var bool */
-    protected $_valid = false;
-
-    /** @var array */
-    protected $_flagValues;
-
-    /** @var array<string, array{debugEventsUntilDate?: int|null, reason?: EvaluationReason, trackEvents?: true, variation?: int|null, version?: int}> **/
-    protected $_flagMetadata;
+    protected bool $_valid = false;
+    protected array $_flagValues;
+    protected array $_flagMetadata;
 
     /**
      * @ignore
@@ -44,16 +41,15 @@ class FeatureFlagsState implements \JsonSerializable
     public function addFlag(
         FeatureFlag $flag,
         EvaluationDetail $detail,
+        bool $forceReasonTracking = false,
         bool $withReason = false,
         bool $detailsOnlyIfTracked = false
     ): void {
-        $requireExperimentData = $flag->isExperiment($detail->getReason());
-
         $this->_flagValues[$flag->getKey()] = $detail->getValue();
         $meta = [];
 
-        $trackEvents = $flag->isTrackEvents() || $requireExperimentData;
-        $trackReason = $requireExperimentData;
+        $trackEvents = $flag->isTrackEvents() || $forceReasonTracking;
+        $trackReason = $forceReasonTracking;
 
         $omitDetails = false;
         if ($detailsOnlyIfTracked) {
@@ -100,9 +96,9 @@ class FeatureFlagsState implements \JsonSerializable
      * @param string $key the feature flag key
      * @return mixed the flag's value; null if the flag returned the default value, or if there was no such flag
      */
-    public function getFlagValue(string $key)
+    public function getFlagValue(string $key): mixed
     {
-        return isset($this->_flagValues[$key]) ? $this->_flagValues[$key] : null;
+        return $this->_flagValues[$key] ?? null;
     }
 
     /**
@@ -115,11 +111,7 @@ class FeatureFlagsState implements \JsonSerializable
      */
     public function getFlagReason(string $key): ?EvaluationReason
     {
-        if (isset($this->_flagMetadata[$key])) {
-            $meta = $this->_flagMetadata[$key];
-            return isset($meta['reason']) ? $meta['reason'] : null;
-        }
-        return null;
+        return ($this->_flagMetadata[$key] ?? [])['reason'] ?? null;
     }
 
     /**
@@ -155,7 +147,7 @@ class FeatureFlagsState implements \JsonSerializable
             $metaMap = [];
             foreach ($this->_flagMetadata as $key => $meta) {
                 $meta = array_replace([], $meta);
-                if (isset($meta['reason'])) {
+                if ($meta['reason'] ?? null) {
                     $meta['reason'] = $meta['reason']->jsonSerialize();
                 }
                 $metaMap[$key] = $meta;

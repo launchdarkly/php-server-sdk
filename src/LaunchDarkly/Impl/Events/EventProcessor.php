@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl\Events;
 
-use LaunchDarkly\EventPublisher;
 use LaunchDarkly\Integrations\Curl;
+use LaunchDarkly\Subsystems\EventPublisher;
 
 /**
  * Internal class that processes analytics event data.
@@ -13,17 +15,10 @@ use LaunchDarkly\Integrations\Curl;
  */
 class EventProcessor
 {
-    /** @var EventPublisher */
-    private $_eventPublisher;
-
-    /** @var EventSerializer */
-    private $_eventSerializer;
-
-    /** @var array */
-    private $_queue = [];
-
-    /** @var int */
-    private $_capacity;
+    private EventPublisher $_eventPublisher;
+    private EventSerializer $_eventSerializer;
+    private array $_queue = [];
+    private int $_capacity;
 
     /**
      * @psalm-param array{capacity: int} $options
@@ -47,7 +42,7 @@ class EventProcessor
     }
 
     /**
-     * @param (int|mixed|string|true)[] $event
+     * @param mixed[] $event
      */
     public function enqueue(array $event): bool
     {
@@ -84,9 +79,6 @@ class EventProcessor
     private function getEventPublisher(string $sdkKey, array $options): EventPublisher
     {
         $ep = $options['event_publisher'] ?? null;
-        if (!$ep && isset($options['event_publisher_class'])) {
-            $ep = $options['event_publisher_class'];
-        }
         if (!$ep) {
             $ep = Curl::eventPublisher();
         }

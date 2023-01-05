@@ -1,8 +1,8 @@
 <?php
 
-namespace LaunchDarkly\Tests\Impl\Model;
+namespace LaunchDarkly\Tests\Impl\Evaluation;
 
-use LaunchDarkly\Impl\Model\Operators;
+use LaunchDarkly\Impl\Evaluation\Operators;
 use PHPUnit\Framework\TestCase;
 
 class OperatorsTest extends TestCase
@@ -51,7 +51,13 @@ class OperatorsTest extends TestCase
         $this->assertEquals(1001, Operators::parseTime("1970-01-01T00:00:01.001Z"));
 
 
+        $this->assertEquals(null, Operators::parseTime(null));
+        $this->assertEquals(null, Operators::parseTime(true));
+        $this->assertEquals(null, Operators::parseTime(""));
+        $this->assertEquals(null, Operators::parseTime("100"));
         $this->assertEquals(null, Operators::parseTime("NOT A REAL TIMESTAMP"));
+        $this->assertEquals(null, Operators::parseTime("1970-01-01"));    // RFC3339 requires both date and time
+        $this->assertEquals(null, Operators::parseTime("00:00:01.001Z")); // ditto
         $this->assertEquals(null, Operators::parseTime([]));
     }
 
@@ -73,6 +79,11 @@ class OperatorsTest extends TestCase
         $this->assertTrue(Operators::apply("semVerGreaterThan", "2.0.0-rc.1", "2.0.0-rc.0"));
         $this->assertFalse(Operators::apply("semVerLessThan", "2.0.0", "xbad%ver"));
         $this->assertFalse(Operators::apply("semVerGreaterThan", "2.0.0", "xbad%ver"));
+
+        // numeric values are always invalid - must be a string
+        $this->assertFalse(Operators::apply("semVerEqual", 2, "2.0.0"));
+        $this->assertFalse(Operators::apply("semVerLessThan", 2, "2.0.1"));
+        $this->assertFalse(Operators::apply("semVerGreaterThan", 3, "2.0.1"));
     }
 
     public function comparisonOperators(): array
@@ -116,7 +127,7 @@ class OperatorsTest extends TestCase
             ["greaterThanOrEqual", 100, "200", false],
             ["greaterThanOrEqual", 100, true, false],
             ["greaterThanOrEqual", true, 100, false],
-            ["greaterThanOrEqual", true, true, false],
+            ["greaterThanOrEqual", true, true, false]
         ];
     }
 

@@ -30,21 +30,6 @@ class LDUserTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(LDUser::class, $user);
     }
 
-    public function testLDUserSecondary()
-    {
-        $builder = new LDUserBuilder("foo@bar.com");
-        $user = $builder->secondary("secondary")->build();
-        $this->assertEquals("secondary", $user->getSecondary());
-    }
-
-    public function testLDUserPrivateSecondary()
-    {
-        $builder = new LDUserBuilder("foo@bar.com");
-        $user = $builder->privateSecondary("secondary")->build();
-        $this->assertEquals("secondary", $user->getSecondary());
-        $this->assertEquals(["secondary"], $user->getPrivateAttributeNames());
-    }
-
     public function testLDUserIP()
     {
         $builder = new LDUserBuilder("foo@bar.com");

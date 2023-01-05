@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl\Integrations;
 
-use LaunchDarkly\FeatureRequester;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Impl\Model\Segment;
+use LaunchDarkly\Subsystems\FeatureRequester;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -19,16 +21,11 @@ class FeatureRequesterBase implements FeatureRequester
     const ALL_ITEMS_KEY = '$all';
     const CACHE_PREFIX = 'launchdarkly:';
 
-    /** @var string */
-    protected $_baseUri;
-    /** @var string */
-    protected $_sdkKey;
-    /** @var array */
-    protected $_options;
-    /** @var FeatureRequesterCache|null */
-    protected $_cache;
-    /** @var LoggerInterface */
-    protected $_logger;
+    protected string $_baseUri;
+    protected string $_sdkKey;
+    protected array $_options;
+    protected ?FeatureRequesterCache $_cache;
+    protected LoggerInterface $_logger;
 
     protected function __construct(string $baseUri, string $sdkKey, array $options)
     {
@@ -37,7 +34,7 @@ class FeatureRequesterBase implements FeatureRequester
         $this->_options = $options;
         $this->_cache = $this->createCache($options);
 
-        if (isset($options['logger']) && $options['logger']) {
+        if ($options['logger'] ?? null) {
             $this->_logger = $options['logger'];
         } else {
             $this->_logger = new NullLogger();
@@ -143,12 +140,10 @@ class FeatureRequesterBase implements FeatureRequester
     protected function getJsonItem(string $namespace, string $key): ?array
     {
         $cacheKey = $this->makeCacheKey($namespace, $key);
-        $raw = $this->_cache ? $this->_cache->getCachedString($cacheKey) : null;
+        $raw = $this->_cache?->getCachedString($cacheKey);
         if ($raw === null) {
             $raw = $this->readItemString($namespace, $key);
-            if ($this->_cache) {
-                $this->_cache->putCachedString($cacheKey, $raw);
-            }
+            $this->_cache?->putCachedString($cacheKey, $raw);
         }
         return ($raw === null) ? null : json_decode($raw, true);
     }
@@ -156,7 +151,7 @@ class FeatureRequesterBase implements FeatureRequester
     protected function getJsonItemList(string $namespace): array
     {
         $cacheKey = $this->makeCacheKey($namespace, self::ALL_ITEMS_KEY);
-        $raw = $this->_cache ? $this->_cache->getCachedString($cacheKey) : null;
+        $raw = $this->_cache?->getCachedString($cacheKey);
         if ($raw) {
             $values = json_decode($raw, true);
         } else {
@@ -164,9 +159,7 @@ class FeatureRequesterBase implements FeatureRequester
             if (!$values) {
                 $values = [];
             }
-            if ($this->_cache) {
-                $this->_cache->putCachedString($cacheKey, json_encode($values));
-            }
+            $this->_cache?->putCachedString($cacheKey, json_encode($values));
         }
         foreach ($values as $i => $s) {
             $values[$i] = json_decode($s, true);

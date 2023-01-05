@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl\Model;
 
 /**
@@ -12,24 +14,26 @@ namespace LaunchDarkly\Impl\Model;
  */
 class Target
 {
+    private ?string $_contextKind;
     /** @var string[] */
-    private $_values = [];
-    /** @var int */
-    private $_variation;
+    private array $_values;
+    private int $_variation;
 
-    protected function __construct(array $values, int $variation)
+    public function __construct(?string $contextKind, array $values, int $variation)
     {
+        $this->_contextKind = $contextKind;
         $this->_values = $values;
         $this->_variation = $variation;
     }
 
     public static function getDecoder(): \Closure
     {
-        return function (array $v) {
-            $values = $v['values'];
-            $variation = $v['variation'];
-            return new Target($values, $variation);
-        };
+        return fn (array $v) => new Target($v['contextKind'] ?? null, $v['values'], $v['variation']);
+    }
+
+    public function getContextKind(): ?string
+    {
+        return $this->_contextKind;
     }
 
     /**

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl;
 
 /**
@@ -15,19 +17,13 @@ namespace LaunchDarkly\Impl;
  */
 class SemanticVersion
 {
-    /** @var string */
-    private static $REGEX = '/^(?<major>0|[1-9]\d*)(\.(?<minor>0|[1-9]\d*))?(\.(?<patch>0|[1-9]\d*))?(\-(?<prerel>[0-9A-Za-z\-\.]+))?(\+(?<build>[0-9A-Za-z\-\.]+))?$/';
+    private static string $REGEX = '/^(?<major>0|[1-9]\d*)(\.(?<minor>0|[1-9]\d*))?(\.(?<patch>0|[1-9]\d*))?(\-(?<prerel>[0-9A-Za-z\-\.]+))?(\+(?<build>[0-9A-Za-z\-\.]+))?$/';
 
-    /** @var int */
-    public $major;
-    /** @var int */
-    public $minor;
-    /** @var int */
-    public $patch;
-    /** @var string */
-    public $prerelease;
-    /** @var string */
-    public $build;
+    public int $major;
+    public int $minor;
+    public int $patch;
+    public string $prerelease;
+    public string $build;
 
     public function __construct(
         int $major,

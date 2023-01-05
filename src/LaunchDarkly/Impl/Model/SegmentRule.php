@@ -1,8 +1,8 @@
 <?php
 
-namespace LaunchDarkly\Impl\Model;
+declare(strict_types=1);
 
-use LaunchDarkly\LDUser;
+namespace LaunchDarkly\Impl\Model;
 
 /**
  * Internal data model class that describes a user segment rule.
@@ -15,46 +15,27 @@ use LaunchDarkly\LDUser;
 class SegmentRule
 {
     /** @var Clause[] */
-    private $_clauses = [];
-    /** @var int|null */
-    private $_weight = null;
-    /** @var string|null */
-    private $_bucketBy = null;
+    private array $_clauses = [];
+    private ?int $_weight = null;
+    private ?string $_bucketBy = null;
+    private ?string $_rolloutContextKind = null;
 
-    protected function __construct(array $clauses, ?int $weight, ?string $bucketBy)
+    public function __construct(array $clauses, ?int $weight, ?string $bucketBy, ?string $rolloutContextKind)
     {
         $this->_clauses = $clauses;
         $this->_weight = $weight;
         $this->_bucketBy = $bucketBy;
+        $this->_rolloutContextKind = $rolloutContextKind;
     }
 
     public static function getDecoder(): \Closure
     {
-        return function (array $v) {
-            return new SegmentRule(
-                array_map(Clause::getDecoder(), $v['clauses'] ?: []),
-                $v['weight'] ?? null,
-                $v['bucketBy'] ?? null
-            );
-        };
-    }
-
-    public function matchesUser(LDUser $user, string $segmentKey, string $segmentSalt): bool
-    {
-        foreach ($this->_clauses as $clause) {
-            if (!$clause->matchesUserNoSegments($user)) {
-                return false;
-            }
-        }
-        // If the weight is absent, this rule matches
-        if ($this->_weight === null) {
-            return true;
-        }
-        // All of the clauses are met. See if the user buckets in
-        $bucketBy = ($this->_bucketBy === null) ? "key" : $this->_bucketBy;
-        $bucket = VariationOrRollout::bucketUser($user, $segmentKey, $bucketBy, $segmentSalt, null);
-        $weight = $this->_weight / 100000.0;
-        return $bucket < $weight;
+        return fn (array $v) => new SegmentRule(
+            array_map(Clause::getDecoder(), $v['clauses'] ?: []),
+            $v['weight'] ?? null,
+            $v['bucketBy'] ?? null,
+            $v['rolloutContextKind'] ?? null
+        );
     }
 
     /**
@@ -68,5 +49,15 @@ class SegmentRule
     public function getBucketBy(): ?string
     {
         return $this->_bucketBy;
+    }
+
+    public function getRolloutContextKind(): ?string
+    {
+        return $this->_rolloutContextKind;
+    }
+
+    public function getWeight(): ?int
+    {
+        return $this->_weight;
     }
 }

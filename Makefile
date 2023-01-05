@@ -1,18 +1,21 @@
 
+test:
+	php -d xdebug.mode=coverage vendor/bin/phpunit
+
+lint:
+	./vendor/bin/psalm --no-cache
+	composer cs-check
+
+
 TEMP_TEST_OUTPUT=/tmp/sse-contract-test-service.log
 
 # TEST_HARNESS_PARAMS can be set to add -skip parameters for any contract tests that cannot yet pass
 # Explanation of current skips:
-# - "secondary": In the PHP SDK this is not an addressable attribute for clauses; in other
-#   SDKs, it is. This was underspecified in the past; in future major versions, the other
-#   SDKs and the contract tests will be in line with the PHP behavior.
-# - "date - bad syntax", "semver - bad type": The PHP SDK has insufficiently strict
-#   validation for these types. We will definitely fix this in 5.0 but may or may not
-#   address it in 4.x, since it does not prevent any valid values from working.
+# - "evaluation/parameterized/attribute references/array index is not supported": Due to how PHP
+#   arrays work, there's no way to disallow an array index lookup without breaking object property
+#   lookups for properties that are numeric strings.
 TEST_HARNESS_PARAMS := $(TEST_HARNESS_PARAMS) \
-	-skip 'evaluation/parameterized/secondary' \
-	-skip 'evaluation/parameterized/operators - date - bad syntax' \
-	-skip 'evaluation/parameterized/operators - semver - bad type'
+	-skip 'evaluation/parameterized/attribute references/array index is not supported'
 
 build-contract-tests:
 	@cd test-service && composer install --no-progress
@@ -26,7 +29,7 @@ start-contract-test-service-bg:
 
 run-contract-tests:
 	@curl -s https://raw.githubusercontent.com/launchdarkly/sdk-test-harness/main/downloader/run.sh \
-      | VERSION=v1 PARAMS="-url http://localhost:8000 -debug -stop-service-at-end $(TEST_HARNESS_PARAMS)" sh
+      | VERSION=v2 PARAMS="-url http://localhost:8000 -debug -stop-service-at-end $(TEST_HARNESS_PARAMS)" sh
 
 contract-tests: build-contract-tests start-contract-test-service-bg run-contract-tests
 

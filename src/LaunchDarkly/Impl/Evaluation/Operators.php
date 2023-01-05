@@ -1,9 +1,11 @@
 <?php
 
-namespace LaunchDarkly\Impl\Model;
+declare(strict_types=1);
+
+namespace LaunchDarkly\Impl\Evaluation;
 
 use DateTime;
-use DateTimeZone;
+use DateTimeInterface;
 use Exception;
 use LaunchDarkly\Impl\SemanticVersion;
 use LaunchDarkly\Impl\Util;
@@ -22,11 +24,7 @@ class Operators
     /** @var string */
     const VERSION_NUMBERS_REGEX = '/^\\d+(\\.\\d+)?(\\.\\d+)?/';
 
-    /**
-     * @param mixed|null $u
-     * @param mixed|null $c
-     */
-    public static function apply(?string $op, $u, $c): bool
+    public static function apply(?string $op, mixed $u, mixed $c): bool
     {
         try {
             if ($u === null || $c === null) {
@@ -101,21 +99,25 @@ class Operators
                     }
                     break;
                 case "semVerEqual":
-                    $uVer = self::parseSemVer($u);
-                    $cVer = self::parseSemVer($c);
-                    return ($uVer != null) && ($cVer != null) && $uVer->comparePrecedence($cVer) == 0;
+                    return self::semver_operator($u, $c, 0);
                 case "semVerLessThan":
-                    $uVer = self::parseSemVer($u);
-                    $cVer = self::parseSemVer($c);
-                    return ($uVer != null) && ($cVer != null) && $uVer->comparePrecedence($cVer) < 0;
+                    return self::semver_operator($u, $c, -1);
                 case "semVerGreaterThan":
-                    $uVer = self::parseSemVer($u);
-                    $cVer = self::parseSemVer($c);
-                    return ($uVer != null) && ($cVer != null) && $uVer->comparePrecedence($cVer) > 0;
+                    return self::semver_operator($u, $c, 1);
             }
         } catch (Exception $ignored) {
         }
         return false;
+    }
+
+    private static function semver_operator(mixed $u, mixed $c, int $expectedComparisonResult): bool
+    {
+        if (!is_string($u) || !is_string($c)) {
+            return false;
+        }
+        $uVer = self::parseSemVer($u);
+        $cVer = self::parseSemVer($c);
+        return ($uVer != null) && ($cVer != null) && $uVer->comparePrecedence($cVer) == $expectedComparisonResult;
     }
 
     /**
@@ -128,33 +130,37 @@ class Operators
      * @param mixed $value
      * @return bool
      */
-    public static function is_numeric($value): bool
+    public static function is_numeric(mixed $value): bool
     {
         return is_numeric($value) && !is_string($value);
     }
 
     /**
-     * @param mixed|null $in
-     * @return ?numeric
+     * @param mixed $in
+     * @return ?int
      */
-    public static function parseTime($in)
+    public static function parseTime(mixed $in): ?int
     {
-        if (is_numeric($in)) {
-            return $in;
+        if (is_string($in)) {
+            $dateTime = DateTime::createFromFormat(DateTimeInterface::RFC3339_EXTENDED, $in);
+            if ($dateTime == null) {
+                // try the same format but without fractional seconds
+                $dateTime = DateTime::createFromFormat(DateTimeInterface::RFC3339, $in);
+            }
+            if ($dateTime == null) {
+                return null;
+            }
+            return Util::dateTimeToUnixMillis($dateTime);
+        }
+
+        if (is_numeric($in)) { // check this after is_string, because a numeric string would return true
+            return (int)$in;
         }
 
         if ($in instanceof DateTime) {
             return Util::dateTimeToUnixMillis($in);
         }
 
-        if (is_string($in)) {
-            try {
-                $dateTime = new DateTime($in, new DateTimeZone('UTC'));
-                return Util::dateTimeToUnixMillis($dateTime);
-            } catch (Exception $e) {
-                return null;
-            }
-        }
         return null;
     }
 

@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl\Integrations;
 
 use GuzzleHttp\Client;
-use LaunchDarkly\EventPublisher;
 use LaunchDarkly\Impl\UnrecoverableHTTPStatusException;
 use LaunchDarkly\Impl\Util;
 use LaunchDarkly\LDClient;
+use LaunchDarkly\Subsystems\EventPublisher;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -15,14 +17,10 @@ use Psr\Log\LoggerInterface;
  */
 class GuzzleEventPublisher implements EventPublisher
 {
-    /** @var string */
-    private $_sdkKey;
-    /** @var string */
-    private $_eventsUri;
-    /** @var LoggerInterface */
-    private $_logger;
-    /** @var mixed[] */
-    private $_requestOptions;
+    private string $_sdkKey;
+    private string $_eventsUri;
+    private LoggerInterface $_logger;
+    private array $_requestOptions;
 
     public function __construct(string $sdkKey, array $options = [])
     {

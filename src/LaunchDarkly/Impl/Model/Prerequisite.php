@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl\Model;
 
 /**
@@ -12,12 +14,10 @@ namespace LaunchDarkly\Impl\Model;
  */
 class Prerequisite
 {
-    /** @var string */
-    private $_key;
-    /** @var int */
-    private $_variation;
+    private string $_key;
+    private int $_variation;
 
-    protected function __construct(string $key, int $variation)
+    public function __construct(string $key, int $variation)
     {
         $this->_key = $key;
         $this->_variation = $variation;
@@ -25,9 +25,7 @@ class Prerequisite
 
     public static function getDecoder(): \Closure
     {
-        return function (array $v) {
-            return new Prerequisite($v['key'], $v['variation']);
-        };
+        return fn (array $v) => new Prerequisite($v['key'], $v['variation']);
     }
 
     public function getKey(): string

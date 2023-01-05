@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl\Model;
 
 /**
@@ -15,24 +17,24 @@ class Rollout
     const KIND_EXPERIMENT = 'experiment';
 
     /** @var WeightedVariation[] */
-    private $_variations = [];
-    /** @var string|null */
-    private $_bucketBy = null;
-    /** @var string */
-    private $_kind;
-    /** @var int|null */
-    private $_seed = null;
+    private array $_variations = [];
+    private ?string $_bucketBy = null;
+    private string $_kind;
+    private ?int $_seed = null;
+    private ?string $_contextKind = null;
 
-    protected function __construct(
+    public function __construct(
         array $variations,
         ?string $bucketBy,
         ?string $kind = null,
-        ?int $seed = null
+        ?int $seed = null,
+        ?string $contextKind = null
     ) {
         $this->_variations = $variations;
         $this->_bucketBy = $bucketBy;
-        $this->_kind = $kind ?? 'rollout';
+        $this->_kind = $kind ?: 'rollout';
         $this->_seed = $seed;
+        $this->_contextKind = $contextKind;
     }
 
     /**
@@ -45,7 +47,7 @@ class Rollout
             $vars = array_map($decoder, $v['variations']);
             $bucket = $v['bucketBy'] ?? null;
             
-            return new Rollout($vars, $bucket, $v['kind'] ?? null, $v['seed'] ?? null);
+            return new Rollout($vars, $bucket, $v['kind'] ?? null, $v['seed'] ?? null, $v['contextKind'] ?? null);
         };
     }
 
@@ -70,5 +72,10 @@ class Rollout
     public function isExperiment(): bool
     {
         return $this->_kind === self::KIND_EXPERIMENT;
+    }
+
+    public function getContextKind(): ?string
+    {
+        return $this->_contextKind;
     }
 }

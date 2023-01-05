@@ -5,7 +5,7 @@ namespace LaunchDarkly\Tests\Integrations;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Integrations\TestData;
 use LaunchDarkly\LDClient;
-use LaunchDarkly\LDUserBuilder;
+use LaunchDarkly\LDContext;
 use LaunchDarkly\Tests;
 use PHPUnit\Framework\TestCase;
 
@@ -46,362 +46,335 @@ class TestDataTest extends TestCase
         $this->assertEquals(['red','blue'], $flag->build(0)['variations']);
     }
 
-    public function provideFlagConfig()
+    public function defaultFlagProps()
     {
-        $td = new TestData();
         return [
-            'flag has fallthrough variation by default' => [
-                [
-                    'on' => true,
-                    'fallthrough' => ['variation' => 0]
-                ],
-                $td->flag('test-flag-1')->build(0)
+            "key" => "flagkey",
+            "version" => 1,
+            "on" => true,
+            "prerequisites" => [],
+            "targets" => [],
+            "contextTargets" => [],
+            "rules" => [],
+            "salt" => "",
+            "variations" => [true, false],
+            "offVariation" => 1,
+            "fallthrough" => ["variation" => 0],
+            "deleted" => false
+        ];
+    }
+
+    public function flagConfigParameterizedTestParams()
+    {
+        return [
+            'defaults' => [
+                [],
+                fn ($f) => $f
             ],
-            'explicitly changing empty flag to boolean flag has no effect compared to default flag' => [
-                [
-                    'on' => true,
-                    'fallthrough' => ['variation' => 0]
-                ],
-                $td->flag('test-flag-2')->booleanFlag()->build(0)
+            'changing default flag to boolean flag has no effect' => [
+                [],
+                fn ($f) => $f->booleanFlag()
             ],
-            'explicitly changing empty flag to be on has no effect compared to default flag' => [
-                [
-                    'on' => true,
-                    'fallthrough' => ['variation' => 0]
-                ],
-                $td->flag('test-flag-3')->on(true)->build(0)
+            'non-boolean flag can be changed to boolean flag' => [
+                [],
+                fn ($f) => $f->variations('a', 'b')->booleanFlag()
             ],
             'flag can be turned off' => [
                 [
-                    'on' => false,
-                    'fallthrough' => ['variation' => 0]
+                    'on' => false
                 ],
-                $td->flag('test-flag-4')->on(false)->build(0)
+                fn ($f) => $f->on(false)
             ],
-            'flag can set false boolean variation for all users' => [
+            'flag can be turned on' => [
+                [],
+                fn ($f) => $f->on(false)->on(true)
+            ],
+            'set false boolean variation for all' => [
                 [
-                    'on' => true,
-                    'offVariation' => 1,
-                    'variations' => [true, false],
                     'fallthrough' => ['variation' => 1],
                 ],
-                $td->flag('test-flag-5')->variationForAllUsers(false)->build(0)
+                fn ($f) => $f->variationForAll(false)
             ],
-            'flag can set true boolean variation for all users' => [
+            'set true boolean variation for all' => [
                 [
-                    'on' => true,
-                    'offVariation' => 1,
                     'variations' => [true, false],
                     'fallthrough' => ['variation' => 0],
                 ],
-                $td->flag('test-flag-6')->variationForAllUsers(true)->build(0)
+                fn ($f) => $f->variationForAll(true)
             ],
+            'set false boolean variation for all users' => [
+                [
+                    'fallthrough' => ['variation' => 1],
+                ],
+                fn ($f) => $f->variationForAllUsers(false)
+            ],
+            'set true boolean variation for all users' => [
+                [
+                    'variations' => [true, false],
+                    'fallthrough' => ['variation' => 0],
+                ],
+                fn ($f) => $f->variationForAllUsers(true)
+            ],
+            'set variation index for all' => [
+                [
+                    'fallthrough' => ['variation' => 2],
+                    'variations' => ['a', 'b', 'c']
+                ],
+                fn ($f) => $f->variations('a', 'b', 'c')->variationForAll(2)
+            ],
+            'set variation index for all users' => [
+                [
+                    'fallthrough' => ['variation' => 2],
+                    'variations' => ['a', 'b', 'c']
+                ],
+                fn ($f) => $f->variations('a', 'b', 'c')->variationForAllUsers(2)
+            ],
+            'set fallthrough variation boolean' => [
+                [
+                    'fallthrough' => ['variation' => 1]
+                ],
+                fn ($f) => $f->fallthroughVariation(false)
+            ],
+            'set fallthrough variation index' => [
+                [
+                    'variations' => ['a', 'b', 'c'],
+                    'fallthrough' => ['variation' => 2]
+                ],
+                fn ($f) => $f->variations('a', 'b', 'c')->fallthroughVariation(2)
+            ],
+            'set off variation boolean' => [
+                [
+                    'offVariation' => 0
+                ],
+                fn ($f) => $f->offVariation(true)
+            ],
+            'set off variation index' => [
+                [
+                    'variations' => ['a', 'b', 'c'],
+                    'offVariation' => 2
+                ],
+                fn ($f) => $f->variations('a', 'b', 'c')->offVariation(2)
+            ],
+            'set context targets as boolean' => [
+                [
+                    'targets' => [
+                        ['variation' => 0, 'values' => ['key1', 'key2']],
+                    ],
+                    'contextTargets' => [
+                        ['contextKind' => 'user', 'variation' => 0, 'values' => []],
+                        ['contextKind' => 'kind1', 'variation' => 0, 'values' => ['key3', 'key4']],
+                        ['contextKind' => 'kind1', 'variation' => 1, 'values' => ['key5', 'key6']],
+                    ]
+                ],
+                fn ($f) => $f->variationForKey('user', 'key1', true)
+                    ->variationForKey('user', 'key2', true)
+                    ->variationForKey('kind1', 'key3', true)
+                    ->variationForKey('kind1', 'key5', false)
+                    ->variationForKey('kind1', 'key4', true)
+                    ->variationForKey('kind1', 'key6', false)
+            ],
+            'set context targets as variation index' => [
+                [
+                    'variations' => ['a', 'b'],
+                    'targets' => [
+                        ['variation' => 0, 'values' => ['key1', 'key2']],
+                    ],
+                    'contextTargets' => [
+                        ['contextKind' => 'user', 'variation' => 0, 'values' => []],
+                        ['contextKind' => 'kind1', 'variation' => 0, 'values' => ['key3', 'key4']],
+                        ['contextKind' => 'kind1', 'variation' => 1, 'values' => ['key5', 'key6']],
+                    ]
+                ],
+                fn ($f) => $f->variations('a', 'b')
+                    ->variationForKey('user', 'key1', 0)
+                    ->variationForKey('user', 'key2', 0)
+                    ->variationForKey('kind1', 'key3', 0)
+                    ->variationForKey('kind1', 'key5', 1)
+                    ->variationForKey('kind1', 'key4', 0)
+                    ->variationForKey('kind1', 'key6', 1)
+            ],
+            'replace existing context target key' => [
+                [
+                    'contextTargets' => [
+                        ['contextKind' => 'kind1', 'variation' => 0, 'values' => ['key1', 'key2']],
+                        ['contextKind' => 'kind1', 'variation' => 1, 'values' => ['key3']]
+                    ]
+                ],
+                fn ($f) => $f->variationForKey('kind1', 'key1', 0)
+                    ->variationForKey('kind1', 'key2', 1)
+                    ->variationForKey('kind1', 'key3', 1)
+                    ->variationForKey('kind1', 'key2', 0)
+            ],
+            'ignore target for nonexistent variation' => [
+                [
+                    'variations' => ['a', 'b'],
+                    'contextTargets' => [
+                        ['contextKind' => 'kind1', 'variation' => 1, 'values' => ['key1']],
+                    ]
+                ],
+                fn ($f) => $f->variations('a', 'b')
+                    ->variationForKey('kind1', 'key1', 1)
+                    ->variationForKey('kind1', 'key2', 3)
+            ],
+            'variationForUser is shortcut for variationForKey' => [
+                [
+                    'targets' => [
+                        ['variation' => 0, 'values' => ['key1']]
+                    ],
+                    'contextTargets' => [
+                        ['contextKind' => 'user', 'variation' => 0, 'values' => []]
+                    ]
+                ],
+                fn ($f) => $f->variationForUser('key1', true)
+            ],
+            'clear targets' => [
+                [],
+                fn ($f) => $f->variationForKey('kind1', 'key1', 0)
+                    ->clearTargets()
+            ],
+            'clearUserTargets is synonym for clearTargets' => [
+                [],
+                fn ($f) => $f->variationForKey('kind1', 'key1', 0)
+                    ->clearUserTargets()
+            ],
+            'ifMatchContext' => [
+                [
+                    'rules' => [
+                        [
+                            'variation' => 1,
+                            'id' => 'rule0',
+                            'clauses' => [
+                                ['contextKind' => 'kind1', 'attribute' => 'attr1', 'op' => 'in', 'values' => ['a', 'b'], 'negate' => false]
+                            ]
+                        ]
+                    ]
+                ],
+                fn ($f) => $f->ifMatchContext('kind1', 'attr1', 'a', 'b')->thenReturn(1)
+            ],
+            'ifNotMatchContext' => [
+                [
+                    'rules' => [
+                        [
+                            'variation' => 1,
+                            'id' => 'rule0',
+                            'clauses' => [
+                                ['contextKind' => 'kind1', 'attribute' => 'attr1', 'op' => 'in', 'values' => ['a', 'b'], 'negate' => true]
+                            ]
+                        ]
+                    ]
+                ],
+                fn ($f) => $f->ifNotMatchContext('kind1', 'attr1', 'a', 'b')->thenReturn(1)
+            ],
+            'ifMatch is shortcut for ifMatchContext' => [
+                [
+                    'rules' => [
+                        [
+                            'variation' => 1,
+                            'id' => 'rule0',
+                            'clauses' => [
+                                ['contextKind' => 'user', 'attribute' => 'attr1', 'op' => 'in', 'values' => ['a', 'b'], 'negate' => false]
+                            ]
+                        ]
+                    ]
+                ],
+                fn ($f) => $f->ifMatch('attr1', 'a', 'b')->thenReturn(1)
+            ],
+            'ifNotMatch is shortcut for ifNotMatchContext' => [
+                [
+                    'rules' => [
+                        [
+                            'variation' => 1,
+                            'id' => 'rule0',
+                            'clauses' => [
+                                ['contextKind' => 'user', 'attribute' => 'attr1', 'op' => 'in', 'values' => ['a', 'b'], 'negate' => true]
+                            ]
+                        ]
+                    ]
+                ],
+                fn ($f) => $f->ifNotMatch('attr1', 'a', 'b')->thenReturn(1)
+            ],
+            'andMatchContext' => [
+                [
+                    'rules' => [
+                        [
+                            'variation' => 1,
+                            'id' => 'rule0',
+                            'clauses' => [
+                                ['contextKind' => 'kind1', 'attribute' => 'attr1', 'op' => 'in', 'values' => ['a', 'b'], 'negate' => false],
+                                ['contextKind' => 'kind1', 'attribute' => 'attr2', 'op' => 'in', 'values' => ['c', 'd'], 'negate' => false]
+                            ]
+                        ]
+                    ]
+                ],
+                fn ($f) => $f->ifMatchContext('kind1', 'attr1', 'a', 'b')
+                    ->andMatchContext('kind1', 'attr2', 'c', 'd')->thenReturn(1)
+            ],
+            'andNotMatchContext' => [
+                [
+                    'rules' => [
+                        [
+                            'variation' => 1,
+                            'id' => 'rule0',
+                            'clauses' => [
+                                ['contextKind' => 'kind1', 'attribute' => 'attr1', 'op' => 'in', 'values' => ['a', 'b'], 'negate' => false],
+                                ['contextKind' => 'kind1', 'attribute' => 'attr2', 'op' => 'in', 'values' => ['c', 'd'], 'negate' => true]
+                            ]
+                        ]
+                    ]
+                ],
+                fn ($f) => $f->ifMatchContext('kind1', 'attr1', 'a', 'b')
+                    ->andNotMatchContext('kind1', 'attr2', 'c', 'd')->thenReturn(1)
+            ],
+            'andMatch is shortcut for andMatchContext' => [
+                [
+                    'rules' => [
+                        [
+                            'variation' => 1,
+                            'id' => 'rule0',
+                            'clauses' => [
+                                ['contextKind' => 'kind1', 'attribute' => 'attr1', 'op' => 'in', 'values' => ['a', 'b'], 'negate' => false],
+                                ['contextKind' => 'user', 'attribute' => 'attr2', 'op' => 'in', 'values' => ['c', 'd'], 'negate' => false]
+                            ]
+                        ]
+                    ]
+                ],
+                fn ($f) => $f->ifMatchContext('kind1', 'attr1', 'a', 'b')
+                    ->andMatch('attr2', 'c', 'd')->thenReturn(1)
+            ],
+            'andNotMatch is shortcut for andNotMatchContext' => [
+                [
+                    'rules' => [
+                        [
+                            'variation' => 1,
+                            'id' => 'rule0',
+                            'clauses' => [
+                                ['contextKind' => 'kind1', 'attribute' => 'attr1', 'op' => 'in', 'values' => ['a', 'b'], 'negate' => false],
+                                ['contextKind' => 'user', 'attribute' => 'attr2', 'op' => 'in', 'values' => ['c', 'd'], 'negate' => true]
+                            ]
+                        ]
+                    ]
+                ],
+                fn ($f) => $f->ifMatchContext('kind1', 'attr1', 'a', 'b')
+                    ->andNotMatch('attr2', 'c', 'd')->thenReturn(1)
+            ],
+            'clearRules' => [
+                [],
+                fn ($f) => $f->ifMatch('kind1', 'attr1', 'a')->thenReturn(1)->clearRules()
+            ]
         ];
     }
 
     /**
-     * @dataProvider provideFlagConfig
+     * @dataProvider flagConfigParameterizedTestParams
      */
-    public function testFlagConfigSimpleBoolean($expected, $actual)
-    {
-        foreach (array_keys($expected) as $key) {
-            $this->assertEquals($expected[$key], $actual[$key]);
-        }
-    }
-
-
-    public function testFlagBuilderBooleanConfigMethodsForcesFlagToBeBoolean()
+    public function testFlagConfigParameterized($expected, $builderActions)
     {
         $td = new TestData();
-        $overwriteBoolFlag1 = $td->flag('test-flag')->variations(1, 2)->booleanFlag()->build(0);
-        $this->assertEquals([true, false], $overwriteBoolFlag1['variations']);
-        $this->assertEquals(true, $overwriteBoolFlag1['on']);
-        $this->assertEquals(1, $overwriteBoolFlag1['offVariation']);
-        $this->assertEquals(['variation' => 0], $overwriteBoolFlag1['fallthrough']);
-
-        $overwriteBoolFlag2 = $td->flag('test-flag')->variations(true, 2)->booleanFlag()->build(0);
-        $this->assertEquals([true, false], $overwriteBoolFlag2['variations']);
-        $this->assertEquals(true, $overwriteBoolFlag2['on']);
-        $this->assertEquals(1, $overwriteBoolFlag2['offVariation']);
-        $this->assertEquals(['variation' => 0], $overwriteBoolFlag2['fallthrough']);
-
-        $boolFlag = $td->flag('test-flag')->booleanFlag()->build(0);
-        $this->assertEquals([true, false], $boolFlag['variations']);
-        $this->assertEquals(true, $boolFlag['on']);
-        $this->assertEquals(1, $boolFlag['offVariation']);
-        $this->assertEquals(['variation' => 0], $boolFlag['fallthrough']);
+        $flagBuilder = $builderActions($td->flag("flagkey"));
+        $actual = $flagBuilder->build(1);
+        $allExpected = array_merge($this->defaultFlagProps(), $expected);
+        $this->assertEquals($allExpected, $actual);
     }
-
-    public function testFlagConfigStringVariations()
-    {
-        $td = new TestData();
-        $stringVariationFlag = $td->flag('test-flag')
-                                    ->variations('red', 'green', 'blue')
-                                    ->offVariation(0)
-                                    ->fallthroughVariation(2)
-                                    ->build(0);
-        $this->assertEquals(['red', 'green', 'blue'], $stringVariationFlag['variations']);
-        $this->assertEquals(true, $stringVariationFlag['on']);
-        $this->assertEquals(0, $stringVariationFlag['offVariation']);
-        $this->assertEquals(['variation' => 2], $stringVariationFlag['fallthrough']);
-    }
-
-    public function testUserTargetsCanSetSameVariationForDistinctUsers()
-    {
-        $td = new TestData();
-        $flagBool1 = $td->flag('test-flag-1')
-                        ->variationForUser("a", true)
-                        ->variationForUser("b", true)
-                        ->build(0);
-        $this->assertEquals(true, $flagBool1['on']);
-        $this->assertEquals([true, false], $flagBool1['variations']);
-        $this->assertEquals(1, $flagBool1['offVariation']);
-        $this->assertEquals(['variation' => 0], $flagBool1['fallthrough']);
-        $expectedTargets = [
-            ['variation' => 0, 'values' => ["a", "b"]],
-        ];
-        $this->assertEquals($expectedTargets, $flagBool1['targets']);
-    }
-
-    public function testUserTargetsWillNotDuplicateSameUser()
-    {
-        $td = new TestData();
-
-        $flagBool2 = $td->flag('test-flag-2')
-                        ->variationForUser("a", true)
-                        ->variationForUser("a", true)
-                        ->build(0);
-        $this->assertEquals(true, $flagBool2['on']);
-        $this->assertEquals([true, false], $flagBool2['variations']);
-        $this->assertEquals(1, $flagBool2['offVariation']);
-        $this->assertEquals(['variation' => 0], $flagBool2['fallthrough']);
-        $expectedTargets = [
-            ['variation' => 0, 'values' => ["a"]],
-        ];
-        $this->assertEquals($expectedTargets, $flagBool2['targets']);
-    }
-
-    public function testUserTargetsCanSetDistinctVariationsForDistinctUsers()
-    {
-        $td = new TestData();
-
-        $flagBool3 = $td->flag('test-flag-3')
-                        ->variationForUser("a", false)
-                        ->variationForUser("b", true)
-                        ->variationForUser("c", false)
-                        ->build(0);
-        $this->assertEquals(true, $flagBool3['on']);
-        $this->assertEquals([true, false], $flagBool3['variations']);
-        $this->assertEquals(1, $flagBool3['offVariation']);
-        $this->assertEquals(['variation' => 0], $flagBool3['fallthrough']);
-        $expectedTargets = [
-            ['variation' => 0, 'values' => ["b"]],
-            ['variation' => 1, 'values' => ["a", "c"]],
-        ];
-        $this->assertEquals($expectedTargets, $flagBool3['targets']);
-    }
-
-    public function testUserTargetsCanModifyVariationForSpecificUser()
-    {
-        $td = new TestData();
-        $flagBool4 = $td->flag('test-flag-3')
-                        ->variationForUser("a", true)
-                        ->variationForUser("b", true)
-                        ->variationForUser("a", false)
-                        ->build(0);
-        $this->assertEquals(true, $flagBool4['on']);
-        $this->assertEquals([true, false], $flagBool4['variations']);
-        $this->assertEquals(1, $flagBool4['offVariation']);
-        $this->assertEquals(['variation' => 0], $flagBool4['fallthrough']);
-        $expectedTargets = [
-            ['variation' => 0, 'values' => ["b"]],
-            ['variation' => 1, 'values' => ["a"]],
-        ];
-        $this->assertEquals($expectedTargets, $flagBool4['targets']);
-    }
-
-    public function testUserTargetsCanSetVariationsWithFallbackValues()
-    {
-        $td = new TestData();
-        $flagString1 = $td->flag('test-flag-4')
-                        ->variations('red', 'green', 'blue')
-                        ->offVariation(0)
-                        ->fallthroughVariation(2)
-                        ->variationForUser("a", 2)
-                        ->variationForUser("b", 2)
-                        ->build(0);
-        $this->assertEquals(['red', 'green', 'blue'], $flagString1['variations']);
-        $this->assertEquals(true, $flagString1['on']);
-        $this->assertEquals(0, $flagString1['offVariation']);
-        $this->assertEquals(['variation' => 2], $flagString1['fallthrough']);
-        $expectedTargets = [
-            ['variation' => 2, 'values' => ["a", "b"]],
-        ];
-        $this->assertEquals($expectedTargets, $flagString1['targets']);
-    }
-
-    public function testUserTargetsCanSetVariationsWithFallbackValuesWithDistinctUserVariations()
-    {
-        $td = new TestData();
-
-        $flagString2 = $td->flag('test-flag-5')
-                        ->variations('red', 'green', 'blue')
-                        ->offVariation(0)
-                        ->fallthroughVariation(2)
-                        ->variationForUser("a", 2)
-                        ->variationForUser("b", 1)
-                        ->variationForUser("c", 2)
-                        ->build(0);
-        $this->assertEquals(['red', 'green', 'blue'], $flagString2['variations']);
-        $this->assertEquals(true, $flagString2['on']);
-        $this->assertEquals(0, $flagString2['offVariation']);
-        $this->assertEquals(['variation' => 2], $flagString2['fallthrough']);
-        $expectedTargets = [
-            ['variation' => 1, 'values' => ["b"]],
-            ['variation' => 2, 'values' => ["a", "c"]],
-        ];
-        $this->assertEquals($expectedTargets, $flagString2['targets']);
-    }
-
-    public function testUserTargetsWillIgnoreSettingNonexistentUserVariation()
-    {
-        $td = new TestData();
-
-        $flagString2 = $td->flag('test-flag-5')
-                        ->variations('red', 'green', 'blue')
-                        ->variationForUser("a", 1)
-                        ->variationForUser("b", 4)
-                        ->build(0);
-        $this->assertEquals(['red', 'green', 'blue'], $flagString2['variations']);
-        $this->assertEquals(true, $flagString2['on']);
-        $expectedTargets = [
-            ['variation' => 1, 'values' => ["a"]],
-        ];
-        $this->assertEquals($expectedTargets, $flagString2['targets']);
-    }
-
-    public function testFlagbuilderCanSetValueForAllUsers()
-    {
-        $jsonString1 = "
-            {
-                \"boolField\": true,
-                \"stringField\": \"some val\",
-                \"intField\": 1,
-                \"arrayField\": [\"cat\", \"dog\", \"fish\" ],
-                \"objectField\": {\"animal\": \"dog\" }
-            }
-        ";
-        $testObject = [
-            "boolField" => true,
-            "stringField" => "some val",
-            "intField" => 1,
-            "arrayField" => ["cat", "dog", "fish" ],
-            "objectField" => [ "animal" => "dog" ]
-        ];
-
-        $td = new TestData();
-        $flagFromJSONString = $td->flag('test-flag');
-        $testObjFromStr = json_decode($jsonString1);
-        $flagFromJSONString->valueForAllUsers($testObjFromStr);
-        $this->assertEquals([$testObject], $flagFromJSONString->build(0)['variations']);
-
-        $flagBoolean = $td->flag('test-flag');
-        $flagBoolean->valueForAllUsers(false);
-        $this->assertEquals([false], $flagBoolean->build(0)['variations']);
-
-        $flagInt = $td->flag('test-flag');
-        $flagInt->valueForAllUsers(4);
-        $this->assertEquals([4], $flagInt->build(0)['variations']);
-
-        $flagArray = $td->flag('test-flag');
-        $flagArray->valueForAllUsers(['cat', 'dog', 'fish']);
-        $this->assertEquals([ ['cat', 'dog', 'fish'] ], $flagArray->build(0)['variations']);
-
-        $flagAssociatedArray = $td->flag('test-flag');
-        $flagAssociatedArray->valueForAllUsers(['animal' => 'dog', 'legs' => 4]);
-        $this->assertEquals([ ['animal' => 'dog', 'legs' => 4] ], $flagAssociatedArray->build(0)['variations']);
-
-        $flagNull = $td->flag('test-flag');
-        $flagNull->valueForAllUsers(null);
-        $this->assertEquals([null], $flagNull->build(0)['variations']);
-
-        $flagObject = $td->flag('test-flag');
-        $flagObject->valueForAllUsers((object) ['animal' => 'dog', 'legs' => 4]);
-        $this->assertEquals([['animal' => 'dog', 'legs' => 4]], $flagObject->build(0)['variations']);
-    }
-
-    public function testSetsVariations()
-    {
-        $td = new TestData();
-        $flag = $td->flag('new-flag')->variations('red', 'green', 'blue');
-        $this->assertEquals(['red', 'green', 'blue'], $flag->build(0)['variations']);
-
-        $flag2 = $td->flag('new-flag-2')->variations(['red', 'green', 'blue']);
-        $this->assertEquals([['red', 'green', 'blue']], $flag2->build(0)['variations']);
-
-        $flag3 = $td->flag('new-flag-3')->variations(['red', 'green', 'blue'], ['cat', 'dog', 'fish']);
-        $this->assertEquals([['red', 'green', 'blue'], ['cat', 'dog', 'fish']], $flag3->build(0)['variations']);
-
-        $flag4 = $td->flag('new-flag-4')->variations([['red', 'green', 'blue']]);
-        $this->assertEquals([['red', 'green', 'blue']], $flag4->build(0)['variations'][0]);
-    }
-
-    public function testFlagBuilderCanSetFallthroughVariation()
-    {
-        $td = new TestData();
-        $flag = $td->flag('test-flag');
-        $flag->fallthroughVariation(2);
-
-        $this->assertEquals(['variation' => 2], $flag->build(0)['fallthrough']);
-    }
-
-    public function testFlagBuilderClearUserTargets()
-    {
-        $td = new TestData();
-        $flag = $td->flag('test-flag')
-                   ->variationForUser('user-1', 0)
-                   ->variationForUser('user-2', 1)
-                   ->clearUserTargets()
-                   ->build(0);
-        $this->assertEquals([], $flag['targets']);
-    }
-
-
-    public function testFlagBuilderDefaultsToBooleanFlag()
-    {
-        $td = new TestData();
-        $flag = $td->flag('empty-flag');
-        $this->assertEquals([true, false], $flag->build(0)['variations']);
-        $this->assertEquals(['variation' => 0], $flag->build(0)['fallthrough']);
-        $this->assertEquals(1, $flag->build(0)['offVariation']);
-    }
-
-    public function testFlagbuilderCanTurnFlagOff()
-    {
-        $td = new TestData();
-        $flag = $td->flag('test-flag');
-        $flag->on(false);
-
-        $this->assertEquals(false, $flag->build(0)['on']);
-    }
-
-    public function testFlagbuilderCanSetVariationWhenTargetingIsOff()
-    {
-        $td = new TestData();
-        $flag = $td->flag('test-flag')->on(false);
-        $this->assertEquals(false, $flag->build(0)['on']);
-        $this->assertEquals([true,false], $flag->build(0)['variations']);
-        $flag->variations('dog', 'cat');
-        $this->assertEquals(['dog','cat'], $flag->build(0)['variations']);
-    }
-
-    public function testFlagbuilderCanSetVariationForAllUsers()
-    {
-        $td = new TestData();
-        $flag = $td->flag('test-flag')->variationForAllUsers(true)->build(0);
-        $this->assertEquals(['variation' => 0], $flag['fallthrough']);
-    }
-
 
     public function testCanSetAndGetFeatureFlag()
     {
@@ -418,7 +391,7 @@ class TestDataTest extends TestCase
             'variations' => [true, false],
 
             /* Required FeatureFlag fields */
-            'salt' => null,
+            'salt' => '',
             'prerequisites' => [],
         ];
         $expectedFeatureFlag = FeatureFlag::decode($expectedFlagJson);
@@ -445,7 +418,7 @@ class TestDataTest extends TestCase
             'variations' => ['red', 'amber', 'green'],
 
             /* Required FeatureFlag fields */
-            'salt' => null,
+            'salt' => '',
             'prerequisites' => [],
         ];
         $expectedUpdatedFeatureFlag = FeatureFlag::decode($expectedUpdatedFlagJson);
@@ -459,37 +432,6 @@ class TestDataTest extends TestCase
 
         $featureFlag = $td->getFeature($key);
         $this->assertEquals($expectedUpdatedFeatureFlag, $featureFlag);
-    }
-
-    public function testFlagBuilderCanAddAndBuildRules()
-    {
-        $td = new TestData();
-        $flag = $td->flag("flag")
-                   ->ifMatch("name", "Patsy", "Edina")
-                   ->andNotMatch("country", "gb")
-                   ->thenReturn(true);
-        $builtFlag = $flag->build(0);
-        $expectedRule = [
-            [
-                "id" => "rule0",
-                "variation" => 0,
-                "clauses" => [
-                    [
-                        "attribute" => "name",
-                        "op" => 'in',
-                        "values" => ["Patsy", "Edina"],
-                        "negate" => false,
-                    ],
-                    [
-                        "attribute" => "country",
-                        "op" => 'in',
-                        "values" => ["gb"],
-                        "negate" => true,
-                    ]
-                ]
-            ]
-        ];
-        $this->assertEquals($expectedRule, $builtFlag['rules']);
     }
 
     public function testUsingTestDataInClientEvaluations()
@@ -509,15 +451,13 @@ class TestDataTest extends TestCase
         ];
         $client = new LDClient("someKey", $options);
 
-        $userBuilder = new LDUserBuilder("someKey");
+        $context1 = LDContext::builder("x")->set("firstName", "Janet")->set("lastName", "Cline")->build();
+        $this->assertFalse($client->variation("flag", $context1));
 
-        $userBuilder->firstName("Janet")->lastName("Cline");
-        $this->assertFalse($client->variation("flag", $userBuilder->build()));
+        $context2 = LDContext::builder("x")->set("firstName", "Patsy")->set("lastName", "Cline")->build();
+        $this->assertFalse($client->variation("flag", $context2));
 
-        $userBuilder->firstName("Patsy")->lastName("Cline");
-        $this->assertFalse($client->variation("flag", $userBuilder->build()));
-
-        $userBuilder->firstName("Patsy")->lastName("Smith");
-        $this->assertTrue($client->variation("flag", $userBuilder->build()));
+        $context3 = LDContext::builder("x")->set("firstName", "Patsy")->set("lastName", "Smith")->build();
+        $this->assertTrue($client->variation("flag", $context3));
     }
 }

@@ -4,9 +4,10 @@ namespace LaunchDarkly\Tests\Impl\Events;
 
 use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
+use LaunchDarkly\Impl\Evaluation\EvalResult;
 use LaunchDarkly\Impl\Events\EventFactory;
 use LaunchDarkly\Impl\Model\FeatureFlag;
-use LaunchDarkly\LDUserBuilder;
+use LaunchDarkly\LDContext;
 use PHPUnit\Framework\TestCase;
 
 class EventFactoryTest extends TestCase
@@ -52,12 +53,11 @@ class EventFactoryTest extends TestCase
         $ef = new EventFactory(false);
 
         $flag = $this->buildFlag(false);
-        $ub = new LDUserBuilder('userkey');
-        $user = $ub->build();
+        $context = LDContext::create('userkey');
 
         $detail = new EvaluationDetail('off', 1, EvaluationReason::fallthrough());
 
-        $result = $ef->newEvalEvent($flag, $user, $detail, null);
+        $result = $ef->newEvalEvent($flag, $context, new EvalResult($detail, false), null);
 
         $this->assertFalse(isset($result['trackEvents']));
     }
@@ -67,12 +67,11 @@ class EventFactoryTest extends TestCase
         $ef = new EventFactory(false);
 
         $flag = $this->buildFlag(true);
-        $ub = new LDUserBuilder('userkey');
-        $user = $ub->build();
+        $context = LDContext::create('userkey');
 
         $detail = new EvaluationDetail('off', 1, EvaluationReason::fallthrough());
 
-        $result = $ef->newEvalEvent($flag, $user, $detail, null);
+        $result = $ef->newEvalEvent($flag, $context, new EvalResult($detail, false), null);
 
         $this->assertTrue($result['trackEvents']);
     }
@@ -82,12 +81,11 @@ class EventFactoryTest extends TestCase
         $ef = new EventFactory(false);
 
         $flag = $this->buildFlag(false);
-        $ub = new LDUserBuilder('userkey');
-        $user = $ub->build();
+        $context = LDContext::create('userkey');
 
         $detail = new EvaluationDetail('off', 1, EvaluationReason::fallthrough(true));
 
-        $result = $ef->newEvalEvent($flag, $user, $detail, null);
+        $result = $ef->newEvalEvent($flag, $context, new EvalResult($detail, true), null);
 
         $this->assertTrue($result['trackEvents']);
     }
@@ -97,12 +95,11 @@ class EventFactoryTest extends TestCase
         $ef = new EventFactory(false);
 
         $flag = $this->buildFlag(false);
-        $ub = new LDUserBuilder('userkey');
-        $user = $ub->build();
+        $context = LDContext::create('userkey');
 
         $detail = new EvaluationDetail('off', 1, EvaluationReason::ruleMatch(1, 'something', true));
 
-        $result = $ef->newEvalEvent($flag, $user, $detail, null);
+        $result = $ef->newEvalEvent($flag, $context, new EvalResult($detail, true), null);
 
         $this->assertTrue($result['trackEvents']);
     }

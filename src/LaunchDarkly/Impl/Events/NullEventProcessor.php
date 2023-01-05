@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl\Events;
 
 /**
@@ -8,7 +10,7 @@ namespace LaunchDarkly\Impl\Events;
  */
 class NullEventProcessor extends EventProcessor
 {
-    public function enqueue($event): bool
+    public function enqueue(array $event): bool
     {
         return true;
     }

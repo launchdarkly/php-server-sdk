@@ -1,9 +1,8 @@
 <?php
 
-namespace LaunchDarkly\Impl\Model;
+declare(strict_types=1);
 
-use LaunchDarkly\FeatureRequester;
-use LaunchDarkly\LDUser;
+namespace LaunchDarkly\Impl\Model;
 
 /**
  * Internal data model class that describes a feature flag rule.
@@ -15,14 +14,12 @@ use LaunchDarkly\LDUser;
  */
 class Rule extends VariationOrRollout
 {
-    /** @var string|null */
-    private $_id = null;
+    private ?string $_id = null;
     /** @var Clause[] */
-    private $_clauses = [];
-    /** @var boolean */
-    private $_trackEvents;
+    private array $_clauses = [];
+    private bool $_trackEvents;
 
-    protected function __construct(
+    public function __construct(
         ?int $variation,
         ?Rollout $rollout,
         ?string $id,
@@ -37,25 +34,14 @@ class Rule extends VariationOrRollout
 
     public static function getDecoder(): \Closure
     {
-        return function (array $v) {
-            return new Rule(
+        return fn (array $v) =>
+            new Rule(
                 $v['variation'] ?? null,
                 isset($v['rollout']) ? call_user_func(Rollout::getDecoder(), $v['rollout']) : null,
                 $v['id'] ?? null,
                 array_map(Clause::getDecoder(), $v['clauses']),
-                $v['trackEvents']?? false
+                !!($v['trackEvents'] ?? false)
             );
-        };
-    }
-
-    public function matchesUser(LDUser $user, ?FeatureRequester $featureRequester): bool
-    {
-        foreach ($this->_clauses as $clause) {
-            if (!$clause->matchesUser($user, $featureRequester)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     public function getId(): ?string

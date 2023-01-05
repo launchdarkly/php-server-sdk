@@ -28,8 +28,11 @@ composer install
 
 To run all unit tests:
 
-```
+```shell
 ./vendor/bin/phpunit
+
+# Or, as a shortcut in Linux:
+make test
 ```
 
 It is preferable to run tests against all supported minor versions of PHP (as described in `README.md` under Requirements), or at least the lowest and highest versions, prior to submitting a pull request. However, LaunchDarkly's CI tests will run automatically against all supported versions.
@@ -44,4 +47,14 @@ To run the SDK contract test suite in Linux (see [`test-service/README.md`](./te
 
 ```bash
 make contract-tests
+```
+
+To run the Psalm linter and cs-check:
+
+```shell
+./vendor/bin/psalm --no-cache
+composer cs-check
+
+# Or, as a shortcut in Linux:
+make lint
 ```

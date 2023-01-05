@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl\Events;
 
 use LaunchDarkly\EvaluationDetail;
+use LaunchDarkly\Impl\Evaluation\EvalResult;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Impl\Util;
-use LaunchDarkly\LDUser;
+use LaunchDarkly\LDContext;
 
 /**
  * @ignore
@@ -13,8 +16,7 @@ use LaunchDarkly\LDUser;
  */
 class EventFactory
 {
-    /** @var boolean */
-    private $_withReasons;
+    private bool $_withReasons;
 
     public function __construct(bool $withReasons)
     {
@@ -23,32 +25,33 @@ class EventFactory
 
     /**
      * @param FeatureFlag $flag
-     * @param LDUser $user
-     * @param EvaluationDetail $detail
-     * @param mixed|null $default
+     * @param LDContext $context
+     * @param EvalResult $result
+     * @param mixed $default
      * @param FeatureFlag|null $prereqOfFlag
-     * @return (mixed|null)[]
+     * @return mixed[]
      */
     public function newEvalEvent(
         FeatureFlag $flag,
-        LDUser $user,
-        EvaluationDetail $detail,
-        $default,
-        $prereqOfFlag = null
+        LDContext $context,
+        EvalResult $result,
+        mixed $default,
+        ?FeatureFlag $prereqOfFlag = null
     ): array {
-        $addExperimentData = $flag->isExperiment($detail->getReason());
+        $detail = $result->getDetail();
+        $forceReasonTracking = $result->isForceReasonTracking();
         $e = [
             'kind' => 'feature',
             'creationDate' => Util::currentTimeUnixMillis(),
             'key' => $flag->getKey(),
-            'user' => $user,
+            'context' => $context,
             'variation' => $detail->getVariationIndex(),
             'value' => $detail->getValue(),
             'default' => $default,
             'version' => $flag->getVersion()
         ];
         // the following properties are handled separately so we don't waste bandwidth on unused keys
-        if ($addExperimentData || $flag->isTrackEvents()) {
+        if ($forceReasonTracking || $flag->isTrackEvents()) {
             $e['trackEvents'] = true;
         }
         if ($flag->getDebugEventsUntilDate()) {
@@ -57,25 +60,22 @@ class EventFactory
         if ($prereqOfFlag) {
             $e['prereqOf'] = $prereqOfFlag->getKey();
         }
-        if (($addExperimentData || $this->_withReasons)) {
+        if (($forceReasonTracking || $this->_withReasons)) {
             $e['reason'] = $detail->getReason()->jsonSerialize();
-        }
-        if ($user->getAnonymous()) {
-            $e['contextKind'] = 'anonymousUser';
         }
         return $e;
     }
 
     /**
-     * @return (mixed|null)[]
+     * @return mixed[]
      */
-    public function newDefaultEvent(FeatureFlag $flag, LDUser $user, EvaluationDetail $detail): array
+    public function newDefaultEvent(FeatureFlag $flag, LDContext $context, EvaluationDetail $detail): array
     {
         $e = [
             'kind' => 'feature',
             'creationDate' => Util::currentTimeUnixMillis(),
             'key' => $flag->getKey(),
-            'user' => $user,
+            'context' => $context,
             'value' => $detail->getValue(),
             'default' => $detail->getValue(),
             'version' => $flag->getVersion()
@@ -90,22 +90,19 @@ class EventFactory
         if ($this->_withReasons) {
             $e['reason'] = $detail->getReason()->jsonSerialize();
         }
-        if ($user->getAnonymous()) {
-            $e['contextKind'] = 'anonymousUser';
-        }
         return $e;
     }
 
     /**
-     * @return (mixed|null)[]
+     * @return mixed[]
      */
-    public function newUnknownFlagEvent(string $key, LDUser $user, EvaluationDetail $detail): array
+    public function newUnknownFlagEvent(string $key, LDContext $context, EvaluationDetail $detail): array
     {
         $e = [
             'kind' => 'feature',
             'creationDate' => Util::currentTimeUnixMillis(),
             'key' => $key,
-            'user' => $user,
+            'context' => $context,
             'value' => $detail->getValue(),
             'default' => $detail->getValue()
         ];
@@ -113,76 +110,38 @@ class EventFactory
         if ($this->_withReasons) {
             $e['reason'] = $detail->getReason()->jsonSerialize();
         }
-        if ($user->getAnonymous()) {
-            $e['contextKind'] = 'anonymousUser';
-        }
         return $e;
     }
 
     /**
-     * @return (mixed|null)[]
+     * @return mixed[]
      */
-    public function newIdentifyEvent(LDUser $user): array
+    public function newIdentifyEvent(LDContext $context): array
     {
         return [
             'kind' => 'identify',
             'creationDate' => Util::currentTimeUnixMillis(),
-            'key' => strval($user->getKey()),
-            'user' => $user
+            'context' => $context
         ];
     }
     
     /**
-     * @param string $eventName
-     * @param LDUser $user
-     * @param mixed|null $data
-     * @param null|numeric $metricValue
-     *
-     * @return (mixed|null)[]
+     * @return mixed[]
      */
-    public function newCustomEvent(string $eventName, LDUser $user, $data, $metricValue): array
+    public function newCustomEvent(string $eventName, LDContext $context, mixed $data, int|float|null $metricValue): array
     {
         $e = [
             'kind' => 'custom',
             'creationDate' => Util::currentTimeUnixMillis(),
             'key' => $eventName,
-            'user' => $user
+            'context' => $context
         ];
-        if (isset($data)) {
+        if ($data !== null) {
             $e['data'] = $data;
         }
-        if (isset($metricValue)) {
+        if ($metricValue !== null) {
             $e['metricValue'] = $metricValue;
         }
-        if ($user->getAnonymous()) {
-            $e['contextKind'] = 'anonymousUser';
-        }
         return $e;
-    }
-
-    /**
-     * @return (mixed|null)[]
-     */
-    public function newAliasEvent(LDUser $user, LDUser $previousUser): array
-    {
-        $e = [
-            'kind' => 'alias',
-            'key' => strval($user->getKey()),
-            'contextKind' => static::contextKind($user),
-            'previousKey' => strval($previousUser->getKey()),
-            'previousContextKind' => static::contextKind($previousUser),
-            'creationDate' => Util::currentTimeUnixMillis()
-        ];
-
-        return $e;
-    }
-
-    private static function contextKind(LDUser $user): string
-    {
-        if ($user->getAnonymous()) {
-            return 'anonymousUser';
-        } else {
-            return 'user';
-        }
     }
 }

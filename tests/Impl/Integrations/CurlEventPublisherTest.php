@@ -3,9 +3,9 @@
 namespace LaunchDarkly\Tests\Impl\Integrations;
 
 use GuzzleHttp\Client;
-use LaunchDarkly\EventPublisher;
 use LaunchDarkly\Impl\Integrations;
 use LaunchDarkly\LDClient;
+use LaunchDarkly\Subsystems\EventPublisher;
 use PHPUnit\Framework\TestCase;
 
 class CurlEventPublisherTest extends TestCase

@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl\Events;
 
-use LaunchDarkly\LDUser;
+use LaunchDarkly\LDContext;
+use LaunchDarkly\Types\AttributeReference;
 
 /**
  * Internal class that translates analytics events into the format used for sending them to LaunchDarkly.
@@ -12,16 +15,22 @@ use LaunchDarkly\LDUser;
  */
 class EventSerializer
 {
-    /** @var bool */
-    private $_allAttrsPrivate;
-
-    /** @var array */
-    private $_privateAttrNames;
+    private bool $_allAttributesPrivate;
+    /** @var AttributeReference[] */
+    private array $_privateAttributes;
 
     public function __construct(array $options)
     {
-        $this->_allAttrsPrivate = isset($options['all_attributes_private']) && $options['all_attributes_private'];
-        $this->_privateAttrNames = isset($options['private_attribute_names']) ? $options['private_attribute_names'] : [];
+        $this->_allAttributesPrivate = !!($options['all_attributes_private'] ?? false);
+
+        $allParsedPrivate = [];
+        foreach ($options['private_attribute_names'] ?? [] as $attr) {
+            $parsed = AttributeReference::fromPath($attr);
+            if ($parsed->getError() === null) {
+                $allParsedPrivate[] = $parsed;
+            }
+        }
+        $this->_privateAttributes = $allParsedPrivate;
     }
 
     public function serializeEvents(array $events): string
@@ -41,8 +50,8 @@ class EventSerializer
     {
         $ret = [];
         foreach ($e as $key => $value) {
-            if ($key == 'user') {
-                $ret[$key] = $this->serializeUser($value);
+            if ($key == 'context') {
+                $ret[$key] = $this->serializeContext($value);
             } else {
                 $ret[$key] = $value;
             }
@@ -50,53 +59,108 @@ class EventSerializer
         return $ret;
     }
 
-    private function filterAttrs(array $attrs, array &$json, ?array $userPrivateAttrs, array &$allPrivateAttrs, bool $stringify): void
+    private function serializeContext(LDContext $context): array
     {
-        foreach ($attrs as $key => $value) {
-            if ($value !== null) {
-                if ($this->_allAttrsPrivate ||
-                    (!is_null($userPrivateAttrs) && in_array($key, $userPrivateAttrs)) ||
-                    in_array($key, $this->_privateAttrNames)) {
-                    $allPrivateAttrs[] = $key;
-                } else {
-                    $json[$key] = $stringify ? strval($value) : $value;
+        if ($context->isMultiple()) {
+            $ret = ['kind' => 'multi'];
+            for ($i = 0; $i < $context->getIndividualContextCount(); $i++) {
+                $c = $context->getIndividualContext($i);
+                if ($c !== null) {
+                    $ret[$c->getKind()] = $this->serializeContextSingleKind($c, false);
                 }
             }
+            return $ret;
+        } else {
+            return $this->serializeContextSingleKind($context, true);
         }
     }
 
-    private function serializeUser(LDUser $user): array
+    private function serializeContextSingleKind(LDContext $c, bool $includeKind): array
     {
-        $json = ["key" => strval($user->getKey())];
-        $userPrivateAttrs = $user->getPrivateAttributeNames();
-        $allPrivateAttrs = [];
-
-        $attrs = [
-            'secondary' => $user->getSecondary(),
-            'ip' => $user->getIP(),
-            'country' => $user->getCountry(),
-            'email' => $user->getEmail(),
-            'name' => $user->getName(),
-            'avatar' => $user->getAvatar(),
-            'firstName' => $user->getFirstName(),
-            'lastName' => $user->getLastName()
-        ];
-        $this->filterAttrs($attrs, $json, $userPrivateAttrs, $allPrivateAttrs, true);
-        if ($user->getAnonymous()) {
-            $json['anonymous'] = true;
+        $ret = ['key' => $c->getKey()];
+        if ($includeKind) {
+            $ret['kind'] = $c->getKind();
         }
-        $custom = $user->getCustom();
-        if (!is_null($custom) && !empty($user->getCustom())) {
-            $customOut = [];
-            $this->filterAttrs($custom, $customOut, $userPrivateAttrs, $allPrivateAttrs, false);
-            if ($customOut) { // if this is empty, we will return a json array for 'custom' instead of an object
-                $json['custom'] = $customOut;
+        if ($c->isAnonymous()) {
+            $ret['anonymous'] = true;
+        }
+        $redacted = [];
+        $allPrivate = array_merge($this->_privateAttributes, $c->getPrivateAttributes() ?? []);
+        if ($c->getName() !== null && !$this->checkWholeAttributePrivate('name', $allPrivate, $redacted)) {
+            $ret['name'] = $c->getName();
+        }
+        foreach ($c->getCustomAttributeNames() as $attr) {
+            if (!$this->checkWholeAttributePrivate($attr, $allPrivate, $redacted)) {
+                $value = $c->get($attr);
+                $ret[$attr] = self::redactJsonValue(null, $attr, $value, $allPrivate, $redacted);
             }
         }
-        if (count($allPrivateAttrs)) {
-            sort($allPrivateAttrs);
-            $json['privateAttrs'] = $allPrivateAttrs;
+        if (count($redacted) !== 0) {
+            $ret['_meta'] = ['redactedAttributes' => $redacted];
         }
-        return $json;
+        return $ret;
+    }
+
+    private function checkWholeAttributePrivate(string $attr, array $allPrivate, array &$redactedOut): bool
+    {
+        if ($this->_allAttributesPrivate) {
+            $redactedOut[] = $attr;
+            return true;
+        }
+        foreach ($allPrivate as $p) {
+            if ($p->getComponent(0) === $attr && $p->getDepth() === 1) {
+                $redactedOut[] = $attr;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static function redactJsonValue(?array $parentPath, string $name, mixed $value, array $allPrivate, array &$redactedOut): mixed
+    {
+        if (!is_array($value) || count($value) === 0) {
+            return $value;
+        }
+        $ret = [];
+        $currentPath = $parentPath ?? [];
+        $currentPath[] = $name;
+        foreach ($value as $k => $v) {
+            if (is_int($k)) {
+                // This is a regular array, not an object with string properties-- redactions don't apply. Technically,
+                // that's not a 100% solid assumption because in PHP, an array could have a mix of int and string keys.
+                // But that's not true in JSON or in pretty much any other SDK, so there wouldn't really be any clear
+                // way to apply our redaction logic in that case anyway.
+                return $value;
+            }
+            $wasRedacted = false;
+            foreach ($allPrivate as $p) {
+                if ($p->getDepth() !== count($currentPath) + 1) {
+                    continue;
+                }
+                if ($p->getComponent(count($currentPath)) !== $k) {
+                    continue;
+                }
+                $match = true;
+                for ($i = 0; $i < count($currentPath); $i++) {
+                    if ($p->getComponent($i) !== $currentPath[$i]) {
+                        $match = false;
+                        break;
+                    }
+                }
+                if ($match) {
+                    $redactedOut[] = $p->getPath();
+                    $wasRedacted = true;
+                    break;
+                }
+            }
+            if (!$wasRedacted) {
+                $ret[$k] = self::redactJsonValue($currentPath, $k, $v, $allPrivate, $redactedOut);
+            }
+        }
+        if (count($ret) === 0) {
+            // Substitute an empty object here, because an empty array would serialize as [] rather than {}
+            return new \stdClass();
+        }
+        return $ret;
     }
 }

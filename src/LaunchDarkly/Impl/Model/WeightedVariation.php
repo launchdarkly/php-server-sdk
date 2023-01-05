@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LaunchDarkly\Impl\Model;
 
 /**
@@ -12,14 +14,11 @@ namespace LaunchDarkly\Impl\Model;
  */
 class WeightedVariation
 {
-    /** @var int */
-    private $_variation;
-    /** @var int */
-    private $_weight;
-    /** @var boolean */
-    private $_untracked = false;
+    private int $_variation;
+    private int $_weight;
+    private bool $_untracked = false;
 
-    private function __construct(int $variation, int $weight, bool $untracked)
+    public function __construct(int $variation, int $weight, bool $untracked)
     {
         $this->_variation = $variation;
         $this->_weight = $weight;
@@ -31,13 +30,11 @@ class WeightedVariation
      */
     public static function getDecoder(): \Closure
     {
-        return function (array $v) {
-            return new WeightedVariation(
-                $v['variation'],
-                $v['weight'],
-                $v['untracked'] ?? false
-            );
-        };
+        return fn (array $v) => new WeightedVariation(
+            (int)$v['variation'],
+            (int)$v['weight'],
+            $v['untracked'] ?? false
+        );
     }
 
     public function getVariation(): int
