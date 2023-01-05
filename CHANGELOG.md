@@ -2,6 +2,41 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [5.0.0] - 2023-01-04
+The latest version of this SDK supports LaunchDarkly's new custom contexts feature. Contexts are an evolution of a previously-existing concept, "users." Contexts let you create targeting rules for feature flags based on a variety of different information, including attributes pertaining to users, organizations, devices, and more. You can even combine contexts to create "multi-contexts." 
+
+This feature is only available to members of LaunchDarkly's Early Access Program (EAP). If you're in the EAP, you can use contexts by updating your SDK to the latest version and, if applicable, updating your Relay Proxy. Outdated SDK versions do not support contexts, and will cause unpredictable flag evaluation behavior.
+
+If you are not in the EAP, only use single contexts of kind "user", or continue to use the user type if available. If you try to create contexts, the context will be sent to LaunchDarkly, but any data not related to the user object will be ignored.
+
+For detailed information about this version, please refer to the list below. For information on how to upgrade from the previous version, please read the [migration guide](https://docs.launchdarkly.com/sdk/server-side/php/migration-4-to-5).
+
+### Added:
+- The type `LDContext` defines the new "context" model. "Contexts" are a replacement for the earlier concept of "users"; they can be populated with attributes in more or less the same way as before, but they also support new behaviors. To learn more, read [the documentation](https://docs.launchdarkly.com/home/contexts).
+- For all SDK methods that took an `LDUser` parameter, the parameter type can now be either `LDUser` or `LDContext`. The SDK still supports `LDUser` for now, but `LDContext` is the preferred model and `LDUser` may be removed in a future version.
+
+### Changed _(breaking changes from 4.x)_:
+- It was previously allowable to set a user key to an empty string. In the new context model, the key is not allowed to be empty. Trying to use an empty key will cause evaluations to fail and return the default value.
+- There is no longer such a thing as a `secondary` meta-attribute that affects percentage rollouts. If you set an attribute with that name in `LDContext`, it will simply be a custom attribute like any other.
+- Component interface types like `EventPublisher` and `FeatureRequester` which applications are unlikely to reference directly (except when defining a custom component implementation) have been moved out of the main namespace into a new namespace, `LaunchDarkly\Subsystems`.
+
+### Changed (requirements/dependencies/build):
+- The minimum PHP version is now 8.0.
+
+### Changed (behavioral changes):
+- The SDK is now more strictly compliant with the LaunchDarkly specification for date and semantic version values. This means that some values that might have been accepted in the past, which other SDKs would not accept, are now correctly considered invalid. Please review the LaunchDarkly documentation on [Using date/time and semantic version operators](https://docs.launchdarkly.com/sdk/concepts/flag-types/?q=representing+date+time+values#using-datetime-and-semantic-version-operators).
+- Analytics event data now uses a new JSON schema due to differences between the context model and the old user model.
+
+### Fixed:
+- Fixed a bug in the parsing of string values in feature flags and user attributes when they were referenced with date/time operators in a targeting rule. As described in [LaunchDarkly documentation](https://docs.launchdarkly.com/sdk/concepts/flag-types#representing-datetime-values), such values must use the RFC3339 date/time format; the SDK was also accepting strings in other formats (for instance, ones that did not have a time or a time zone), which would cause undefined behavior inconsistent with evaluations done by other LaunchDarkly services. This fix ensures that all targeting rules that reference an invalid date/time value are a non-match, and does not affect how the SDK treats values that are in the correct format.
+- The SDK was allowing numeric values to be treated as semantic versions in targeting rules. It now correctly only allows strings, as described in [LaunchDarkly documentation](https://docs.launchdarkly.com/sdk/concepts/flag-types#using-semantic-versions).
+
+### Removed:
+- Removed all types, fields, and methods that were deprecated as of the most recent 4.x release.
+- Removed the `secondary` meta-attribute in `LDUser` and `LDUserBuilder`.
+- The `alias` method no longer exists because alias events are not needed in the new context model.
+- The `inline_users_in_events` option no longer exists because it is not relevant in the new context model.
+
 ## [4.2.4] - 2022-10-07
 ### Changed:
 - CI builds now include a cross-platform test suite implemented in https://github.com/launchdarkly/sdk-test-harness. This is in addition to unit test coverage, and ensures consistent behavior across SDKs.
