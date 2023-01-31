@@ -916,6 +916,36 @@ Search.appendIndex(
             "summary": "Gets\u0020all\u0020feature\u0020flags.",
             "url": "classes/LaunchDarkly-Subsystems-FeatureRequester.html#method_getAllFeatures"
         },                {
+            "fqsen": "\\LaunchDarkly\\Types\\ApplicationInfo",
+            "name": "ApplicationInfo",
+            "summary": "An\u0020object\u0020that\u0020allows\u0020configuration\u0020of\u0020application\u0020metadata.",
+            "url": "classes/LaunchDarkly-Types-ApplicationInfo.html"
+        },                {
+            "fqsen": "\\LaunchDarkly\\Types\\ApplicationInfo\u003A\u003A__construct\u0028\u0029",
+            "name": "__construct",
+            "summary": "",
+            "url": "classes/LaunchDarkly-Types-ApplicationInfo.html#method___construct"
+        },                {
+            "fqsen": "\\LaunchDarkly\\Types\\ApplicationInfo\u003A\u003AwithId\u0028\u0029",
+            "name": "withId",
+            "summary": "Set\u0020the\u0020application\u0020id\u0020metadata\u0020identifier.",
+            "url": "classes/LaunchDarkly-Types-ApplicationInfo.html#method_withId"
+        },                {
+            "fqsen": "\\LaunchDarkly\\Types\\ApplicationInfo\u003A\u003AwithVersion\u0028\u0029",
+            "name": "withVersion",
+            "summary": "Set\u0020the\u0020application\u0020version\u0020metadata\u0020identifier.",
+            "url": "classes/LaunchDarkly-Types-ApplicationInfo.html#method_withVersion"
+        },                {
+            "fqsen": "\\LaunchDarkly\\Types\\ApplicationInfo\u003A\u003Aerrors\u0028\u0029",
+            "name": "errors",
+            "summary": "Retrieve\u0020any\u0020validation\u0020errors\u0020that\u0020have\u0020accumulated\u0020as\u0020a\u0020result\u0020of\u0020creating\u0020this\u0020instance.",
+            "url": "classes/LaunchDarkly-Types-ApplicationInfo.html#method_errors"
+        },                {
+            "fqsen": "\\LaunchDarkly\\Types\\ApplicationInfo\u003A\u003A__toString\u0028\u0029",
+            "name": "__toString",
+            "summary": "",
+            "url": "classes/LaunchDarkly-Types-ApplicationInfo.html#method___toString"
+        },                {
             "fqsen": "\\LaunchDarkly\\Types\\AttributeReference",
             "name": "AttributeReference",
             "summary": "An\u0020attribute\u0020name\u0020or\u0020path\u0020expression\u0020identifying\u0020a\u0020value\u0020within\u0020an\u0020\u007B\u0040see\u0020\\LaunchDarkly\\LDContext\u007D.",

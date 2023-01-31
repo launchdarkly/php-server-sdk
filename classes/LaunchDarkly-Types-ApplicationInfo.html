@@ -93,38 +93,42 @@
             <div class="phpdocumentor-column -eight phpdocumentor-content">
                     <ul class="phpdocumentor-breadcrumbs">
             <li class="phpdocumentor-breadcrumb"><a href="namespaces/launchdarkly.html">LaunchDarkly</a></li>
-            <li class="phpdocumentor-breadcrumb"><a href="namespaces/launchdarkly-subsystems.html">Subsystems</a></li>
+            <li class="phpdocumentor-breadcrumb"><a href="namespaces/launchdarkly-types.html">Types</a></li>
     </ul>
 
-    <article class="phpdocumentor-element -interface">
+    <article class="phpdocumentor-element -class">
         <h2 class="phpdocumentor-content__title">
-    FeatureRequester
-                <div class="phpdocumentor-element__package">
-            in
+    ApplicationInfo
+
+    
+            <div class="phpdocumentor-element__package">
+            in package
             <ul class="phpdocumentor-breadcrumbs">
-                                    <li><a href="packages/LaunchDarklyPHPSDK.html">LaunchDarklyPHPSDK</a></li>
+                                    <li class="phpdocumentor-breadcrumb"><a href="packages/LaunchDarklyPHPSDK.html">LaunchDarklyPHPSDK</a></li>
                             </ul>
         </div>
+    
+    
     </h2>
 
         <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Subsystems/FeatureRequester.php"><a href="files/launchdarkly-subsystems-featurerequester.html"><abbr title="LaunchDarkly/Subsystems/FeatureRequester.php">FeatureRequester.php</abbr></a></abbr>
+    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Types/ApplicationInfo.php"><a href="files/launchdarkly-types-applicationinfo.html"><abbr title="LaunchDarkly/Types/ApplicationInfo.php">ApplicationInfo.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">21</span>
+    <span class="phpdocumentor-element-found-in__line">19</span>
 
     </aside>
 
-            <p class="phpdocumentor-summary">Interface for the component that retrieves feature flag data.</p>
+            <p class="phpdocumentor-summary">An object that allows configuration of application metadata.</p>
 
-    <section class="phpdocumentor-description"><p>Application code should not need to implement this interface. LaunchDarkly provides several implementations:</p>
+    <section class="phpdocumentor-description"><p>Application metadata may be used in LaunchDarkly analytics or other product
+features, but does not affect feature flag evaluations.</p>
+<p>To use these properties, provide an instance of ApplicationInfo in the config
+parameter of the LDClient.</p>
+<p>Application values have the following restrictions:</p>
 <ul>
-<li>The default, <a href="classes/LaunchDarkly-Integrations-Guzzle.html#method_featureRequester"><abbr title="\LaunchDarkly\Integrations\Guzzle::featureRequester()">Guzzle::featureRequester()</abbr></a>, which requests
-flags inefficiently via HTTP on demand.</li>
-<li>Database integrations provided in separate packages. See: https://docs.launchdarkly.com/sdk/features/storing-data#php</li>
-<li>A mechanism for reading data from the filesystem: <a href="classes/LaunchDarkly-Integrations-Files.html"><abbr title="\LaunchDarkly\Integrations\Files">Files</abbr></a>
-</li>
-<li>A mechanism for injecting test data: <a href="classes/LaunchDarkly-Integrations-TestData.html"><abbr title="\LaunchDarkly\Integrations\TestData">TestData</abbr></a>
-</li>
+<li>Cannot be empty</li>
+<li>Cannot exceed 64 characters in length</li>
+<li>Can only contain a-z, A-Z, 0-9, period (.), dash (-), and underscore (_).</li>
 </ul>
 </section>
 
@@ -142,25 +146,39 @@ flags inefficiently via HTTP on demand.</li>
 
 <dl class="phpdocumentor-table-of-contents">
                     <dt class="phpdocumentor-table-of-contents__entry -method -public">
-    <a href="classes/LaunchDarkly-Subsystems-FeatureRequester.html#method_getAllFeatures">getAllFeatures()</a>
+    <a href="classes/LaunchDarkly-Types-ApplicationInfo.html#method___construct">__construct()</a>
     <span>
-                        &nbsp;: array&lt;string, <abbr title="\LaunchDarkly\Impl\Model\FeatureFlag">FeatureFlag</abbr>&gt;|null    </span>
+                        &nbsp;: mixed    </span>
 </dt>
-<dd>Gets all feature flags.</dd>
+<dd></dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
-    <a href="classes/LaunchDarkly-Subsystems-FeatureRequester.html#method_getFeature">getFeature()</a>
+    <a href="classes/LaunchDarkly-Types-ApplicationInfo.html#method___toString">__toString()</a>
     <span>
-                        &nbsp;: <abbr title="\LaunchDarkly\Impl\Model\FeatureFlag">FeatureFlag</abbr>|null    </span>
+                        &nbsp;: string    </span>
 </dt>
-<dd>Gets the configuration for a specific feature flag.</dd>
+<dd></dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
-    <a href="classes/LaunchDarkly-Subsystems-FeatureRequester.html#method_getSegment">getSegment()</a>
+    <a href="classes/LaunchDarkly-Types-ApplicationInfo.html#method_errors">errors()</a>
     <span>
-                        &nbsp;: <abbr title="\LaunchDarkly\Impl\Model\Segment">Segment</abbr>|null    </span>
+                        &nbsp;: array&lt;string|int, mixed&gt;    </span>
 </dt>
-<dd>Gets the configuration for a specific user segment.</dd>
+<dd>Retrieve any validation errors that have accumulated as a result of creating this instance.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/LaunchDarkly-Types-ApplicationInfo.html#method_withId">withId()</a>
+    <span>
+                        &nbsp;: <a href="classes/LaunchDarkly-Types-ApplicationInfo.html"><abbr title="\LaunchDarkly\Types\ApplicationInfo">ApplicationInfo</abbr></a>    </span>
+</dt>
+<dd>Set the application id metadata identifier.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/LaunchDarkly-Types-ApplicationInfo.html#method_withVersion">withVersion()</a>
+    <span>
+                        &nbsp;: <a href="classes/LaunchDarkly-Types-ApplicationInfo.html"><abbr title="\LaunchDarkly\Types\ApplicationInfo">ApplicationInfo</abbr></a>    </span>
+</dt>
+<dd>Set the application version metadata identifier.</dd>
 
         </dl>
 
@@ -168,10 +186,12 @@ flags inefficiently via HTTP on demand.</li>
 
         
 
+        
+
             <section class="phpdocumentor-methods">
         <h3 class="phpdocumentor-elements__header" id="methods">
             Methods
-            <a href="classes/LaunchDarkly-Subsystems-FeatureRequester.html#methods" class="headerlink"><i class="fas fa-link"></i></a>
+            <a href="classes/LaunchDarkly-Types-ApplicationInfo.html#methods" class="headerlink"><i class="fas fa-link"></i></a>
         </h3>
                     <article
         class="phpdocumentor-element
@@ -179,33 +199,31 @@ flags inefficiently via HTTP on demand.</li>
             -public
                                                         "
 >
-    <h4 class="phpdocumentor-element__name" id="method_getAllFeatures">
-        getAllFeatures()
-        <a href="classes/LaunchDarkly-Subsystems-FeatureRequester.html#method_getAllFeatures" class="headerlink"><i class="fas fa-link"></i></a>
+    <h4 class="phpdocumentor-element__name" id="method___construct">
+        __construct()
+        <a href="classes/LaunchDarkly-Types-ApplicationInfo.html#method___construct" class="headerlink"><i class="fas fa-link"></i></a>
     </h4>
     <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Subsystems/FeatureRequester.php"><a href="files/launchdarkly-subsystems-featurerequester.html"><abbr title="LaunchDarkly/Subsystems/FeatureRequester.php">FeatureRequester.php</abbr></a></abbr>
+    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Types/ApplicationInfo.php"><a href="files/launchdarkly-types-applicationinfo.html"><abbr title="LaunchDarkly/Types/ApplicationInfo.php">ApplicationInfo.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">44</span>
+    <span class="phpdocumentor-element-found-in__line">30</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Gets all feature flags.</p>
-
+    
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getAllFeatures</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;string, <abbr title="\LaunchDarkly\Impl\Model\FeatureFlag">FeatureFlag</abbr>&gt;|null</span></code>
+                <span class="phpdocumentor-signature__name">__construct</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
 
-    
+        <section class="phpdocumentor-description"></section>
+
     
     
 
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-    <span class="phpdocumentor-signature__response_type">array&lt;string, <abbr title="\LaunchDarkly\Impl\Model\FeatureFlag">FeatureFlag</abbr>&gt;|null</span>
+    <span class="phpdocumentor-signature__response_type">mixed</span>
             &mdash;
-            <section class="phpdocumentor-description"><p>The decoded FeatureFlags, or null if missing</p>
-</section>
-
+        
     
 </article>
                     <article
@@ -214,45 +232,31 @@ flags inefficiently via HTTP on demand.</li>
             -public
                                                         "
 >
-    <h4 class="phpdocumentor-element__name" id="method_getFeature">
-        getFeature()
-        <a href="classes/LaunchDarkly-Subsystems-FeatureRequester.html#method_getFeature" class="headerlink"><i class="fas fa-link"></i></a>
+    <h4 class="phpdocumentor-element__name" id="method___toString">
+        __toString()
+        <a href="classes/LaunchDarkly-Types-ApplicationInfo.html#method___toString" class="headerlink"><i class="fas fa-link"></i></a>
     </h4>
     <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Subsystems/FeatureRequester.php"><a href="files/launchdarkly-subsystems-featurerequester.html"><abbr title="LaunchDarkly/Subsystems/FeatureRequester.php">FeatureRequester.php</abbr></a></abbr>
+    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Types/ApplicationInfo.php"><a href="files/launchdarkly-types-applicationinfo.html"><abbr title="LaunchDarkly/Types/ApplicationInfo.php">ApplicationInfo.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">29</span>
+    <span class="phpdocumentor-element-found-in__line">65</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Gets the configuration for a specific feature flag.</p>
-
+    
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getFeature</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$key</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\LaunchDarkly\Impl\Model\FeatureFlag">FeatureFlag</abbr>|null</span></code>
+                <span class="phpdocumentor-signature__name">__toString</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+
+        <section class="phpdocumentor-description"></section>
 
     
-        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
-    <dl class="phpdocumentor-argument-list">
-                    <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-signature__argument__name">$key</span>
-                : <span class="phpdocumentor-signature__argument__return-type">string</span>
-                            </dt>
-            <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>feature key</p>
-</section>
-
-            </dd>
-            </dl>
-
     
 
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-    <span class="phpdocumentor-signature__response_type"><abbr title="\LaunchDarkly\Impl\Model\FeatureFlag">FeatureFlag</abbr>|null</span>
+    <span class="phpdocumentor-signature__response_type">string</span>
             &mdash;
-            <section class="phpdocumentor-description"><p>The decoded FeatureFlag, or null if missing</p>
-</section>
-
+        
     
 </article>
                     <article
@@ -261,33 +265,65 @@ flags inefficiently via HTTP on demand.</li>
             -public
                                                         "
 >
-    <h4 class="phpdocumentor-element__name" id="method_getSegment">
-        getSegment()
-        <a href="classes/LaunchDarkly-Subsystems-FeatureRequester.html#method_getSegment" class="headerlink"><i class="fas fa-link"></i></a>
+    <h4 class="phpdocumentor-element__name" id="method_errors">
+        errors()
+        <a href="classes/LaunchDarkly-Types-ApplicationInfo.html#method_errors" class="headerlink"><i class="fas fa-link"></i></a>
     </h4>
     <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Subsystems/FeatureRequester.php"><a href="files/launchdarkly-subsystems-featurerequester.html"><abbr title="LaunchDarkly/Subsystems/FeatureRequester.php">FeatureRequester.php</abbr></a></abbr>
+    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Types/ApplicationInfo.php"><a href="files/launchdarkly-types-applicationinfo.html"><abbr title="LaunchDarkly/Types/ApplicationInfo.php">ApplicationInfo.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">37</span>
+    <span class="phpdocumentor-element-found-in__line">60</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Gets the configuration for a specific user segment.</p>
+        <p class="phpdocumentor-summary">Retrieve any validation errors that have accumulated as a result of creating this instance.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getSegment</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$key</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\LaunchDarkly\Impl\Model\Segment">Segment</abbr>|null</span></code>
+                <span class="phpdocumentor-signature__name">errors</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;string|int, mixed&gt;</span></code>
+
+    
+    
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">array&lt;string|int, mixed&gt;</span>
+            &mdash;
+        
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_withId">
+        withId()
+        <a href="classes/LaunchDarkly-Types-ApplicationInfo.html#method_withId" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Types/ApplicationInfo.php"><a href="files/launchdarkly-types-applicationinfo.html"><abbr title="LaunchDarkly/Types/ApplicationInfo.php">ApplicationInfo.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">40</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Set the application id metadata identifier.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                <span class="phpdocumentor-signature__name">withId</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$id</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Types-ApplicationInfo.html"><abbr title="\LaunchDarkly\Types\ApplicationInfo">ApplicationInfo</abbr></a></span></code>
 
     
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
     <dl class="phpdocumentor-argument-list">
                     <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-signature__argument__name">$key</span>
+                <span class="phpdocumentor-signature__argument__name">$id</span>
                 : <span class="phpdocumentor-signature__argument__return-type">string</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>segment key</p>
-</section>
+                    <section class="phpdocumentor-description"></section>
 
             </dd>
             </dl>
@@ -295,11 +331,53 @@ flags inefficiently via HTTP on demand.</li>
     
 
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-    <span class="phpdocumentor-signature__response_type"><abbr title="\LaunchDarkly\Impl\Model\Segment">Segment</abbr>|null</span>
+    <span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Types-ApplicationInfo.html"><abbr title="\LaunchDarkly\Types\ApplicationInfo">ApplicationInfo</abbr></a></span>
             &mdash;
-            <section class="phpdocumentor-description"><p>The decoded Segment, or null if missing</p>
-</section>
+        
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_withVersion">
+        withVersion()
+        <a href="classes/LaunchDarkly-Types-ApplicationInfo.html#method_withVersion" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/Types/ApplicationInfo.php"><a href="files/launchdarkly-types-applicationinfo.html"><abbr title="LaunchDarkly/Types/ApplicationInfo.php">ApplicationInfo.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">50</span>
 
+    </aside>
+
+        <p class="phpdocumentor-summary">Set the application version metadata identifier.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                <span class="phpdocumentor-signature__name">withVersion</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$version</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Types-ApplicationInfo.html"><abbr title="\LaunchDarkly\Types\ApplicationInfo">ApplicationInfo</abbr></a></span></code>
+
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$version</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"></section>
+
+            </dd>
+            </dl>
+
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Types-ApplicationInfo.html"><abbr title="\LaunchDarkly\Types\ApplicationInfo">ApplicationInfo</abbr></a></span>
+            &mdash;
+        
     
 </article>
             </section>
@@ -380,7 +458,7 @@ flags inefficiently via HTTP on demand.</li>
 </section>
             </div>
         </div>
-        <a href="classes/LaunchDarkly-Subsystems-FeatureRequester.html#top" class="phpdocumentor-back-to-top"><i class="fas fa-chevron-circle-up"></i></a>
+        <a href="classes/LaunchDarkly-Types-ApplicationInfo.html#top" class="phpdocumentor-back-to-top"><i class="fas fa-chevron-circle-up"></i></a>
 
     </main>
 

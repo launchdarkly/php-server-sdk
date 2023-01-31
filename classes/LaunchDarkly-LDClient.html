@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>LaunchDarkly PHP SDK 5.0.0</title>
+    <title>LaunchDarkly PHP SDK 5.1.0</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="../">
     <link rel="icon" href="images/favicon.ico"/>
@@ -23,7 +23,7 @@
     </head>
 <body id="top">
     <header class="phpdocumentor-header phpdocumentor-section">
-    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">LaunchDarkly PHP SDK 5.0.0</a></h1>
+    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">LaunchDarkly PHP SDK 5.1.0</a></h1>
     <input class="phpdocumentor-header__menu-button" type="checkbox" id="menu-button" name="menu-button" />
     <label class="phpdocumentor-header__menu-icon" for="menu-button">
         <i class="fas fa-bars"></i>
@@ -113,7 +113,7 @@
         <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDClient.php"><a href="files/launchdarkly-ldclient.html"><abbr title="LaunchDarkly/LDClient.php">LDClient.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">26</span>
+    <span class="phpdocumentor-element-found-in__line">27</span>
 
     </aside>
 
@@ -150,7 +150,7 @@
             <dt class="phpdocumentor-table-of-contents__entry -constant -public">
     <a href="classes/LaunchDarkly-LDClient.html#constant_VERSION">VERSION</a>
     <span>
-        &nbsp;= &#039;5.0.0&#039;                    </span>
+        &nbsp;= &#039;5.1.0&#039;                    </span>
 </dt>
 <dd>The current SDK version.</dd>
 
@@ -237,7 +237,7 @@ describes the way the value was determined.</dd>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDClient.php"><a href="files/launchdarkly-ldclient.html"><abbr title="LaunchDarkly/LDClient.php">LDClient.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">29</span>
+    <span class="phpdocumentor-element-found-in__line">30</span>
 
     </aside>
 
@@ -264,7 +264,7 @@ describes the way the value was determined.</dd>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDClient.php"><a href="files/launchdarkly-ldclient.html"><abbr title="LaunchDarkly/LDClient.php">LDClient.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">31</span>
+    <span class="phpdocumentor-element-found-in__line">32</span>
 
     </aside>
 
@@ -291,7 +291,7 @@ describes the way the value was determined.</dd>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDClient.php"><a href="files/launchdarkly-ldclient.html"><abbr title="LaunchDarkly/LDClient.php">LDClient.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">36</span>
+    <span class="phpdocumentor-element-found-in__line">37</span>
 
     </aside>
 
@@ -301,7 +301,7 @@ describes the way the value was determined.</dd>
     <span class="phpdocumentor-signature__visibility">public</span>
     <span class="phpdocumentor-signature__type">string</span>
     <span class="phpdocumentor-signature__name">VERSION</span>
-    = <span class="phpdocumentor-signature__default-value">&#039;5.0.0&#039;</span>
+    = <span class="phpdocumentor-signature__default-value">&#039;5.1.0&#039;</span>
 </code>
 
 
@@ -332,7 +332,7 @@ describes the way the value was determined.</dd>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDClient.php"><a href="files/launchdarkly-ldclient.html"><abbr title="LaunchDarkly/LDClient.php">LDClient.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">83</span>
+    <span class="phpdocumentor-element-found-in__line">85</span>
 
     </aside>
 
@@ -392,7 +392,9 @@ Defaults to <a href="classes/LaunchDarkly-Integrations-Curl.html#method_eventPub
 Defaults to false.</li>
 <li>
 <code class="prettyprint">private_attribute_names</code>: An optional array of user attribute names to be marked private. Any users sent to LaunchDarkly
-with this configuration active will have attributes with these names removed. You can also set private attributes on a
+with this configuration active will have attributes with these names removed. You can also set private attributes on a</li>
+<li>
+<code class="prettyprint">application_info</code>: An optional <a href="classes/LaunchDarkly-Types-ApplicationInfo.html"><abbr title="\LaunchDarkly\Types\ApplicationInfo">ApplicationInfo</abbr></a> instance.
 per-user basis in the LDContext builder.</li>
 <li>Other options may be available depending on any features you are using from the <code class="prettyprint">LaunchDarkly\Integrations</code> namespace.</li>
 </ul>
@@ -422,7 +424,7 @@ per-user basis in the LDContext builder.</li>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDClient.php"><a href="files/launchdarkly-ldclient.html"><abbr title="LaunchDarkly/LDClient.php">LDClient.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">368</span>
+    <span class="phpdocumentor-element-found-in__line">379</span>
 
     </aside>
 
@@ -495,7 +497,7 @@ turned on</li>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDClient.php"><a href="files/launchdarkly-ldclient.html"><abbr title="LaunchDarkly/LDClient.php">LDClient.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">431</span>
+    <span class="phpdocumentor-element-found-in__line">442</span>
 
     </aside>
 
@@ -532,7 +534,7 @@ turned on</li>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDClient.php"><a href="files/launchdarkly-ldclient.html"><abbr title="LaunchDarkly/LDClient.php">LDClient.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">337</span>
+    <span class="phpdocumentor-element-found-in__line">348</span>
 
     </aside>
 
@@ -584,7 +586,7 @@ identify() if you want to identify the context without evaluating a flag.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDClient.php"><a href="files/launchdarkly-ldclient.html"><abbr title="LaunchDarkly/LDClient.php">LDClient.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">292</span>
+    <span class="phpdocumentor-element-found-in__line">303</span>
 
     </aside>
 
@@ -617,7 +619,7 @@ identify() if you want to identify the context without evaluating a flag.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDClient.php"><a href="files/launchdarkly-ldclient.html"><abbr title="LaunchDarkly/LDClient.php">LDClient.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">416</span>
+    <span class="phpdocumentor-element-found-in__line">427</span>
 
     </aside>
 
@@ -666,7 +668,7 @@ identify() if you want to identify the context without evaluating a flag.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDClient.php"><a href="files/launchdarkly-ldclient.html"><abbr title="LaunchDarkly/LDClient.php">LDClient.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">313</span>
+    <span class="phpdocumentor-element-found-in__line">324</span>
 
     </aside>
 
@@ -745,7 +747,7 @@ numeric custom metrics; can be omitted if this event is used by only non-numeric
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDClient.php"><a href="files/launchdarkly-ldclient.html"><abbr title="LaunchDarkly/LDClient.php">LDClient.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">186</span>
+    <span class="phpdocumentor-element-found-in__line">197</span>
 
     </aside>
 
@@ -827,7 +829,7 @@ does not match any existing flag), <code class="prettyprint">$defaultValue</code
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDClient.php"><a href="files/launchdarkly-ldclient.html"><abbr title="LaunchDarkly/LDClient.php">LDClient.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">206</span>
+    <span class="phpdocumentor-element-found-in__line">217</span>
 
     </aside>
 
