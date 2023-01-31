@@ -8,6 +8,11 @@ publications:
   - url: https://packagist.org/packages/launchdarkly/server-sdk
     description: Packagist
 
+branches:
+  - name: main
+    description: 5.x
+  - name: 4.x
+
 jobs:
   - docker:
       image: ldcircleci/php-sdk-release:4  # Releaser's default for PHP is still php-sdk-release:3, which is PHP 7.x
