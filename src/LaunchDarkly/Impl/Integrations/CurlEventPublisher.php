@@ -3,6 +3,7 @@
 namespace LaunchDarkly\Impl\Integrations;
 
 use LaunchDarkly\EventPublisher;
+use LaunchDarkly\Impl\Util;
 use LaunchDarkly\LDClient;
 
 /**
@@ -13,9 +14,6 @@ use LaunchDarkly\LDClient;
  */
 class CurlEventPublisher implements EventPublisher
 {
-    /** @var string */
-    private $_sdkKey;
-
     /** @var string */
     private $_host;
 
@@ -37,10 +35,11 @@ class CurlEventPublisher implements EventPublisher
     /** @var bool */
     private $_isWindows;
 
+    /** @var array<string, string> */
+    private $_eventHeaders;
+
     public function __construct(string $sdkKey, array $options = [])
     {
-        $this->_sdkKey = $sdkKey;
-
         $baseUri = $options['events_uri'] ?? null;
         if (!$baseUri) {
             $baseUri = LDClient::DEFAULT_EVENTS_URI;
@@ -61,6 +60,7 @@ class CurlEventPublisher implements EventPublisher
             $this->_curl = $options['curl'];
         }
 
+        $this->_eventHeaders = Util::eventHeaders($sdkKey, $options['application_info'] ?? null);
         $this->_connectTimeout = $options['connect_timeout'];
         $this->_isWindows = PHP_OS_FAMILY == 'Windows';
     }
@@ -92,11 +92,15 @@ class CurlEventPublisher implements EventPublisher
         $scheme = $this->_ssl ? "https://" : "http://";
         $args = " -X POST";
         $args.= " --connect-timeout " . $this->_connectTimeout;
-        $args.= " -H 'Content-Type: application/json'";
-        $args.= " -H " . escapeshellarg("Authorization: " . $this->_sdkKey);
-        $args.= " -H 'User-Agent: PHPClient/" . LDClient::VERSION . "'";
-        $args.= " -H 'X-LaunchDarkly-Event-Schema: " . EventPublisher::CURRENT_SCHEMA_VERSION . "'";
-        $args.= " -H 'Accept: application/json'";
+
+        foreach ($this->_eventHeaders as $key => $value) {
+            if ($key == 'Authorization') {
+                $args.= " -H " . escapeshellarg("Authorization: " . $value);
+            } else {
+                $args.= " -H '$key: $value'";
+            }
+        }
+
         $args.= " -d " . escapeshellarg($payload);
         $args.= " " . escapeshellarg($scheme . $this->_host . ":" . $this->_port . $this->_path . "/bulk");
         return $args;
@@ -114,16 +118,8 @@ class CurlEventPublisher implements EventPublisher
 
     private function createPowershellArgs(string $payloadFile): string
     {
-        $headers = [
-            'Content-Type' => 'application/json',
-            'Authorization' => $this->_sdkKey,
-            'User-Agent' => 'PHPClient/' . LDClient::VERSION,
-            'X-LaunchDarkly-Event-Schema' => EventPublisher::CURRENT_SCHEMA_VERSION,
-            'Accept' => 'application/json',
-        ];
-
         $headerString = "";
-        foreach ($headers as $key => $value) {
+        foreach ($this->_eventHeaders as $key => $value) {
             $headerString .= sprintf("'%s'='%s';", $key, $value);
         }
 

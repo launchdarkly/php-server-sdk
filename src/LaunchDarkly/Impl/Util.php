@@ -4,6 +4,9 @@ namespace LaunchDarkly\Impl;
 
 use DateTime;
 use DateTimeZone;
+use LaunchDarkly\EventPublisher;
+use LaunchDarkly\LDClient;
+use LaunchDarkly\Types\ApplicationInfo;
 
 /**
  * Internal class containing helper methods.
@@ -47,5 +50,48 @@ class Util
             . (($status == 401) ? ' (invalid SDK key)' : '')
             . ' for ' . $context . ' - '
             . (Util::isHttpErrorRecoverable($status) ? $retryMessage : 'giving up permanently');
+    }
+
+    /**
+     * An array of header name and values that should be used for any request
+     * made to LaunchDarkly servers.
+     *
+     * @param string $sdkKey
+     * @param ApplicationInfo|null $applicationInfo
+     * @return array<string, string>
+     */
+    public static function defaultHeaders(string $sdkKey, $applicationInfo): array
+    {
+        $headers = [
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+            'Authorization' => $sdkKey,
+            'User-Agent' => 'PHPClient/' . LDClient::VERSION,
+        ];
+
+        if ($applicationInfo instanceof ApplicationInfo) {
+            $headerValue = (string) $applicationInfo;
+            if ($headerValue) {
+                $headers['X-LaunchDarkly-Tags'] = $headerValue;
+            }
+        }
+
+        return $headers;
+    }
+
+    /**
+     * An array of header name and values that should be used for any request
+     * made to the LaunchDarkly Events API.
+     *
+     * @param string $sdkKey
+     * @param ApplicationInfo|null $applicationInfo
+     * @return array
+     */
+    public static function eventHeaders(string $sdkKey, $applicationInfo): array
+    {
+        $headers = Util::defaultHeaders($sdkKey, $applicationInfo);
+        $headers['X-LaunchDarkly-Event-Schema'] = EventPublisher::CURRENT_SCHEMA_VERSION;
+
+        return $headers;
     }
 }
