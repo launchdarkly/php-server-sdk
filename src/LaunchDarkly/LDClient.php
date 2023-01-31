@@ -9,6 +9,7 @@ use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Impl\PreloadedFeatureRequester;
 use LaunchDarkly\Impl\UnrecoverableHTTPStatusException;
 use LaunchDarkly\Integrations\Guzzle;
+use LaunchDarkly\Types\ApplicationInfo;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
@@ -81,6 +82,7 @@ class LDClient
      * - `private_attribute_names`: An optional array of user attribute names to be marked private. Any users sent to LaunchDarkly
      * with this configuration active will have attributes with these names removed. You can also set private attributes on a
      * per-user basis in LDUserBuilder.
+     * - `application_info`: An optional {@see \LaunchDarkly\Types\ApplicationInfo} instance.
      * - Other options may be available depending on any features you are using from the `LaunchDarkly\Integrations` namespace.
      *
      * @return LDClient
@@ -125,7 +127,16 @@ class LDClient
             $logger = new Logger("LaunchDarkly", [new ErrorLogHandler()]);
             $options['logger'] = $logger;
         }
+
+        /** @var LoggerInterface */
         $this->_logger = $options['logger'];
+
+        $applicationInfo = $options['application_info'] ?? null;
+        if ($applicationInfo instanceof ApplicationInfo) {
+            foreach ($applicationInfo->errors() as $error) {
+                $this->_logger->warning($error);
+            }
+        }
 
         $this->_eventFactoryDefault = new EventFactory(false);
         $this->_eventFactoryWithReasons = new EventFactory(true);

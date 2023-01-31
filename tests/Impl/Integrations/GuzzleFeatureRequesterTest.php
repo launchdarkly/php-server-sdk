@@ -3,12 +3,13 @@
 namespace LaunchDarkly\Tests\Impl\Integrations;
 
 use GuzzleHttp\Client;
-use LaunchDarkly\EventPublisher;
-use LaunchDarkly\Impl\Integrations;
+use LaunchDarkly\Impl\Integrations\GuzzleFeatureRequester;
 use LaunchDarkly\LDClient;
+use LaunchDarkly\Types\ApplicationInfo;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
-class CurlEventPublisherTest extends TestCase
+class GuzzleFeatureRequesterTest extends TestCase
 {
     public function setUp(): void
     {
@@ -20,17 +21,21 @@ class CurlEventPublisherTest extends TestCase
         $client->request('DELETE', 'http://localhost:8080/__admin/requests');
     }
 
-    public function testSendsCorrectBodyAndHeaders()
+    public function testSendsCorrectHeaders(): void
     {
-        $event = json_encode(["key" => "user-key"]);
-        $publisher = new Integrations\CurlEventPublisher(
-            'sdk-key',
-            [
-                'events_uri' => 'http://localhost:8080',
-                'connect_timeout' => 3,
-            ]
-        );
-        $publisher->publish($event);
+        /** @var LoggerInterface **/
+        $logger = $this->getMockBuilder(LoggerInterface::class)->getMock();
+        $appInfo = (new ApplicationInfo())->withId('my-id')->withVersion('my-version');
+
+        $config = [
+            'logger' => $logger,
+            'timeout' => 3,
+            'connect_timeout' => 3,
+            'application_info' => $appInfo,
+        ];
+
+        $requester = new GuzzleFeatureRequester('http://localhost:8080', 'sdk-key', $config);
+        $requester->getFeature("flag-key");
 
         $requests = [];
         $client = new Client();
@@ -56,9 +61,8 @@ class CurlEventPublisherTest extends TestCase
 
         $request = $requests[0]['request'];
 
-        // Validate that we hit the right endpoint with the right data
-        $this->assertEquals($event, $request['body']);
-        $this->assertEquals('/bulk', $request['url']);
+        // Validate that we hit the right endpoint
+        $this->assertEquals('/sdk/flags/flag-key', $request['url']);
 
         // And validate that we provided all the correct headers
         $headers = $request['headers'];
@@ -66,6 +70,6 @@ class CurlEventPublisherTest extends TestCase
         $this->assertEquals('application/json', $headers['Accept']);
         $this->assertEquals('sdk-key', $headers['Authorization']);
         $this->assertEquals('PHPClient/' . LDClient::VERSION, $headers['User-Agent']);
-        $this->assertEquals(EventPublisher::CURRENT_SCHEMA_VERSION, $headers['X-LaunchDarkly-Event-Schema']);
+        $this->assertEquals('application-id/my-id application-version/my-version', $headers['X-LaunchDarkly-Tags']);
     }
 }
