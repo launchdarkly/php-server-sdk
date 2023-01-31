@@ -13,7 +13,6 @@ use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Impl\Model\Segment;
 use LaunchDarkly\Impl\UnrecoverableHTTPStatusException;
 use LaunchDarkly\Impl\Util;
-use LaunchDarkly\LDClient;
 use LaunchDarkly\Subsystems\FeatureRequester;
 use Psr\Log\LoggerInterface;
 
@@ -48,11 +47,7 @@ class GuzzleFeatureRequester implements FeatureRequester
         }
 
         $defaults = [
-            'headers' => [
-                'Authorization' => $sdkKey,
-                'Content-Type' => 'application/json',
-                'User-Agent' => 'PHPClient/' . LDClient::VERSION
-            ],
+            'headers' => Util::defaultHeaders($sdkKey, $options['application_info'] ?? null),
             'timeout' => $options['timeout'],
             'connect_timeout' => $options['connect_timeout'],
             'handler' => $stack,
