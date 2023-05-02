@@ -64,6 +64,9 @@ jobs:
       - checkout
 
       - run:
+          name: Install xdebug
+          command: sudo pecl install xdebug
+      - run:
           name: validate composer.json
           command: composer validate
       - run:
@@ -96,8 +99,9 @@ jobs:
           command: mkdir -p build/contract-tests-output && make run-contract-tests
 
       - store_test_results:
-          path: build/phpunit
+          path: build/phpunit/junit.xml
       - store_test_results:
           path: build/contract-tests-output
       - store_artifacts:
-          path: build/phpunit
+          path: build/phpunit/html-coverage/
+          destination: coverage/
