@@ -65,8 +65,6 @@ class Util
                 'exception' => $e,
             ]
         );
-
-        $logger->debug("$e");
     }
 
     public static function makeNullLogger(): LoggerInterface
