@@ -59,7 +59,13 @@ class Util
 
     public static function logExceptionAtErrorLevel(LoggerInterface $logger, \Throwable $e, string $message): void
     {
-        $logger->error($message . ': ' . $e->getMessage());
+        $logger->error(
+            $message . ': ' . $e->getMessage(),
+            [
+                'exception' => $e,
+            ]
+        );
+
         $logger->debug("$e");
     }
 
