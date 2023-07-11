@@ -247,7 +247,14 @@ class LDClient
             $result = $errorDetail(EvaluationReason::USER_NOT_SPECIFIED_ERROR);
             $sendEvent(new EvalResult($result, false), null);
             $error = $context->getError();
-            $this->_logger->warning("Context was invalid for flag evaluation ($error); returning default value");
+
+            $this->_logger->warning(
+                "Context was invalid for flag evaluation ($error); returning default value",
+                [
+                    'flag' => $key,
+                ]
+            );
+
             return $result;
         }
 
