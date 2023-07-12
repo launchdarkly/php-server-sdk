@@ -2,6 +2,11 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [5.1.1] - 2023-07-12
+### Changed:
+- Invalid context log message now includes the flag key as part of the Psr\Log context. (Thanks, [mrtus](https://github.com/launchdarkly/php-server-sdk/pull/179)!)
+- Error logging now includes the exception in the Psr\Log exception context key. (Thanks, [mrtus](https://github.com/launchdarkly/php-server-sdk/pull/177)!)
+
 ## [5.1.0] - 2023-01-31
 ### Added:
 - Introduced support for an `application_info` config property which sets application metadata that may be used in LaunchDarkly analytics or other product features. This does not affect feature flag evaluations.
