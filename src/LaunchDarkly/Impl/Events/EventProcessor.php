@@ -21,7 +21,7 @@ class EventProcessor
     private int $_capacity;
 
     /**
-     * @psalm-param array{capacity: int} $options
+     * @param array<string, mixed> $options
      */
     public function __construct(string $sdkKey, array $options)
     {

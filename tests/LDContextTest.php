@@ -19,12 +19,13 @@ class LDContextTest extends \PHPUnit\Framework\TestCase
         self::assertNull($c->getName());
         self::assertFalse($c->isAnonymous());
         self::assertEquals([], $c->getCustomAttributeNames());
+        self::assertSame(['user' => 'a'], $c->getKeys());
     }
 
     public function testCreateWithNonDefaultKind()
     {
         $c = LDContext::create('a', 'b');
-        
+
         self::assertContextValid($c);
         self::assertFalse($c->isMultiple());
         self::assertEquals('a', $c->getKey());
@@ -32,6 +33,7 @@ class LDContextTest extends \PHPUnit\Framework\TestCase
         self::assertNull($c->getName());
         self::assertFalse($c->isAnonymous());
         self::assertEquals([], $c->getCustomAttributeNames());
+        self::assertSame(['b' => 'a'], $c->getKeys());
     }
 
     public function testBuilderWithDefaultKind()
@@ -45,6 +47,7 @@ class LDContextTest extends \PHPUnit\Framework\TestCase
         self::assertNull($c->getName());
         self::assertFalse($c->isAnonymous());
         self::assertEquals([], $c->getCustomAttributeNames());
+        self::assertSame(['user' => 'a'], $c->getKeys());
     }
 
     public function testBuilderWithNonDefaultKind()
@@ -58,6 +61,7 @@ class LDContextTest extends \PHPUnit\Framework\TestCase
         self::assertNull($c->getName());
         self::assertFalse($c->isAnonymous());
         self::assertEquals([], $c->getCustomAttributeNames());
+        self::assertSame(['b' => 'a'], $c->getKeys());
     }
 
     public function testBuilderName()
@@ -84,7 +88,7 @@ class LDContextTest extends \PHPUnit\Framework\TestCase
             ->set('b', true)
             ->set('c', 'd')
             ->build();
-        
+
         self::assertContextValid($c);
         self::assertEquals('a', $c->getKey());
         self::assertEquals(true, $c->get('b'));
@@ -100,7 +104,7 @@ class LDContextTest extends \PHPUnit\Framework\TestCase
             ->set('name', 'c')
             ->set('anonymous', true)
             ->build();
-        
+
         self::assertContextValid($c);
         self::assertEquals('a', $c->getKey());
         self::assertEquals('b', $c->getKind());
@@ -174,7 +178,7 @@ class LDContextTest extends \PHPUnit\Framework\TestCase
         $c1 = LDContext::create('a', 'kind1');
         $c2 = LDContext::create('b', 'kind2');
         $mc = LDContext::createMulti($c1, $c2);
-        
+
         self::assertContextValid($mc);
         self::assertTrue($mc->isMultiple());
         self::assertEquals(2, $mc->getIndividualContextCount());
@@ -187,6 +191,7 @@ class LDContextTest extends \PHPUnit\Framework\TestCase
         self::assertSame($c1, $mc->getIndividualContext('kind1'));
         self::assertSame($c2, $mc->getIndividualContext('kind2'));
         self::assertNull($mc->getIndividualContext('kind3'));
+        self::assertSame(['kind1' => 'a', 'kind2' => 'b'], $mc->getKeys());
     }
 
     public function testMultiBuilder()
@@ -248,7 +253,7 @@ class LDContextTest extends \PHPUnit\Framework\TestCase
             LDContext::builder('a')->set('c', 3)->set('b', true)->build()
         );
         self::assertContextsFromFactoryEqual(fn () => LDContext::create('invalid', 'kind'));
-        
+
         self::assertContextsUnequal(LDContext::create('a', 'kind1'), LDContext::create('a', 'kind2'));
         self::assertContextsUnequal(LDContext::create('b', 'kind1'), LDContext::create('a', 'kind1'));
         self::assertContextsUnequal(
@@ -275,7 +280,7 @@ class LDContextTest extends \PHPUnit\Framework\TestCase
             LDContext::createMulti(LDContext::create('a', 'kind1'), LDContext::create('b', 'kind2')),
             LDContext::createMulti(LDContext::create('b', 'kind2'), LDContext::create('a', 'kind1'))
         );
-        
+
         self::assertContextsUnequal(
             LDContext::createMulti(LDContext::create('a', 'kind1'), LDContext::create('b', 'kind2')),
             LDContext::createMulti(LDContext::create('a', 'kind1'), LDContext::create('c', 'kind2'))
@@ -365,7 +370,7 @@ class LDContextTest extends \PHPUnit\Framework\TestCase
           ->anonymous(true)
           ->build();
         self::assertContextsEqual($c1Expected, $c1);
-    
+
         // test case where there were no built-in optional attrs, only custom
         $u2 = (new LDUserBuilder("key"))
             ->customAttribute("c1", "v1")

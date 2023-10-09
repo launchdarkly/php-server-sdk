@@ -17,7 +17,7 @@ namespace LaunchDarkly\Impl;
  */
 class SemanticVersion
 {
-    private static string $REGEX = '/^(?<major>0|[1-9]\d*)(\.(?<minor>0|[1-9]\d*))?(\.(?<patch>0|[1-9]\d*))?(\-(?<prerel>[0-9A-Za-z\-\.]+))?(\+(?<build>[0-9A-Za-z\-\.]+))?$/';
+    private const REGEX = '/^(?<major>0|[1-9]\d*)(\.(?<minor>0|[1-9]\d*))?(\.(?<patch>0|[1-9]\d*))?(\-(?<prerel>[0-9A-Za-z\-\.]+))?(\+(?<build>[0-9A-Za-z\-\.]+))?$/';
 
     public int $major;
     public int $minor;
@@ -47,7 +47,7 @@ class SemanticVersion
      */
     public static function parse(string $input, bool $loose = false): SemanticVersion
     {
-        if (!preg_match(self::$REGEX, $input, $matches)) {
+        if (!preg_match(self::REGEX, $input, $matches)) {
             throw new \InvalidArgumentException("not a valid semantic version");
         }
         $major = intval($matches['major']);

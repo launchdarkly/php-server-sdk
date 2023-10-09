@@ -454,6 +454,30 @@ class LDContext implements \JsonSerializable
     }
 
     /**
+     * Returns an associate array mapping each context kind to its key.
+     *
+     * If the context is invalid, this will return an empty array. A single
+     * kind context will return an array with a single mapping.
+     */
+    public function getKeys(): array
+    {
+        if (!$this->isValid()) {
+            return [];
+        }
+
+        if ($this->_multiContexts !== null) {
+            $result = [];
+            foreach ($this->_multiContexts as $context) {
+                $result[$context->getKind()] = $context->getKey();
+            }
+
+            return $result;
+        }
+
+        return [$this->getKind() => $this->getKey()];
+    }
+
+    /**
      * Returns the context's `key` attribute.
      *
      * For a single context, this value is set by {@see \LaunchDarkly\LDContext::create()},

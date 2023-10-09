@@ -52,8 +52,6 @@ class LDClient
     /**
      * Creates a new client instance that connects to LaunchDarkly.
      *
-     * @psalm-param array{capacity?: int, defaults?: array<string, mixed|null>} $options
-     *
      * @param string $sdkKey The SDK key for your account
      * @param array $options Client configuration settings
      * - `base_uri`: Base URI of the LaunchDarkly service. Change this if you are connecting to a Relay Proxy instance instead of
@@ -151,6 +149,11 @@ class LDClient
         $this->_featureRequester = $this->getFeatureRequester($sdkKey, $options);
 
         $this->_evaluator = new Evaluator($this->_featureRequester, $this->_logger);
+    }
+
+    public function getLogger(): LoggerInterface
+    {
+        return $this->_logger;
     }
 
     /**
