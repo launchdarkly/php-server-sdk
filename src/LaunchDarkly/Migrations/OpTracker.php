@@ -47,7 +47,7 @@ class OpTracker
 
 
     /**
-     * Sets the migration related {@see Operation} associated with these tracking measurements.
+     * Sets the migration related Operation associated with these tracking measurements.
      */
     public function operation(Operation $operation): OpTracker
     {
@@ -112,9 +112,11 @@ class OpTracker
 
 
     /**
-    * Returns an array representing a migration operation event. This event
-    * data can be provided to {@see \LaunchDarkly\LDClient::trackMigrationOp()}
-    * to relay this metric information upstream to LaunchDarkly services.
+    * Returns an array representing a migration operation event.
+    *
+    * This event data can be provided to {@see
+    * \LaunchDarkly\LDClient::trackMigrationOp()} to relay this metric
+    * information upstream to LaunchDarkly services.
     *
     * @return array<string, mixed>|string
     */
