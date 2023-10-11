@@ -15,6 +15,8 @@ use LaunchDarkly\Impl\PreloadedFeatureRequester;
 use LaunchDarkly\Impl\UnrecoverableHTTPStatusException;
 use LaunchDarkly\Impl\Util;
 use LaunchDarkly\Integrations\Guzzle;
+use LaunchDarkly\Migrations\OpTracker;
+use LaunchDarkly\Migrations\Stage;
 use LaunchDarkly\Subsystems\FeatureRequester;
 use LaunchDarkly\Types\ApplicationInfo;
 use Monolog\Handler\ErrorLogHandler;
@@ -199,7 +201,7 @@ class LDClient
      */
     public function variation(string $key, LDContext|LDUser $context, mixed $defaultValue = false): mixed
     {
-        $detail = $this->variationDetailInternal($key, $context, $defaultValue, $this->_eventFactoryDefault);
+        $detail = $this->variationDetailInternal($key, $context, $defaultValue, $this->_eventFactoryDefault)['detail'];
         return $detail->getValue();
     }
 
@@ -219,7 +221,58 @@ class LDClient
      */
     public function variationDetail(string $key, LDContext|LDUser $context, mixed $defaultValue = false): EvaluationDetail
     {
-        return $this->variationDetailInternal($key, $context, $defaultValue, $this->_eventFactoryWithReasons);
+        return $this->variationDetailInternal($key, $context, $defaultValue, $this->_eventFactoryWithReasons)['detail'];
+    }
+
+    /**
+     * This method returns the migration stage of the migration feature flag
+     * for the given evaluation context.
+     *
+     * This method returns the default stage if there is an error or the flag
+     * does not exist. If the default stage is not a valid stage, then a
+     * default stage of {@see Stage::OFF} will be used
+     * instead.
+     *
+     * @psalm-return array{'stage': Stage, 'tracker': OpTracker}
+     */
+    public function migrationVariation(string $key, LDContext|LDUser $context, Stage $defaultStage): array
+    {
+        $result = $this->variationDetailInternal($key, $context, $defaultStage->value, $this->_eventFactoryDefault);
+        /** @var EvaluationDetail $detail */
+        $detail = $result['detail'];
+        /** @var ?FeatureFlag $flag */
+        $flag = $result['flag'];
+
+        $valueAsString = Stage::tryFrom($detail->getValue());
+
+        if ($valueAsString !== null) {
+            $tracker = new OpTracker(
+                $this->_logger,
+                $key,
+                $flag,
+                $context,
+                $detail,
+                $defaultStage
+            );
+
+            return ['stage' => $valueAsString, 'tracker' => $tracker];
+        }
+
+        $detail = new EvaluationDetail(
+            $defaultStage->value,
+            null,
+            EvaluationReason::error(EvaluationReason::WRONG_TYPE_ERROR)
+        );
+        $tracker = new OpTracker(
+            $this->_logger,
+            $key,
+            $flag,
+            $context,
+            $detail,
+            $defaultStage
+        );
+
+        return ['stage' => $defaultStage, 'tracker' => $tracker];
     }
 
     /**
@@ -228,9 +281,9 @@ class LDClient
      * @param mixed $default
      * @param EventFactory $eventFactory
      *
-     * @return EvaluationDetail
+     * @psalm-return array{'detail': EvaluationDetail, 'flag': ?FeatureFlag}
      */
-    private function variationDetailInternal(string $key, LDContext|LDUser $contextOrUser, mixed $default, EventFactory $eventFactory): EvaluationDetail
+    private function variationDetailInternal(string $key, LDContext|LDUser $contextOrUser, mixed $default, EventFactory $eventFactory): array
     {
         $context = $contextOrUser instanceof LDUser ? LDContext::fromUser($contextOrUser) : $contextOrUser;
         $default = $this->_get_default($key, $default);
@@ -258,25 +311,26 @@ class LDClient
                 ]
             );
 
-            return $result;
+            return ['detail' => $result, 'flag' => null];
         }
 
         if ($this->_offline) {
-            return $errorDetail(EvaluationReason::CLIENT_NOT_READY_ERROR);
+            return ['detail' => $errorDetail(EvaluationReason::CLIENT_NOT_READY_ERROR), 'flag' => null];
         }
 
+        $flag = null;
         try {
             try {
                 $flag = $this->_featureRequester->getFeature($key);
             } catch (UnrecoverableHTTPStatusException $e) {
                 $this->handleUnrecoverableError();
-                return $errorDetail(EvaluationReason::EXCEPTION_ERROR);
+                return ['detail' => $errorDetail(EvaluationReason::EXCEPTION_ERROR), 'flag' => null];
             }
 
             if (is_null($flag)) {
                 $result = $errorDetail(EvaluationReason::FLAG_NOT_FOUND_ERROR);
                 $sendEvent(new EvalResult($result, false), null);
-                return $result;
+                return ['detail' => $result, 'flag' => null];
             }
             $evalResult = $this->_evaluator->evaluate(
                 $flag,
@@ -298,12 +352,12 @@ class LDClient
                 $evalResult = new EvalResult($detail, $evalResult->isForceReasonTracking());
             }
             $sendEvent($evalResult, $flag);
-            return $detail;
+            return ['detail' => $detail, 'flag' => $flag];
         } catch (\Exception $e) {
             Util::logExceptionAtErrorLevel($this->_logger, $e, "Unexpected error evaluating flag $key");
             $result = $errorDetail(EvaluationReason::EXCEPTION_ERROR);
             $sendEvent(new EvalResult($result, false), null);
-            return $result;
+            return ['detail' => $result, 'flag' => $flag];
         }
     }
 

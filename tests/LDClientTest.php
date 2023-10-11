@@ -9,6 +9,8 @@ use LaunchDarkly\LDClient;
 use LaunchDarkly\LDContext;
 use LaunchDarkly\LDUser;
 use LaunchDarkly\LDUserBuilder;
+use LaunchDarkly\Migrations\OpTracker;
+use LaunchDarkly\Migrations\Stage;
 use Psr\Log\LoggerInterface;
 
 class LDClientTest extends \PHPUnit\Framework\TestCase
@@ -653,5 +655,53 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $invalidContext = LDContext::create('');
 
         $client->variation('MyFeature', $invalidContext);
+    }
+
+    public function testUsesDefaultIfFlagIsNotFound(): void
+    {
+        $client = $this->makeClient();
+        $result = $client->migrationVariation('unknown-flag-key', LDContext::create('userkey'), Stage::LIVE);
+
+        $this->assertEquals(Stage::LIVE, $result['stage']);
+        $this->assertInstanceOf(OpTracker::class, $result['tracker']);
+    }
+
+    public function testUsesDefaultIfFlagReturnsInvalidStage(): void
+    {
+        $flag = $this->makeOffFlagWithValue('feature', 'invalid stage value');
+        $this->mockRequester->addFlag($flag);
+        $client = $this->makeClient();
+
+        $result = $client->migrationVariation('feature', LDContext::create('userkey'), Stage::LIVE);
+
+        $this->assertEquals(Stage::LIVE, $result['stage']);
+        $this->assertInstanceOf(OpTracker::class, $result['tracker']);
+    }
+
+    public function stageProvider(): array
+    {
+        return [
+            [Stage::OFF],
+            [Stage::DUALWRITE],
+            [Stage::SHADOW],
+            [Stage::LIVE],
+            [Stage::RAMPDOWN],
+            [Stage::COMPLETE],
+        ];
+    }
+
+    /**
+     * @dataProvider stageProvider
+     */
+    public function testCanDetermineCorrectStage(Stage $stage): void
+    {
+        $flag = $this->makeOffFlagWithValue('feature', $stage->value);
+        $this->mockRequester->addFlag($flag);
+        $client = $this->makeClient();
+
+        $result = $client->migrationVariation('feature', LDContext::create('userkey'), Stage::OFF);
+
+        $this->assertEquals($stage, $result['stage']);
+        $this->assertInstanceOf(OpTracker::class, $result['tracker']);
     }
 }
