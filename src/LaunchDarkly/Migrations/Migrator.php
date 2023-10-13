@@ -7,7 +7,6 @@ namespace LaunchDarkly\Migrations;
 use LaunchDarkly\Impl\Migrations\Executor;
 use LaunchDarkly\LDClient;
 use LaunchDarkly\LDContext;
-use LaunchDarkly\LDUser;
 
 /**
  * Migrator is a class for performing a technology migration.
@@ -32,7 +31,7 @@ class Migrator
      */
     public function read(
         string $key,
-        LDContext|LDUser $context,
+        LDContext $context,
         Stage $defaultStage,
         mixed $payload = null
     ): OperationResult {
@@ -65,7 +64,7 @@ class Migrator
      */
     public function write(
         string $key,
-        LDContext|LDUser $context,
+        LDContext $context,
         Stage $defaultStage,
         mixed $payload = null
     ): WriteResult {

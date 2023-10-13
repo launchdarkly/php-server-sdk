@@ -156,19 +156,6 @@ class FlagBuilder
     }
 
     /**
-     * Deprecated name for variationForAll.
-     *
-     * @param bool|int $variation `true` or `false` or the desired variation index to return:
-     *                  `0` for the first, `1` for the second, etc.
-     * @return FlagBuilder the flag builder
-     * @deprecated Use {@see \LaunchDarkly\Integrations\TestData\FlagBuilder::variationForAll()}.
-     */
-    public function variationForAllUsers(bool|int $variation): FlagBuilder
-    {
-        return $this->variationForAll($variation);
-    }
-
-    /**
      * Sets the flag to always return the specified variation for all users.
      *
      * The variation is specified, targeting is switched on, and any existing targets or rules are removed.
@@ -188,18 +175,6 @@ class FlagBuilder
             return $this->booleanFlag()->variationForAll($this->variationForBoolean($variation));
         }
         return $this->on(true)->clearRules()->clearTargets()->fallthroughVariation($variation);
-    }
-
-    /**
-     * Deprecated name for valueForAll.
-     *
-     * @param mixed $value the desired value to be returned for all users
-     * @return FlagBuilder the flag builder
-     * @deprecated Use {@see \LaunchDarkly\Integrations\TestData\FlagBuilder::valueForAll()}.
-     */
-    public function valueForAllUsers(mixed $value): FlagBuilder
-    {
-        return $this->valueForAll($value);
     }
 
     /**
@@ -423,17 +398,6 @@ class FlagBuilder
     {
         $this->_rules = [];
         return $this;
-    }
-
-    /**
-     * Deprecated name for clearTargets.
-     *
-     * @return FlagBuilder the same builder
-     * @deprecated Use {@see \LaunchDarkly\Integrations\TestData\FlagBuilder::clearTargets()}.
-     */
-    public function clearUserTargets(): FlagBuilder
-    {
-        return $this->clearTargets();
     }
 
     /**

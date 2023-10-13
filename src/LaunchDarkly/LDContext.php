@@ -6,32 +6,9 @@ namespace LaunchDarkly;
 
 use LaunchDarkly\Types\AttributeReference;
 
-function isAllowableUserCustomAttr(string $name): bool
-{
-    switch ($name) {
-        case 'anonymous':
-        case 'avatar':
-        case 'country':
-        case 'email':
-        case 'firstName':
-        case 'ip':
-        case 'key':
-        case 'kind':
-        case 'lastName':
-        case 'name':
-            return false;
-        default:
-            return true;
-    }
-}
-
 /**
  * A collection of attributes that can be referenced in flag evaluations and analytics events.
  * This entity is also called an "evaluation context."
- *
- * LDContext is the newer replacement for the previous, less flexible {@see \LaunchDarkly\LDUser} type.
- * The current SDK still supports LDUser, but LDContext is now the preferred model and may entirely
- * replace User in the future.
  *
  * To create an LDContext of a single kind, such as a user, you may use
  * {@see \LaunchDarkly\LDContext::create()} when only the key and the kind are relevant; or, to
@@ -221,60 +198,6 @@ class LDContext implements \JsonSerializable
     }
 
     /**
-     * @param LDUser $user
-     * @return LDContext
-     */
-    public static function fromUser(LDUser $user): LDContext
-    {
-        $attrs = null;
-        self::maybeAddAttr($attrs, "avatar", $user->getAvatar());
-        self::maybeAddAttr($attrs, "country", $user->getCountry());
-        self::maybeAddAttr($attrs, "email", $user->getEmail());
-        self::maybeAddAttr($attrs, "firstName", $user->getFirstName());
-        self::maybeAddAttr($attrs, "ip", $user->getIP());
-        self::maybeAddAttr($attrs, "lastName", $user->getLastName());
-        $userCustom = $user->getCustom();
-        if ($userCustom !== null && count($userCustom) !== 0) {
-            if ($attrs === null) {
-                $attrs = [];
-            }
-            foreach ($userCustom as $k => $v) {
-                if (isAllowableUserCustomAttr($k)) {
-                    $attrs[$k] = $v;
-                }
-            }
-        }
-        $privateAttrs = null;
-        $userPrivate = $user->getPrivateAttributeNames();
-        if ($userPrivate !== null && count($userPrivate) !== 0) {
-            $privateAttrs = [];
-            foreach ($userPrivate as $pa) {
-                $privateAttrs[] = AttributeReference::fromLiteral($pa);
-            }
-        }
-        return new LDContext(
-            self::DEFAULT_KIND,
-            $user->getKey(),
-            $user->getName(),
-            $user->getAnonymous() ?? false,
-            $attrs,
-            $privateAttrs,
-            null,
-            null
-        );
-    }
-
-    private static function maybeAddAttr(?array &$attrsOut, string $name, ?string $value): void
-    {
-        if ($value !== null) {
-            if ($attrsOut === null) {
-                $attrsOut = [];
-            }
-            $attrsOut[$name] = $value;
-        }
-    }
-
-    /**
      * Creates a builder for building an LDContext.
      *
      * You may use {@see \LaunchDarkly\LDContextBuilder} methods to set additional attributes and/or
@@ -323,10 +246,7 @@ class LDContext implements \JsonSerializable
     /**
      * Creates an LDContext from a parsed JSON representation.
      *
-     * The JSON must be in one of the standard formats used by LaunchDarkly. This can either be a
-     * context representation similar to what would be produced by {@see \LaunchDarkly\LDContext::jsonSerialize()},
-     * or a user representation in the format used by older LaunchDarkly SDKs. A user representation
-     * does not have a `kind` property and will be converted to a context with the kind "user".
+     * The JSON must be in one of the standard formats used by LaunchDarkly.
      *
      * ```php
      *     $json = '{"kind": "user", "key": "aaa"}';
@@ -359,9 +279,6 @@ class LDContext implements \JsonSerializable
 
         $a = (array)$o;
         $kind = $a['kind'] ?? null;
-        if ($kind === null) {
-            return self::decodeJsonOldUser($a, is_array($o));
-        }
         if ($kind === self::MULTI_KIND) {
             $b = self::multiBuilder();
             foreach ($a as $k => $v) {
@@ -849,76 +766,6 @@ class LDContext implements \JsonSerializable
         if ($kind === '' || $kind === null) {
             // the builder's validation wouldn't catch this because the builder has a default kind of "user"
             return self::createWithError(self::ERR_KIND_CANNOT_BE_EMPTY);
-        }
-        return $b->build();
-    }
-
-    private static function decodeJsonOldUser(array $o, bool $wasParsedAsArray): LDContext
-    {
-        $b = self::builder('');
-        $key = null;
-        foreach ($o as $k => $v) {
-            switch ($k) {
-                case 'custom':
-                    if ($v !== null) {
-                        if (!is_object($v) && !($wasParsedAsArray && is_array($v))) {
-                            // The reason for the awkward test expression above is that if the JSON was parsed
-                            // as an associative array, there is no way for us to distinguish {} from [] so we
-                            // can't safely say that [] is invalid.
-                            throw self::parsingBadTypeError($k);
-                        }
-                        foreach ((array)$v as $k1 => $v1) {
-                            if (isAllowableUserCustomAttr($k1)) {
-                                $b->set($k1, $v1);
-                            }
-                        }
-                    }
-                    break;
-                case 'privateAttributeNames':
-                    if ($v !== null) {
-                        if (!is_array($v)) {
-                            throw self::parsingBadTypeError($k);
-                        }
-                        foreach ($v as $p) {
-                            $b->private($p);
-                        }
-                    }
-                    break;
-                case 'avatar':
-                case 'country':
-                case 'email':
-                case 'firstName':
-                case 'ip':
-                case 'lastName':
-                    // These used to be built-in attributes with a string type constraint, so even though
-                    // the new context model has no such constraint, we enforce it when parsing user JSON
-                    if ($v !== null && !is_string($v)) {
-                        throw self::parsingBadTypeError($k);
-                    }
-                    $b->set($k, $v);
-                    break;
-                case 'anonymous':
-                    // Special case where the old user model allowed anonymous to be null; we don't now,
-                    // so treat null the same as false
-                    if ($v !== null && !is_bool($v)) {
-                        throw self::parsingBadTypeError($k);
-                    }
-                    $b->set($k, !!$v);
-                    break;
-                default:
-                    if (!$b->trySet($k, $v)) {
-                        throw self::parsingBadTypeError($k);
-                    }
-                    if ($k === 'key') {
-                        $key = $v;
-                    }
-            }
-        }
-        if ($key === '') {
-            // The context builder won't allow an empty key, but it is allowed in the old user model.
-            $c = $b->key('x')->build();
-            $c->_key = '';
-            return $c;
         }
         return $b->build();
     }

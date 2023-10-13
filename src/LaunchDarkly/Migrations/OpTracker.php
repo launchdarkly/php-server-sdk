@@ -9,7 +9,6 @@ use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\Impl;
 use LaunchDarkly\Impl\Util;
 use LaunchDarkly\LDContext;
-use LaunchDarkly\LDUser;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -24,7 +23,6 @@ use Psr\Log\LoggerInterface;
  */
 class OpTracker
 {
-    private LDContext $context;
     private ?Operation $operation = null;
     private array $invoked = [];
     private ?bool $consistent = null;
@@ -36,11 +34,10 @@ class OpTracker
         private LoggerInterface $logger,
         private string $key,
         private ?Impl\Model\FeatureFlag $flag,
-        LDContext|LDUser $contextOrUser,
+        private LDContext $context,
         private EvaluationDetail $detail,
         private Stage $default_stage
     ) {
-        $this->context = $contextOrUser instanceof LDUser ? LDContext::fromUser($contextOrUser) : $contextOrUser;
         $this->consistentRatio = 1; # TODO(sc-219378): This needs to get set from the flag once we support those fields
     }
 
