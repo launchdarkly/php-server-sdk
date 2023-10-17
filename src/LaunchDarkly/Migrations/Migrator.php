@@ -54,7 +54,7 @@ class Migrator
             Stage::COMPLETE => $new->run(),
         };
 
-        // TODO(sc-219377): Emit the event here
+        $this->client->trackMigrationOperation($tracker);
 
         return $result;
     }
@@ -87,7 +87,7 @@ class Migrator
             Stage::COMPLETE => new WriteResult($new->run()),
         };
 
-        // TODO(sc-219377): Emit the event here
+        $this->client->trackMigrationOperation($tracker);
 
         return $writeResult;
     }

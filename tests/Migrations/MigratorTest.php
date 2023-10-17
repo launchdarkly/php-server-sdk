@@ -18,6 +18,7 @@ use LaunchDarkly\Types\Result;
 class MigratorTest extends \PHPUnit\Framework\TestCase
 {
     private MigratorBuilder $builder;
+    private MockEventProcessor $eventProcessor;
 
     public function setUp(): void
     {
@@ -27,9 +28,10 @@ class MigratorTest extends \PHPUnit\Framework\TestCase
             $requester->addFlag($this->makeOffFlagWithValue($stage->value, $stage->value));
         }
 
+        $this->eventProcessor = new MockEventProcessor();
         $options = [
             'feature_requester' => $requester,
-            'event_processor' => new MockEventProcessor()
+            'event_processor' => $this->eventProcessor,
         ];
 
         $client = new LDClient("someKey", $options);
@@ -138,7 +140,20 @@ class MigratorTest extends \PHPUnit\Framework\TestCase
      */
     public function testTrackingInvokedForReads(Stage $stage, array $origins): void
     {
-        $this->markTestSkipped('skipped until sc-219378');
+        /** @var Migrator */
+        $migrator = $this->builder->build()->value;
+        $migrator->read($stage->value, LDContext::create('user-key'), Stage::LIVE);
+
+        $events = $this->eventProcessor->getEvents();
+
+        $this->assertCount(2, $events);
+
+        $event = $events[1]; // First event is evaluation result
+        $invoked = $event['measurements'][0];
+
+        $this->assertEquals('invoked', $invoked['key']);
+
+        array_map(fn ($origin) => $this->assertTrue($invoked['values'][$origin->value]), $origins);
     }
 
     /**
@@ -146,7 +161,28 @@ class MigratorTest extends \PHPUnit\Framework\TestCase
      */
     public function testTrackingLatencyForReads(Stage $stage, array $origins): void
     {
-        $this->markTestSkipped('skipped until sc-219378');
+        $delayed = function (mixed $payload): Result {
+            return Result::success(null);
+        };
+
+        $this->builder->read($delayed, $delayed);
+        $this->builder->trackLatency(true);
+
+        /** @var Migrator */
+        $migrator = $this->builder->build()->value;
+        $migrator->read($stage->value, LDContext::create('user-key'), Stage::LIVE);
+
+        $events = $this->eventProcessor->getEvents();
+
+        $this->assertCount(2, $events);
+
+        $event = $events[1]; // First event is evaluation result
+        $latencies = $event['measurements'][1]; // First measurement is invoked
+
+        $this->assertEquals('latency_ms', $latencies['key']);
+        foreach ($origins as $origin) {
+            $this->assertGreaterThanOrEqual($latencies['values'][$origin->value], 100);
+        }
     }
 
     /**
@@ -154,7 +190,27 @@ class MigratorTest extends \PHPUnit\Framework\TestCase
      */
     public function testTrackingErrorsForReads(Stage $stage, array $origins): void
     {
-        $this->markTestSkipped('skipped until sc-219378');
+        $this->builder->read(
+            fn () => throw new Exception("old write"),
+            fn () => throw new Exception("new write"),
+        );
+        $this->builder->trackErrors(true);
+
+        /** @var Migrator */
+        $migrator = $this->builder->build()->value;
+        $migrator->read($stage->value, LDContext::create('user-key'), Stage::LIVE);
+
+        $events = $this->eventProcessor->getEvents();
+
+        $this->assertCount(2, $events);
+
+        $event = $events[1]; // First event is evaluation result
+        $errors = $event['measurements'][1]; // First measurement is invoked
+
+        $this->assertEquals('error', $errors['key']);
+        foreach ($origins as $origin) {
+            $this->assertTrue($errors['values'][$origin->value]);
+        }
     }
 
     public function writeStageOriginProvider(): array
@@ -174,7 +230,20 @@ class MigratorTest extends \PHPUnit\Framework\TestCase
      */
     public function testTrackingInvokedForWrites(Stage $stage, array $origins): void
     {
-        $this->markTestSkipped('skipped until sc-219377');
+        /** @var Migrator */
+        $migrator = $this->builder->build()->value;
+        $migrator->write($stage->value, LDContext::create('user-key'), Stage::LIVE);
+
+        $events = $this->eventProcessor->getEvents();
+
+        $this->assertCount(2, $events);
+
+        $event = $events[1]; // First event is evaluation result
+        $invoked = $event['measurements'][0];
+
+        $this->assertEquals('invoked', $invoked['key']);
+
+        array_map(fn ($origin) => $this->assertTrue($invoked['values'][$origin->value]), $origins);
     }
 
     /**
@@ -182,20 +251,151 @@ class MigratorTest extends \PHPUnit\Framework\TestCase
      */
     public function testTrackingLatencyForWrites(Stage $stage, array $origins): void
     {
-        $this->markTestSkipped('skipped until sc-219377');
+        $delayed = function (mixed $payload): Result {
+            return Result::success(null);
+        };
+
+        $this->builder->write($delayed, $delayed);
+        $this->builder->trackLatency(true);
+
+        /** @var Migrator */
+        $migrator = $this->builder->build()->value;
+        $migrator->write($stage->value, LDContext::create('user-key'), Stage::LIVE);
+
+        $events = $this->eventProcessor->getEvents();
+
+        $this->assertCount(2, $events);
+
+        $event = $events[1]; // First event is evaluation result
+        $latencies = $event['measurements'][1]; // First measurement is invoked
+
+        $this->assertEquals('latency_ms', $latencies['key']);
+        foreach ($origins as $origin) {
+            $this->assertGreaterThanOrEqual($latencies['values'][$origin->value], 100);
+        }
+    }
+
+    public function authoritativeWriteStageOriginProvider(): array
+    {
+        return [
+            [Stage::OFF, Origin::OLD],
+            [Stage::DUALWRITE, Origin::OLD],
+            [Stage::SHADOW, Origin::OLD],
+            [Stage::LIVE, Origin::NEW],
+            [Stage::RAMPDOWN, Origin::NEW],
+            [Stage::COMPLETE, Origin::NEW],
+        ];
     }
 
     /**
-     * @dataProvider writeStageOriginProvider
+     * @dataProvider authoritativeWriteStageOriginProvider
      */
-    public function testTrackingErrorsForWrites(Stage $stage, array $origins): void
+    public function testTrackingErrorsForAuthoritativeWrites(Stage $stage, Origin $origin): void
     {
-        $this->markTestSkipped('skipped until sc-219377');
+        $this->builder->write(
+            fn () => throw new Exception("old write"),
+            fn () => throw new Exception("new write"),
+        );
+        $this->builder->trackErrors(true);
+
+        /** @var Migrator */
+        $migrator = $this->builder->build()->value;
+        $migrator->write($stage->value, LDContext::create('user-key'), Stage::LIVE);
+
+        $events = $this->eventProcessor->getEvents();
+
+        $this->assertCount(2, $events);
+
+        $event = $events[1]; // First event is evaluation result
+        $errors = $event['measurements'][1]; // First measurement is invoked
+
+        $this->assertEquals('error', $errors['key']);
+        $this->assertTrue($errors['values'][$origin->value]);
     }
 
-    public function testTrackingConsistency(): void
+    public function nonauthoritativeWriteStageOriginProvider(): array
     {
-        $this->markTestSkipped('skipped until sc-219377');
+        return [
+            // Off and Complete only run authoritative writes so there is nothing to test
+            [Stage::DUALWRITE, Origin::OLD, Origin::NEW],
+            [Stage::SHADOW, Origin::OLD, Origin::NEW],
+            [Stage::LIVE, Origin::NEW, Origin::OLD],
+            [Stage::RAMPDOWN, Origin::NEW, Origin::OLD],
+        ];
+    }
+
+    /**
+     * @dataProvider nonauthoritativeWriteStageOriginProvider
+     */
+    public function testTrackingErrorsForNonAuthoritativeWrites(Stage $stage, Origin $authoritative, Origin $nonauthoritative): void
+    {
+        if ($authoritative == Origin::OLD) {
+            $this->builder->write(
+                fn () => Result::success(null),
+                fn () => throw new Exception("new write"),
+            );
+        } else {
+            $this->builder->write(
+                fn () => throw new Exception("old write"),
+                fn () => Result::success(null),
+            );
+        }
+        $this->builder->trackErrors(true);
+
+        /** @var Migrator */
+        $migrator = $this->builder->build()->value;
+        $migrator->write($stage->value, LDContext::create('user-key'), Stage::LIVE);
+
+        $events = $this->eventProcessor->getEvents();
+
+        $this->assertCount(2, $events);
+
+        $event = $events[1]; // First event is evaluation result
+        $errors = $event['measurements'][1]; // First measurement is invoked
+
+        $this->assertEquals('error', $errors['key']);
+        $this->assertTrue($errors['values'][$nonauthoritative->value]);
+    }
+
+    public function trackingConsistencyProvider(): array
+    {
+        return [
+            // SHADOW and LIVE are the only stages that run both reads and as a
+            // result, can produce consistency values.
+            [Stage::SHADOW, "same", "same", true],
+            [Stage::LIVE, "same", "same", true],
+
+            [Stage::SHADOW, "different", "same", false],
+            [Stage::LIVE, "different", "same", false],
+        ];
+    }
+
+    /**
+     * @dataProvider trackingConsistencyProvider
+     */
+    public function testTrackingConsistency(Stage $stage, string $old, string $new, bool $shouldMatch): void
+    {
+        $this->builder->read(
+            fn () => Result::success($old),
+            fn () => Result::success($new),
+            fn ($lhs, $rhs) => $lhs == $rhs,
+        );
+
+        /** @var Migrator */
+        $migrator = $this->builder->build()->value;
+        $migrator->read($stage->value, LDContext::create('user-key'), Stage::LIVE);
+
+        $events = $this->eventProcessor->getEvents();
+
+        $this->assertCount(2, $events);
+
+        $event = $events[1]; // First event is evaluation result
+        $consistency = $event['measurements'][1]; // First measurement is invoked
+
+        $this->assertEquals('consistent', $consistency['key']);
+        $this->assertEquals($shouldMatch, $consistency['value']);
+
+        // TODO(sc-219378): Add sampling tests
     }
 
     public function readHandlerExceptionProvider(): array

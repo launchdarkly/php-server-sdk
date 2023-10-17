@@ -394,6 +394,30 @@ class LDClient
     }
 
     /**
+     * Tracks the results of a migrations operation. This event includes
+     * measurements which can be used to enhance the observability of a
+     * migration within the LaunchDarkly UI.
+     *
+     * Customers making use of the {@see
+     * LaunchDarkly\Migrations\MigrationBuilder} should not need to call this
+     * method manually.
+     *
+     * Customers not using the builder should provide this method with the
+     * tracker returned from calling {@ LDClient::migrationVariation}.
+     */
+    public function trackMigrationOperation(OpTracker $tracker): void
+    {
+        $event = $tracker->build();
+
+        if (is_string($event)) {
+            $this->_logger->error("error generating migration op event {$event}; no event will be emitted");
+            return;
+        }
+
+        $this->_eventProcessor->enqueue($event);
+    }
+
+    /**
      * Reports details about an evaluation context.
      *
      * This method simply creates an analytics event containing the context properties, to
