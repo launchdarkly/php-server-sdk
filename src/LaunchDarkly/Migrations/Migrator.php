@@ -74,7 +74,7 @@ class Migrator
         $stage = $variationResult['stage'];
         /** @var OpTracker */
         $tracker = $variationResult['tracker'];
-        $tracker->operation(Operation::READ);
+        $tracker->operation(Operation::WRITE);
 
         $old = new Executor(Origin::OLD, $this->writeConfig->old, $tracker, $this->trackLatency, $this->trackErrors, $payload);
         $new = new Executor(Origin::NEW, $this->writeConfig->new, $tracker, $this->trackLatency, $this->trackErrors, $payload);

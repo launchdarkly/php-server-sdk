@@ -243,7 +243,11 @@ class LDClient
         /** @var ?FeatureFlag $flag */
         $flag = $result['flag'];
 
-        $valueAsString = Stage::tryFrom($detail->getValue());
+        $value = $detail->getValue();
+        $valueAsString = null;
+        if (is_string($value)) {
+            $valueAsString = Stage::tryFrom($detail->getValue());
+        }
 
         if ($valueAsString !== null) {
             $tracker = new OpTracker(
