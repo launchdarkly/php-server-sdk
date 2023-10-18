@@ -44,6 +44,8 @@ class EventFactory
             'kind' => 'feature',
             'creationDate' => Util::currentTimeUnixMillis(),
             'key' => $flag->getKey(),
+            'samplingRatio' => $flag->getSamplingRatio(),
+            'excludeFromSummaries' => $flag->getExcludeFromSummaries(),
             'context' => $context,
             'variation' => $detail->getVariationIndex(),
             'value' => $detail->getValue(),
@@ -75,6 +77,8 @@ class EventFactory
             'kind' => 'feature',
             'creationDate' => Util::currentTimeUnixMillis(),
             'key' => $flag->getKey(),
+            'samplingRatio' => $flag->getSamplingRatio(),
+            'excludeFromSummaries' => $flag->getExcludeFromSummaries(),
             'context' => $context,
             'value' => $detail->getValue(),
             'default' => $detail->getValue(),
@@ -124,7 +128,7 @@ class EventFactory
             'context' => $context
         ];
     }
-    
+
     /**
      * @return mixed[]
      */

@@ -6,6 +6,7 @@ use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Integrations\TestData\FlagBuilder;
+use LaunchDarkly\Integrations\TestData\MigrationSettingsBuilder;
 use LaunchDarkly\LDContext;
 use LaunchDarkly\Migrations\Operation;
 use LaunchDarkly\Migrations\OpTracker;
@@ -54,7 +55,7 @@ class OpTrackerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('live', $evaluation['default']);
         $this->assertEquals(0, $evaluation['version']);
         $this->assertEquals(0, $evaluation['variation']);
-        $this->assertEquals('FALLTHROUGH', $evaluation['reason']);
+        $this->assertEquals('FALLTHROUGH', $evaluation['reason']['kind']);
     }
 
     public function testFailsWithoutOperation(): void
@@ -282,10 +283,22 @@ class OpTrackerTest extends \PHPUnit\Framework\TestCase
      */
     public function testWithCheckRatioOf1(bool $consistent): void
     {
-        $this->markTestSkipped('skipped until sc-219378');
-
-        // TODO(sc-219378): Do custom setup for tracker with flag that has an
-        // explicit check ratio of 1
+        $migrationSettings = (new MigrationSettingsBuilder())->setCheckRatio(1);
+        $flag = (new FlagBuilder('flag'))->variations('off')->variationForAll(0)->migrationSettings($migrationSettings)->build(0);
+        $detail = new EvaluationDetail('off', 0, EvaluationReason::fallthrough());
+        $tracker = new OpTracker(
+            EvaluatorTestUtil::testLogger(),
+            'flag',
+            FeatureFlag::decode($flag),
+            LDContext::create('user-key'),
+            $detail,
+            Stage::LIVE,
+        );
+        $tracker->operation(Operation::READ)
+            ->invoked(Origin::OLD)
+            ->invoked(Origin::NEW);
+        $tracker->consistent(fn () => $consistent);
+        $event = $tracker->build();
 
         $this->assertCount(2, $event['measurements']);
 
@@ -301,10 +314,22 @@ class OpTrackerTest extends \PHPUnit\Framework\TestCase
      */
     public function testCanDisableConsistencyWithCheckRatioOf0(bool $consistent): void
     {
-        $this->markTestSkipped('skipped until sc-219378');
-
-        // TODO(sc-219378): Do custom setup for tracker with flag that has an
-        // explicit check ratio of 0
+        $migrationSettings = (new MigrationSettingsBuilder())->setCheckRatio(0);
+        $flag = (new FlagBuilder('flag'))->variations('off')->variationForAll(0)->migrationSettings($migrationSettings)->build(0);
+        $detail = new EvaluationDetail('off', 0, EvaluationReason::fallthrough());
+        $tracker = new OpTracker(
+            EvaluatorTestUtil::testLogger(),
+            'flag',
+            FeatureFlag::decode($flag),
+            LDContext::create('user-key'),
+            $detail,
+            Stage::LIVE,
+        );
+        $tracker->operation(Operation::READ)
+            ->invoked(Origin::OLD)
+            ->invoked(Origin::NEW);
+        $tracker->consistent(fn () => $consistent);
+        $event = $tracker->build();
 
         $this->assertCount(1, $event['measurements']); // We always have invoked
     }

@@ -38,7 +38,7 @@ class OpTracker
         private EvaluationDetail $detail,
         private Stage $default_stage
     ) {
-        $this->consistentRatio = 1; # TODO(sc-219378): This needs to get set from the flag once we support those fields
+        $this->consistentRatio = $flag?->getMigrationSettings()?->getCheckRatio() ?? 1;
     }
 
 
@@ -77,7 +77,10 @@ class OpTracker
     */
     public function consistent(callable $isConsistent): OpTracker
     {
-        # TODO(sc-219378): Add sampling support
+        if (!Util::sample($this->consistentRatio)) {
+            return $this;
+        }
+
         try {
             $this->consistent = boolval($isConsistent());
         } catch (Exception $e) {
@@ -136,6 +139,7 @@ class OpTracker
 
         $event = [
             'kind' => 'migration_op',
+            'samplingRatio' => 1,
             'creationDate' => Util::currentTimeUnixMillis(),
             'contextKeys' => $this->context->getKeys(),
             'operation' => $this->operation->value,
@@ -143,7 +147,7 @@ class OpTracker
                 'key' => $this->key,
                 'value' => $this->detail->getValue(),
                 'default' => $this->default_stage->value,
-                'reason' => $this->detail->getReason(),
+                'reason' => $this->detail->getReason()->jsonSerialize(),
             ],
 
             'measurements' => [
@@ -156,6 +160,7 @@ class OpTracker
 
         if ($this->flag) {
             $event['evaluation']['version'] = $this->flag->getVersion();
+            $event['samplingRatio'] = $this->flag->getSamplingRatio();
         }
 
         if ($this->detail->getVariationIndex() !== null) {

@@ -50,7 +50,13 @@ class EventSerializer
     {
         $ret = [];
         foreach ($e as $key => $value) {
-            if ($key == 'context') {
+            if ($key == 'samplingRatio' && $value === 1) {
+                // 1 is the default case, so we don't have to include it in the final output.
+                continue;
+            } elseif ($key == 'excludeFromSummaries' && $value === false) {
+                // false is the default case, so we don't have to include it in the final output.
+                continue;
+            } elseif ($key == 'context') {
                 $ret[$key] = $this->serializeContext($value);
             } else {
                 $ret[$key] = $value;

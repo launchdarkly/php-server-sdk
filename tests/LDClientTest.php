@@ -3,12 +3,16 @@
 namespace LaunchDarkly\Tests;
 
 use InvalidArgumentException;
+use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\LDClient;
 use LaunchDarkly\LDContext;
+use LaunchDarkly\Migrations\Operation;
 use LaunchDarkly\Migrations\OpTracker;
+use LaunchDarkly\Migrations\Origin;
 use LaunchDarkly\Migrations\Stage;
+use LaunchDarkly\Tests\Impl\Evaluation\EvaluatorTestUtil;
 use Psr\Log\LoggerInterface;
 
 class LDClientTest extends \PHPUnit\Framework\TestCase
@@ -25,7 +29,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(LDClient::class, new LDClient("BOGUS_SDK_KEY"));
     }
 
-    private function makeOffFlagWithValue($key, $value)
+    private function makeOffFlagWithValue($key, $value, $samplingRatio = 1, $excludeFromSummaries = false)
     {
         return ModelBuilders::flagBuilder($key)
             ->version(100)
@@ -33,6 +37,8 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
             ->variations('FALLTHROUGH', $value)
             ->fallthroughVariation(0)
             ->offVariation(1)
+            ->samplingRatio($samplingRatio)
+            ->excludeFromSummaries($excludeFromSummaries)
             ->build();
     }
 
@@ -165,7 +171,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
 
     public function testVariationDetailSendsEvent()
     {
-        $flag = $this->makeOffFlagWithValue('flagkey', 'flagvalue');
+        $flag = $this->makeOffFlagWithValue('flagkey', 'flagvalue', 1);
         $this->mockRequester->addFlag($flag);
         $ep = new MockEventProcessor();
         $client = $this->makeClient(['event_processor' => $ep]);
@@ -184,6 +190,121 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('default', $event['default']);
         $this->assertFalse(isset($event['trackEvents']));
         $this->assertEquals(['kind' => 'OFF'], $event['reason']);
+    }
+
+    public function testZeroSamplingRatioSuppressesFeatureEvent()
+    {
+        $flag = $this->makeOffFlagWithValue('flagkey', 'flagvalue', 0);
+        $this->mockRequester->addFlag($flag);
+
+        $mockPublisher = new MockEventPublisher("", []);
+        $options = [
+            'feature_requester' => $this->mockRequester,
+            'event_publisher' => $mockPublisher,
+        ];
+        $client = new LDClient("someKey", $options);
+
+        $context = LDContext::create('userkey');
+        $client->variationDetail('flagkey', $context, 'default');
+        // We don't flush the event processor until __destruct is called. Let's
+        // force that by unsetting this variable.
+        unset($client);
+        $this->assertCount(0, $mockPublisher->payloads);
+    }
+
+    public function testFeatureEventContainsExcludeFlagSummaryValue(): void
+    {
+        $flag = $this->makeOffFlagWithValue('flagkey', 'flagvalue', 1, true);
+        $this->mockRequester->addFlag($flag);
+
+        $mockPublisher = new MockEventPublisher("", []);
+        $options = [
+            'feature_requester' => $this->mockRequester,
+            'event_publisher' => $mockPublisher,
+        ];
+        $client = new LDClient("someKey", $options);
+
+        $context = LDContext::create('userkey');
+        $client->variationDetail('flagkey', $context, 'default');
+        // We don't flush the event processor until __destruct is called. Let's
+        // force that by unsetting this variable.
+        unset($client);
+
+        $event = json_decode($mockPublisher->payloads[0], true)[0];
+        $this->assertEquals('feature', $event['kind']);
+        $this->assertTrue($event['excludeFromSummaries']);
+    }
+
+    public function testMigrationVariationSendsEvent(): void
+    {
+        $flag = $this->makeOffFlagWithValue('flag', 'off', 1);
+        $this->mockRequester->addFlag($flag);
+
+        $detail = new EvaluationDetail('off', 0, EvaluationReason::fallthrough());
+        $tracker = new OpTracker(
+            EvaluatorTestUtil::testLogger(),
+            'flag',
+            $flag,
+            LDContext::create('user-key'),
+            $detail,
+            Stage::LIVE,
+        );
+        $tracker->operation(Operation::READ)
+            ->invoked(Origin::OLD)
+            ->invoked(Origin::NEW);
+
+        $mockPublisher = new MockEventPublisher("", []);
+        $options = [
+            'feature_requester' => $this->mockRequester,
+            'event_publisher' => $mockPublisher,
+        ];
+        $client = new LDClient("someKey", $options);
+
+        $client->trackMigrationOperation($tracker);
+        // We don't flush the event processor until __destruct is called. Let's
+        // force that by unsetting this variable.
+        unset($client);
+
+        $events = json_decode($mockPublisher->payloads[0], true);
+        $this->assertCount(1, $events);
+
+        $event = $events[0];
+        $this->assertEquals('migration_op', $event['kind']);
+        $this->assertEquals('flag', $event['evaluation']['key']);
+        $this->assertArrayNotHasKey('samplingRatio', $event);
+    }
+
+    public function testMigrationVariationDoesNotSendEventWith0SamplingRatio()
+    {
+        $flag = $this->makeOffFlagWithValue('flag', 'off', 0);
+        $this->mockRequester->addFlag($flag);
+
+        $detail = new EvaluationDetail('off', 0, EvaluationReason::fallthrough());
+        $tracker = new OpTracker(
+            EvaluatorTestUtil::testLogger(),
+            'flag',
+            $flag,
+            LDContext::create('user-key'),
+            $detail,
+            Stage::LIVE,
+        );
+        $tracker->operation(Operation::READ)
+            ->invoked(Origin::OLD)
+            ->invoked(Origin::NEW);
+
+        $mockPublisher = new MockEventPublisher("", []);
+        $options = [
+            'feature_requester' => $this->mockRequester,
+            'event_publisher' => $mockPublisher,
+        ];
+        $client = new LDClient("someKey", $options);
+
+        $client->trackMigrationOperation($tracker);
+        // We don't flush the event processor until __destruct is called. Let's
+        // force that by unsetting this variable.
+        unset($client);
+
+        $this->assertCount(0, $mockPublisher->payloads);
     }
 
     public function testVariationForcesTrackingWhenMatchedRuleHasTrackEventsSet()

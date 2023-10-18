@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace LaunchDarkly\Migrations;
 
 use LaunchDarkly\Impl\Migrations\Executor;
+use LaunchDarkly\Impl\Util;
 use LaunchDarkly\LDClient;
 use LaunchDarkly\LDContext;
 
@@ -94,8 +95,7 @@ class Migrator
 
     private function readBoth(Executor $authoritative, Executor $nonauthoritative, OpTracker $tracker): OperationResult
     {
-        // TODO(sc-219378): Add sampling to limit to 50% chance
-        if ($this->executionOrder == ExecutionOrder::RANDOM) {
+        if ($this->executionOrder == ExecutionOrder::RANDOM && Util::sample(2)) {
             $nonauthoritativeResult = $nonauthoritative->run();
             $authoritativeResult = $authoritative->run();
         } else {

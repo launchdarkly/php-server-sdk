@@ -28,6 +28,14 @@ class MigratorTest extends \PHPUnit\Framework\TestCase
             $requester->addFlag($this->makeOffFlagWithValue($stage->value, $stage->value));
         }
 
+        $zeroSamplingRatio = ModelBuilders::flagBuilder("zero-sampling-ratio")
+            ->version(100)
+            ->on(false)
+            ->variations('FALLTHROUGH', Stage::OFF->value)
+            ->fallthroughVariation(0)
+            ->offVariation(1)
+            ->build();
+
         $this->eventProcessor = new MockEventProcessor();
         $options = [
             'feature_requester' => $requester,
@@ -394,8 +402,7 @@ class MigratorTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals('consistent', $consistency['key']);
         $this->assertEquals($shouldMatch, $consistency['value']);
-
-        // TODO(sc-219378): Add sampling tests
+        $this->assertArrayNotHasKey('samplingRatio', $consistency);
     }
 
     public function readHandlerExceptionProvider(): array

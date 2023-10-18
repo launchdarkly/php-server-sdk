@@ -3,6 +3,7 @@
 namespace LaunchDarkly\Tests;
 
 use LaunchDarkly\Impl\Model\FeatureFlag;
+use LaunchDarkly\Impl\Model\MigrationSettings;
 use LaunchDarkly\Impl\Model\Prerequisite;
 use LaunchDarkly\Impl\Model\Rollout;
 use LaunchDarkly\Impl\Model\Rule;
@@ -31,6 +32,9 @@ class FlagBuilder
     private bool $_trackEventsFallthrough = false;
     private ?int $_debugEventsUntilDate = null;
     private bool $_clientSide = false;
+    private ?MigrationSettings $_migrationSettings = null;
+    private ?int $_samplingRatio = null;
+    private bool $_excludeFromSummaries = false;
 
     public function __construct(string $key)
     {
@@ -56,7 +60,10 @@ class FlagBuilder
             $this->_trackEvents,
             $this->_trackEventsFallthrough,
             $this->_debugEventsUntilDate,
-            $this->_clientSide
+            $this->_clientSide,
+            $this->_samplingRatio,
+            $this->_excludeFromSummaries,
+            $this->_migrationSettings,
         );
     }
 
@@ -153,6 +160,24 @@ class FlagBuilder
     public function version(int $version): FlagBuilder
     {
         $this->_version = $version;
+        return $this;
+    }
+
+    public function migrationSettings(MigrationSettingsBuilder $builder): FlagBuilder
+    {
+        $this->_migrationSettingsBuilder = $builder;
+        return $this;
+    }
+
+    public function samplingRatio(int $samplingRatio): FlagBuilder
+    {
+        $this->_samplingRatio = $samplingRatio;
+        return $this;
+    }
+
+    public function excludeFromSummaries(bool $excludeFromSummaries): FlagBuilder
+    {
+        $this->_excludeFromSummaries = $excludeFromSummaries;
         return $this;
     }
 }

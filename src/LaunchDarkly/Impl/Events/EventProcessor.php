@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LaunchDarkly\Impl\Events;
 
+use LaunchDarkly\Impl\Util;
 use LaunchDarkly\Integrations\Curl;
 use LaunchDarkly\Subsystems\EventPublisher;
 
@@ -47,6 +48,11 @@ class EventProcessor
     public function enqueue(array $event): bool
     {
         if (count($this->_queue) > $this->_capacity) {
+            return false;
+        }
+
+        $samplingRatio = $event['samplingRatio'] ?? 1;
+        if (is_int($samplingRatio) && !Util::sample($samplingRatio)) {
             return false;
         }
 
