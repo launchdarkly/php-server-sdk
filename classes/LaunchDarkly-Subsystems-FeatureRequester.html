@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>LaunchDarkly PHP SDK 5.2.0</title>
+            <title>LaunchDarkly PHP SDK 6.0.0</title>
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="../">
     <link rel="icon" href="images/favicon.ico"/>
@@ -23,7 +24,7 @@
     </head>
 <body id="top">
     <header class="phpdocumentor-header phpdocumentor-section">
-    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">LaunchDarkly PHP SDK 5.2.0</a></h1>
+    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">LaunchDarkly PHP SDK 6.0.0</a></h1>
     <input class="phpdocumentor-header__menu-button" type="checkbox" id="menu-button" name="menu-button" />
     <label class="phpdocumentor-header__menu-icon" for="menu-button">
         <i class="fas fa-bars"></i>
@@ -54,18 +55,24 @@
 <aside class="phpdocumentor-column -four phpdocumentor-sidebar">
                     <section class="phpdocumentor-sidebar__category">
             <h2 class="phpdocumentor-sidebar__category-header">Namespaces</h2>
-                                    <h4 class="phpdocumentor-sidebar__root-namespace"><a href="namespaces/launchdarkly.html">LaunchDarkly</a></h4>
+                                    <h4 class="phpdocumentor-sidebar__root-namespace">
+    <a href="namespaces/launchdarkly.html" class="">LaunchDarkly</a>
+</h4>
     <ul class="phpdocumentor-list">
                     <li>
-                <a href="namespaces/launchdarkly-integrations.html">Integrations</a>
+                <a href="namespaces/launchdarkly-integrations.html" class="">Integrations</a>
                 
             </li>
                     <li>
-                <a href="namespaces/launchdarkly-subsystems.html">Subsystems</a>
+                <a href="namespaces/launchdarkly-migrations.html" class="">Migrations</a>
                 
             </li>
                     <li>
-                <a href="namespaces/launchdarkly-types.html">Types</a>
+                <a href="namespaces/launchdarkly-subsystems.html" class="">Subsystems</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/launchdarkly-types.html" class="">Types</a>
                 
             </li>
             </ul>
@@ -73,7 +80,9 @@
                         </section>
                 <section class="phpdocumentor-sidebar__category">
             <h2 class="phpdocumentor-sidebar__category-header">Packages</h2>
-                                    <h4 class="phpdocumentor-sidebar__root-namespace"><a href="packages/LaunchDarklyPHPSDK.html">LaunchDarklyPHPSDK</a></h4>
+                                    <h4 class="phpdocumentor-sidebar__root-namespace">
+    <a href="packages/LaunchDarklyPHPSDK.html" class="">LaunchDarklyPHPSDK</a>
+</h4>
 
                         </section>
             
@@ -141,24 +150,24 @@ flags inefficiently via HTTP on demand.</li>
 </h3>
 
 <dl class="phpdocumentor-table-of-contents">
-                    <dt class="phpdocumentor-table-of-contents__entry -method -public">
+                        <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-Subsystems-FeatureRequester.html#method_getAllFeatures">getAllFeatures()</a>
     <span>
-                        &nbsp;: array&lt;string, <abbr title="\LaunchDarkly\Impl\Model\FeatureFlag">FeatureFlag</abbr>&gt;|null    </span>
+                                &nbsp;: array&lt;string, <abbr title="\LaunchDarkly\Impl\Model\FeatureFlag">FeatureFlag</abbr>&gt;|null    </span>
 </dt>
 <dd>Gets all feature flags.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-Subsystems-FeatureRequester.html#method_getFeature">getFeature()</a>
     <span>
-                        &nbsp;: <abbr title="\LaunchDarkly\Impl\Model\FeatureFlag">FeatureFlag</abbr>|null    </span>
+                                &nbsp;: <abbr title="\LaunchDarkly\Impl\Model\FeatureFlag">FeatureFlag</abbr>|null    </span>
 </dt>
 <dd>Gets the configuration for a specific feature flag.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-Subsystems-FeatureRequester.html#method_getSegment">getSegment()</a>
     <span>
-                        &nbsp;: <abbr title="\LaunchDarkly\Impl\Model\Segment">Segment</abbr>|null    </span>
+                                &nbsp;: <abbr title="\LaunchDarkly\Impl\Model\Segment">Segment</abbr>|null    </span>
 </dt>
 <dd>Gets the configuration for a specific user segment.</dd>
 
@@ -194,7 +203,7 @@ flags inefficiently via HTTP on demand.</li>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getAllFeatures</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;string, <abbr title="\LaunchDarkly\Impl\Model\FeatureFlag">FeatureFlag</abbr>&gt;|null</span></code>
+                    <span class="phpdocumentor-signature__name">getAllFeatures</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;string, <abbr title="\LaunchDarkly\Impl\Model\FeatureFlag">FeatureFlag</abbr>&gt;|null</span></code>
 
     
     
@@ -229,7 +238,7 @@ flags inefficiently via HTTP on demand.</li>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getFeature</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$key</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\LaunchDarkly\Impl\Model\FeatureFlag">FeatureFlag</abbr>|null</span></code>
+                    <span class="phpdocumentor-signature__name">getFeature</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$key</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\LaunchDarkly\Impl\Model\FeatureFlag">FeatureFlag</abbr>|null</span></code>
 
     
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
@@ -276,7 +285,7 @@ flags inefficiently via HTTP on demand.</li>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getSegment</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$key</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\LaunchDarkly\Impl\Model\Segment">Segment</abbr>|null</span></code>
+                    <span class="phpdocumentor-signature__name">getSegment</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$key</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\LaunchDarkly\Impl\Model\Segment">Segment</abbr>|null</span></code>
 
     
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>

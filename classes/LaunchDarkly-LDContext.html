@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>LaunchDarkly PHP SDK 5.2.0</title>
+            <title>LaunchDarkly PHP SDK 6.0.0</title>
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="../">
     <link rel="icon" href="images/favicon.ico"/>
@@ -23,7 +24,7 @@
     </head>
 <body id="top">
     <header class="phpdocumentor-header phpdocumentor-section">
-    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">LaunchDarkly PHP SDK 5.2.0</a></h1>
+    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">LaunchDarkly PHP SDK 6.0.0</a></h1>
     <input class="phpdocumentor-header__menu-button" type="checkbox" id="menu-button" name="menu-button" />
     <label class="phpdocumentor-header__menu-icon" for="menu-button">
         <i class="fas fa-bars"></i>
@@ -54,18 +55,24 @@
 <aside class="phpdocumentor-column -four phpdocumentor-sidebar">
                     <section class="phpdocumentor-sidebar__category">
             <h2 class="phpdocumentor-sidebar__category-header">Namespaces</h2>
-                                    <h4 class="phpdocumentor-sidebar__root-namespace"><a href="namespaces/launchdarkly.html">LaunchDarkly</a></h4>
+                                    <h4 class="phpdocumentor-sidebar__root-namespace">
+    <a href="namespaces/launchdarkly.html" class="">LaunchDarkly</a>
+</h4>
     <ul class="phpdocumentor-list">
                     <li>
-                <a href="namespaces/launchdarkly-integrations.html">Integrations</a>
+                <a href="namespaces/launchdarkly-integrations.html" class="">Integrations</a>
                 
             </li>
                     <li>
-                <a href="namespaces/launchdarkly-subsystems.html">Subsystems</a>
+                <a href="namespaces/launchdarkly-migrations.html" class="">Migrations</a>
                 
             </li>
                     <li>
-                <a href="namespaces/launchdarkly-types.html">Types</a>
+                <a href="namespaces/launchdarkly-subsystems.html" class="">Subsystems</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/launchdarkly-types.html" class="">Types</a>
                 
             </li>
             </ul>
@@ -73,7 +80,9 @@
                         </section>
                 <section class="phpdocumentor-sidebar__category">
             <h2 class="phpdocumentor-sidebar__category-header">Packages</h2>
-                                    <h4 class="phpdocumentor-sidebar__root-namespace"><a href="packages/LaunchDarklyPHPSDK.html">LaunchDarklyPHPSDK</a></h4>
+                                    <h4 class="phpdocumentor-sidebar__root-namespace">
+    <a href="packages/LaunchDarklyPHPSDK.html" class="">LaunchDarklyPHPSDK</a>
+</h4>
 
                         </section>
             
@@ -116,16 +125,13 @@
         <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContext.php"><a href="files/launchdarkly-ldcontext.html"><abbr title="LaunchDarkly/LDContext.php">LDContext.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">46</span>
+    <span class="phpdocumentor-element-found-in__line">23</span>
 
     </aside>
 
             <p class="phpdocumentor-summary">A collection of attributes that can be referenced in flag evaluations and analytics events.</p>
 
     <section class="phpdocumentor-description"><p>This entity is also called an &quot;evaluation context.&quot;</p>
-<p>LDContext is the newer replacement for the previous, less flexible <a href="classes/LaunchDarkly-LDUser.html"><abbr title="\LaunchDarkly\LDUser">LDUser</abbr></a> type.
-The current SDK still supports LDUser, but LDContext is now the preferred model and may entirely
-replace User in the future.</p>
 <p>To create an LDContext of a single kind, such as a user, you may use
 <a href="classes/LaunchDarkly-LDContext.html#method_create"><abbr title="\LaunchDarkly\LDContext::create()">LDContext::create()</abbr></a> when only the key and the kind are relevant; or, to
 specify other attributes, use <a href="classes/LaunchDarkly-LDContext.html#method_builder"><abbr title="\LaunchDarkly\LDContext::builder()">LDContext::builder()</abbr></a>.</p>
@@ -141,13 +147,14 @@ specify other attributes, use <a href="classes/LaunchDarkly-LDContext.html#metho
 
 
 <h3 id="interfaces_class_traits">
-    Interfaces, Classes and Traits
+    Interfaces, Classes, Traits and Enums
     <a href="#interfaces_class_traits" class="headerlink"><i class="fas fa-link"></i></a>
 </h3>
 
 <dl class="phpdocumentor-table-of-contents">
             <dt class="phpdocumentor-table-of-contents__entry -interface"><abbr title="\JsonSerializable">JsonSerializable</abbr></dt>
         <dd></dd>
+    
     
     
     </dl>
@@ -162,147 +169,147 @@ specify other attributes, use <a href="classes/LaunchDarkly-LDContext.html#metho
             <dt class="phpdocumentor-table-of-contents__entry -constant -public">
     <a href="classes/LaunchDarkly-LDContext.html#constant_DEFAULT_KIND">DEFAULT_KIND</a>
     <span>
-        &nbsp;= &#039;user&#039;                    </span>
+        &nbsp;= &#039;user&#039;                            </span>
 </dt>
 <dd>A constant for the default kind of &quot;user&quot;.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -constant -public">
     <a href="classes/LaunchDarkly-LDContext.html#constant_MULTI_KIND">MULTI_KIND</a>
     <span>
-        &nbsp;= &#039;multi&#039;                    </span>
+        &nbsp;= &#039;multi&#039;                            </span>
 </dt>
 <dd>A constant for the kind that all multi-contexts have.</dd>
 
-                    <dt class="phpdocumentor-table-of-contents__entry -method -public">
+                        <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-LDContext.html#method___construct">__construct()</a>
     <span>
-                        &nbsp;: mixed    </span>
+                                &nbsp;: mixed    </span>
 </dt>
 <dd>Constructs an instance, setting all properties. Avoid using this constructor directly.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-LDContext.html#method___toString">__toString()</a>
     <span>
-                        &nbsp;: string    </span>
+                                &nbsp;: string    </span>
 </dt>
 <dd>Returns a string representation of the LDContext.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-LDContext.html#method_builder">builder()</a>
     <span>
-                        &nbsp;: <a href="classes/LaunchDarkly-LDContextBuilder.html"><abbr title="\LaunchDarkly\LDContextBuilder">LDContextBuilder</abbr></a>    </span>
+                                &nbsp;: <a href="classes/LaunchDarkly-LDContextBuilder.html"><abbr title="\LaunchDarkly\LDContextBuilder">LDContextBuilder</abbr></a>    </span>
 </dt>
 <dd>Creates a builder for building an LDContext.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-LDContext.html#method_create">create()</a>
     <span>
-                        &nbsp;: <a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a>    </span>
+                                &nbsp;: <a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a>    </span>
 </dt>
 <dd>Creates a single-kind LDContext with only the key and the kind specified.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-LDContext.html#method_createMulti">createMulti()</a>
     <span>
-                        &nbsp;: <a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a>    </span>
+                                &nbsp;: <a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a>    </span>
 </dt>
 <dd>Creates a multi-context out of the specified single-kind LDContexts.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-LDContext.html#method_equals">equals()</a>
     <span>
-                        &nbsp;: bool    </span>
+                                &nbsp;: bool    </span>
 </dt>
 <dd>Tests whether two contexts are logically equal.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-LDContext.html#method_fromJson">fromJson()</a>
     <span>
-                        &nbsp;: <a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a>    </span>
+                                &nbsp;: <a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a>    </span>
 </dt>
 <dd>Creates an LDContext from a parsed JSON representation.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
-    <a href="classes/LaunchDarkly-LDContext.html#method_fromUser">fromUser()</a>
-    <span>
-                        &nbsp;: <a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a>    </span>
-</dt>
-<dd></dd>
-
-            <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-LDContext.html#method_get">get()</a>
     <span>
-                        &nbsp;: mixed    </span>
+                                &nbsp;: mixed    </span>
 </dt>
 <dd>Looks up the value of any attribute of the context by name.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-LDContext.html#method_getCustomAttributeNames">getCustomAttributeNames()</a>
     <span>
-                        &nbsp;: array&lt;string|int, mixed&gt;    </span>
+                                &nbsp;: array&lt;string|int, mixed&gt;    </span>
 </dt>
 <dd>Returns the names of all non-built-in attributes that have been set in this context.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-LDContext.html#method_getError">getError()</a>
     <span>
-                        &nbsp;: string|null    </span>
+                                &nbsp;: string|null    </span>
 </dt>
 <dd>Returns `null` for a valid LDContext, or an error message for an invalid one.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-LDContext.html#method_getFullyQualifiedKey">getFullyQualifiedKey()</a>
     <span>
-                        &nbsp;: string    </span>
+                                &nbsp;: string    </span>
 </dt>
 <dd>Returns a string that describes the LDContext uniquely based on `kind` and `key` values.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-LDContext.html#method_getIndividualContext">getIndividualContext()</a>
     <span>
-                        &nbsp;: <a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a>|null    </span>
+                                &nbsp;: <a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a>|null    </span>
 </dt>
 <dd>Returns the single-kind LDContext corresponding to one of the kinds in this context.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-LDContext.html#method_getIndividualContextCount">getIndividualContextCount()</a>
     <span>
-                        &nbsp;: int    </span>
+                                &nbsp;: int    </span>
 </dt>
 <dd>Returns the number of context kinds in this context.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-LDContext.html#method_getKey">getKey()</a>
     <span>
-                        &nbsp;: string    </span>
+                                &nbsp;: string    </span>
 </dt>
 <dd>Returns the context&#039;s `key` attribute.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/LaunchDarkly-LDContext.html#method_getKeys">getKeys()</a>
+    <span>
+                                &nbsp;: array&lt;string|int, mixed&gt;    </span>
+</dt>
+<dd>Returns an associate array mapping each context kind to its key.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-LDContext.html#method_getKind">getKind()</a>
     <span>
-                        &nbsp;: string    </span>
+                                &nbsp;: string    </span>
 </dt>
 <dd>Returns the context&#039;s `kind` attribute.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-LDContext.html#method_getName">getName()</a>
     <span>
-                        &nbsp;: string|null    </span>
+                                &nbsp;: string|null    </span>
 </dt>
 <dd>Returns the context&#039;s `name` attribute.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-LDContext.html#method_getPrivateAttributes">getPrivateAttributes()</a>
     <span>
-                        &nbsp;: array&lt;string|int, <a href="classes/LaunchDarkly-Types-AttributeReference.html"><abbr title="\LaunchDarkly\Types\AttributeReference">AttributeReference</abbr></a>&gt;|null    </span>
+                                &nbsp;: array&lt;string|int, <a href="classes/LaunchDarkly-Types-AttributeReference.html"><abbr title="\LaunchDarkly\Types\AttributeReference">AttributeReference</abbr></a>&gt;|null    </span>
 </dt>
 <dd>Gets the list of all attribute references marked as private for this specific LDContext.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-LDContext.html#method_isAnonymous">isAnonymous()</a>
     <span>
-                        &nbsp;: bool    </span>
+                                &nbsp;: bool    </span>
 </dt>
 <dd>Returns true if this context is only intended for flag evaluations and will not be
 indexed by LaunchDarkly.</dd>
@@ -310,21 +317,21 @@ indexed by LaunchDarkly.</dd>
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-LDContext.html#method_isMultiple">isMultiple()</a>
     <span>
-                        &nbsp;: bool    </span>
+                                &nbsp;: bool    </span>
 </dt>
 <dd>Returns true if this is a multi-context.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-LDContext.html#method_isValid">isValid()</a>
     <span>
-                        &nbsp;: bool    </span>
+                                &nbsp;: bool    </span>
 </dt>
 <dd>Returns `true` for a valid LDContext, `false` for an invalid one.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-LDContext.html#method_jsonSerialize">jsonSerialize()</a>
     <span>
-                        &nbsp;: array&lt;string|int, mixed&gt;    </span>
+                                &nbsp;: array&lt;string|int, mixed&gt;    </span>
 </dt>
 <dd>Returns a JSON representation of the context (as an associative array), in the format used by
 LaunchDarkly SDKs.</dd>
@@ -332,7 +339,7 @@ LaunchDarkly SDKs.</dd>
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-LDContext.html#method_multiBuilder">multiBuilder()</a>
     <span>
-                        &nbsp;: <a href="classes/LaunchDarkly-LDContextMultiBuilder.html"><abbr title="\LaunchDarkly\LDContextMultiBuilder">LDContextMultiBuilder</abbr></a>    </span>
+                                &nbsp;: <a href="classes/LaunchDarkly-LDContextMultiBuilder.html"><abbr title="\LaunchDarkly\LDContextMultiBuilder">LDContextMultiBuilder</abbr></a>    </span>
 </dt>
 <dd>Creates a builder for building a multi-context.</dd>
 
@@ -355,7 +362,7 @@ LaunchDarkly SDKs.</dd>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContext.php"><a href="files/launchdarkly-ldcontext.html"><abbr title="LaunchDarkly/LDContext.php">LDContext.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">51</span>
+    <span class="phpdocumentor-element-found-in__line">28</span>
 
     </aside>
 
@@ -363,7 +370,7 @@ LaunchDarkly SDKs.</dd>
 
     <code class="phpdocumentor-signature phpdocumentor-code ">
     <span class="phpdocumentor-signature__visibility">public</span>
-    <span class="phpdocumentor-signature__type">mixed</span>
+        <span class="phpdocumentor-signature__type">mixed</span>
     <span class="phpdocumentor-signature__name">DEFAULT_KIND</span>
     = <span class="phpdocumentor-signature__default-value">&#039;user&#039;</span>
 </code>
@@ -384,7 +391,7 @@ LaunchDarkly SDKs.</dd>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContext.php"><a href="files/launchdarkly-ldcontext.html"><abbr title="LaunchDarkly/LDContext.php">LDContext.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">56</span>
+    <span class="phpdocumentor-element-found-in__line">33</span>
 
     </aside>
 
@@ -392,7 +399,7 @@ LaunchDarkly SDKs.</dd>
 
     <code class="phpdocumentor-signature phpdocumentor-code ">
     <span class="phpdocumentor-signature__visibility">public</span>
-    <span class="phpdocumentor-signature__type">mixed</span>
+        <span class="phpdocumentor-signature__type">mixed</span>
     <span class="phpdocumentor-signature__name">MULTI_KIND</span>
     = <span class="phpdocumentor-signature__default-value">&#039;multi&#039;</span>
 </code>
@@ -426,7 +433,7 @@ LaunchDarkly SDKs.</dd>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContext.php"><a href="files/launchdarkly-ldcontext.html"><abbr title="LaunchDarkly/LDContext.php">LDContext.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">94</span>
+    <span class="phpdocumentor-element-found-in__line">71</span>
 
     </aside>
 
@@ -434,7 +441,7 @@ LaunchDarkly SDKs.</dd>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">__construct</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$kind</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$key</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$name</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">bool&nbsp;</span><span class="phpdocumentor-signature__argument__name">$anonymous</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, mixed&gt;|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$attributes</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, <a href="classes/LaunchDarkly-Types-AttributeReference.html"><abbr title="\LaunchDarkly\Types\AttributeReference">AttributeReference</abbr></a>&gt;|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$privateAttributes</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, <a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a>&gt;|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$multiContexts</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$error</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">__construct</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$kind</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$key</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$name</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">bool&nbsp;</span><span class="phpdocumentor-signature__argument__name">$anonymous</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, mixed&gt;|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$attributes</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, <a href="classes/LaunchDarkly-Types-AttributeReference.html"><abbr title="\LaunchDarkly\Types\AttributeReference">AttributeReference</abbr></a>&gt;|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$privateAttributes</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, <a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a>&gt;|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$multiContexts</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$error</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
 
         <section class="phpdocumentor-description"><p>Applications should not normally use this constructor; the intended pattern is to use
 factory methods or builders. Calling this constructor directly may result in some context
@@ -538,7 +545,7 @@ validation being skipped.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContext.php"><a href="files/launchdarkly-ldcontext.html"><abbr title="LaunchDarkly/LDContext.php">LDContext.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">745</span>
+    <span class="phpdocumentor-element-found-in__line">686</span>
 
     </aside>
 
@@ -546,7 +553,7 @@ validation being skipped.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">__toString</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+                    <span class="phpdocumentor-signature__name">__toString</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
 
         <section class="phpdocumentor-description"><p>For a valid LDContext, this is currently defined as being the same as the JSON representation,
 since that is the simplest way to represent all of the Context properties. However, application
@@ -579,7 +586,7 @@ For an invalid LDContext, __toString() returns a description of why it is invali
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContext.php"><a href="files/launchdarkly-ldcontext.html"><abbr title="LaunchDarkly/LDContext.php">LDContext.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">298</span>
+    <span class="phpdocumentor-element-found-in__line">221</span>
 
     </aside>
 
@@ -587,7 +594,7 @@ For an invalid LDContext, __toString() returns a description of why it is invali
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-            <span class="phpdocumentor-signature__static">static</span>    <span class="phpdocumentor-signature__name">builder</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$key</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-LDContextBuilder.html"><abbr title="\LaunchDarkly\LDContextBuilder">LDContextBuilder</abbr></a></span></code>
+            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">builder</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$key</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-LDContextBuilder.html"><abbr title="\LaunchDarkly\LDContextBuilder">LDContextBuilder</abbr></a></span></code>
 
         <section class="phpdocumentor-description"><p>You may use <a href="classes/LaunchDarkly-LDContextBuilder.html"><abbr title="\LaunchDarkly\LDContextBuilder">LDContextBuilder</abbr></a> methods to set additional attributes and/or
 change the <code class="prettyprint">kind</code> before calling <a href="classes/LaunchDarkly-LDContextBuilder.html#method_build"><abbr title="\LaunchDarkly\LDContextBuilder::build()">LDContextBuilder::build()</abbr></a>. If you do not
@@ -659,7 +666,7 @@ you call <a href="classes/LaunchDarkly-LDContextBuilder.html#method_build"><abbr
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContext.php"><a href="files/launchdarkly-ldcontext.html"><abbr title="LaunchDarkly/LDContext.php">LDContext.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">186</span>
+    <span class="phpdocumentor-element-found-in__line">163</span>
 
     </aside>
 
@@ -667,7 +674,7 @@ you call <a href="classes/LaunchDarkly-LDContextBuilder.html#method_build"><abbr
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-            <span class="phpdocumentor-signature__static">static</span>    <span class="phpdocumentor-signature__name">create</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$key</span></span><span class="phpdocumentor-signature__argument"><span>[</span><span>, </span><span class="phpdocumentor-signature__argument__return-type">string|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$kind</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">null</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a></span></code>
+            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">create</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$key</span></span><span class="phpdocumentor-signature__argument"><span>[</span><span>, </span><span class="phpdocumentor-signature__argument__return-type">string|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$kind</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">null</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a></span></code>
 
         <section class="phpdocumentor-description"><p>If you omit the kind, it defaults to &quot;user&quot; (<a href="classes/LaunchDarkly-LDContext.html#constant_DEFAULT_KIND"><abbr title="\LaunchDarkly\LDContext::DEFAULT_KIND">LDContext::DEFAULT_KIND</abbr></a>).</p>
 <p>To specify additional properties, use <a href="classes/LaunchDarkly-LDContext.html#method_builder"><abbr title="\LaunchDarkly\LDContext::builder()">LDContext::builder()</abbr></a>. To create a
@@ -742,7 +749,7 @@ multi-context instead of a single one, use <a href="classes/LaunchDarkly-LDConte
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContext.php"><a href="files/launchdarkly-ldcontext.html"><abbr title="LaunchDarkly/LDContext.php">LDContext.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">211</span>
+    <span class="phpdocumentor-element-found-in__line">188</span>
 
     </aside>
 
@@ -750,7 +757,7 @@ multi-context instead of a single one, use <a href="classes/LaunchDarkly-LDConte
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-            <span class="phpdocumentor-signature__static">static</span>    <span class="phpdocumentor-signature__name">createMulti</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type"><a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a>&nbsp;</span><span class="phpdocumentor-signature__argument__variadic-operator">...</span><span class="phpdocumentor-signature__argument__name">$contexts</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a></span></code>
+            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">createMulti</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type"><a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a>&nbsp;</span><span class="phpdocumentor-signature__argument__variadic-operator">...</span><span class="phpdocumentor-signature__argument__name">$contexts</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a></span></code>
 
         <section class="phpdocumentor-description"><p>To create an LDContext for a single context kind, use <a href="classes/LaunchDarkly-LDContext.html#method_create"><abbr title="\LaunchDarkly\LDContext::create()">LDContext::create()</abbr></a>
 or <a href="classes/LaunchDarkly-LDContext.html#method_builder"><abbr title="\LaunchDarkly\LDContext::builder()">LDContext::builder()</abbr></a>.</p>
@@ -819,7 +826,7 @@ individual kinds from it separately. See <a href="classes/LaunchDarkly-LDContext
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContext.php"><a href="files/launchdarkly-ldcontext.html"><abbr title="LaunchDarkly/LDContext.php">LDContext.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">686</span>
+    <span class="phpdocumentor-element-found-in__line">627</span>
 
     </aside>
 
@@ -827,7 +834,7 @@ individual kinds from it separately. See <a href="classes/LaunchDarkly-LDContext
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">equals</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type"><a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a>&nbsp;</span><span class="phpdocumentor-signature__argument__name">$other</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
+                    <span class="phpdocumentor-signature__name">equals</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type"><a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a>&nbsp;</span><span class="phpdocumentor-signature__argument__name">$other</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
 
         <section class="phpdocumentor-description"><p>Equality for single contexts means that all of their attributes are equal. Equality for
 multi-contexts means that the same context kinds are present in both, and the individual
@@ -870,7 +877,7 @@ contexts for each kind are equal.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContext.php"><a href="files/launchdarkly-ldcontext.html"><abbr title="LaunchDarkly/LDContext.php">LDContext.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">345</span>
+    <span class="phpdocumentor-element-found-in__line">265</span>
 
     </aside>
 
@@ -878,12 +885,9 @@ contexts for each kind are equal.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-            <span class="phpdocumentor-signature__static">static</span>    <span class="phpdocumentor-signature__name">fromJson</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string|array&lt;string|int, mixed&gt;|object&nbsp;</span><span class="phpdocumentor-signature__argument__name">$jsonObject</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a></span></code>
+            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">fromJson</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string|array&lt;string|int, mixed&gt;|object&nbsp;</span><span class="phpdocumentor-signature__argument__name">$jsonObject</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a></span></code>
 
-        <section class="phpdocumentor-description"><p>The JSON must be in one of the standard formats used by LaunchDarkly. This can either be a
-context representation similar to what would be produced by <a href="classes/LaunchDarkly-LDContext.html#method_jsonSerialize"><abbr title="\LaunchDarkly\LDContext::jsonSerialize()">LDContext::jsonSerialize()</abbr></a>,
-or a user representation in the format used by older LaunchDarkly SDKs. A user representation
-does not have a <code class="prettyprint">kind</code> property and will be converted to a context with the kind &quot;user&quot;.</p>
+        <section class="phpdocumentor-description"><p>The JSON must be in one of the standard formats used by LaunchDarkly.</p>
 <pre class="prettyprint"><code class="language-php">    $json = '{&quot;kind&quot;: &quot;user&quot;, &quot;key&quot;: &quot;aaa&quot;}';
     $context = LDContext::fromJson($json);
 
@@ -938,48 +942,6 @@ was not well-formed JSON</p>
         class="phpdocumentor-element
             -method
             -public
-                                    -static                    "
->
-    <h4 class="phpdocumentor-element__name" id="method_fromUser">
-        fromUser()
-        <a href="classes/LaunchDarkly-LDContext.html#method_fromUser" class="headerlink"><i class="fas fa-link"></i></a>
-    </h4>
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContext.php"><a href="files/launchdarkly-ldcontext.html"><abbr title="LaunchDarkly/LDContext.php">LDContext.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">227</span>
-
-    </aside>
-
-    
-    <code class="phpdocumentor-code phpdocumentor-signature ">
-    <span class="phpdocumentor-signature__visibility">public</span>
-            <span class="phpdocumentor-signature__static">static</span>    <span class="phpdocumentor-signature__name">fromUser</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type"><a href="classes/LaunchDarkly-LDUser.html"><abbr title="\LaunchDarkly\LDUser">LDUser</abbr></a>&nbsp;</span><span class="phpdocumentor-signature__argument__name">$user</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a></span></code>
-
-    
-        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
-    <dl class="phpdocumentor-argument-list">
-                    <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-signature__argument__name">$user</span>
-                : <span class="phpdocumentor-signature__argument__return-type"><a href="classes/LaunchDarkly-LDUser.html"><abbr title="\LaunchDarkly\LDUser">LDUser</abbr></a></span>
-                            </dt>
-            <dd class="phpdocumentor-argument-list__definition">
-                
-            </dd>
-            </dl>
-
-    
-
-        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-    <span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a></span>
-            &mdash;
-        
-    
-</article>
-                    <article
-        class="phpdocumentor-element
-            -method
-            -public
                                                         "
 >
     <h4 class="phpdocumentor-element__name" id="method_get">
@@ -989,7 +951,7 @@ was not well-formed JSON</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContext.php"><a href="files/launchdarkly-ldcontext.html"><abbr title="LaunchDarkly/LDContext.php">LDContext.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">540</span>
+    <span class="phpdocumentor-element-found-in__line">481</span>
 
     </aside>
 
@@ -997,7 +959,7 @@ was not well-formed JSON</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">get</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$attributeName</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">get</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$attributeName</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
 
         <section class="phpdocumentor-description"><p>For a single-kind context, the attribute name can be any custom attribute that was set
 by <a href="classes/LaunchDarkly-LDContextBuilder.html#method_set"><abbr title="\LaunchDarkly\LDContextBuilder::set()">LDContextBuilder::set()</abbr></a>. It can also be one of the built-in ones like
@@ -1062,7 +1024,7 @@ null value.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContext.php"><a href="files/launchdarkly-ldcontext.html"><abbr title="LaunchDarkly/LDContext.php">LDContext.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">570</span>
+    <span class="phpdocumentor-element-found-in__line">511</span>
 
     </aside>
 
@@ -1070,7 +1032,7 @@ null value.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getCustomAttributeNames</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;string|int, mixed&gt;</span></code>
+                    <span class="phpdocumentor-signature__name">getCustomAttributeNames</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;string|int, mixed&gt;</span></code>
 
         <section class="phpdocumentor-description"><p>For a single-kind context, this includes all the names that were passed to
 <a href="classes/LaunchDarkly-LDContextBuilder.html#method_set"><abbr title="\LaunchDarkly\LDContextBuilder::set()">LDContextBuilder::set()</abbr></a> as long as the values were not null (since
@@ -1102,7 +1064,7 @@ a null value in LaunchDarkly is equivalent to the attribute not being set).</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContext.php"><a href="files/launchdarkly-ldcontext.html"><abbr title="LaunchDarkly/LDContext.php">LDContext.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">419</span>
+    <span class="phpdocumentor-element-found-in__line">336</span>
 
     </aside>
 
@@ -1110,7 +1072,7 @@ a null value in LaunchDarkly is equivalent to the attribute not being set).</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getError</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string|null</span></code>
+                    <span class="phpdocumentor-signature__name">getError</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string|null</span></code>
 
         <section class="phpdocumentor-description"><p>If this is null, then <a href="classes/LaunchDarkly-LDContext.html#method_isValid"><abbr title="\LaunchDarkly\LDContext::isValid()">LDContext::isValid()</abbr></a> is true. If it is non-null,
 then <a href="classes/LaunchDarkly-LDContext.html#method_isValid"><abbr title="\LaunchDarkly\LDContext::isValid()">LDContext::isValid()</abbr></a> is false.</p>
@@ -1154,7 +1116,7 @@ then <a href="classes/LaunchDarkly-LDContext.html#method_isValid"><abbr title="\
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContext.php"><a href="files/launchdarkly-ldcontext.html"><abbr title="LaunchDarkly/LDContext.php">LDContext.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">655</span>
+    <span class="phpdocumentor-element-found-in__line">596</span>
 
     </aside>
 
@@ -1162,7 +1124,7 @@ then <a href="classes/LaunchDarkly-LDContext.html#method_isValid"><abbr title="\
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getFullyQualifiedKey</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+                    <span class="phpdocumentor-signature__name">getFullyQualifiedKey</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
 
         <section class="phpdocumentor-description"><p>This value is used whenever LaunchDarkly needs a string identifier based on all of the
 <code class="prettyprint">kind</code> and <code class="prettyprint">key</code> values in the context. Applications typically do not need to use it.</p>
@@ -1192,7 +1154,7 @@ then <a href="classes/LaunchDarkly-LDContext.html#method_isValid"><abbr title="\
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContext.php"><a href="files/launchdarkly-ldcontext.html"><abbr title="LaunchDarkly/LDContext.php">LDContext.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">614</span>
+    <span class="phpdocumentor-element-found-in__line">555</span>
 
     </aside>
 
@@ -1200,7 +1162,7 @@ then <a href="classes/LaunchDarkly-LDContext.html#method_isValid"><abbr title="\
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getIndividualContext</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int|string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$kind</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a>|null</span></code>
+                    <span class="phpdocumentor-signature__name">getIndividualContext</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int|string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$kind</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a>|null</span></code>
 
         <section class="phpdocumentor-description"><p>The <code class="prettyprint">kind</code> parameter can be either a number representing a zero-based index, or a string
 representing a context kind.</p>
@@ -1251,7 +1213,7 @@ it must match the context kind of one of the individual contexts.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContext.php"><a href="files/launchdarkly-ldcontext.html"><abbr title="LaunchDarkly/LDContext.php">LDContext.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">585</span>
+    <span class="phpdocumentor-element-found-in__line">526</span>
 
     </aside>
 
@@ -1259,7 +1221,7 @@ it must match the context kind of one of the individual contexts.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getIndividualContextCount</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">int</span></code>
+                    <span class="phpdocumentor-signature__name">getIndividualContextCount</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">int</span></code>
 
         <section class="phpdocumentor-description"><p>For a valid individual context, this returns 1. For a multi-context, it returns the number
 of context kinds. For an invalid context, it returns zero.</p>
@@ -1289,7 +1251,7 @@ of context kinds. For an invalid context, it returns zero.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContext.php"><a href="files/launchdarkly-ldcontext.html"><abbr title="LaunchDarkly/LDContext.php">LDContext.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">471</span>
+    <span class="phpdocumentor-element-found-in__line">412</span>
 
     </aside>
 
@@ -1297,7 +1259,7 @@ of context kinds. For an invalid context, it returns zero.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getKey</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+                    <span class="phpdocumentor-signature__name">getKey</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
 
         <section class="phpdocumentor-description"><p>For a single context, this value is set by <a href="classes/LaunchDarkly-LDContext.html#method_create"><abbr title="\LaunchDarkly\LDContext::create()">LDContext::create()</abbr></a>,
 <a href="classes/LaunchDarkly-LDContext.html#method_builder"><abbr title="\LaunchDarkly\LDContext::builder()">LDContext::builder()</abbr></a>, or <a href="classes/LaunchDarkly-LDContextBuilder.html#method_key"><abbr title="\LaunchDarkly\LDContextBuilder::key()">LDContextBuilder::key()</abbr></a>.</p>
@@ -1338,6 +1300,42 @@ context for a particular kind, then call getKey() on it.</p>
             -public
                                                         "
 >
+    <h4 class="phpdocumentor-element__name" id="method_getKeys">
+        getKeys()
+        <a href="classes/LaunchDarkly-LDContext.html#method_getKeys" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContext.php"><a href="files/launchdarkly-ldcontext.html"><abbr title="LaunchDarkly/LDContext.php">LDContext.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">379</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Returns an associate array mapping each context kind to its key.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                    <span class="phpdocumentor-signature__name">getKeys</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;string|int, mixed&gt;</span></code>
+
+        <section class="phpdocumentor-description"><p>If the context is invalid, this will return an empty array. A single
+kind context will return an array with a single mapping.</p>
+</section>
+
+    
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">array&lt;string|int, mixed&gt;</span>
+            &mdash;
+        
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
     <h4 class="phpdocumentor-element__name" id="method_getKind">
         getKind()
         <a href="classes/LaunchDarkly-LDContext.html#method_getKind" class="headerlink"><i class="fas fa-link"></i></a>
@@ -1345,7 +1343,7 @@ context for a particular kind, then call getKey() on it.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContext.php"><a href="files/launchdarkly-ldcontext.html"><abbr title="LaunchDarkly/LDContext.php">LDContext.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">451</span>
+    <span class="phpdocumentor-element-found-in__line">368</span>
 
     </aside>
 
@@ -1353,7 +1351,7 @@ context for a particular kind, then call getKey() on it.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getKind</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+                    <span class="phpdocumentor-signature__name">getKind</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
 
         <section class="phpdocumentor-description"><p>Every valid context has a non-empty kind. For multi-contexts, this value is
 <a href="classes/LaunchDarkly-LDContext.html#constant_MULTI_KIND"><abbr title="\LaunchDarkly\LDContext::MULTI_KIND">LDContext::MULTI_KIND</abbr></a> and the kinds within the context can be
@@ -1398,7 +1396,7 @@ inspected with <a href="classes/LaunchDarkly-LDContext.html#method_getIndividual
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContext.php"><a href="files/launchdarkly-ldcontext.html"><abbr title="LaunchDarkly/LDContext.php">LDContext.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">489</span>
+    <span class="phpdocumentor-element-found-in__line">430</span>
 
     </aside>
 
@@ -1406,7 +1404,7 @@ inspected with <a href="classes/LaunchDarkly-LDContext.html#method_getIndividual
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getName</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string|null</span></code>
+                    <span class="phpdocumentor-signature__name">getName</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string|null</span></code>
 
         <section class="phpdocumentor-description"><p>For a single context, this value is set by <a href="classes/LaunchDarkly-LDContextBuilder.html#method_name"><abbr title="\LaunchDarkly\LDContextBuilder::name()">LDContextBuilder::name()</abbr></a>.
 It is null if no value was set.</p>
@@ -1453,7 +1451,7 @@ kind, then call getName() on it.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContext.php"><a href="files/launchdarkly-ldcontext.html"><abbr title="LaunchDarkly/LDContext.php">LDContext.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">642</span>
+    <span class="phpdocumentor-element-found-in__line">583</span>
 
     </aside>
 
@@ -1461,7 +1459,7 @@ kind, then call getName() on it.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getPrivateAttributes</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;string|int, <a href="classes/LaunchDarkly-Types-AttributeReference.html"><abbr title="\LaunchDarkly\Types\AttributeReference">AttributeReference</abbr></a>&gt;|null</span></code>
+                    <span class="phpdocumentor-signature__name">getPrivateAttributes</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;string|int, <a href="classes/LaunchDarkly-Types-AttributeReference.html"><abbr title="\LaunchDarkly\Types\AttributeReference">AttributeReference</abbr></a>&gt;|null</span></code>
 
         <section class="phpdocumentor-description"><p>This includes all attribute names/paths that were specified with
 <a href="classes/LaunchDarkly-LDContextBuilder.html#method_private"><abbr title="\LaunchDarkly\LDContextBuilder::private()">LDContextBuilder::private()</abbr></a>. If there are none, it is null.</p>
@@ -1491,7 +1489,7 @@ kind, then call getName() on it.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContext.php"><a href="files/launchdarkly-ldcontext.html"><abbr title="LaunchDarkly/LDContext.php">LDContext.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">514</span>
+    <span class="phpdocumentor-element-found-in__line">455</span>
 
     </aside>
 
@@ -1500,7 +1498,7 @@ indexed by LaunchDarkly.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">isAnonymous</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
+                    <span class="phpdocumentor-signature__name">isAnonymous</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
 
         <section class="phpdocumentor-description"><p>The default value is false. False means that this LDContext represents an entity
 such as a user that you want to be able to see on the LaunchDarkly dashboard.</p>
@@ -1552,7 +1550,7 @@ is always treated as a boolean true or false in evaluations.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContext.php"><a href="files/launchdarkly-ldcontext.html"><abbr title="LaunchDarkly/LDContext.php">LDContext.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">436</span>
+    <span class="phpdocumentor-element-found-in__line">353</span>
 
     </aside>
 
@@ -1560,7 +1558,7 @@ is always treated as a boolean true or false in evaluations.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">isMultiple</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
+                    <span class="phpdocumentor-signature__name">isMultiple</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
 
         <section class="phpdocumentor-description"><p>If this value is true, then <a href="classes/LaunchDarkly-LDContext.html#method_getKind"><abbr title="\LaunchDarkly\LDContext::getKind()">LDContext::getKind()</abbr></a> is guaranteed to be
 <a href="classes/LaunchDarkly-LDContext.html#constant_MULTI_KIND"><abbr title="\LaunchDarkly\LDContext::MULTI_KIND">LDContext::MULTI_KIND</abbr></a>, and you can inspect the individual context for
@@ -1593,7 +1591,7 @@ return a value that is not <a href="classes/LaunchDarkly-LDContext.html#constant
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContext.php"><a href="files/launchdarkly-ldcontext.html"><abbr title="LaunchDarkly/LDContext.php">LDContext.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">405</span>
+    <span class="phpdocumentor-element-found-in__line">322</span>
 
     </aside>
 
@@ -1601,7 +1599,7 @@ return a value that is not <a href="classes/LaunchDarkly-LDContext.html#constant
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">isValid</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
+                    <span class="phpdocumentor-signature__name">isValid</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
 
         <section class="phpdocumentor-description"><p>A valid context is one that can be used in SDK operations. An invalid context is one that
 is missing necessary attributes or has invalid attributes, indicating an incorrect usage
@@ -1663,7 +1661,7 @@ isValid() or <a href="classes/LaunchDarkly-LDContext.html#method_getError"><abbr
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContext.php"><a href="files/launchdarkly-ldcontext.html"><abbr title="LaunchDarkly/LDContext.php">LDContext.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">722</span>
+    <span class="phpdocumentor-element-found-in__line">663</span>
 
     </aside>
 
@@ -1672,7 +1670,7 @@ LaunchDarkly SDKs.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">jsonSerialize</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;string|int, mixed&gt;</span></code>
+                    <span class="phpdocumentor-signature__name">jsonSerialize</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;string|int, mixed&gt;</span></code>
 
         <section class="phpdocumentor-description"><p>Use this method if you are passing context data to the front end for use with the LaunchDarkly
 JavaScript SDK.</p>
@@ -1704,7 +1702,7 @@ method.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContext.php"><a href="files/launchdarkly-ldcontext.html"><abbr title="LaunchDarkly/LDContext.php">LDContext.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">318</span>
+    <span class="phpdocumentor-element-found-in__line">241</span>
 
     </aside>
 
@@ -1712,7 +1710,7 @@ method.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-            <span class="phpdocumentor-signature__static">static</span>    <span class="phpdocumentor-signature__name">multiBuilder</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-LDContextMultiBuilder.html"><abbr title="\LaunchDarkly\LDContextMultiBuilder">LDContextMultiBuilder</abbr></a></span></code>
+            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">multiBuilder</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-LDContextMultiBuilder.html"><abbr title="\LaunchDarkly\LDContextMultiBuilder">LDContextMultiBuilder</abbr></a></span></code>
 
         <section class="phpdocumentor-description"><p>This method is for building an LDContext that contains multiple contexts, each for a different
 context kind. To define a single context, use <a href="classes/LaunchDarkly-LDContext.html#method_builder"><abbr title="\LaunchDarkly\LDContext::builder()">LDContext::builder()</abbr></a>

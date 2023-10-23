@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>LaunchDarkly PHP SDK 5.2.0</title>
+            <title>LaunchDarkly PHP SDK 6.0.0</title>
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="../">
     <link rel="icon" href="images/favicon.ico"/>
@@ -23,7 +24,7 @@
     </head>
 <body id="top">
     <header class="phpdocumentor-header phpdocumentor-section">
-    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">LaunchDarkly PHP SDK 5.2.0</a></h1>
+    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">LaunchDarkly PHP SDK 6.0.0</a></h1>
     <input class="phpdocumentor-header__menu-button" type="checkbox" id="menu-button" name="menu-button" />
     <label class="phpdocumentor-header__menu-icon" for="menu-button">
         <i class="fas fa-bars"></i>
@@ -54,18 +55,24 @@
 <aside class="phpdocumentor-column -four phpdocumentor-sidebar">
                     <section class="phpdocumentor-sidebar__category">
             <h2 class="phpdocumentor-sidebar__category-header">Namespaces</h2>
-                                    <h4 class="phpdocumentor-sidebar__root-namespace"><a href="namespaces/launchdarkly.html">LaunchDarkly</a></h4>
+                                    <h4 class="phpdocumentor-sidebar__root-namespace">
+    <a href="namespaces/launchdarkly.html" class="">LaunchDarkly</a>
+</h4>
     <ul class="phpdocumentor-list">
                     <li>
-                <a href="namespaces/launchdarkly-integrations.html">Integrations</a>
+                <a href="namespaces/launchdarkly-integrations.html" class="">Integrations</a>
                 
             </li>
                     <li>
-                <a href="namespaces/launchdarkly-subsystems.html">Subsystems</a>
+                <a href="namespaces/launchdarkly-migrations.html" class="">Migrations</a>
                 
             </li>
                     <li>
-                <a href="namespaces/launchdarkly-types.html">Types</a>
+                <a href="namespaces/launchdarkly-subsystems.html" class="">Subsystems</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/launchdarkly-types.html" class="">Types</a>
                 
             </li>
             </ul>
@@ -73,7 +80,9 @@
                         </section>
                 <section class="phpdocumentor-sidebar__category">
             <h2 class="phpdocumentor-sidebar__category-header">Packages</h2>
-                                    <h4 class="phpdocumentor-sidebar__root-namespace"><a href="packages/LaunchDarklyPHPSDK.html">LaunchDarklyPHPSDK</a></h4>
+                                    <h4 class="phpdocumentor-sidebar__root-namespace">
+    <a href="packages/LaunchDarklyPHPSDK.html" class="">LaunchDarklyPHPSDK</a>
+</h4>
 
                         </section>
             
@@ -119,7 +128,7 @@
 
             <p class="phpdocumentor-summary">An object that combines the result of a flag evaluation with an explanation of how it was calculated.</p>
 
-    <section class="phpdocumentor-description"><p>This is returned by <a href="classes/LaunchDarkly-LDClient.html#method_variationDetail"><abbr title="\LaunchDarkly\LDClient::variationDetail()">LDClient::variationDetail()</abbr></a>.</p>
+    <section class="phpdocumentor-description"><p>This is returned by <abbr title="\LaunchDarkly\LDClient::variationDetail()">LDClient::variationDetail()</abbr>.</p>
 </section>
 
 
@@ -135,24 +144,24 @@
 </h3>
 
 <dl class="phpdocumentor-table-of-contents">
-                    <dt class="phpdocumentor-table-of-contents__entry -method -public">
+                        <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-EvaluationDetail.html#method___construct">__construct()</a>
     <span>
-                        &nbsp;: mixed    </span>
+                                &nbsp;: mixed    </span>
 </dt>
 <dd>EvaluationDetail constructor.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-EvaluationDetail.html#method_getReason">getReason()</a>
     <span>
-                        &nbsp;: <a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a>    </span>
+                                &nbsp;: <a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a>    </span>
 </dt>
 <dd>Returns information about how the flag value was calculated.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-EvaluationDetail.html#method_getValue">getValue()</a>
     <span>
-                        &nbsp;: mixed    </span>
+                                &nbsp;: mixed    </span>
 </dt>
 <dd>Returns the result of the flag evaluation. This will be either one of the flag&#039;s variations or the default
 value that was passed to the {@see \LaunchDarkly\LDClient::variationDetail()} method.</dd>
@@ -160,7 +169,7 @@ value that was passed to the {@see \LaunchDarkly\LDClient::variationDetail()} me
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-EvaluationDetail.html#method_getVariationIndex">getVariationIndex()</a>
     <span>
-                        &nbsp;: int|null    </span>
+                                &nbsp;: int|null    </span>
 </dt>
 <dd>The index of the returned value within the flag&#039;s list of variations, e.g. 0 for the first variation--
 or null if it was the default value (evaluation failed).</dd>
@@ -168,7 +177,7 @@ or null if it was the default value (evaluation failed).</dd>
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-EvaluationDetail.html#method_isDefaultValue">isDefaultValue()</a>
     <span>
-                        &nbsp;: bool    </span>
+                                &nbsp;: bool    </span>
 </dt>
 <dd>Returns true if the flag evaluated to the default value, rather than one of its variations.</dd>
 
@@ -206,7 +215,7 @@ or null if it was the default value (evaluation failed).</dd>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">__construct</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$value</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$variationIndex</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type"><a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a>&nbsp;</span><span class="phpdocumentor-signature__argument__name">$reason</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">__construct</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$value</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">int|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$variationIndex</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type"><a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a>&nbsp;</span><span class="phpdocumentor-signature__argument__name">$reason</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
 
     
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
@@ -269,7 +278,7 @@ or null if it was the default value (evaluation failed).</dd>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getReason</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a></span></code>
+                    <span class="phpdocumentor-signature__name">getReason</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a></span></code>
 
     
     
@@ -303,7 +312,7 @@ value that was passed to the {@see \LaunchDarkly\LDClient::variationDetail()} me
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getValue</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">getValue</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
 
     
     
@@ -339,7 +348,7 @@ or null if it was the default value (evaluation failed).</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getVariationIndex</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">int|null</span></code>
+                    <span class="phpdocumentor-signature__name">getVariationIndex</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">int|null</span></code>
 
     
     
@@ -374,7 +383,7 @@ or null if it was the default value (evaluation failed).</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">isDefaultValue</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
+                    <span class="phpdocumentor-signature__name">isDefaultValue</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
 
     
     

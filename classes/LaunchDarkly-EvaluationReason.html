@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>LaunchDarkly PHP SDK 5.2.0</title>
+            <title>LaunchDarkly PHP SDK 6.0.0</title>
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="../">
     <link rel="icon" href="images/favicon.ico"/>
@@ -23,7 +24,7 @@
     </head>
 <body id="top">
     <header class="phpdocumentor-header phpdocumentor-section">
-    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">LaunchDarkly PHP SDK 5.2.0</a></h1>
+    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">LaunchDarkly PHP SDK 6.0.0</a></h1>
     <input class="phpdocumentor-header__menu-button" type="checkbox" id="menu-button" name="menu-button" />
     <label class="phpdocumentor-header__menu-icon" for="menu-button">
         <i class="fas fa-bars"></i>
@@ -54,18 +55,24 @@
 <aside class="phpdocumentor-column -four phpdocumentor-sidebar">
                     <section class="phpdocumentor-sidebar__category">
             <h2 class="phpdocumentor-sidebar__category-header">Namespaces</h2>
-                                    <h4 class="phpdocumentor-sidebar__root-namespace"><a href="namespaces/launchdarkly.html">LaunchDarkly</a></h4>
+                                    <h4 class="phpdocumentor-sidebar__root-namespace">
+    <a href="namespaces/launchdarkly.html" class="">LaunchDarkly</a>
+</h4>
     <ul class="phpdocumentor-list">
                     <li>
-                <a href="namespaces/launchdarkly-integrations.html">Integrations</a>
+                <a href="namespaces/launchdarkly-integrations.html" class="">Integrations</a>
                 
             </li>
                     <li>
-                <a href="namespaces/launchdarkly-subsystems.html">Subsystems</a>
+                <a href="namespaces/launchdarkly-migrations.html" class="">Migrations</a>
                 
             </li>
                     <li>
-                <a href="namespaces/launchdarkly-types.html">Types</a>
+                <a href="namespaces/launchdarkly-subsystems.html" class="">Subsystems</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/launchdarkly-types.html" class="">Types</a>
                 
             </li>
             </ul>
@@ -73,7 +80,9 @@
                         </section>
                 <section class="phpdocumentor-sidebar__category">
             <h2 class="phpdocumentor-sidebar__category-header">Packages</h2>
-                                    <h4 class="phpdocumentor-sidebar__root-namespace"><a href="packages/LaunchDarklyPHPSDK.html">LaunchDarklyPHPSDK</a></h4>
+                                    <h4 class="phpdocumentor-sidebar__root-namespace">
+    <a href="packages/LaunchDarklyPHPSDK.html" class="">LaunchDarklyPHPSDK</a>
+</h4>
 
                         </section>
             
@@ -122,7 +131,7 @@
 
             <p class="phpdocumentor-summary">Describes the reason that a flag evaluation produced a particular value.</p>
 
-    <section class="phpdocumentor-description"><p>This is part of the <a href="classes/LaunchDarkly-EvaluationDetail.html"><abbr title="\LaunchDarkly\EvaluationDetail">EvaluationDetail</abbr></a> object returned by <a href="classes/LaunchDarkly-LDClient.html#method_variationDetail"><abbr title="\LaunchDarkly\LDClient::variationDetail()">LDClient::variationDetail()</abbr></a>.</p>
+    <section class="phpdocumentor-description"><p>This is part of the <a href="classes/LaunchDarkly-EvaluationDetail.html"><abbr title="\LaunchDarkly\EvaluationDetail">EvaluationDetail</abbr></a> object returned by <abbr title="\LaunchDarkly\LDClient::variationDetail()">LDClient::variationDetail()</abbr>.</p>
 </section>
 
 
@@ -131,13 +140,14 @@
 
 
 <h3 id="interfaces_class_traits">
-    Interfaces, Classes and Traits
+    Interfaces, Classes, Traits and Enums
     <a href="#interfaces_class_traits" class="headerlink"><i class="fas fa-link"></i></a>
 </h3>
 
 <dl class="phpdocumentor-table-of-contents">
             <dt class="phpdocumentor-table-of-contents__entry -interface"><abbr title="\JsonSerializable">JsonSerializable</abbr></dt>
         <dd></dd>
+    
     
     
     </dl>
@@ -152,7 +162,7 @@
             <dt class="phpdocumentor-table-of-contents__entry -constant -public">
     <a href="classes/LaunchDarkly-EvaluationReason.html#constant_CLIENT_NOT_READY_ERROR">CLIENT_NOT_READY_ERROR</a>
     <span>
-        &nbsp;= &#039;CLIENT_NOT_READY&#039;                    </span>
+        &nbsp;= &#039;CLIENT_NOT_READY&#039;                            </span>
 </dt>
 <dd>A possible value for getErrorKind(): indicates that the caller tried to evaluate a flag
 before the client had successfully initialized.</dd>
@@ -160,14 +170,14 @@ before the client had successfully initialized.</dd>
             <dt class="phpdocumentor-table-of-contents__entry -constant -public">
     <a href="classes/LaunchDarkly-EvaluationReason.html#constant_ERROR">ERROR</a>
     <span>
-        &nbsp;= &#039;ERROR&#039;                    </span>
+        &nbsp;= &#039;ERROR&#039;                            </span>
 </dt>
 <dd>A possible value for getKind(): indicates that the flag could not be evaluated, e.g.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -constant -public">
     <a href="classes/LaunchDarkly-EvaluationReason.html#constant_EXCEPTION_ERROR">EXCEPTION_ERROR</a>
     <span>
-        &nbsp;= &#039;EXCEPTION&#039;                    </span>
+        &nbsp;= &#039;EXCEPTION&#039;                            </span>
 </dt>
 <dd>A possible value for getErrorKind(): indicates that an unexpected exception stopped flag
 evaluation.</dd>
@@ -175,7 +185,7 @@ evaluation.</dd>
             <dt class="phpdocumentor-table-of-contents__entry -constant -public">
     <a href="classes/LaunchDarkly-EvaluationReason.html#constant_FALLTHROUGH">FALLTHROUGH</a>
     <span>
-        &nbsp;= &#039;FALLTHROUGH&#039;                    </span>
+        &nbsp;= &#039;FALLTHROUGH&#039;                            </span>
 </dt>
 <dd>A possible value for getKind(): indicates that the flag was on but the user did not
 match any targets or rules.</dd>
@@ -183,7 +193,7 @@ match any targets or rules.</dd>
             <dt class="phpdocumentor-table-of-contents__entry -constant -public">
     <a href="classes/LaunchDarkly-EvaluationReason.html#constant_FLAG_NOT_FOUND_ERROR">FLAG_NOT_FOUND_ERROR</a>
     <span>
-        &nbsp;= &#039;FLAG_NOT_FOUND&#039;                    </span>
+        &nbsp;= &#039;FLAG_NOT_FOUND&#039;                            </span>
 </dt>
 <dd>A possible value for getErrorKind(): indicates that the caller provided a flag key that
 did not match any known flag.</dd>
@@ -191,7 +201,7 @@ did not match any known flag.</dd>
             <dt class="phpdocumentor-table-of-contents__entry -constant -public">
     <a href="classes/LaunchDarkly-EvaluationReason.html#constant_MALFORMED_FLAG_ERROR">MALFORMED_FLAG_ERROR</a>
     <span>
-        &nbsp;= &#039;MALFORMED_FLAG&#039;                    </span>
+        &nbsp;= &#039;MALFORMED_FLAG&#039;                            </span>
 </dt>
 <dd>A possible value for getErrorKind(): indicates that there was an internal inconsistency
 in the flag data, e.g. a rule specified a nonexistent variation. An error message will
@@ -200,7 +210,7 @@ always be logged in this case.</dd>
             <dt class="phpdocumentor-table-of-contents__entry -constant -public">
     <a href="classes/LaunchDarkly-EvaluationReason.html#constant_OFF">OFF</a>
     <span>
-        &nbsp;= &#039;OFF&#039;                    </span>
+        &nbsp;= &#039;OFF&#039;                            </span>
 </dt>
 <dd>A possible value for getKind(): indicates that the flag was off and therefore returned
 its configured off value.</dd>
@@ -208,7 +218,7 @@ its configured off value.</dd>
             <dt class="phpdocumentor-table-of-contents__entry -constant -public">
     <a href="classes/LaunchDarkly-EvaluationReason.html#constant_PREREQUISITE_FAILED">PREREQUISITE_FAILED</a>
     <span>
-        &nbsp;= &#039;PREREQUISITE_FAILED&#039;                    </span>
+        &nbsp;= &#039;PREREQUISITE_FAILED&#039;                            </span>
 </dt>
 <dd>A possible value for getKind(): indicates that the flag was considered off because it
 had at least one prerequisite flag that either was off or did not return the desired variation.</dd>
@@ -216,14 +226,14 @@ had at least one prerequisite flag that either was off or did not return the des
             <dt class="phpdocumentor-table-of-contents__entry -constant -public">
     <a href="classes/LaunchDarkly-EvaluationReason.html#constant_RULE_MATCH">RULE_MATCH</a>
     <span>
-        &nbsp;= &#039;RULE_MATCH&#039;                    </span>
+        &nbsp;= &#039;RULE_MATCH&#039;                            </span>
 </dt>
 <dd>A possible value for getKind(): indicates that the user matched one of the flag&#039;s rules.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -constant -public">
     <a href="classes/LaunchDarkly-EvaluationReason.html#constant_TARGET_MATCH">TARGET_MATCH</a>
     <span>
-        &nbsp;= &#039;TARGET_MATCH&#039;                    </span>
+        &nbsp;= &#039;TARGET_MATCH&#039;                            </span>
 </dt>
 <dd>A possible value for getKind(): indicates that the user key was specifically targeted
 for this flag.</dd>
@@ -231,36 +241,44 @@ for this flag.</dd>
             <dt class="phpdocumentor-table-of-contents__entry -constant -public">
     <a href="classes/LaunchDarkly-EvaluationReason.html#constant_USER_NOT_SPECIFIED_ERROR">USER_NOT_SPECIFIED_ERROR</a>
     <span>
-        &nbsp;= &#039;USER_NOT_SPECIFIED&#039;                    </span>
+        &nbsp;= &#039;USER_NOT_SPECIFIED&#039;                            </span>
 </dt>
 <dd>A possible value for getErrorKind(): indicates that the caller passed null for the user
 parameter, or the user lacked a key.</dd>
 
-                    <dt class="phpdocumentor-table-of-contents__entry -method -public">
+            <dt class="phpdocumentor-table-of-contents__entry -constant -public">
+    <a href="classes/LaunchDarkly-EvaluationReason.html#constant_WRONG_TYPE_ERROR">WRONG_TYPE_ERROR</a>
+    <span>
+        &nbsp;= &#039;WRONG_TYPE&#039;                            </span>
+</dt>
+<dd>A possible value for getErrorKind(): indicates the value of the
+evaluation did not match the PHP type expected.</dd>
+
+                        <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-EvaluationReason.html#method___toString">__toString()</a>
     <span>
-                        &nbsp;: string    </span>
+                                &nbsp;: string    </span>
 </dt>
 <dd>Returns a simple string representation of this object.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-EvaluationReason.html#method_error">error()</a>
     <span>
-                        &nbsp;: <a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a>    </span>
+                                &nbsp;: <a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a>    </span>
 </dt>
 <dd>Creates a new instance of the ERROR reason.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-EvaluationReason.html#method_fallthrough">fallthrough()</a>
     <span>
-                        &nbsp;: <a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a>    </span>
+                                &nbsp;: <a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a>    </span>
 </dt>
 <dd>Creates a new instance of the FALLTHROUGH reason.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-EvaluationReason.html#method_getErrorKind">getErrorKind()</a>
     <span>
-                        &nbsp;: string|null    </span>
+                                &nbsp;: string|null    </span>
 </dt>
 <dd>Returns a constant indicating the nature of the error, if getKind() is OFF. Otherwise
 returns null.</dd>
@@ -268,14 +286,14 @@ returns null.</dd>
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-EvaluationReason.html#method_getKind">getKind()</a>
     <span>
-                        &nbsp;: string    </span>
+                                &nbsp;: string    </span>
 </dt>
 <dd>Returns a constant indicating the general category of the reason, such as OFF.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-EvaluationReason.html#method_getPrerequisiteKey">getPrerequisiteKey()</a>
     <span>
-                        &nbsp;: string|null    </span>
+                                &nbsp;: string|null    </span>
 </dt>
 <dd>Returns the key of the prerequisite feature flag that failed, if getKind() is
 PREREQUISITE_FAILED. Otherwise returns null.</dd>
@@ -283,14 +301,14 @@ PREREQUISITE_FAILED. Otherwise returns null.</dd>
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-EvaluationReason.html#method_getRuleId">getRuleId()</a>
     <span>
-                        &nbsp;: string|null    </span>
+                                &nbsp;: string|null    </span>
 </dt>
 <dd>Returns the unique identifier of the rule that was matched, if getKind() is RULE_MATCH.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-EvaluationReason.html#method_getRuleIndex">getRuleIndex()</a>
     <span>
-                        &nbsp;: int|null    </span>
+                                &nbsp;: int|null    </span>
 </dt>
 <dd>Returns the positional index of the rule that was matched (0 for the first), if getKind()
 is RULE_MATCH. Otherwise returns null.</dd>
@@ -298,7 +316,7 @@ is RULE_MATCH. Otherwise returns null.</dd>
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-EvaluationReason.html#method_isInExperiment">isInExperiment()</a>
     <span>
-                        &nbsp;: bool    </span>
+                                &nbsp;: bool    </span>
 </dt>
 <dd>Returns true if the evaluation resulted in an experiment rollout *and* served
 one of the variations in the experiment.  Otherwise it returns false.</dd>
@@ -306,7 +324,7 @@ one of the variations in the experiment.  Otherwise it returns false.</dd>
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-EvaluationReason.html#method_jsonSerialize">jsonSerialize()</a>
     <span>
-                        &nbsp;: array&lt;string|int, mixed&gt;    </span>
+                                &nbsp;: array&lt;string|int, mixed&gt;    </span>
 </dt>
 <dd>Returns a JSON representation of this object. This method is used automatically
 if you call json_encode().</dd>
@@ -314,28 +332,28 @@ if you call json_encode().</dd>
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-EvaluationReason.html#method_off">off()</a>
     <span>
-                        &nbsp;: <a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a>    </span>
+                                &nbsp;: <a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a>    </span>
 </dt>
 <dd>Creates a new instance of the OFF reason.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-EvaluationReason.html#method_prerequisiteFailed">prerequisiteFailed()</a>
     <span>
-                        &nbsp;: <a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a>    </span>
+                                &nbsp;: <a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a>    </span>
 </dt>
 <dd>Creates a new instance of the PREREQUISITE_FAILED reason.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-EvaluationReason.html#method_ruleMatch">ruleMatch()</a>
     <span>
-                        &nbsp;: <a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a>    </span>
+                                &nbsp;: <a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a>    </span>
 </dt>
 <dd>Creates a new instance of the RULE_MATCH reason.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-EvaluationReason.html#method_targetMatch">targetMatch()</a>
     <span>
-                        &nbsp;: <a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a>    </span>
+                                &nbsp;: <a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a>    </span>
 </dt>
 <dd>Creates a new instance of the TARGET_MATCH reason.</dd>
 
@@ -367,7 +385,7 @@ before the client had successfully initialized.</p>
 
     <code class="phpdocumentor-signature phpdocumentor-code ">
     <span class="phpdocumentor-signature__visibility">public</span>
-    <span class="phpdocumentor-signature__type">string</span>
+        <span class="phpdocumentor-signature__type">string</span>
     <span class="phpdocumentor-signature__name">CLIENT_NOT_READY_ERROR</span>
     = <span class="phpdocumentor-signature__default-value">&#039;CLIENT_NOT_READY&#039;</span>
 </code>
@@ -395,7 +413,7 @@ before the client had successfully initialized.</p>
 
     <code class="phpdocumentor-signature phpdocumentor-code ">
     <span class="phpdocumentor-signature__visibility">public</span>
-    <span class="phpdocumentor-signature__type">string</span>
+        <span class="phpdocumentor-signature__type">string</span>
     <span class="phpdocumentor-signature__name">ERROR</span>
     = <span class="phpdocumentor-signature__default-value">&#039;ERROR&#039;</span>
 </code>
@@ -426,7 +444,7 @@ evaluation.</p>
 
     <code class="phpdocumentor-signature phpdocumentor-code ">
     <span class="phpdocumentor-signature__visibility">public</span>
-    <span class="phpdocumentor-signature__type">string</span>
+        <span class="phpdocumentor-signature__type">string</span>
     <span class="phpdocumentor-signature__name">EXCEPTION_ERROR</span>
     = <span class="phpdocumentor-signature__default-value">&#039;EXCEPTION&#039;</span>
 </code>
@@ -455,7 +473,7 @@ match any targets or rules.</p>
 
     <code class="phpdocumentor-signature phpdocumentor-code ">
     <span class="phpdocumentor-signature__visibility">public</span>
-    <span class="phpdocumentor-signature__type">string</span>
+        <span class="phpdocumentor-signature__type">string</span>
     <span class="phpdocumentor-signature__name">FALLTHROUGH</span>
     = <span class="phpdocumentor-signature__default-value">&#039;FALLTHROUGH&#039;</span>
 </code>
@@ -484,7 +502,7 @@ did not match any known flag.</p>
 
     <code class="phpdocumentor-signature phpdocumentor-code ">
     <span class="phpdocumentor-signature__visibility">public</span>
-    <span class="phpdocumentor-signature__type">string</span>
+        <span class="phpdocumentor-signature__type">string</span>
     <span class="phpdocumentor-signature__name">FLAG_NOT_FOUND_ERROR</span>
     = <span class="phpdocumentor-signature__default-value">&#039;FLAG_NOT_FOUND&#039;</span>
 </code>
@@ -514,7 +532,7 @@ always be logged in this case.</p>
 
     <code class="phpdocumentor-signature phpdocumentor-code ">
     <span class="phpdocumentor-signature__visibility">public</span>
-    <span class="phpdocumentor-signature__type">string</span>
+        <span class="phpdocumentor-signature__type">string</span>
     <span class="phpdocumentor-signature__name">MALFORMED_FLAG_ERROR</span>
     = <span class="phpdocumentor-signature__default-value">&#039;MALFORMED_FLAG&#039;</span>
 </code>
@@ -543,7 +561,7 @@ its configured off value.</p>
 
     <code class="phpdocumentor-signature phpdocumentor-code ">
     <span class="phpdocumentor-signature__visibility">public</span>
-    <span class="phpdocumentor-signature__type">string</span>
+        <span class="phpdocumentor-signature__type">string</span>
     <span class="phpdocumentor-signature__name">OFF</span>
     = <span class="phpdocumentor-signature__default-value">&#039;OFF&#039;</span>
 </code>
@@ -572,7 +590,7 @@ had at least one prerequisite flag that either was off or did not return the des
 
     <code class="phpdocumentor-signature phpdocumentor-code ">
     <span class="phpdocumentor-signature__visibility">public</span>
-    <span class="phpdocumentor-signature__type">string</span>
+        <span class="phpdocumentor-signature__type">string</span>
     <span class="phpdocumentor-signature__name">PREREQUISITE_FAILED</span>
     = <span class="phpdocumentor-signature__default-value">&#039;PREREQUISITE_FAILED&#039;</span>
 </code>
@@ -600,7 +618,7 @@ had at least one prerequisite flag that either was off or did not return the des
 
     <code class="phpdocumentor-signature phpdocumentor-code ">
     <span class="phpdocumentor-signature__visibility">public</span>
-    <span class="phpdocumentor-signature__type">string</span>
+        <span class="phpdocumentor-signature__type">string</span>
     <span class="phpdocumentor-signature__name">RULE_MATCH</span>
     = <span class="phpdocumentor-signature__default-value">&#039;RULE_MATCH&#039;</span>
 </code>
@@ -629,7 +647,7 @@ for this flag.</p>
 
     <code class="phpdocumentor-signature phpdocumentor-code ">
     <span class="phpdocumentor-signature__visibility">public</span>
-    <span class="phpdocumentor-signature__type">string</span>
+        <span class="phpdocumentor-signature__type">string</span>
     <span class="phpdocumentor-signature__name">TARGET_MATCH</span>
     = <span class="phpdocumentor-signature__default-value">&#039;TARGET_MATCH&#039;</span>
 </code>
@@ -658,7 +676,7 @@ parameter, or the user lacked a key.</p>
 
     <code class="phpdocumentor-signature phpdocumentor-code ">
     <span class="phpdocumentor-signature__visibility">public</span>
-    <span class="phpdocumentor-signature__type">string</span>
+        <span class="phpdocumentor-signature__type">string</span>
     <span class="phpdocumentor-signature__name">USER_NOT_SPECIFIED_ERROR</span>
     = <span class="phpdocumentor-signature__default-value">&#039;USER_NOT_SPECIFIED&#039;</span>
 </code>
@@ -666,6 +684,36 @@ parameter, or the user lacked a key.</p>
 
     
     
+    
+
+</article>
+                    <article class="phpdocumentor-element -constant -public ">
+    <h4 class="phpdocumentor-element__name" id="constant_WRONG_TYPE_ERROR">
+        WRONG_TYPE_ERROR
+        <a href="classes/LaunchDarkly-EvaluationReason.html#constant_WRONG_TYPE_ERROR" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/EvaluationReason.php"><a href="files/launchdarkly-evaluationreason.html"><abbr title="LaunchDarkly/EvaluationReason.php">EvaluationReason.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">91</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">A possible value for getErrorKind(): indicates the value of the
+evaluation did not match the PHP type expected.</p>
+
+    <code class="phpdocumentor-signature phpdocumentor-code ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+        <span class="phpdocumentor-signature__type">mixed</span>
+    <span class="phpdocumentor-signature__name">WRONG_TYPE_ERROR</span>
+    = <span class="phpdocumentor-signature__default-value">&#039;WRONG_TYPE&#039;</span>
+</code>
+
+
+    
+        <section class="phpdocumentor-description"></section>
+
     
 
 </article>
@@ -691,7 +739,7 @@ parameter, or the user lacked a key.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/EvaluationReason.php"><a href="files/launchdarkly-evaluationreason.html"><abbr title="LaunchDarkly/EvaluationReason.php">EvaluationReason.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">232</span>
+    <span class="phpdocumentor-element-found-in__line">239</span>
 
     </aside>
 
@@ -699,7 +747,7 @@ parameter, or the user lacked a key.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">__toString</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+                    <span class="phpdocumentor-signature__name">__toString</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
 
     
     
@@ -724,7 +772,7 @@ parameter, or the user lacked a key.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/EvaluationReason.php"><a href="files/launchdarkly-evaluationreason.html"><abbr title="LaunchDarkly/EvaluationReason.php">EvaluationReason.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">149</span>
+    <span class="phpdocumentor-element-found-in__line">156</span>
 
     </aside>
 
@@ -732,7 +780,7 @@ parameter, or the user lacked a key.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-            <span class="phpdocumentor-signature__static">static</span>    <span class="phpdocumentor-signature__name">error</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$errorKind</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a></span></code>
+            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">error</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$errorKind</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a></span></code>
 
     
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
@@ -767,7 +815,7 @@ parameter, or the user lacked a key.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/EvaluationReason.php"><a href="files/launchdarkly-evaluationreason.html"><abbr title="LaunchDarkly/EvaluationReason.php">EvaluationReason.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">106</span>
+    <span class="phpdocumentor-element-found-in__line">113</span>
 
     </aside>
 
@@ -775,7 +823,7 @@ parameter, or the user lacked a key.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-            <span class="phpdocumentor-signature__static">static</span>    <span class="phpdocumentor-signature__name">fallthrough</span><span>(</span><span class="phpdocumentor-signature__argument"><span>[</span><span class="phpdocumentor-signature__argument__return-type">bool&nbsp;</span><span class="phpdocumentor-signature__argument__name">$inExperiment</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">false</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a></span></code>
+            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">fallthrough</span><span>(</span><span class="phpdocumentor-signature__argument"><span>[</span><span class="phpdocumentor-signature__argument__return-type">bool&nbsp;</span><span class="phpdocumentor-signature__argument__name">$inExperiment</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">false</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a></span></code>
 
     
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
@@ -811,7 +859,7 @@ parameter, or the user lacked a key.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/EvaluationReason.php"><a href="files/launchdarkly-evaluationreason.html"><abbr title="LaunchDarkly/EvaluationReason.php">EvaluationReason.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">184</span>
+    <span class="phpdocumentor-element-found-in__line">191</span>
 
     </aside>
 
@@ -820,7 +868,7 @@ returns null.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getErrorKind</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string|null</span></code>
+                    <span class="phpdocumentor-signature__name">getErrorKind</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string|null</span></code>
 
     
     
@@ -845,7 +893,7 @@ returns null.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/EvaluationReason.php"><a href="files/launchdarkly-evaluationreason.html"><abbr title="LaunchDarkly/EvaluationReason.php">EvaluationReason.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">174</span>
+    <span class="phpdocumentor-element-found-in__line">181</span>
 
     </aside>
 
@@ -853,7 +901,7 @@ returns null.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getKind</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+                    <span class="phpdocumentor-signature__name">getKind</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
 
     
     
@@ -878,7 +926,7 @@ returns null.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/EvaluationReason.php"><a href="files/launchdarkly-evaluationreason.html"><abbr title="LaunchDarkly/EvaluationReason.php">EvaluationReason.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">214</span>
+    <span class="phpdocumentor-element-found-in__line">221</span>
 
     </aside>
 
@@ -887,7 +935,7 @@ PREREQUISITE_FAILED. Otherwise returns null.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getPrerequisiteKey</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string|null</span></code>
+                    <span class="phpdocumentor-signature__name">getPrerequisiteKey</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string|null</span></code>
 
     
     
@@ -912,7 +960,7 @@ PREREQUISITE_FAILED. Otherwise returns null.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/EvaluationReason.php"><a href="files/launchdarkly-evaluationreason.html"><abbr title="LaunchDarkly/EvaluationReason.php">EvaluationReason.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">204</span>
+    <span class="phpdocumentor-element-found-in__line">211</span>
 
     </aside>
 
@@ -920,7 +968,7 @@ PREREQUISITE_FAILED. Otherwise returns null.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getRuleId</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string|null</span></code>
+                    <span class="phpdocumentor-signature__name">getRuleId</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string|null</span></code>
 
         <section class="phpdocumentor-description"><p>Otherwise returns null.</p>
 </section>
@@ -947,7 +995,7 @@ PREREQUISITE_FAILED. Otherwise returns null.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/EvaluationReason.php"><a href="files/launchdarkly-evaluationreason.html"><abbr title="LaunchDarkly/EvaluationReason.php">EvaluationReason.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">194</span>
+    <span class="phpdocumentor-element-found-in__line">201</span>
 
     </aside>
 
@@ -956,7 +1004,7 @@ is RULE_MATCH. Otherwise returns null.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getRuleIndex</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">int|null</span></code>
+                    <span class="phpdocumentor-signature__name">getRuleIndex</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">int|null</span></code>
 
     
     
@@ -981,7 +1029,7 @@ is RULE_MATCH. Otherwise returns null.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/EvaluationReason.php"><a href="files/launchdarkly-evaluationreason.html"><abbr title="LaunchDarkly/EvaluationReason.php">EvaluationReason.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">224</span>
+    <span class="phpdocumentor-element-found-in__line">231</span>
 
     </aside>
 
@@ -990,7 +1038,7 @@ one of the variations in the experiment.  Otherwise it returns false.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">isInExperiment</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
+                    <span class="phpdocumentor-signature__name">isInExperiment</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
 
     
     
@@ -1015,7 +1063,7 @@ one of the variations in the experiment.  Otherwise it returns false.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/EvaluationReason.php"><a href="files/launchdarkly-evaluationreason.html"><abbr title="LaunchDarkly/EvaluationReason.php">EvaluationReason.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">250</span>
+    <span class="phpdocumentor-element-found-in__line">257</span>
 
     </aside>
 
@@ -1024,7 +1072,7 @@ if you call json_encode().</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">jsonSerialize</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;string|int, mixed&gt;</span></code>
+                    <span class="phpdocumentor-signature__name">jsonSerialize</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;string|int, mixed&gt;</span></code>
 
     
     
@@ -1049,7 +1097,7 @@ if you call json_encode().</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/EvaluationReason.php"><a href="files/launchdarkly-evaluationreason.html"><abbr title="LaunchDarkly/EvaluationReason.php">EvaluationReason.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">97</span>
+    <span class="phpdocumentor-element-found-in__line">104</span>
 
     </aside>
 
@@ -1057,7 +1105,7 @@ if you call json_encode().</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-            <span class="phpdocumentor-signature__static">static</span>    <span class="phpdocumentor-signature__name">off</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a></span></code>
+            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">off</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a></span></code>
 
     
     
@@ -1082,7 +1130,7 @@ if you call json_encode().</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/EvaluationReason.php"><a href="files/launchdarkly-evaluationreason.html"><abbr title="LaunchDarkly/EvaluationReason.php">EvaluationReason.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">137</span>
+    <span class="phpdocumentor-element-found-in__line">144</span>
 
     </aside>
 
@@ -1090,7 +1138,7 @@ if you call json_encode().</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-            <span class="phpdocumentor-signature__static">static</span>    <span class="phpdocumentor-signature__name">prerequisiteFailed</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$prerequisiteKey</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a></span></code>
+            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">prerequisiteFailed</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$prerequisiteKey</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a></span></code>
 
     
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
@@ -1126,7 +1174,7 @@ if you call json_encode().</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/EvaluationReason.php"><a href="files/launchdarkly-evaluationreason.html"><abbr title="LaunchDarkly/EvaluationReason.php">EvaluationReason.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">128</span>
+    <span class="phpdocumentor-element-found-in__line">135</span>
 
     </aside>
 
@@ -1134,7 +1182,7 @@ if you call json_encode().</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-            <span class="phpdocumentor-signature__static">static</span>    <span class="phpdocumentor-signature__name">ruleMatch</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">null|int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$ruleIndex</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">null|string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$ruleId</span></span><span class="phpdocumentor-signature__argument"><span>[</span><span>, </span><span class="phpdocumentor-signature__argument__return-type">bool&nbsp;</span><span class="phpdocumentor-signature__argument__name">$inExperiment</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">false</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a></span></code>
+            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">ruleMatch</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">null|int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$ruleIndex</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">null|string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$ruleId</span></span><span class="phpdocumentor-signature__argument"><span>[</span><span>, </span><span class="phpdocumentor-signature__argument__return-type">bool&nbsp;</span><span class="phpdocumentor-signature__argument__name">$inExperiment</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">false</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a></span></code>
 
     
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
@@ -1184,7 +1232,7 @@ if you call json_encode().</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/EvaluationReason.php"><a href="files/launchdarkly-evaluationreason.html"><abbr title="LaunchDarkly/EvaluationReason.php">EvaluationReason.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">115</span>
+    <span class="phpdocumentor-element-found-in__line">122</span>
 
     </aside>
 
@@ -1192,7 +1240,7 @@ if you call json_encode().</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-            <span class="phpdocumentor-signature__static">static</span>    <span class="phpdocumentor-signature__name">targetMatch</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a></span></code>
+            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">targetMatch</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-EvaluationReason.html"><abbr title="\LaunchDarkly\EvaluationReason">EvaluationReason</abbr></a></span></code>
 
     
     

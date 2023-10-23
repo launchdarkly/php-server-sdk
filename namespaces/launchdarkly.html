@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>LaunchDarkly PHP SDK 5.2.0</title>
+            <title>LaunchDarkly PHP SDK 6.0.0</title>
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="../">
     <link rel="icon" href="images/favicon.ico"/>
@@ -23,7 +24,7 @@
     </head>
 <body id="top">
     <header class="phpdocumentor-header phpdocumentor-section">
-    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">LaunchDarkly PHP SDK 5.2.0</a></h1>
+    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">LaunchDarkly PHP SDK 6.0.0</a></h1>
     <input class="phpdocumentor-header__menu-button" type="checkbox" id="menu-button" name="menu-button" />
     <label class="phpdocumentor-header__menu-icon" for="menu-button">
         <i class="fas fa-bars"></i>
@@ -54,18 +55,24 @@
 <aside class="phpdocumentor-column -four phpdocumentor-sidebar">
                     <section class="phpdocumentor-sidebar__category">
             <h2 class="phpdocumentor-sidebar__category-header">Namespaces</h2>
-                                    <h4 class="phpdocumentor-sidebar__root-namespace"><a href="namespaces/launchdarkly.html">LaunchDarkly</a></h4>
+                                    <h4 class="phpdocumentor-sidebar__root-namespace">
+    <a href="namespaces/launchdarkly.html" class="-active">LaunchDarkly</a>
+</h4>
     <ul class="phpdocumentor-list">
                     <li>
-                <a href="namespaces/launchdarkly-integrations.html">Integrations</a>
+                <a href="namespaces/launchdarkly-integrations.html" class="">Integrations</a>
                 
             </li>
                     <li>
-                <a href="namespaces/launchdarkly-subsystems.html">Subsystems</a>
+                <a href="namespaces/launchdarkly-migrations.html" class="">Migrations</a>
                 
             </li>
                     <li>
-                <a href="namespaces/launchdarkly-types.html">Types</a>
+                <a href="namespaces/launchdarkly-subsystems.html" class="">Subsystems</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/launchdarkly-types.html" class="">Types</a>
                 
             </li>
             </ul>
@@ -73,7 +80,9 @@
                         </section>
                 <section class="phpdocumentor-sidebar__category">
             <h2 class="phpdocumentor-sidebar__category-header">Packages</h2>
-                                    <h4 class="phpdocumentor-sidebar__root-namespace"><a href="packages/LaunchDarklyPHPSDK.html">LaunchDarklyPHPSDK</a></h4>
+                                    <h4 class="phpdocumentor-sidebar__root-namespace">
+    <a href="packages/LaunchDarklyPHPSDK.html" class="">LaunchDarklyPHPSDK</a>
+</h4>
 
                         </section>
             
@@ -105,12 +114,13 @@
 
 <dl class="phpdocumentor-table-of-contents">
             <dt class="phpdocumentor-table-of-contents__entry -namespace"><a href="namespaces/launchdarkly-integrations.html"><abbr title="\LaunchDarkly\Integrations">Integrations</abbr></a></dt>
+            <dt class="phpdocumentor-table-of-contents__entry -namespace"><a href="namespaces/launchdarkly-migrations.html"><abbr title="\LaunchDarkly\Migrations">Migrations</abbr></a></dt>
             <dt class="phpdocumentor-table-of-contents__entry -namespace"><a href="namespaces/launchdarkly-subsystems.html"><abbr title="\LaunchDarkly\Subsystems">Subsystems</abbr></a></dt>
             <dt class="phpdocumentor-table-of-contents__entry -namespace"><a href="namespaces/launchdarkly-types.html"><abbr title="\LaunchDarkly\Types">Types</abbr></a></dt>
     </dl>
 
 <h3 id="interfaces_class_traits">
-    Interfaces, Classes and Traits
+    Interfaces, Classes, Traits and Enums
     <a href="#interfaces_class_traits" class="headerlink"><i class="fas fa-link"></i></a>
 </h3>
 
@@ -122,85 +132,21 @@
         <dd>Describes the reason that a flag evaluation produced a particular value.</dd>
             <dt class="phpdocumentor-table-of-contents__entry -class"><a href="classes/LaunchDarkly-FeatureFlagsState.html"><abbr title="\LaunchDarkly\FeatureFlagsState">FeatureFlagsState</abbr></a></dt>
         <dd>A snapshot of the state of all feature flags with regard to a specific user.</dd>
-            <dt class="phpdocumentor-table-of-contents__entry -class"><a href="classes/LaunchDarkly-LDClient.html"><abbr title="\LaunchDarkly\LDClient">LDClient</abbr></a></dt>
-        <dd>A client for the LaunchDarkly API.</dd>
             <dt class="phpdocumentor-table-of-contents__entry -class"><a href="classes/LaunchDarkly-LDContext.html"><abbr title="\LaunchDarkly\LDContext">LDContext</abbr></a></dt>
         <dd>A collection of attributes that can be referenced in flag evaluations and analytics events.</dd>
             <dt class="phpdocumentor-table-of-contents__entry -class"><a href="classes/LaunchDarkly-LDContextBuilder.html"><abbr title="\LaunchDarkly\LDContextBuilder">LDContextBuilder</abbr></a></dt>
         <dd>A mutable object that uses the builder pattern to specify properties for LDContext.</dd>
             <dt class="phpdocumentor-table-of-contents__entry -class"><a href="classes/LaunchDarkly-LDContextMultiBuilder.html"><abbr title="\LaunchDarkly\LDContextMultiBuilder">LDContextMultiBuilder</abbr></a></dt>
         <dd>A mutable object that uses the builder pattern to specify properties for a multi-context.</dd>
-            <dt class="phpdocumentor-table-of-contents__entry -class"><a href="classes/LaunchDarkly-LDUser.html"><abbr title="\LaunchDarkly\LDUser">LDUser</abbr></a></dt>
-        <dd>Contains specific attributes of a user browsing your site.</dd>
-            <dt class="phpdocumentor-table-of-contents__entry -class"><a href="classes/LaunchDarkly-LDUserBuilder.html"><abbr title="\LaunchDarkly\LDUserBuilder">LDUserBuilder</abbr></a></dt>
-        <dd>A builder for constructing LDUser objects.</dd>
+    
     
     </dl>
 
 
-<h3 id="toc">
-    Table of Contents
-    <a href="#toc" class="headerlink"><i class="fas fa-link"></i></a>
-</h3>
-
-<dl class="phpdocumentor-table-of-contents">
-                        <dt class="phpdocumentor-table-of-contents__entry -function -">
-    <a href="namespaces/launchdarkly.html#function_isAllowableUserCustomAttr">isAllowableUserCustomAttr()</a>
-    <span>
-                        &nbsp;: bool    </span>
-</dt>
-<dd></dd>
-
-    </dl>
 
         
 
-            <section class="phpdocumentor-functions">
-        <h3 class="phpdocumentor-elements__header" id="functions">
-            Functions
-            <a href="namespaces/launchdarkly.html#functions" class="headerlink"><i class="fas fa-link"></i></a>
-        </h3>
-                    <article class="phpdocumentor-element -function - ">
-    <h4 class="phpdocumentor-element__name" id="function_isAllowableUserCustomAttr">
-        isAllowableUserCustomAttr()
-        <a href="namespaces/launchdarkly.html#function_isAllowableUserCustomAttr" class="headerlink"><i class="fas fa-link"></i></a>
-    </h4>
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="LaunchDarkly/LDContext.php"><a href="files/launchdarkly-ldcontext.html"><abbr title="LaunchDarkly/LDContext.php">LDContext.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">9</span>
-
-    </aside>
-
-    
-    <code class="phpdocumentor-code phpdocumentor-signature ">
-    <span class="phpdocumentor-signature__visibility"></span>
-                <span class="phpdocumentor-signature__name">isAllowableUserCustomAttr</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$name</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
-
-        <section class="phpdocumentor-description"></section>
-
-        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
-    <dl class="phpdocumentor-argument-list">
-                    <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-signature__argument__name">$name</span>
-                : <span class="phpdocumentor-signature__argument__return-type">string</span>
-                            </dt>
-            <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"></section>
-
-            </dd>
-            </dl>
-
-    
-
-        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-    <span class="phpdocumentor-signature__response_type">bool</span>
-            &mdash;
         
-    
-</article>
-            </section>
-
     </article>
                 <section data-search-results class="phpdocumentor-search-results phpdocumentor-search-results--hidden">
     <section class="phpdocumentor-search-results__dialog">

@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>LaunchDarkly PHP SDK 5.2.0</title>
+            <title>LaunchDarkly PHP SDK 6.0.0</title>
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="../">
     <link rel="icon" href="images/favicon.ico"/>
@@ -23,7 +24,7 @@
     </head>
 <body id="top">
     <header class="phpdocumentor-header phpdocumentor-section">
-    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">LaunchDarkly PHP SDK 5.2.0</a></h1>
+    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">LaunchDarkly PHP SDK 6.0.0</a></h1>
     <input class="phpdocumentor-header__menu-button" type="checkbox" id="menu-button" name="menu-button" />
     <label class="phpdocumentor-header__menu-icon" for="menu-button">
         <i class="fas fa-bars"></i>
@@ -54,18 +55,24 @@
 <aside class="phpdocumentor-column -four phpdocumentor-sidebar">
                     <section class="phpdocumentor-sidebar__category">
             <h2 class="phpdocumentor-sidebar__category-header">Namespaces</h2>
-                                    <h4 class="phpdocumentor-sidebar__root-namespace"><a href="namespaces/launchdarkly.html">LaunchDarkly</a></h4>
+                                    <h4 class="phpdocumentor-sidebar__root-namespace">
+    <a href="namespaces/launchdarkly.html" class="">LaunchDarkly</a>
+</h4>
     <ul class="phpdocumentor-list">
                     <li>
-                <a href="namespaces/launchdarkly-integrations.html">Integrations</a>
+                <a href="namespaces/launchdarkly-integrations.html" class="">Integrations</a>
                 
             </li>
                     <li>
-                <a href="namespaces/launchdarkly-subsystems.html">Subsystems</a>
+                <a href="namespaces/launchdarkly-migrations.html" class="">Migrations</a>
                 
             </li>
                     <li>
-                <a href="namespaces/launchdarkly-types.html">Types</a>
+                <a href="namespaces/launchdarkly-subsystems.html" class="">Subsystems</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/launchdarkly-types.html" class="">Types</a>
                 
             </li>
             </ul>
@@ -73,7 +80,9 @@
                         </section>
                 <section class="phpdocumentor-sidebar__category">
             <h2 class="phpdocumentor-sidebar__category-header">Packages</h2>
-                                    <h4 class="phpdocumentor-sidebar__root-namespace"><a href="packages/LaunchDarklyPHPSDK.html">LaunchDarklyPHPSDK</a></h4>
+                                    <h4 class="phpdocumentor-sidebar__root-namespace">
+    <a href="packages/LaunchDarklyPHPSDK.html" class="">LaunchDarklyPHPSDK</a>
+</h4>
 
                         </section>
             
@@ -152,28 +161,28 @@ mentioned here are supported.</li>
             <dt class="phpdocumentor-table-of-contents__entry -constant -public">
     <a href="classes/LaunchDarkly-Types-AttributeReference.html#constant_ERR_ATTR_EMPTY">ERR_ATTR_EMPTY</a>
     <span>
-        &nbsp;= &#039;attribute reference cannot be empty&#039;                    </span>
+        &nbsp;= &#039;attribute reference cannot be empty&#039;                            </span>
 </dt>
 <dd></dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -constant -public">
     <a href="classes/LaunchDarkly-Types-AttributeReference.html#constant_ERR_ATTR_EXTRA_SLASH">ERR_ATTR_EXTRA_SLASH</a>
     <span>
-        &nbsp;= &#039;attribute reference contained a double slash or a trailing slash&#039;                    </span>
+        &nbsp;= &#039;attribute reference contained a double slash or a trailing slash&#039;                            </span>
 </dt>
 <dd></dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -constant -public">
     <a href="classes/LaunchDarkly-Types-AttributeReference.html#constant_ERR_ATTR_INVALID_ESCAPE">ERR_ATTR_INVALID_ESCAPE</a>
     <span>
-        &nbsp;= &#039;attribute reference contained an escape character (~) that was not followed by 0 or 1&#039;                    </span>
+        &nbsp;= &#039;attribute reference contained an escape character (~) that was not followed by 0 or 1&#039;                            </span>
 </dt>
 <dd></dd>
 
-                    <dt class="phpdocumentor-table-of-contents__entry -method -public">
+                        <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-Types-AttributeReference.html#method_fromLiteral">fromLiteral()</a>
     <span>
-                        &nbsp;: <a href="classes/LaunchDarkly-Types-AttributeReference.html"><abbr title="\LaunchDarkly\Types\AttributeReference">AttributeReference</abbr></a>    </span>
+                                &nbsp;: <a href="classes/LaunchDarkly-Types-AttributeReference.html"><abbr title="\LaunchDarkly\Types\AttributeReference">AttributeReference</abbr></a>    </span>
 </dt>
 <dd>Similar to {@see \LaunchDarkly\AttributeReference::fromPath()}, except that it always
 interprets the string as a literal attribute name, never as a slash-delimited path expression.</dd>
@@ -181,7 +190,7 @@ interprets the string as a literal attribute name, never as a slash-delimited pa
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-Types-AttributeReference.html#method_fromPath">fromPath()</a>
     <span>
-                        &nbsp;: <a href="classes/LaunchDarkly-Types-AttributeReference.html"><abbr title="\LaunchDarkly\Types\AttributeReference">AttributeReference</abbr></a>    </span>
+                                &nbsp;: <a href="classes/LaunchDarkly-Types-AttributeReference.html"><abbr title="\LaunchDarkly\Types\AttributeReference">AttributeReference</abbr></a>    </span>
 </dt>
 <dd>Creates an AttributeReference from a string. For the supported syntax and examples, see
 comments on the {@see \LaunchDarkly\AttributeReference} type.</dd>
@@ -189,28 +198,28 @@ comments on the {@see \LaunchDarkly\AttributeReference} type.</dd>
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-Types-AttributeReference.html#method_getComponent">getComponent()</a>
     <span>
-                        &nbsp;: string    </span>
+                                &nbsp;: string    </span>
 </dt>
 <dd>Retrieves a single path component from the attribute reference.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-Types-AttributeReference.html#method_getDepth">getDepth()</a>
     <span>
-                        &nbsp;: int    </span>
+                                &nbsp;: int    </span>
 </dt>
 <dd>The number of path components in the AttributeReference.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-Types-AttributeReference.html#method_getError">getError()</a>
     <span>
-                        &nbsp;: string|null    </span>
+                                &nbsp;: string|null    </span>
 </dt>
 <dd>Returns null for a valid reference, or an error string for an invalid one.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/LaunchDarkly-Types-AttributeReference.html#method_getPath">getPath()</a>
     <span>
-                        &nbsp;: string    </span>
+                                &nbsp;: string    </span>
 </dt>
 <dd>Returns the original attribute reference path string.</dd>
 
@@ -240,7 +249,7 @@ comments on the {@see \LaunchDarkly\AttributeReference} type.</dd>
     
     <code class="phpdocumentor-signature phpdocumentor-code ">
     <span class="phpdocumentor-signature__visibility">public</span>
-    <span class="phpdocumentor-signature__type">mixed</span>
+        <span class="phpdocumentor-signature__type">mixed</span>
     <span class="phpdocumentor-signature__name">ERR_ATTR_EMPTY</span>
     = <span class="phpdocumentor-signature__default-value">&#039;attribute reference cannot be empty&#039;</span>
 </code>
@@ -269,7 +278,7 @@ comments on the {@see \LaunchDarkly\AttributeReference} type.</dd>
     
     <code class="phpdocumentor-signature phpdocumentor-code ">
     <span class="phpdocumentor-signature__visibility">public</span>
-    <span class="phpdocumentor-signature__type">mixed</span>
+        <span class="phpdocumentor-signature__type">mixed</span>
     <span class="phpdocumentor-signature__name">ERR_ATTR_EXTRA_SLASH</span>
     = <span class="phpdocumentor-signature__default-value">&#039;attribute reference contained a double slash or a trailing slash&#039;</span>
 </code>
@@ -298,7 +307,7 @@ comments on the {@see \LaunchDarkly\AttributeReference} type.</dd>
     
     <code class="phpdocumentor-signature phpdocumentor-code ">
     <span class="phpdocumentor-signature__visibility">public</span>
-    <span class="phpdocumentor-signature__type">mixed</span>
+        <span class="phpdocumentor-signature__type">mixed</span>
     <span class="phpdocumentor-signature__name">ERR_ATTR_INVALID_ESCAPE</span>
     = <span class="phpdocumentor-signature__default-value">&#039;attribute reference contained an escape character (~) that was not followed by 0 or 1&#039;</span>
 </code>
@@ -342,7 +351,7 @@ interprets the string as a literal attribute name, never as a slash-delimited pa
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-            <span class="phpdocumentor-signature__static">static</span>    <span class="phpdocumentor-signature__name">fromLiteral</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$attributeName</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Types-AttributeReference.html"><abbr title="\LaunchDarkly\Types\AttributeReference">AttributeReference</abbr></a></span></code>
+            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">fromLiteral</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$attributeName</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Types-AttributeReference.html"><abbr title="\LaunchDarkly\Types\AttributeReference">AttributeReference</abbr></a></span></code>
 
         <section class="phpdocumentor-description"><p>There is no escaping or unescaping, even if the name contains literal '/' or '~' characters.
 Since an attribute name can contain any characters, this method always returns a valid
@@ -392,7 +401,7 @@ comments on the {@see \LaunchDarkly\AttributeReference} type.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-            <span class="phpdocumentor-signature__static">static</span>    <span class="phpdocumentor-signature__name">fromPath</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$refPath</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Types-AttributeReference.html"><abbr title="\LaunchDarkly\Types\AttributeReference">AttributeReference</abbr></a></span></code>
+            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">fromPath</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$refPath</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/LaunchDarkly-Types-AttributeReference.html"><abbr title="\LaunchDarkly\Types\AttributeReference">AttributeReference</abbr></a></span></code>
 
         <section class="phpdocumentor-description"><p>This method always returns an AttributeRef that preserves the original string, even if
 validation fails. If validation fails, <abbr title="\LaunchDarkly\AttributeReference::getError()">AttributeReference::getError()</abbr> will
@@ -444,7 +453,7 @@ will consider it invalid.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getComponent</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$index</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+                    <span class="phpdocumentor-signature__name">getComponent</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$index</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
 
         <section class="phpdocumentor-description"><p>For a simple attribute reference such as &quot;name&quot; with no leading slash, it returns the
 attribute name if index is zero, and an empty string otherwise.</p>
@@ -495,7 +504,7 @@ getDepth(), it returns the path component string at that position.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getDepth</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">int</span></code>
+                    <span class="phpdocumentor-signature__name">getDepth</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">int</span></code>
 
         <section class="phpdocumentor-description"><p>For a simple attribute reference such as &quot;name&quot; with no leading slash, this returns 1.</p>
 <p>For an attribute reference with a leading slash, it is the number of slash-delimited path
@@ -535,7 +544,7 @@ components after the initial slash. For instance, for &quot;/a/b&quot; it return
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getError</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string|null</span></code>
+                    <span class="phpdocumentor-signature__name">getError</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string|null</span></code>
 
     
     
@@ -570,7 +579,7 @@ components after the initial slash. For instance, for &quot;/a/b&quot; it return
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">getPath</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+                    <span class="phpdocumentor-signature__name">getPath</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
 
     
     
