@@ -139,7 +139,6 @@ class OpTracker
 
         $event = [
             'kind' => 'migration_op',
-            'samplingRatio' => 1,
             'creationDate' => Util::currentTimeUnixMillis(),
             'contextKeys' => $this->context->getKeys(),
             'operation' => $this->operation->value,
@@ -160,7 +159,10 @@ class OpTracker
 
         if ($this->flag) {
             $event['evaluation']['version'] = $this->flag->getVersion();
-            $event['samplingRatio'] = $this->flag->getSamplingRatio();
+
+            if ($this->flag->getSamplingRatio() !== 1) {
+                $event['samplingRatio'] = $this->flag->getSamplingRatio();
+            }
         }
 
         if ($this->detail->getVariationIndex() !== null) {

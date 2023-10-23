@@ -44,15 +44,20 @@ class EventFactory
             'kind' => 'feature',
             'creationDate' => Util::currentTimeUnixMillis(),
             'key' => $flag->getKey(),
-            'samplingRatio' => $flag->getSamplingRatio(),
-            'excludeFromSummaries' => $flag->getExcludeFromSummaries(),
             'context' => $context,
             'variation' => $detail->getVariationIndex(),
             'value' => $detail->getValue(),
             'default' => $default,
             'version' => $flag->getVersion()
         ];
+
         // the following properties are handled separately so we don't waste bandwidth on unused keys
+        if ($flag->getExcludeFromSummaries()) {
+            $e['excludeFromSummaries'] = true;
+        }
+        if ($flag->getSamplingRatio() !== 1) {
+            $e['samplingRatio'] = $flag->getSamplingRatio();
+        }
         if ($forceReasonTracking || $flag->isTrackEvents()) {
             $e['trackEvents'] = true;
         }
@@ -63,35 +68,6 @@ class EventFactory
             $e['prereqOf'] = $prereqOfFlag->getKey();
         }
         if (($forceReasonTracking || $this->_withReasons)) {
-            $e['reason'] = $detail->getReason()->jsonSerialize();
-        }
-        return $e;
-    }
-
-    /**
-     * @return mixed[]
-     */
-    public function newDefaultEvent(FeatureFlag $flag, LDContext $context, EvaluationDetail $detail): array
-    {
-        $e = [
-            'kind' => 'feature',
-            'creationDate' => Util::currentTimeUnixMillis(),
-            'key' => $flag->getKey(),
-            'samplingRatio' => $flag->getSamplingRatio(),
-            'excludeFromSummaries' => $flag->getExcludeFromSummaries(),
-            'context' => $context,
-            'value' => $detail->getValue(),
-            'default' => $detail->getValue(),
-            'version' => $flag->getVersion()
-        ];
-        // the following properties are handled separately so we don't waste bandwidth on unused keys
-        if ($flag->isTrackEvents()) {
-            $e['trackEvents'] = true;
-        }
-        if ($flag->getDebugEventsUntilDate()) {
-            $e['debugEventsUntilDate'] = $flag->getDebugEventsUntilDate();
-        }
-        if ($this->_withReasons) {
             $e['reason'] = $detail->getReason()->jsonSerialize();
         }
         return $e;

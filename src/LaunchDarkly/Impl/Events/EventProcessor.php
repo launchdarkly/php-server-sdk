@@ -51,9 +51,11 @@ class EventProcessor
             return false;
         }
 
-        $samplingRatio = $event['samplingRatio'] ?? 1;
-        if (is_int($samplingRatio) && !Util::sample($samplingRatio)) {
-            return false;
+        if (isset($event['samplingRatio'])) {
+            $samplingRatio = $event['samplingRatio'];
+            if (is_int($samplingRatio) && !Util::sample($samplingRatio)) {
+                return false;
+            }
         }
 
         $this->_queue[] = $event;
