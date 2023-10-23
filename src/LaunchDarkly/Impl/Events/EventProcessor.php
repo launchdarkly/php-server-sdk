@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LaunchDarkly\Impl\Events;
 
+use LaunchDarkly\Impl\Util;
 use LaunchDarkly\Integrations\Curl;
 use LaunchDarkly\Subsystems\EventPublisher;
 
@@ -21,7 +22,7 @@ class EventProcessor
     private int $_capacity;
 
     /**
-     * @psalm-param array{capacity: int} $options
+     * @param array<string, mixed> $options
      */
     public function __construct(string $sdkKey, array $options)
     {
@@ -48,6 +49,13 @@ class EventProcessor
     {
         if (count($this->_queue) > $this->_capacity) {
             return false;
+        }
+
+        if (isset($event['samplingRatio'])) {
+            $samplingRatio = $event['samplingRatio'];
+            if (is_int($samplingRatio) && !Util::sample($samplingRatio)) {
+                return false;
+            }
         }
 
         $this->_queue[] = $event;

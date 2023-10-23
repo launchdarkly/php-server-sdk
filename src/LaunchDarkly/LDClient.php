@@ -15,6 +15,8 @@ use LaunchDarkly\Impl\PreloadedFeatureRequester;
 use LaunchDarkly\Impl\UnrecoverableHTTPStatusException;
 use LaunchDarkly\Impl\Util;
 use LaunchDarkly\Integrations\Guzzle;
+use LaunchDarkly\Migrations\OpTracker;
+use LaunchDarkly\Migrations\Stage;
 use LaunchDarkly\Subsystems\FeatureRequester;
 use LaunchDarkly\Types\ApplicationInfo;
 use Monolog\Handler\ErrorLogHandler;
@@ -51,8 +53,6 @@ class LDClient
 
     /**
      * Creates a new client instance that connects to LaunchDarkly.
-     *
-     * @psalm-param array{capacity?: int, defaults?: array<string, mixed|null>} $options
      *
      * @param string $sdkKey The SDK key for your account
      * @param array $options Client configuration settings
@@ -153,6 +153,11 @@ class LDClient
         $this->_evaluator = new Evaluator($this->_featureRequester, $this->_logger);
     }
 
+    public function getLogger(): LoggerInterface
+    {
+        return $this->_logger;
+    }
+
     /**
      * @param string $sdkKey
      * @param mixed[] $options
@@ -189,14 +194,14 @@ class LDClient
      * does not match any existing flag), `$defaultValue` is returned.
      *
      * @param string $key the unique key for the feature flag
-     * @param LDContext|LDUser $context the evaluation context or user
+     * @param LDContext $context the evaluation context
      * @param mixed $defaultValue the default value of the flag
      * @return mixed The variation for the given context, or `$defaultValue` if the flag cannot be evaluated
      * @see \LaunchDarkly\LDClient::variationDetail()
      */
-    public function variation(string $key, LDContext|LDUser $context, mixed $defaultValue = false): mixed
+    public function variation(string $key, LDContext $context, mixed $defaultValue = false): mixed
     {
-        $detail = $this->variationDetailInternal($key, $context, $defaultValue, $this->_eventFactoryDefault);
+        $detail = $this->variationDetailInternal($key, $context, $defaultValue, $this->_eventFactoryDefault)['detail'];
         return $detail->getValue();
     }
 
@@ -208,28 +213,82 @@ class LDClient
      * detailed event data for this flag.
      *
      * @param string $key the unique key for the feature flag
-     * @param LDContext|LDUser $context the evaluation context or user
+     * @param LDContext $context the evaluation context
      * @param mixed $defaultValue the default value of the flag
      *
      * @return EvaluationDetail An EvaluationDetail object that includes the feature flag value
      * and evaluation reason
      */
-    public function variationDetail(string $key, LDContext|LDUser $context, mixed $defaultValue = false): EvaluationDetail
+    public function variationDetail(string $key, LDContext $context, mixed $defaultValue = false): EvaluationDetail
     {
-        return $this->variationDetailInternal($key, $context, $defaultValue, $this->_eventFactoryWithReasons);
+        return $this->variationDetailInternal($key, $context, $defaultValue, $this->_eventFactoryWithReasons)['detail'];
+    }
+
+    /**
+     * This method returns the migration stage of the migration feature flag
+     * for the given evaluation context.
+     *
+     * This method returns the default stage if there is an error or the flag
+     * does not exist. If the default stage is not a valid stage, then a
+     * default stage of {@see Stage::OFF} will be used
+     * instead.
+     *
+     * @psalm-return array{'stage': Stage, 'tracker': OpTracker}
+     */
+    public function migrationVariation(string $key, LDContext $context, Stage $defaultStage): array
+    {
+        $result = $this->variationDetailInternal($key, $context, $defaultStage->value, $this->_eventFactoryDefault);
+        /** @var EvaluationDetail $detail */
+        $detail = $result['detail'];
+        /** @var ?FeatureFlag $flag */
+        $flag = $result['flag'];
+
+        $value = $detail->getValue();
+        $valueAsString = null;
+        if (is_string($value)) {
+            $valueAsString = Stage::tryFrom($detail->getValue());
+        }
+
+        if ($valueAsString !== null) {
+            $tracker = new OpTracker(
+                $this->_logger,
+                $key,
+                $flag,
+                $context,
+                $detail,
+                $defaultStage
+            );
+
+            return ['stage' => $valueAsString, 'tracker' => $tracker];
+        }
+
+        $detail = new EvaluationDetail(
+            $defaultStage->value,
+            null,
+            EvaluationReason::error(EvaluationReason::WRONG_TYPE_ERROR)
+        );
+        $tracker = new OpTracker(
+            $this->_logger,
+            $key,
+            $flag,
+            $context,
+            $detail,
+            $defaultStage
+        );
+
+        return ['stage' => $defaultStage, 'tracker' => $tracker];
     }
 
     /**
      * @param string $key
-     * @param LDContext|LDUser $contextOrUser
+     * @param LDContext $context
      * @param mixed $default
      * @param EventFactory $eventFactory
      *
-     * @return EvaluationDetail
+     * @psalm-return array{'detail': EvaluationDetail, 'flag': ?FeatureFlag}
      */
-    private function variationDetailInternal(string $key, LDContext|LDUser $contextOrUser, mixed $default, EventFactory $eventFactory): EvaluationDetail
+    private function variationDetailInternal(string $key, LDContext $context, mixed $default, EventFactory $eventFactory): array
     {
-        $context = $contextOrUser instanceof LDUser ? LDContext::fromUser($contextOrUser) : $contextOrUser;
         $default = $this->_get_default($key, $default);
 
         $errorDetail = fn (string $errorKind): EvaluationDetail =>
@@ -255,25 +314,26 @@ class LDClient
                 ]
             );
 
-            return $result;
+            return ['detail' => $result, 'flag' => null];
         }
 
         if ($this->_offline) {
-            return $errorDetail(EvaluationReason::CLIENT_NOT_READY_ERROR);
+            return ['detail' => $errorDetail(EvaluationReason::CLIENT_NOT_READY_ERROR), 'flag' => null];
         }
 
+        $flag = null;
         try {
             try {
                 $flag = $this->_featureRequester->getFeature($key);
             } catch (UnrecoverableHTTPStatusException $e) {
                 $this->handleUnrecoverableError();
-                return $errorDetail(EvaluationReason::EXCEPTION_ERROR);
+                return ['detail' => $errorDetail(EvaluationReason::EXCEPTION_ERROR), 'flag' => null];
             }
 
             if (is_null($flag)) {
                 $result = $errorDetail(EvaluationReason::FLAG_NOT_FOUND_ERROR);
                 $sendEvent(new EvalResult($result, false), null);
-                return $result;
+                return ['detail' => $result, 'flag' => null];
             }
             $evalResult = $this->_evaluator->evaluate(
                 $flag,
@@ -295,12 +355,12 @@ class LDClient
                 $evalResult = new EvalResult($detail, $evalResult->isForceReasonTracking());
             }
             $sendEvent($evalResult, $flag);
-            return $detail;
+            return ['detail' => $detail, 'flag' => $flag];
         } catch (\Exception $e) {
             Util::logExceptionAtErrorLevel($this->_logger, $e, "Unexpected error evaluating flag $key");
             $result = $errorDetail(EvaluationReason::EXCEPTION_ERROR);
             $sendEvent(new EvalResult($result, false), null);
-            return $result;
+            return ['detail' => $result, 'flag' => $flag];
         }
     }
 
@@ -323,14 +383,13 @@ class LDClient
      * see {@see \LaunchDarkly\LDClient::flush()}.
      *
      * @param string $eventName The name of the event
-     * @param LDContext|LDUser $context The evaluation context or user associated with the event
+     * @param LDContext $context The evaluation context or user associated with the event
      * @param mixed $data Optional additional information to associate with the event
      * @param int|float|null $metricValue A numeric value used by the LaunchDarkly experimentation feature in
      *   numeric custom metrics; can be omitted if this event is used by only non-numeric metrics
      */
-    public function track(string $eventName, LDContext|LDUser $context, mixed $data = null, int|float|null $metricValue = null): void
+    public function track(string $eventName, LDContext $context, mixed $data = null, int|float|null $metricValue = null): void
     {
-        $context = $context instanceof LDUser ? LDContext::fromUser($context) : $context;
         if (!$context->isValid()) {
             $this->_logger->warning("Track called with null/empty user key!");
             return;
@@ -339,7 +398,31 @@ class LDClient
     }
 
     /**
-     * Reports details about an evaluation context or user.
+     * Tracks the results of a migrations operation. This event includes
+     * measurements which can be used to enhance the observability of a
+     * migration within the LaunchDarkly UI.
+     *
+     * Customers making use of the {@see
+     * LaunchDarkly\Migrations\MigrationBuilder} should not need to call this
+     * method manually.
+     *
+     * Customers not using the builder should provide this method with the
+     * tracker returned from calling {@ LDClient::migrationVariation}.
+     */
+    public function trackMigrationOperation(OpTracker $tracker): void
+    {
+        $event = $tracker->build();
+
+        if (is_string($event)) {
+            $this->_logger->error("error generating migration op event {$event}; no event will be emitted");
+            return;
+        }
+
+        $this->_eventProcessor->enqueue($event);
+    }
+
+    /**
+     * Reports details about an evaluation context.
      *
      * This method simply creates an analytics event containing the context properties, to
      * that LaunchDarkly will know about that context if it does not already.
@@ -349,12 +432,11 @@ class LDClient
      * the context information to LaunchDarkly (if events are enabled), so you only need to use
      * identify() if you want to identify the context without evaluating a flag.
      *
-     * @param LDContext|LDUser $context The context or user to register
+     * @param LDContext $context The context to register
      * @return void
      */
-    public function identify(LDContext|LDUser $context): void
+    public function identify(LDContext $context): void
     {
-        $context = $context instanceof LDUser ? LDContext::fromUser($context) : $context;
         if (!$context->isValid()) {
             $this->_logger->warning("Identify called with null/empty user key!");
             return;
@@ -371,7 +453,7 @@ class LDClient
      *
      * This method does not send analytics events back to LaunchDarkly.
      *
-     * @param LDContext|LDUser $context the evalation context or user
+     * @param LDContext $context the evalation context
      * @param array $options Optional properties affecting how the state is computed:
      * - `clientSideOnly`: Set this to true to specify that only flags marked for client-side use
      * should be included; by default, all flags are included
@@ -383,9 +465,8 @@ class LDClient
      *
      * @return FeatureFlagsState a FeatureFlagsState object (will never be null)
      */
-    public function allFlagsState(LDContext|LDUser $context, array $options = []): FeatureFlagsState
+    public function allFlagsState(LDContext $context, array $options = []): FeatureFlagsState
     {
-        $context = $context instanceof LDUser ? LDContext::fromUser($context) : $context;
         if (!$context->isValid()) {
             $error = $context->getError();
             $this->_logger->warning("Invalid context for allFlagsState ($error); returning empty state");
@@ -428,12 +509,11 @@ class LDClient
      *
      * See: [Secure mode](https://docs.launchdarkly.com/sdk/features/secure-mode)
      *
-     * @param LDContext|LDUser $context The evaluation context or user
+     * @param LDContext $context The evaluation context
      * @return string The hash value
      */
-    public function secureModeHash(LDContext|LDUser $context): string
+    public function secureModeHash(LDContext $context): string
     {
-        $context = $context instanceof LDUser ? LDContext::fromUser($context) : $context;
         if (!$context->isValid()) {
             return "";
         }

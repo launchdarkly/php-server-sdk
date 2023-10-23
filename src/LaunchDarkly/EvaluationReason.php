@@ -83,6 +83,13 @@ class EvaluationReason implements \JsonSerializable
      */
     const EXCEPTION_ERROR = 'EXCEPTION';
 
+    /**
+     * A possible value for getErrorKind(): indicates the value of the
+     * evaluation did not match the PHP type expected.
+     */
+
+    const WRONG_TYPE_ERROR = 'WRONG_TYPE';
+
     private string $_kind;
     private ?string $_errorKind;
     private ?int $_ruleIndex;

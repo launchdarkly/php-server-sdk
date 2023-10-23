@@ -12,7 +12,7 @@
     "launchdarkly/server-sdk": "*",
     "mikecao/flight": "^2",
     "monolog/monolog": "^2",
-    "php": ">=8.0",
+    "php": ">=8.1",
     "psr/log": "1.*"
   },
   "autoload": {

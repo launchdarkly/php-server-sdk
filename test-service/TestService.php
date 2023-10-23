@@ -73,7 +73,9 @@ class TestService
                 'all-flags-details-only-for-tracked-flags',
                 'all-flags-with-reasons',
                 'context-type',
-                'secure-mode-hash'
+                'secure-mode-hash',
+                'migrations',
+                'event-sampling'
             ],
             'clientVersion' => \LaunchDarkly\LDClient::VERSION
         ];

@@ -10,12 +10,13 @@ publications:
 
 branches:
   - name: main
-    description: 5.x
+    description: 6.x
+  - name: 5.x
   - name: 4.x
 
 jobs:
   - docker:
-      image: ldcircleci/php-sdk-release:4  # Releaser's default for PHP is still php-sdk-release:3, which is PHP 7.x
+      image: ldcircleci/php-sdk-release:5  # Releaser's default for PHP is still php-sdk-release:3, which is PHP 7.x
     template:
       name: php
 

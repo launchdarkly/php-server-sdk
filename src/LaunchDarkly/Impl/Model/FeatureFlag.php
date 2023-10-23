@@ -34,6 +34,9 @@ class FeatureFlag
     protected bool $_trackEventsFallthrough = false;
     protected ?int $_debugEventsUntilDate = null;
     protected bool $_clientSide = false;
+    protected ?int $_samplingRatio = null;
+    protected bool $_excludeFromSummaries = false;
+    protected ?MigrationSettings $_migrationSettings = null;
 
     // Note, trackEvents and debugEventsUntilDate are not used in EventProcessor, because
     // the PHP client doesn't do summary events. However, we need to capture them in case
@@ -55,7 +58,10 @@ class FeatureFlag
         bool $trackEvents,
         bool $trackEventsFallthrough,
         ?int $debugEventsUntilDate,
-        bool $clientSide
+        bool $clientSide,
+        ?int $samplingRatio,
+        bool $excludeFromSummaries,
+        ?MigrationSettings $migrationSettings,
     ) {
         $this->_key = $key;
         $this->_version = $version;
@@ -73,6 +79,9 @@ class FeatureFlag
         $this->_trackEventsFallthrough = $trackEventsFallthrough;
         $this->_debugEventsUntilDate = $debugEventsUntilDate;
         $this->_clientSide = $clientSide;
+        $this->_samplingRatio = $samplingRatio;
+        $this->_excludeFromSummaries = $excludeFromSummaries;
+        $this->_migrationSettings = $migrationSettings;
     }
 
     /**
@@ -82,8 +91,14 @@ class FeatureFlag
      */
     public static function getDecoder(): \Closure
     {
-        return fn ($v) =>
-            new FeatureFlag(
+        return function ($v) {
+            $migrationSettings = null;
+
+            if (is_array($v['migration'] ?? null)) {
+                $migrationSettings = call_user_func(MigrationSettings::getDecoder(), $v['migration']);
+            }
+
+            return new FeatureFlag(
                 $v['key'],
                 $v['version'],
                 $v['on'],
@@ -99,8 +114,12 @@ class FeatureFlag
                 !!($v['trackEvents'] ?? false),
                 !!($v['trackEventsFallthrough'] ?? false),
                 $v['debugEventsUntilDate'] ?? null,
-                !!($v['clientSide'] ?? false)
+                !!($v['clientSide'] ?? false),
+                $v['samplingRatio'] ?? null,
+                !!($v['excludeFromSummaries'] ?? false),
+                $migrationSettings,
             );
+        };
     }
 
     public static function decode(array $v): self
@@ -191,5 +210,20 @@ class FeatureFlag
     public function getVersion(): int
     {
         return $this->_version;
+    }
+
+    public function getSamplingRatio(): int
+    {
+        return $this->_samplingRatio ?? 1;
+    }
+
+    public function getExcludeFromSummaries(): bool
+    {
+        return $this->_excludeFromSummaries;
+    }
+
+    public function getMigrationSettings(): ?MigrationSettings
+    {
+        return $this->_migrationSettings;
     }
 }
