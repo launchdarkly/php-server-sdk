@@ -2,6 +2,10 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [5.2.0] - 2023-10-23
+### Deprecated:
+- `LDUser` is now deprecated in favor of `LDContext`.
+
 ## [5.1.1] - 2023-07-12
 ### Changed:
 - Invalid context log message now includes the flag key as part of the Psr\Log context. (Thanks, [mrtus](https://github.com/launchdarkly/php-server-sdk/pull/179)!)
