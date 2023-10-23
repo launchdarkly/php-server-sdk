@@ -9,7 +9,7 @@ workflows:
       - test-on-linux:
           matrix:
               parameters:
-                  php-version: ["8.0", "8.1"]
+                  php-version: ["8.1", "8.2"]
                   composer-dependencies: ["lowest", "highest"]
       - test-on-windows
 

@@ -7,7 +7,7 @@ namespace LaunchDarkly;
 /**
  * A mutable object that uses the builder pattern to specify properties for a multi-context.
  *
- * Use this builder if you need to construct an {@see \LaunchDarkly\LDContext) that contains
+ * Use this builder if you need to construct an {@see \LaunchDarkly\LDContext} that contains
  * multiple contexts, each for a different context kind. To define a regular context for a
  * single kind, use {@see \LaunchDarkly\LDContext::create()} or
  * {@see \LaunchDarkly\LDContext::builder()}.

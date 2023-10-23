@@ -4,9 +4,16 @@ declare(strict_types=1);
 
 namespace Tests;
 
+use Closure;
+use GuzzleHttp\Client;
 use LaunchDarkly\Integrations\Guzzle;
 use LaunchDarkly\LDClient;
 use LaunchDarkly\LDContext;
+use LaunchDarkly\Migrations\ExecutionOrder;
+use LaunchDarkly\Migrations\MigratorBuilder;
+use LaunchDarkly\Migrations\Operation;
+use LaunchDarkly\Migrations\Stage;
+use LaunchDarkly\Types\Result;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -87,10 +94,16 @@ class SdkClientEntity
 
             case 'contextBuild':
                 return $this->doContextBuild($commandParams);
-            
+
             case 'contextConvert':
                 return $this->doContextConvert($commandParams);
-            
+
+            case 'migrationVariation':
+                return $this->doMigrationVariation($commandParams);
+
+            case 'migrationOperation':
+                return $this->doMigrationOperation($commandParams);
+
             default:
                 return false;  // means invalid command
         }
@@ -206,6 +219,86 @@ class SdkClientEntity
         } catch (\Throwable $e) {
             return ['error' => "$e"];
         }
+    }
+
+    private function doMigrationVariation(array $params): array
+    {
+        try {
+            $results = $this->_client->migrationVariation(
+                $params['key'],
+                $this->makeContext($params['context']),
+                Stage::from($params['defaultStage'])
+            );
+
+            return ['result' => $results['stage']->value];
+        } catch (\Throwable $e) {
+            return ['error' => "$e"];
+        }
+    }
+
+    private function doMigrationOperation(array $params): array
+    {
+        $builder = new MigratorBuilder($this->_client);
+
+        // PHP doesn't support concurrent, so we just do the best we can.
+        if ($params['readExecutionOrder'] == 'concurrent') {
+            $params['readExecutionOrder'] = 'serial';
+        }
+
+        $builder->readExecutionOrder(ExecutionOrder::from($params['readExecutionOrder']));
+        $builder->trackLatency($params['trackLatency']);
+        $builder->trackErrors($params['trackErrors']);
+
+        $callback = function (string $endpoint): Closure {
+            return function ($payload) use ($endpoint): Result {
+                $client = new Client();
+                $response = $client->request('POST', $endpoint, ['body' => $payload]);
+
+                $statusCode = $response->getStatusCode();
+                if ($statusCode == 200) {
+                    return Result::success($response->getBody()->getContents());
+                };
+
+                return Result::error("Request failed with status code {$statusCode}");
+            };
+        };
+
+        $consistency = null;
+        if ($params['trackConsistency'] ?? false) {
+            $consistency = fn ($lhs, $rhs) => $lhs == $rhs;
+        }
+
+        $builder->read(($callback)($params['oldEndpoint']), ($callback)($params['newEndpoint']), $consistency);
+        $builder->write(($callback)($params['oldEndpoint']), ($callback)($params['newEndpoint']));
+
+        $results = $builder->build();
+
+        if (!$results->isSuccessful()) {
+            return ['result' => $results->error];
+        }
+
+        /** @var \LaunchDarkly\Migrations\Migrator */
+        $migrator = $results->value;
+
+        if ($params['operation'] == Operation::READ->value) {
+            $result = $migrator->read(
+                $params['key'],
+                $this->makeContext($params['context']),
+                Stage::from($params['defaultStage']),
+                $params['payload'],
+            );
+
+            return ['result' => $result->isSuccessful() ? $result->value : $result->error];
+        }
+
+        $result = $migrator->write(
+            $params['key'],
+            $this->makeContext($params['context']),
+            Stage::from($params['defaultStage']),
+            $params['payload'],
+        );
+
+        return ['result' => $result->authoritative->isSuccessful() ? $result->authoritative->value : $result->authoritative->error];
     }
 
     private function makeContext(array $data): LDContext

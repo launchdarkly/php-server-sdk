@@ -102,32 +102,12 @@ class TestDataTest extends TestCase
                 ],
                 fn ($f) => $f->variationForAll(true)
             ],
-            'set false boolean variation for all users' => [
-                [
-                    'fallthrough' => ['variation' => 1],
-                ],
-                fn ($f) => $f->variationForAllUsers(false)
-            ],
-            'set true boolean variation for all users' => [
-                [
-                    'variations' => [true, false],
-                    'fallthrough' => ['variation' => 0],
-                ],
-                fn ($f) => $f->variationForAllUsers(true)
-            ],
             'set variation index for all' => [
                 [
                     'fallthrough' => ['variation' => 2],
                     'variations' => ['a', 'b', 'c']
                 ],
                 fn ($f) => $f->variations('a', 'b', 'c')->variationForAll(2)
-            ],
-            'set variation index for all users' => [
-                [
-                    'fallthrough' => ['variation' => 2],
-                    'variations' => ['a', 'b', 'c']
-                ],
-                fn ($f) => $f->variations('a', 'b', 'c')->variationForAllUsers(2)
             ],
             'set fallthrough variation boolean' => [
                 [
@@ -231,11 +211,6 @@ class TestDataTest extends TestCase
                 [],
                 fn ($f) => $f->variationForKey('kind1', 'key1', 0)
                     ->clearTargets()
-            ],
-            'clearUserTargets is synonym for clearTargets' => [
-                [],
-                fn ($f) => $f->variationForKey('kind1', 'key1', 0)
-                    ->clearUserTargets()
             ],
             'ifMatchContext' => [
                 [
@@ -426,7 +401,7 @@ class TestDataTest extends TestCase
         $td = new TestData();
         $flag = $td->flag($key);
         $td->update($flag);
-        
+
         $updatedFlag = $flag->variations('red', 'amber', 'green')->fallthroughVariation(2);
         $td->update($updatedFlag);
 

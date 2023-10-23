@@ -23,6 +23,9 @@ class FlagBuilder
     protected array $_variations;
     protected ?int $_offVariation;
     protected ?int $_fallthroughVariation;
+    protected ?MigrationSettingsBuilder $_migrationSettingsBuilder;
+    protected ?int $_samplingRatio;
+    protected bool $_excludeFromSummaries;
 
     // In _targets, each key is a context kind, and the value is another associative array where the key is a
     // variation index and the value is an array of context keys.
@@ -39,6 +42,9 @@ class FlagBuilder
         $this->_fallthroughVariation = null;
         $this->_targets = [];
         $this->_rules = [];
+        $this->_samplingRatio = null;
+        $this->_excludeFromSummaries = false;
+        $this->_migrationSettingsBuilder = null;
     }
 
     /**
@@ -71,6 +77,9 @@ class FlagBuilder
             $to->_targets[$k] = $v;
         }
         $to->_rules = $this->_rules;
+        $to->_samplingRatio = $this->_samplingRatio;
+        $to->_excludeFromSummaries = $this->_excludeFromSummaries;
+        $to->_migrationSettingsBuilder = $this->_migrationSettingsBuilder;
 
         return $to;
     }
@@ -138,6 +147,30 @@ class FlagBuilder
         return $this;
     }
 
+    public function migrationSettings(MigrationSettingsBuilder $builder): FlagBuilder
+    {
+        $this->_migrationSettingsBuilder = $builder;
+        return $this;
+    }
+
+    /**
+     * Control the rate at which events from this flag will be sampled.
+     */
+    public function samplingRatio(int $samplingRatio): FlagBuilder
+    {
+        $this->_samplingRatio = $samplingRatio;
+        return $this;
+    }
+
+    /**
+     * Control whether or not this flag should should be included in flag summary counts.
+     */
+    public function excludeFromSummaries(bool $excludeFromSummaries): FlagBuilder
+    {
+        $this->_excludeFromSummaries = $excludeFromSummaries;
+        return $this;
+    }
+
     /**
      * Specifies the off variation for a boolean flag or index of variation.
      * This is the variation that is returned whenever targeting is off.
@@ -153,19 +186,6 @@ class FlagBuilder
         }
         $this->_offVariation = $variation;
         return $this;
-    }
-
-    /**
-     * Deprecated name for variationForAll.
-     *
-     * @param bool|int $variation `true` or `false` or the desired variation index to return:
-     *                  `0` for the first, `1` for the second, etc.
-     * @return FlagBuilder the flag builder
-     * @deprecated Use {@see \LaunchDarkly\Integrations\TestData\FlagBuilder::variationForAll()}.
-     */
-    public function variationForAllUsers(bool|int $variation): FlagBuilder
-    {
-        return $this->variationForAll($variation);
     }
 
     /**
@@ -188,18 +208,6 @@ class FlagBuilder
             return $this->booleanFlag()->variationForAll($this->variationForBoolean($variation));
         }
         return $this->on(true)->clearRules()->clearTargets()->fallthroughVariation($variation);
-    }
-
-    /**
-     * Deprecated name for valueForAll.
-     *
-     * @param mixed $value the desired value to be returned for all users
-     * @return FlagBuilder the flag builder
-     * @deprecated Use {@see \LaunchDarkly\Integrations\TestData\FlagBuilder::valueForAll()}.
-     */
-    public function valueForAllUsers(mixed $value): FlagBuilder
-    {
-        return $this->valueForAll($value);
     }
 
     /**
@@ -426,17 +434,6 @@ class FlagBuilder
     }
 
     /**
-     * Deprecated name for clearTargets.
-     *
-     * @return FlagBuilder the same builder
-     * @deprecated Use {@see \LaunchDarkly\Integrations\TestData\FlagBuilder::clearTargets()}.
-     */
-    public function clearUserTargets(): FlagBuilder
-    {
-        return $this->clearTargets();
-    }
-
-    /**
      * Removes any existing targets for individual user/context keys from the flag. This undoes the effect of
      * the `variationForUser` and `variationForKey` methods.
      *
@@ -518,6 +515,11 @@ class FlagBuilder
 
         foreach ($this->_rules as $idx => $rule) {
             $baseFlagObject['rules'][] = $rule->build($idx);
+        }
+
+        $migrationSettings = $this->_migrationSettingsBuilder?->build() ?? [];
+        if (!empty($migrationSettings)) {
+            $baseFlagObject['migration'] = $migrationSettings;
         }
 
         $baseFlagObject['deleted'] = false;
