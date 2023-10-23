@@ -16,7 +16,7 @@ branches:
 
 jobs:
   - docker:
-      image: ldcircleci/php-sdk-release:4  # Releaser's default for PHP is still php-sdk-release:3, which is PHP 7.x
+      image: ldcircleci/php-sdk-release:5  # Releaser's default for PHP is still php-sdk-release:3, which is PHP 7.x
     template:
       name: php
 
