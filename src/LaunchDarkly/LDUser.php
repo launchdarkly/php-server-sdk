@@ -18,6 +18,8 @@ namespace LaunchDarkly;
  * this may be a username or e-mail address. For anonymous users, it could be an IP address or session ID.
  *
  * Use {@see \LaunchDarkly\LDUserBuilder} to construct instances of this class.
+ *
+ * @deprecated Use LDContext instead.
  */
 class LDUser
 {
@@ -65,6 +67,8 @@ class LDUser
         ?array $custom = [],
         ?array $privateAttributeNames = []
     ) {
+        trigger_error('LDUser is being removed in 6.0.0. Use LDContext instead', E_USER_DEPRECATED);
+
         $this->_key = $key;
         $this->_ip = $ip;
         $this->_country = $country;
@@ -169,7 +173,7 @@ class LDUser
     {
         return $this->_privateAttributeNames;
     }
-    
+
     public function isKeyBlank(): bool
     {
         return empty($this->_key);
