@@ -407,7 +407,7 @@ class LDClient
      * method manually.
      *
      * Customers not using the builder should provide this method with the
-     * tracker returned from calling {@ LDClient::migrationVariation}.
+     * tracker returned from calling {@see LDClient::migrationVariation}.
      */
     public function trackMigrationOperation(OpTracker $tracker): void
     {
