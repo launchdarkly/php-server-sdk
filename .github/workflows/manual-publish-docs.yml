@@ -1,0 +1,35 @@
+on:
+  workflow_dispatch:
+
+name: Publish Documentation
+jobs:
+  build-publish:
+    runs-on: ubuntu-latest
+
+    services:
+      wiremock:
+        image: wiremock/wiremock
+        ports:
+          - 8080:8080
+
+    env:
+      LD_INCLUDE_INTEGRATION_TESTS: 1
+
+    permissions:
+      contents: write # Needed in this case to write github pages.
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and Test
+        uses: ./.github/actions/ci
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build documentation
+        uses: ./.github/actions/build-docs
+
+      - name: Publish Documentation
+        uses: ./.github/actions/publish-docs
+        with:
+          token: ${{secrets.GITHUB_TOKEN}}

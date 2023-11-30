@@ -1,0 +1,51 @@
+name: Run Release Please
+
+on:
+  push:
+    branches:
+      - 5.x
+
+jobs:
+  release-package:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write # Contents and pull-requests are for release-please to make releases.
+      pull-requests: write
+
+    services:
+      wiremock:
+        image: wiremock/wiremock
+        ports:
+          - 8080:8080
+
+    env:
+      LD_INCLUDE_INTEGRATION_TESTS: 1
+
+    steps:
+      - uses: google-github-actions/release-please-action@v3
+        id: release
+        with:
+          command: manifest
+          token: ${{ secrets.GITHUB_TOKEN }}
+          default-branch: 5.x
+
+      - uses: actions/checkout@v4
+        if: ${{ steps.release.outputs.releases_created }}
+        with:
+          fetch-depth: 0 # If you only need the current version keep this.
+
+      - name: Build and Test
+        if: ${{ steps.release.outputs.releases_created }}
+        uses: ./.github/actions/ci
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build documentation
+        if: ${{ steps.release.outputs.releases_created }}
+        uses: ./.github/actions/build-docs
+
+      - uses: ./.github/actions/publish-docs
+        if: ${{ steps.release.outputs.releases_created }}
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,12 @@
+{
+  "packages": {
+    ".": {
+      "release-type": "php",
+      "bump-minor-pre-major": true,
+      "versioning": "default",
+      "include-v-in-tag": false,
+      "include-component-in-tag": false,
+       "extra-files": ["src/LaunchDarkly/LDClient.php"]
+    }
+  }
+}
