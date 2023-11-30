@@ -1,0 +1,21 @@
+# Use a step like this to build documentation.
+name: Build Documentation
+description: 'Build Documentation.'
+
+runs:
+  using: composite
+  steps:
+    - name: Build Documentation
+      shell: bash
+      run: |
+        phpdoc \
+          -d src \
+          -t "docs" \
+          --ignore Impl/ \
+          --ignore '*/Impl/' \
+          --ignore-tags psalm-param \
+          --ignore-tags psalm-var \
+          --ignore-tags psalm-return \
+          --visibility public \
+          --defaultpackagename "LaunchDarkly" \
+          --title "LaunchDarkly PHP SDK"
