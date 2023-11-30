@@ -1,0 +1,83 @@
+name: Run CI
+on:
+  push:
+    branches: [ 5.x ]
+    paths-ignore:
+      - '**.md' # Do not need to run CI for markdown changes.
+  pull_request:
+    branches: [ 5.x ]
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  linux-build:
+    runs-on: ubuntu-latest
+
+    services:
+      wiremock:
+        image: wiremock/wiremock
+        ports:
+          - 8080:8080
+
+    strategy:
+      matrix:
+        php-version: [8.0, 8.1]
+        use-lowest-dependencies: [true, false]
+
+    env:
+      LD_INCLUDE_INTEGRATION_TESTS: 1
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # If you only need the current version keep this.
+
+      - uses: ./.github/actions/ci
+        with:
+          php-version: ${{ matrix.php-version }}
+          use-lowest-dependencies: ${{ matrix.use-lowest-dependencies }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  windows-build:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        php-version: [8.0.30, 8.1.26]
+
+    env:
+      LD_INCLUDE_INTEGRATION_TESTS: 1
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # If you only need the current version keep this.
+
+      - name: Install java support
+        run: choco install -y javaruntime
+
+      - name: Install php support
+        run: choco install -y php --version=${{ matrix.php-version }} --force
+
+      - name: Install composer
+        run: choco install -y composer
+
+      - name: Download wiremock
+        run: Invoke-WebRequest -Uri https://repo1.maven.org/maven2/com/github/tomakehurst/wiremock-jre8-standalone/2.31.0/wiremock-jre8-standalone-2.31.0.jar -UseBasicParsing -OutFile wiremock.jar
+
+      - name: Verify checksum
+        shell: bash
+        run: |
+          [ "$(sha256sum wiremock.jar | awk '{ print $1 }')" == "c5cd526e04c57293ec847d845733b017c4052d2132653332e05a54272934a305" ]
+
+      - name: Start wiremock
+        run: cmd /c "START /b java -jar ./wiremock.jar"
+
+      - name: Wait for wiremock to be available
+        run: PowerShell -Command Start-Sleep -Seconds 5
+
+      - name: Install dependencies
+        run: composer install --no-progress
+
+      - name: Run tests
+        run: .\vendor\bin\phpunit
