@@ -1,11 +1,11 @@
 name: Run CI
 on:
   push:
-    branches: [ 5.x ]
+    branches: [ main ]
     paths-ignore:
       - '**.md' # Do not need to run CI for markdown changes.
   pull_request:
-    branches: [ 5.x ]
+    branches: [ main ]
     paths-ignore:
       - '**.md'
 
@@ -21,7 +21,7 @@ jobs:
 
     strategy:
       matrix:
-        php-version: [8.0, 8.1]
+        php-version: [8.1, 8.2]
         use-lowest-dependencies: [true, false]
 
     env:
@@ -43,7 +43,7 @@ jobs:
 
     strategy:
       matrix:
-        php-version: [8.0.30, 8.1.26]
+        php-version: [8.1.26, 8.2.13]
 
     env:
       LD_INCLUDE_INTEGRATION_TESTS: 1

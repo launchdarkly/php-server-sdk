@@ -4,7 +4,7 @@ inputs:
   php-version:
     description: 'Which version of PHP should we setup?'
     required: false
-    default: 8.0
+    default: 8.1
   use-lowest-dependencies:
     description: 'Should we prefer the lowest dependency version?'
     type: boolean
@@ -22,7 +22,7 @@ runs:
       with:
         php-version: ${{ inputs.php-version }}
         extensions: xdebug
-        tools: phpdoc:3.1.2
+        tools: phpdoc:3.3.1
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
 

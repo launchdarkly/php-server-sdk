@@ -3,7 +3,7 @@ name: Run Release Please
 on:
   push:
     branches:
-      - 5.x
+      - main
 
 jobs:
   release-package:
@@ -28,7 +28,7 @@ jobs:
         with:
           command: manifest
           token: ${{ secrets.GITHUB_TOKEN }}
-          default-branch: 5.x
+          default-branch: main
 
       - uses: actions/checkout@v4
         if: ${{ steps.release.outputs.releases_created }}
