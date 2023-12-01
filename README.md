@@ -1,6 +1,6 @@
 # LaunchDarkly Server-side SDK for PHP
 
-[![Circle CI](https://img.shields.io/circleci/project/launchdarkly/php-server-sdk.png)](https://circleci.com/gh/launchdarkly/php-server-sdk)
+[![Run CI](https://github.com/launchdarkly/php-server-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/launchdarkly/php-server-sdk/actions/workflows/ci.yml)
 [![Packagist](https://img.shields.io/packagist/v/launchdarkly/server-sdk.svg?style=flat-square)](https://packagist.org/packages/launchdarkly/server-sdk)
 [![Documentation](https://img.shields.io/static/v1?label=GitHub+Pages&message=API+reference&color=00add8)](https://launchdarkly.github.io/php-server-sdk)
 

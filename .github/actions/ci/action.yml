@@ -1,0 +1,48 @@
+name: CI Workflow
+description: 'Shared CI workflow.'
+inputs:
+  php-version:
+    description: 'Which version of PHP should we setup?'
+    required: false
+    default: 8.1
+  use-lowest-dependencies:
+    description: 'Should we prefer the lowest dependency version?'
+    type: boolean
+    required: false
+    default: false
+  token:
+    description: 'Token used to prevent composer rate limiting'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Setup PHP
+      uses: shivammathur/setup-php@e6f75134d35752277f093989e72e140eaa222f35
+      with:
+        php-version: ${{ inputs.php-version }}
+        extensions: xdebug
+        tools: phpdoc:3.3.1
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+
+    - name: Install dependencies
+      shell: bash
+      run: composer install --no-progress
+
+    - name: Downgrade to lowest versions
+      if: ${{ inputs.use-lowest-dependencies }}
+      shell: bash
+      run: composer update --prefer-lowest --prefer-stable
+
+    - name: Run unit tests
+      shell: bash
+      run: make test
+
+    - name: Run lint checks
+      shell: bash
+      run: make lint
+
+    - name: Run contract tests
+      shell: bash
+      run: make contract-tests
