@@ -4,11 +4,9 @@
 # https://git-scm.com/docs/gitattributes
 
 # Ignore all test and documentation with "export-ignore".
-/.circleci          export-ignore
 /.gitattributes     export-ignore
 /.github            export-ignore
 /.gitignore         export-ignore
-/.ldrelease         export-ignore
 /.php-cs-fixer.php  export-ignore
 /CHANGELOG.md       export-ignore
 /CODEOWNERS         export-ignore
