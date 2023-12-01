@@ -2,6 +2,18 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [6.0.1](https://github.com/launchdarkly/php-server-sdk/compare/6.0.0...6.0.1) (2023-12-01)
+
+
+### Bug Fixes
+
+* **build:** Leverage .gitattributes to reduce package size ([#186](https://github.com/launchdarkly/php-server-sdk/issues/186)) ([b8cb035](https://github.com/launchdarkly/php-server-sdk/commit/b8cb03582b63cead74e45b50fa498380fb79cdd3))
+
+
+### Miscellaneous Chores
+
+* Fix package version in release please manifest ([#190](https://github.com/launchdarkly/php-server-sdk/issues/190)) ([cbdb529](https://github.com/launchdarkly/php-server-sdk/commit/cbdb5296569da112ec4d192c1d4805e7caf06c09))
+
 ## [6.0.0] - 2023-10-23
 The latest version of this SDK supports the ability to manage migrations or modernizations, using migration flags. You might use this functionality if you are optimizing queries, upgrading to new tech stacks, migrating from one database to another, or other similar technology changes. Migration flags are part of LaunchDarkly's Early Access Program. This feature is available to all LaunchDarkly customers but may undergo additional changes before it is finalized.
 
