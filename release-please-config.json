@@ -6,7 +6,10 @@
       "versioning": "default",
       "include-v-in-tag": false,
       "include-component-in-tag": false,
-       "extra-files": ["src/LaunchDarkly/LDClient.php"]
+      "extra-files": [
+        ".github/actions/build-docs/action.yml",
+        "src/LaunchDarkly/LDClient.php"
+      ]
     }
   }
 }
