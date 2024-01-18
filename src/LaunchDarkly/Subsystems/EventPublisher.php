@@ -18,7 +18,7 @@ interface EventPublisher
      * @var int
      * @ignore
      */
-    const CURRENT_SCHEMA_VERSION = 2;
+    const CURRENT_SCHEMA_VERSION = 4;
 
     /**
      * @param string $sdkKey The SDK key for your account
