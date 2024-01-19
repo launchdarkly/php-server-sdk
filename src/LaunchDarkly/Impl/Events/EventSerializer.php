@@ -48,10 +48,12 @@ class EventSerializer
 
     private function filterEvent(array $e): array
     {
+        $isFeatureEvent = ($e['kind'] ?? '') == 'feature';
+
         $ret = [];
         foreach ($e as $key => $value) {
             if ($key == 'context') {
-                $ret[$key] = $this->serializeContext($value);
+                $ret[$key] = $this->serializeContext($value, $isFeatureEvent);
             } else {
                 $ret[$key] = $value;
             }
@@ -59,23 +61,23 @@ class EventSerializer
         return $ret;
     }
 
-    private function serializeContext(LDContext $context): array
+    private function serializeContext(LDContext $context, bool $redactAnonymousAttributes): array
     {
         if ($context->isMultiple()) {
             $ret = ['kind' => 'multi'];
             for ($i = 0; $i < $context->getIndividualContextCount(); $i++) {
                 $c = $context->getIndividualContext($i);
                 if ($c !== null) {
-                    $ret[$c->getKind()] = $this->serializeContextSingleKind($c, false);
+                    $ret[$c->getKind()] = $this->serializeContextSingleKind($c, false, $redactAnonymousAttributes);
                 }
             }
             return $ret;
         } else {
-            return $this->serializeContextSingleKind($context, true);
+            return $this->serializeContextSingleKind($context, true, $redactAnonymousAttributes);
         }
     }
 
-    private function serializeContextSingleKind(LDContext $c, bool $includeKind): array
+    private function serializeContextSingleKind(LDContext $c, bool $includeKind, bool $redactAnonymousAttributes): array
     {
         $ret = ['key' => $c->getKey()];
         if ($includeKind) {
@@ -86,11 +88,12 @@ class EventSerializer
         }
         $redacted = [];
         $allPrivate = array_merge($this->_privateAttributes, $c->getPrivateAttributes() ?? []);
-        if ($c->getName() !== null && !$this->checkWholeAttributePrivate('name', $allPrivate, $redacted)) {
+        $redactAllAttributes = $this->_allAttributesPrivate || ($redactAnonymousAttributes && $c->isAnonymous());
+        if ($c->getName() !== null && !$this->checkWholeAttributePrivate('name', $allPrivate, $redacted, $redactAllAttributes)) {
             $ret['name'] = $c->getName();
         }
         foreach ($c->getCustomAttributeNames() as $attr) {
-            if (!$this->checkWholeAttributePrivate($attr, $allPrivate, $redacted)) {
+            if (!$this->checkWholeAttributePrivate($attr, $allPrivate, $redacted, $redactAllAttributes)) {
                 $value = $c->get($attr);
                 $ret[$attr] = self::redactJsonValue(null, $attr, $value, $allPrivate, $redacted);
             }
@@ -101,9 +104,9 @@ class EventSerializer
         return $ret;
     }
 
-    private function checkWholeAttributePrivate(string $attr, array $allPrivate, array &$redactedOut): bool
+    private function checkWholeAttributePrivate(string $attr, array $allPrivate, array &$redactedOut, bool $redactAllAttributes): bool
     {
-        if ($this->_allAttributesPrivate) {
+        if ($redactAllAttributes) {
             $redactedOut[] = $attr;
             return true;
         }
