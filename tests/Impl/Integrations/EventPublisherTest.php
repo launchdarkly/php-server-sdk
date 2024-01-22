@@ -88,6 +88,7 @@ class EventPublisherTest extends TestCase
         $this->assertEquals('sdk-key', $headers['Authorization']);
         $this->assertEquals('PHPClient/' . LDClient::VERSION, $headers['User-Agent']);
         $this->assertEquals(EventPublisher::CURRENT_SCHEMA_VERSION, $headers['X-LaunchDarkly-Event-Schema']);
+        $this->assertArrayHasKey('X-LaunchDarkly-Unsummarized', $headers);
         $this->assertEquals('application-id/my-id application-version/my-version', $headers['X-LaunchDarkly-Tags']);
     }
 }
