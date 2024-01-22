@@ -126,6 +126,9 @@ class Util
     {
         $headers = Util::defaultHeaders($sdkKey, $applicationInfo);
         $headers['X-LaunchDarkly-Event-Schema'] = EventPublisher::CURRENT_SCHEMA_VERSION;
+        // Only the presence of this header is important. We encode a string
+        // value of 'true' to ensure it isn't dropped along the way.
+        $headers['X-LaunchDarkly-Unsummarized'] = 'true';
 
         return $headers;
     }
