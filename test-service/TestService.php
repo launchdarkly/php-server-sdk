@@ -75,7 +75,9 @@ class TestService
                 'context-type',
                 'secure-mode-hash',
                 'migrations',
-                'event-sampling'
+                'event-sampling',
+                'inline-context',
+                'anonymous-redaction'
             ],
             'clientVersion' => \LaunchDarkly\LDClient::VERSION
         ];

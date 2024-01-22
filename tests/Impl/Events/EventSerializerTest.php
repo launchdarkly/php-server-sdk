@@ -16,7 +16,7 @@ class EventSerializerTest extends TestCase
             ->set('firstName', 'Sue')
             ->build();
     }
-    
+
     private function getContextSpecifyingOwnPrivateAttr()
     {
         return LDContext::builder('abc')
@@ -26,7 +26,7 @@ class EventSerializerTest extends TestCase
             ->private('dizzle')
             ->build();
     }
-    
+
     private function getFullContextResult()
     {
         return [
@@ -37,7 +37,7 @@ class EventSerializerTest extends TestCase
             'dizzle' => 'ghi'
         ];
     }
-    
+
     private function getContextResultWithAllAttrsHidden()
     {
         return [
@@ -48,7 +48,7 @@ class EventSerializerTest extends TestCase
             ]
         ];
     }
-    
+
     private function getContextResultWithSomeAttrsHidden()
     {
         return [
@@ -60,7 +60,7 @@ class EventSerializerTest extends TestCase
             ]
         ];
     }
-    
+
     private function getContextResultWithOwnSpecifiedAttrHidden()
     {
         return [
@@ -73,7 +73,7 @@ class EventSerializerTest extends TestCase
             ]
         ];
     }
-    
+
     private function makeEvent($context)
     {
         return [
@@ -83,14 +83,14 @@ class EventSerializerTest extends TestCase
             'context' => $context
         ];
     }
-    
+
     private function getJsonForContextBySerializingEvent($user)
     {
         $es = new EventSerializer([]);
         $event = $this->makeEvent($user);
         return json_decode($es->serializeEvents([$event]), true)[0]['context'];
     }
-    
+
     public function testAllContextAttrsSerialized()
     {
         $es = new EventSerializer([]);
@@ -108,7 +108,92 @@ class EventSerializerTest extends TestCase
         $expected = $this->makeEvent($this->getContextResultWithAllAttrsHidden());
         $this->assertEquals([$expected], json_decode($json, true));
     }
-    
+
+    public function testRedactsAllAttributesFromAnonymousContextWithFeatureEvent()
+    {
+        $anonymousContext = LDContext::builder('abc')
+            ->anonymous(true)
+            ->set('bizzle', 'def')
+            ->set('dizzle', 'ghi')
+            ->set('firstName', 'Sue')
+            ->build();
+
+        $es = new EventSerializer([]);
+        $event = $this->makeEvent($anonymousContext);
+        $event['kind'] = 'feature';
+        $json = $es->serializeEvents([$event]);
+
+        // But we redact all attributes when the context is anonymous
+        $expectedContextOutput = $this->getContextResultWithAllAttrsHidden();
+        $expectedContextOutput['anonymous'] = true;
+
+        $expected = $this->makeEvent($expectedContextOutput);
+        $expected['kind'] = 'feature';
+
+        $this->assertEquals([$expected], json_decode($json, true));
+    }
+
+    public function testDoesNotRedactAttributesFromAnonymousContextWithNonFeatureEvent()
+    {
+        $anonymousContext = LDContext::builder('abc')
+            ->anonymous(true)
+            ->set('bizzle', 'def')
+            ->set('dizzle', 'ghi')
+            ->set('firstName', 'Sue')
+            ->build();
+
+        $es = new EventSerializer([]);
+        $event = $this->makeEvent($anonymousContext);
+        $json = $es->serializeEvents([$event]);
+
+        // But we redact all attributes when the context is anonymous
+        $expectedContextOutput = $this->getFullContextResult();
+        $expectedContextOutput['anonymous'] = true;
+
+        $expected = $this->makeEvent($expectedContextOutput);
+
+        $this->assertEquals([$expected], json_decode($json, true));
+    }
+
+    public function testRedactsAllAttributesOnlyIfContextIsAnonymous()
+    {
+        $userContext = LDContext::builder('user-key')
+            ->kind('user')
+            ->anonymous(true)
+            ->name('Example user')
+            ->build();
+
+        $orgContext = LDContext::builder('org-key')
+            ->kind('org')
+            ->anonymous(false)
+            ->name('Example org')
+            ->build();
+
+        $multiContext = LDContext::createMulti($userContext, $orgContext);
+
+        $es = new EventSerializer([]);
+        $event = $this->makeEvent($multiContext);
+        $event['kind'] = 'feature';
+        $json = $es->serializeEvents([$event]);
+
+        $expectedContextOutput = [
+            'kind' => 'multi',
+            'user' => [
+                'key' => 'user-key',
+                'anonymous' => true,
+                '_meta' => ['redactedAttributes' => ['name']]
+            ],
+            'org' => [
+                'key' => 'org-key',
+                'name' => 'Example org',
+            ],
+        ];
+        $expected = $this->makeEvent($expectedContextOutput);
+        $expected['kind'] = 'feature';
+
+        $this->assertEquals([$expected], json_decode($json, true));
+    }
+
     public function testSomeContextAttrsPrivate()
     {
         $es = new EventSerializer(['private_attribute_names' => ['firstName', 'bizzle']]);
@@ -117,7 +202,7 @@ class EventSerializerTest extends TestCase
         $expected = $this->makeEvent($this->getContextResultWithSomeAttrsHidden());
         $this->assertEquals([$expected], json_decode($json, true));
     }
-    
+
     public function testPerContextPrivateAttr()
     {
         $es = new EventSerializer([]);
@@ -135,7 +220,7 @@ class EventSerializerTest extends TestCase
         $expected = $this->makeEvent($this->getContextResultWithAllAttrsHidden());
         $this->assertEquals([$expected], json_decode($json, true));
     }
-    
+
     public function testObjectPropertyRedaction()
     {
         $es = new EventSerializer(['private_attribute_names' => ['/b/prop1', '/c/prop2/sub1']]);
