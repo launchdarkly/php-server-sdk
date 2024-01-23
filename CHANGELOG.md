@@ -2,6 +2,13 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [5.2.1](https://github.com/launchdarkly/php-server-sdk/compare/5.2.0...5.2.1) (2024-01-23)
+
+
+### Bug Fixes
+
+* Remove noisy log message about missing guzzle cache middleware ([#195](https://github.com/launchdarkly/php-server-sdk/issues/195)) ([d1119dd](https://github.com/launchdarkly/php-server-sdk/commit/d1119dd3c7d0bbe5375b05b9bfc74280844fb957))
+
 ## [5.2.0] - 2023-10-23
 ### Deprecated:
 - `LDUser` is now deprecated in favor of `LDContext`.
