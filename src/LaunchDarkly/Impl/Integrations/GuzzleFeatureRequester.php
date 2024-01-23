@@ -26,7 +26,6 @@ class GuzzleFeatureRequester implements FeatureRequester
     const SDK_SEGMENTS = "sdk/segments";
     private Client $_client;
     private LoggerInterface $_logger;
-    private bool $_loggedCacheNotice = false;
 
     public function __construct(string $baseUri, string $sdkKey, array $options)
     {
@@ -41,9 +40,6 @@ class GuzzleFeatureRequester implements FeatureRequester
                 ),
                 'cache'
             );
-        } elseif (!$this->_loggedCacheNotice) {
-            $this->_logger->info("GuzzleFeatureRequester is not using an HTTP cache because Kevinrob\GuzzleCache\CacheMiddleware was not installed");
-            $this->_loggedCacheNotice = true;
         }
 
         $defaults = [
