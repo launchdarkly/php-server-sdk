@@ -2,6 +2,13 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [6.0.2](https://github.com/launchdarkly/php-server-sdk/compare/6.0.1...6.0.2) (2024-01-23)
+
+
+### Bug Fixes
+
+* Remove noisy log message about missing guzzle cache middleware ([#196](https://github.com/launchdarkly/php-server-sdk/issues/196)) ([e850026](https://github.com/launchdarkly/php-server-sdk/commit/e85002653dadc95e36fd828301bdb8ffa31532e3))
+
 ## [6.0.1](https://github.com/launchdarkly/php-server-sdk/compare/6.0.0...6.0.1) (2023-12-01)
 
 
