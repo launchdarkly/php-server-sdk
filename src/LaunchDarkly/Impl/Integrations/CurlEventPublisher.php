@@ -129,7 +129,7 @@ class CurlEventPublisher implements EventPublisher
      */
     private function makePowershellRequest(string $args): bool
     {
-        $cmd = base64_encode(iconv("UTF-8", "UTF-16LE", utf8_encode($args)));
+        $cmd = base64_encode(iconv('ISO-8859-1', 'UTF-16LE', $args));
         shell_exec("start /B powershell.exe -encodedCommand $cmd > nul 2>&1");
 
         return true;
