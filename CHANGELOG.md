@@ -2,6 +2,22 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [6.1.0](https://github.com/launchdarkly/php-server-sdk/compare/6.0.2...6.1.0) (2024-03-15)
+
+> [!WARNING]
+> If you are using the [Relay Proxy](https://github.com/launchdarkly/ld-relay/), please make sure to update to v8.4.0 **before** updating to this version of the SDK.
+> Failure to do so will affect the events sent to LaunchDarkly and any support data export integrations.
+
+### Features
+
+* Redact anonymous attributes within feature events ([#193](https://github.com/launchdarkly/php-server-sdk/issues/193)) ([cdad89a](https://github.com/launchdarkly/php-server-sdk/commit/cdad89a38c9dbe16ae70ae2d260eab0471ec64f7))
+* Update to event schema v4 ([#192](https://github.com/launchdarkly/php-server-sdk/issues/192)) ([475727f](https://github.com/launchdarkly/php-server-sdk/commit/475727f634abeecbad9cf678618b95909c341af4))
+
+
+### Bug Fixes
+
+* Replace deprecated utf8_encode usage ([#201](https://github.com/launchdarkly/php-server-sdk/issues/201)) ([2c05c8d](https://github.com/launchdarkly/php-server-sdk/commit/2c05c8d909d57e2855cde9dde2588b4ee53ca828)), closes [#199](https://github.com/launchdarkly/php-server-sdk/issues/199)
+
 ## [6.0.2](https://github.com/launchdarkly/php-server-sdk/compare/6.0.1...6.0.2) (2024-01-23)
 
 
