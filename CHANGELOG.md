@@ -4,6 +4,9 @@ All notable changes to the LaunchDarkly PHP SDK will be documented in this file.
 
 ## [6.1.0](https://github.com/launchdarkly/php-server-sdk/compare/6.0.2...6.1.0) (2024-03-15)
 
+> [!WARNING]
+> If you are using the [Relay Proxy](https://github.com/launchdarkly/ld-relay/), please make sure to update to v8.4.0 **before** updating to this version of the SDK.
+> Failure to do so will affect the events sent to LaunchDarkly and any support data export integrations.
 
 ### Features
 
