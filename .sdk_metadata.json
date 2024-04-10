@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "sdks": {
+    "php-server-sdk": {
+      "name": "PHP SDK",
+      "type": "server-side",
+      "languages": [
+        "PHP"
+      ]
+    }
+  }
+}
