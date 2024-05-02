@@ -1,4 +1,3 @@
-
 test:
 	php -d xdebug.mode=coverage vendor/bin/phpunit
 
