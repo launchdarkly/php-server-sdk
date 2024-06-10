@@ -43,7 +43,7 @@ class GuzzleFeatureRequester implements FeatureRequester
         }
 
         $defaults = [
-            'headers' => Util::defaultHeaders($sdkKey, $options['application_info'] ?? null),
+            'headers' => Util::defaultHeaders($sdkKey, $options),
             'timeout' => $options['timeout'],
             'connect_timeout' => $options['connect_timeout'],
             'handler' => $stack,

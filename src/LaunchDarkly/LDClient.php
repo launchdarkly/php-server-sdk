@@ -78,6 +78,8 @@ class LDClient
      * with this configuration active will have attributes with these names removed. You can also set private attributes on a
      * - `application_info`: An optional {@see \LaunchDarkly\Types\ApplicationInfo} instance.
      * per-user basis in the LDContext builder.
+     * - `wrapper_name`: For use by wrapper libraries to set an identifying name for the wrapper being used. This will be sent in User-Agent headers during requests to the LaunchDarkly servers to allow recording metrics on the usage of these wrapper libraries.
+     * - `wrapper_version`: For use by wrapper libraries to report the version of the library in use. If `wrapper_name` is not set, this field will be ignored. Otherwise the version string will be included in the User-Agent headers along with the `wrapper_name` during requests to the LaunchDarkly servers.
      * - Other options may be available depending on any features you are using from the `LaunchDarkly\Integrations` namespace.
      *
      * @return LDClient

@@ -34,7 +34,7 @@ class GuzzleEventPublisher implements EventPublisher
         $this->_eventsUri = \LaunchDarkly\Impl\Util::adjustBaseUri($baseUri);
 
         $this->_requestOptions = [
-            'headers' => Util::eventHeaders($this->_sdkKey, $options['application_info'] ?? null),
+            'headers' => Util::eventHeaders($this->_sdkKey, $options),
             'timeout' => $options['timeout'],
             'connect_timeout' => $options['connect_timeout']
         ];

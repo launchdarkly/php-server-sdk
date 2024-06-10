@@ -72,4 +72,74 @@ class GuzzleFeatureRequesterTest extends TestCase
         $this->assertEquals('PHPClient/' . LDClient::VERSION, $headers['User-Agent']);
         $this->assertEquals('application-id/my-id application-version/my-version', $headers['X-LaunchDarkly-Tags']);
     }
+
+    public function wrapperProvider(): array
+    {
+        return [
+            [null, null, null],
+            ['my-wrapper', null, 'my-wrapper'],
+            ['my-wrapper', '1.0.0', 'my-wrapper/1.0.0'],
+            [null, '1.0.0', null],
+        ];
+    }
+
+    /**
+     * @dataProvider wrapperProvider
+     */
+    public function testSendsCorrectWrapperNameHeaders(?string $wrapper_name, ?string $wrapper_version, ?string $expected_header): void
+    {
+        /** @var LoggerInterface **/
+        $logger = $this->getMockBuilder(LoggerInterface::class)->getMock();
+
+        $config = [
+            'logger' => $logger,
+            'timeout' => 3,
+            'connect_timeout' => 3,
+        ];
+
+        if ($wrapper_name) {
+            $config['wrapper_name'] = $wrapper_name;
+        }
+        if ($wrapper_version) {
+            $config['wrapper_version'] = $wrapper_version;
+        }
+
+        $requester = new GuzzleFeatureRequester('http://localhost:8080', 'sdk-key', $config);
+        $requester->getFeature("flag-key");
+
+        $requests = [];
+        $client = new Client();
+
+        // Provide time for the curl to execute
+        $start = time();
+        while (time() - $start < 5) {
+            $response = $client->request('GET', 'http://localhost:8080/__admin/requests');
+            $body = json_decode($response->getBody()->getContents(), true);
+            $requests = $body['requests'];
+
+            if ($requests) {
+                break;
+            }
+            usleep(100);
+        }
+
+        if (!$requests) {
+            $this->fail("Unable to connect to endpoint within specified timeout");
+        }
+
+        $this->assertCount(1, $requests);
+
+        $request = $requests[0]['request'];
+
+        // Validate that we hit the right endpoint
+        $this->assertEquals('/sdk/flags/flag-key', $request['url']);
+
+        // And validate that we provided all the correct headers
+        $headers = $request['headers'];
+        if ($expected_header) {
+            $this->assertEquals($expected_header, $headers['X-LaunchDarkly-Wrapper']);
+        } else {
+            $this->assertNotContains('X-LaunchDarkly-Wrapper', $headers);
+        }
+    }
 }

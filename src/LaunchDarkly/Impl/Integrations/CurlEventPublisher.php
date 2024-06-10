@@ -49,7 +49,7 @@ class CurlEventPublisher implements EventPublisher
             $this->_curl = $options['curl'];
         }
 
-        $this->_eventHeaders = Util::eventHeaders($sdkKey, $options['application_info'] ?? null);
+        $this->_eventHeaders = Util::eventHeaders($sdkKey, $options);
         $this->_connectTimeout = $options['connect_timeout'];
         $this->_isWindows = PHP_OS_FAMILY == 'Windows';
     }
