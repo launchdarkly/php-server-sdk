@@ -92,10 +92,10 @@ class Util
      * made to LaunchDarkly servers.
      *
      * @param string $sdkKey
-     * @param ApplicationInfo|null $applicationInfo
+     * @params array<string, mixed> $options
      * @return array<string, string>
      */
-    public static function defaultHeaders(string $sdkKey, $applicationInfo): array
+    public static function defaultHeaders(string $sdkKey, array $options): array
     {
         $headers = [
             'Content-Type' => 'application/json',
@@ -104,10 +104,19 @@ class Util
             'User-Agent' => 'PHPClient/' . LDClient::VERSION,
         ];
 
+        $applicationInfo = $options['application_info'] ?? null;
         if ($applicationInfo instanceof ApplicationInfo) {
             $headerValue = (string) $applicationInfo;
             if ($headerValue) {
                 $headers['X-LaunchDarkly-Tags'] = $headerValue;
+            }
+        }
+
+        if (!empty($options['wrapper_name'])) {
+            $headers['X-LaunchDarkly-Wrapper'] = $options['wrapper_name'];
+
+            if (!empty($options['wrapper_version'])) {
+                $headers['X-LaunchDarkly-Wrapper'] .= '/' . $options['wrapper_version'];
             }
         }
 
@@ -119,12 +128,12 @@ class Util
      * made to the LaunchDarkly Events API.
      *
      * @param string $sdkKey
-     * @param ApplicationInfo|null $applicationInfo
+     * @param array<string, mixed> $options
      * @return array
      */
-    public static function eventHeaders(string $sdkKey, $applicationInfo): array
+    public static function eventHeaders(string $sdkKey, array $options): array
     {
-        $headers = Util::defaultHeaders($sdkKey, $applicationInfo);
+        $headers = Util::defaultHeaders($sdkKey, $options);
         $headers['X-LaunchDarkly-Event-Schema'] = EventPublisher::CURRENT_SCHEMA_VERSION;
         // Only the presence of this header is important. We encode a string
         // value of 'true' to ensure it isn't dropped along the way.
