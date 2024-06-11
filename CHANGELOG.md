@@ -2,6 +2,18 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [6.2.0](https://github.com/launchdarkly/php-server-sdk/compare/6.1.0...6.2.0) (2024-06-11)
+
+
+### Features
+
+* Add wrapper_name and wrapper_version configuration options ([#207](https://github.com/launchdarkly/php-server-sdk/issues/207)) ([9deddf0](https://github.com/launchdarkly/php-server-sdk/commit/9deddf08ebf2a0e55f5e214375de0667ecb2955c))
+
+
+### Miscellaneous Chores
+
+* add .sdk_metadata.json ([#204](https://github.com/launchdarkly/php-server-sdk/issues/204)) ([cc13724](https://github.com/launchdarkly/php-server-sdk/commit/cc137241688862ec5b821211c9c63b1fcb783f8d))
+
 ## [6.1.0](https://github.com/launchdarkly/php-server-sdk/compare/6.0.2...6.1.0) (2024-03-15)
 
 > [!WARNING]
