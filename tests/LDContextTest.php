@@ -140,6 +140,12 @@ class LDContextTest extends \PHPUnit\Framework\TestCase
         self::assertFalse($b->trySet('anonymous', null));
         self::assertFalse($b->trySet('anonymous', 3));
         self::assertTrue($b->build()->isAnonymous());
+
+        $b->set('custom-attribute', null);
+        $b->set('custom-attribute', 3);
+        self::assertTrue($b->trySet('custom-attribute', null));
+        self::assertTrue($b->trySet('custom-attribute', 3));
+        self::assertEquals(['custom-attribute'], $b->build()->getCustomAttributeNames());
     }
 
     public function testGetBuiltInAttributeByName()
@@ -168,6 +174,17 @@ class LDContextTest extends \PHPUnit\Framework\TestCase
                 AttributeReference::fromPath('/c/d'),
                 AttributeReference::fromPath('e')
             ],
+            $c->getPrivateAttributes()
+        );
+    }
+
+    public function testPrivateEmptyAttributes()
+    {
+        self::assertNull(LDContext::create('a')->getPrivateAttributes());
+
+        $c = LDContext::builder('a')->private()->build();
+        self::assertEquals(
+            null,
             $c->getPrivateAttributes()
         );
     }
