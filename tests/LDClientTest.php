@@ -609,6 +609,204 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedState, $state->jsonSerialize());
     }
 
+    public function testAllFlagsShowsTopLevelPrereqKeys()
+    {
+        $topLevel1 = ModelBuilders::flagBuilder('top-level-1')
+            ->version(100)
+            ->on(true)
+            ->variations(true, false)
+            ->fallthroughVariation(0)
+            ->prerequisite('prereq1-of-tl1', 0)
+            ->prerequisite('prereq2-of-tl1', 0)
+            ->build();
+
+        $prereq1OfTl1 = ModelBuilders::flagBuilder('prereq1-of-tl1')
+            ->version(200)
+            ->on(true)
+            ->variations(true, false)
+            ->fallthroughVariation(0)
+            ->prerequisite('prereq1-of-prereq1', 0)
+            ->build();
+
+        $prereq2OfTl1 = ModelBuilders::flagBuilder('prereq2-of-tl1')
+            ->version(200)
+            ->on(true)
+            ->variations(true, false)
+            ->fallthroughVariation(0)
+            ->build();
+
+        $prereq1OfPrereq1 = ModelBuilders::flagBuilder('prereq1-of-prereq1')
+            ->version(300)
+            ->on(true)
+            ->variations(true, false)
+            ->fallthroughVariation(0)
+            ->build();
+
+        $this->mockRequester->addFlag($topLevel1);
+        $this->mockRequester->addFlag($prereq1OfTl1);
+        $this->mockRequester->addFlag($prereq2OfTl1);
+        $this->mockRequester->addFlag($prereq1OfPrereq1);
+
+        $client = $this->makeClient();
+
+        $context = LDContext::create('userkey');
+        $state = $client->allFlagsState($context);
+
+        $this->assertTrue($state->isValid());
+        $this->assertEquals([
+            'top-level-1' => true,
+            'prereq1-of-tl1' => true,
+            'prereq2-of-tl1' => true,
+            'prereq1-of-prereq1' => true,
+        ], $state->toValuesMap());
+
+        $expectedState = [
+            'top-level-1' => true,
+            'prereq1-of-tl1' => true,
+            'prereq2-of-tl1' => true,
+            'prereq1-of-prereq1' => true,
+            '$flagsState' => [
+                'top-level-1' => [
+                    'variation' => 0,
+                    'version' => 100,
+                    'prerequisites' => ['prereq1-of-tl1', 'prereq2-of-tl1'],
+                ],
+                'prereq1-of-tl1' => [
+                    'variation' => 0,
+                    'version' => 200,
+                    'prerequisites' => ['prereq1-of-prereq1'],
+                ],
+                'prereq2-of-tl1' => [
+                    'variation' => 0,
+                    'version' => 200,
+                ],
+                'prereq1-of-prereq1' => [
+                    'variation' => 0,
+                    'version' => 300,
+                ]
+            ],
+            '$valid' => true
+        ];
+        $this->assertEquals($expectedState, $state->jsonSerialize());
+    }
+
+    public function testAllFlagsPrereqsAreHaltedOnFailure()
+    {
+        $topLevel1 = ModelBuilders::flagBuilder('top-level-1')
+            ->version(100)
+            ->on(true)
+            ->variations(true, false)
+            ->fallthroughVariation(0)
+            // This flag will actually evaluate with variation index 0
+            ->prerequisite('prereq1-of-tl1', 1)
+            ->prerequisite('prereq2-of-tl1', 0)
+            ->build();
+
+        $prereq1OfTl1 = ModelBuilders::flagBuilder('prereq1-of-tl1')
+            ->version(200)
+            ->on(true)
+            ->variations(true, false)
+            ->fallthroughVariation(0)
+            ->build();
+
+        $prereq2OfTl1 = ModelBuilders::flagBuilder('prereq2-of-tl1')
+            ->version(200)
+            ->on(true)
+            ->variations(true, false)
+            ->fallthroughVariation(0)
+            ->build();
+
+        $this->mockRequester->addFlag($topLevel1);
+        $this->mockRequester->addFlag($prereq1OfTl1);
+        $this->mockRequester->addFlag($prereq2OfTl1);
+
+        $client = $this->makeClient();
+
+        $context = LDContext::create('userkey');
+        $state = $client->allFlagsState($context);
+
+        $this->assertTrue($state->isValid());
+        $this->assertEquals([
+            'top-level-1' => null,
+            'prereq1-of-tl1' => true,
+            'prereq2-of-tl1' => true,
+        ], $state->toValuesMap());
+
+        $expectedState = [
+            'top-level-1' => null,
+            'prereq1-of-tl1' => true,
+            'prereq2-of-tl1' => true,
+            '$flagsState' => [
+                'top-level-1' => [
+                    'version' => 100,
+                    'prerequisites' => ['prereq1-of-tl1'],
+                ],
+                'prereq1-of-tl1' => [
+                    'variation' => 0,
+                    'version' => 200,
+                ],
+                'prereq2-of-tl1' => [
+                    'variation' => 0,
+                    'version' => 200,
+                ],
+            ],
+            '$valid' => true
+        ];
+        $this->assertEquals($expectedState, $state->jsonSerialize());
+    }
+
+    public function testAllFlagsClientSideVisiblityDoesNotAffectPrereqKeyList()
+    {
+        $flagJson = [
+            'key' => 'top-level-1', 'version' => 100, 'on' => true, 'salt' => '', 'deleted' => false,
+            'targets' => [], 'rules' => [], 'prerequisites' => [['key' => 'prereq1-of-tl1', 'variation' => 0], ['key' => 'prereq2-of-tl1', 'variation' => 0]], 'fallthrough' => ['variation' => 0],
+            'offVariation' => 1, 'variations' => ['a', 'b'], 'clientSide' => true
+        ];
+        $topLevel1 = FeatureFlag::decode($flagJson);
+
+        $flagJson['key'] = 'prereq1-of-tl1';
+        $flagJson['prerequisites'] = [];
+        $flagJson['version'] = 200;
+        $prereq1OfTl1 = FeatureFlag::decode($flagJson);
+
+        $flagJson['key'] = 'prereq2-of-tl1';
+        $flagJson['clientSide'] = false;
+        $prereq2OfTl1 = FeatureFlag::decode($flagJson);
+
+        $this->mockRequester->addFlag($topLevel1);
+        $this->mockRequester->addFlag($prereq1OfTl1);
+        $this->mockRequester->addFlag($prereq2OfTl1);
+
+        $client = $this->makeClient();
+
+        $context = LDContext::create('userkey');
+        $state = $client->allFlagsState($context, ['clientSideOnly' => true]);
+
+        $this->assertTrue($state->isValid());
+        $this->assertEquals([
+            'top-level-1' => 'a',
+            'prereq1-of-tl1' => 'a',
+        ], $state->toValuesMap());
+
+        $expectedState = [
+            'top-level-1' => 'a',
+            'prereq1-of-tl1' => 'a',
+            '$flagsState' => [
+                'top-level-1' => [
+                    'variation' => 0,
+                    'version' => 100,
+                    'prerequisites' => ['prereq1-of-tl1', 'prereq2-of-tl1'],
+                ],
+                'prereq1-of-tl1' => [
+                    'variation' => 0,
+                    'version' => 200,
+                ],
+            ],
+            '$valid' => true
+        ];
+        $this->assertEquals($expectedState, $state->jsonSerialize());
+    }
+
     public function testIdentifySendsEvent()
     {
         $ep = new MockEventProcessor();

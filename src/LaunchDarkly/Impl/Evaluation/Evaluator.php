@@ -17,20 +17,6 @@ use LaunchDarkly\Subsystems\FeatureRequester;
 use Psr\Log\LoggerInterface;
 
 /**
- * @ignore
- * @internal
- */
-class EvaluatorState
-{
-    public ?array $prerequisiteStack = null;
-    public ?array $segmentStack = null;
-    
-    public function __construct(public FeatureFlag $originalFlag)
-    {
-    }
-}
-
-/**
  * Encapsulates the feature flag evaluation logic. The Evaluator has no direct access to the
  * rest of the SDK environment; if it needs to retrieve flags or segments that are referenced
  * by a flag, it does so through a FeatureRequester that is provided in the constructor. It also
@@ -62,15 +48,15 @@ class Evaluator
      */
     public function evaluate(FeatureFlag $flag, LDContext $context, ?callable $prereqEvalSink): EvalResult
     {
-        $stateStack = null;
         $state = new EvaluatorState($flag);
         try {
-            return $this->evaluateInternal($flag, $context, $prereqEvalSink, $state);
+            return $this->evaluateInternal($flag, $context, $prereqEvalSink, $state)
+                ->withState($state);
         } catch (EvaluationException $e) {
-            return new EvalResult(new EvaluationDetail(null, null, EvaluationReason::error($e->getErrorKind())));
+            return new EvalResult(new EvaluationDetail(null, null, EvaluationReason::error($e->getErrorKind())), false, $state);
         } catch (\Throwable $e) {
             Util::logExceptionAtErrorLevel($this->_logger, $e, 'Unexpected error when evaluating flag ' . $flag->getKey());
-            return new EvalResult(new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::EXCEPTION_ERROR)));
+            return new EvalResult(new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::EXCEPTION_ERROR)), false, $state);
         }
     }
 
@@ -144,6 +130,15 @@ class Evaluator
                         EvaluationReason::MALFORMED_FLAG_ERROR
                     );
                 }
+
+                if ($state->depth == 0) {
+                    if ($state->prerequisites === null) {
+                        $state->prerequisites = [];
+                    }
+                    $state->prerequisites[] = $prereqKey;
+                }
+
+
                 $prereqOk = true;
                 $prereqFeatureFlag = $this->_featureRequester->getFeature($prereqKey);
                 if ($prereqFeatureFlag === null) {
@@ -151,7 +146,9 @@ class Evaluator
                 } else {
                     // Note that if the prerequisite flag is off, we don't consider it a match no matter what its
                     // off variation was. But we still need to evaluate it in order to generate an event.
+                    $state->depth++;
                     $prereqEvalResult = $this->evaluateInternal($prereqFeatureFlag, $context, $prereqEvalSink, $state);
+                    $state->depth--;
                     $variation = $prereq->getVariation();
                     if (!$prereqFeatureFlag->isOn() || $prereqEvalResult->getDetail()->getVariationIndex() !== $variation) {
                         $prereqOk = false;

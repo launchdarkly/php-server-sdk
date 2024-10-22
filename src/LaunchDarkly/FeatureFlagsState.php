@@ -43,7 +43,8 @@ class FeatureFlagsState implements \JsonSerializable
         EvaluationDetail $detail,
         bool $forceReasonTracking = false,
         bool $withReason = false,
-        bool $detailsOnlyIfTracked = false
+        bool $detailsOnlyIfTracked = false,
+        ?array $prerequisites = null,
     ): void {
         $this->_flagValues[$flag->getKey()] = $detail->getValue();
         $meta = [];
@@ -60,6 +61,9 @@ class FeatureFlagsState implements \JsonSerializable
 
         $reason = (!$withReason && !$trackReason) ? null : $detail->getReason();
 
+        if ($prerequisites) {
+            $meta['prerequisites'] = $prerequisites;
+        }
         if ($reason && !$omitDetails) {
             $meta['reason'] = $reason;
         }
