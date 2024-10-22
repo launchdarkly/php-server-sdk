@@ -63,7 +63,7 @@ class RolloutRandomizationConsistencyTest extends TestCase
 
         return $decodedFlag;
     }
-    
+
     public function testVariationIndexForContext()
     {
         $flag = $this->buildFlag();
@@ -87,18 +87,21 @@ class RolloutRandomizationConsistencyTest extends TestCase
         );
 
         $evaluator = new Evaluator(static::$requester);
-    
+
         $context1 = LDContext::create('userKeyA');
         $result1 = $evaluator->evaluate($flag, $context1, EvaluatorTestUtil::expectNoPrerequisiteEvals());
-        $this->assertEquals($expectedEvalResult1, $result1);
+        $this->assertEquals($expectedEvalResult1->getDetail(), $result1->getDetail());
+        $this->assertEquals($expectedEvalResult1->isForceReasonTracking(), $result1->isForceReasonTracking());
 
         $context2 = LDContext::create('userKeyB');
         $result2 = $evaluator->evaluate($flag, $context2, EvaluatorTestUtil::expectNoPrerequisiteEvals());
-        $this->assertEquals($expectedEvalResult2, $result2);
+        $this->assertEquals($expectedEvalResult2->getDetail(), $result2->getDetail());
+        $this->assertEquals($expectedEvalResult2->isForceReasonTracking(), $result2->isForceReasonTracking());
 
         $context3 = LDContext::create('userKeyC');
         $result3 = $evaluator->evaluate($flag, $context3, EvaluatorTestUtil::expectNoPrerequisiteEvals());
-        $this->assertEquals($expectedEvalResult3, $result3);
+        $this->assertEquals($expectedEvalResult3->getDetail(), $result3->getDetail());
+        $this->assertEquals($expectedEvalResult3->isForceReasonTracking(), $result3->isForceReasonTracking());
     }
 
     public function testBucketContextByKey()

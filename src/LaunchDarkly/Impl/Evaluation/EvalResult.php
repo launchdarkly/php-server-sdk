@@ -15,21 +15,33 @@ use LaunchDarkly\EvaluationDetail;
 class EvalResult
 {
     private EvaluationDetail $_detail;
+    private ?EvaluatorState $_state;
     private bool $_forceReasonTracking;
 
     /**
      * @param EvaluationDetail $detail
      * @param bool $forceReasonTracking
      */
-    public function __construct(EvaluationDetail $detail, bool $forceReasonTracking = false)
+    public function __construct(EvaluationDetail $detail, bool $forceReasonTracking = false, EvaluatorState $state = null)
     {
         $this->_detail = $detail;
+        $this->_state = $state;
         $this->_forceReasonTracking = $forceReasonTracking;
+    }
+
+    public function withState(EvaluatorState $state): EvalResult
+    {
+        return new EvalResult($this->_detail, $this->_forceReasonTracking, $state);
     }
 
     public function getDetail(): EvaluationDetail
     {
         return $this->_detail;
+    }
+
+    public function getState(): ?EvaluatorState
+    {
+        return $this->_state;
     }
 
     public function isForceReasonTracking(): bool

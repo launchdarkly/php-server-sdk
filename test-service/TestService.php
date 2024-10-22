@@ -77,7 +77,8 @@ class TestService
                 'migrations',
                 'event-sampling',
                 'inline-context',
-                'anonymous-redaction'
+                'anonymous-redaction',
+                'client-prereq-events'
             ],
             'clientVersion' => \LaunchDarkly\LDClient::VERSION
         ];

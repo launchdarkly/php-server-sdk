@@ -501,7 +501,7 @@ class LDClient
                 continue;
             }
             $result = $tempEvaluator->evaluate($flag, $context, null);
-            $state->addFlag($flag, $result->getDetail(), $result->isForceReasonTracking(), $withReasons, $detailsOnlyIfTracked);
+            $state->addFlag($flag, $result->getDetail(), $result->isForceReasonTracking(), $withReasons, $detailsOnlyIfTracked, $result->getState()?->prerequisites);
         }
         return $state;
     }
