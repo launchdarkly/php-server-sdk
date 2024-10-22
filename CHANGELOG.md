@@ -2,6 +2,13 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [6.3.0](https://github.com/launchdarkly/php-server-sdk/compare/6.2.0...6.3.0) (2024-10-22)
+
+
+### Features
+
+* Add support for client-side prerequisite events ([#210](https://github.com/launchdarkly/php-server-sdk/issues/210)) ([a940b34](https://github.com/launchdarkly/php-server-sdk/commit/a940b342352c88ad899ef867b2e3093eb6374666))
+
 ## [6.2.0](https://github.com/launchdarkly/php-server-sdk/compare/6.1.0...6.2.0) (2024-06-11)
 
 

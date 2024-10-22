@@ -17,4 +17,4 @@ runs:
           --ignore-tags psalm-return \
           --visibility public \
           --defaultpackagename "LaunchDarkly" \
-          --title "LaunchDarkly PHP SDK 6.2.0" # x-release-please-version
+          --title "LaunchDarkly PHP SDK 6.3.0" # x-release-please-version
