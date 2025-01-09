@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace LaunchDarkly\Impl\Evaluation;
 
+use LaunchDarkly\BigSegmentEvaluationStatus;
 use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
+use LaunchDarkly\Impl\BigSegments;
 use LaunchDarkly\Impl\Model\Clause;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Impl\Model\Rule;
@@ -27,11 +29,13 @@ use Psr\Log\LoggerInterface;
 class Evaluator
 {
     private FeatureRequester $_featureRequester;
+    private BigSegments\StoreManager $_bigSegmentStoreManager;
     private LoggerInterface $_logger;
 
-    public function __construct(FeatureRequester $featureRequester, ?LoggerInterface $logger = null)
+    public function __construct(FeatureRequester $featureRequester, BigSegments\StoreManager $bigSegmentStoreManager, ?LoggerInterface $logger = null)
     {
         $this->_featureRequester = $featureRequester;
+        $this->_bigSegmentStoreManager = $bigSegmentStoreManager;
         $this->_logger = $logger ?: Util::makeNullLogger();
     }
 
@@ -50,8 +54,21 @@ class Evaluator
     {
         $state = new EvaluatorState($flag);
         try {
-            return $this->evaluateInternal($flag, $context, $prereqEvalSink, $state)
+            $evalResult = $this->evaluateInternal($flag, $context, $prereqEvalSink, $state)
                 ->withState($state);
+
+            if ($state->bigSegmentEvaluationStatus !== null) {
+                $reason = $evalResult->getDetail()->getReason()->withBigSegmentEvaluationStatus($state->bigSegmentEvaluationStatus);
+                $detail = new EvaluationDetail(
+                    $evalResult->getDetail()->getValue(),
+                    $evalResult->getDetail()->getVariationIndex(),
+                    $reason
+                );
+
+                $evalResult = $evalResult->withDetail($detail);
+            }
+
+            return $evalResult;
         } catch (EvaluationException $e) {
             return new EvalResult(new EvaluationDetail(null, null, EvaluationReason::error($e->getErrorKind())), false, $state);
         } catch (\Throwable $e) {
@@ -248,22 +265,35 @@ class Evaluator
 
     private function segmentMatchesContext(Segment $segment, LDContext $context, EvaluatorState $state): bool
     {
-        if (EvaluatorHelpers::contextKeyIsInTargetList($context, null, $segment->getIncluded())) {
-            return true;
+        if ($segment->getUnbounded()) {
+            return $this->bigSegmentContextMatch($segment, $context, $state);
         }
-        foreach ($segment->getIncludedContexts() as $t) {
-            if (EvaluatorHelpers::contextKeyIsInTargetList($context, $t->getContextKind(), $t->getValues())) {
+
+        return $this->simpleSegmentContextMatch($segment, $context, $state, true);
+
+    }
+
+    private function simpleSegmentContextMatch(Segment $segment, LDContext $context, EvaluatorState $state, bool $useIncludes): bool
+    {
+        if ($useIncludes) {
+            if (EvaluatorHelpers::contextKeyIsInTargetList($context, null, $segment->getIncluded())) {
                 return true;
             }
-        }
-        if (EvaluatorHelpers::contextKeyIsInTargetList($context, null, $segment->getExcluded())) {
-            return false;
-        }
-        foreach ($segment->getExcludedContexts() as $t) {
-            if (EvaluatorHelpers::contextKeyIsInTargetList($context, $t->getContextKind(), $t->getValues())) {
+            foreach ($segment->getIncludedContexts() as $t) {
+                if (EvaluatorHelpers::contextKeyIsInTargetList($context, $t->getContextKind(), $t->getValues())) {
+                    return true;
+                }
+            }
+            if (EvaluatorHelpers::contextKeyIsInTargetList($context, null, $segment->getExcluded())) {
                 return false;
             }
+            foreach ($segment->getExcludedContexts() as $t) {
+                if (EvaluatorHelpers::contextKeyIsInTargetList($context, $t->getContextKind(), $t->getValues())) {
+                    return false;
+                }
+            }
         }
+
         $rules = $segment->getRules();
         if (count($rules) !== 0) {
             // Evaluating rules means we might be doing recursive segment matches, so we'll push the current
@@ -285,6 +315,68 @@ class Evaluator
         return false;
     }
 
+    private function bigSegmentContextMatch(Segment $segment, LDContext $context, EvaluatorState $state): bool
+    {
+        if ($segment->getGeneration() === null) {
+            $state->bigSegmentEvaluationStatus = BigSegmentEvaluationStatus::NOT_CONFIGURED;
+            return false;
+        }
+
+        $matchedContext = $context->getIndividualContext($segment->getUnboundedContextKind());
+        if ($matchedContext === null) {
+            return false;
+        }
+
+        /** @var ?array<string, bool> */
+        $membership = null;
+        if ($state->bigSegmentMembership !== null) {
+            $membership = $state->bigSegmentMembership[$matchedContext->getKey()] ?? null;
+        }
+
+        if ($membership === null) {
+            // Note that this query is just by key; the context kind doesn't
+            // matter because any given Big Segment can only reference one
+            // context kind. So if segment A for the "user" kind includes a
+            // "user" context with key X, and segment B for the "org" kind
+            // includes an "org" context with the same key X, it is fine to say
+            // that the membership for key X is segment A and segment B-- there
+            // is no ambiguity.
+            $result = $this->_bigSegmentStoreManager->getContextMembership($matchedContext->getKey());
+            if ($result !== null) {
+                $state->bigSegmentEvaluationStatus = $result->status;
+
+                $membership = $result->membership;
+                if ($state->bigSegmentMembership === null) {
+                    $state->bigSegmentMembership = [];
+                }
+                $state->bigSegmentMembership[$matchedContext->getKey()] = $membership;
+            } else {
+                $state->bigSegmentEvaluationStatus = BigSegmentEvaluationStatus::NOT_CONFIGURED;
+            }
+        }
+
+        $membershipResult = null;
+        if ($membership !== null) {
+            $segmentRef = Evaluator::makeBigSegmentRef($segment);
+            $membershipResult = $membership[$segmentRef] ?? false;
+        }
+
+        if ($membershipResult !== null) {
+            return $membershipResult;
+        }
+
+        return $this->simpleSegmentContextMatch($segment, $context, $state, false);
+    }
+
+    private static function makeBigSegmentRef(Segment $segment): string
+    {
+        // The format of Big Segment references is independent of what store
+        // implementation is being used; the store implementation receives only
+        // this string and does not know the details of the data model. The
+        // Relay Proxy will use the same format when writing to the store.
+        return sprintf("%s.g%s", $segment->getKey(), $segment->getGeneration() ?? '');
+    }
+
     private function segmentRuleMatchesContext(
         SegmentRule $rule,
         LDContext $context,
@@ -292,7 +384,6 @@ class Evaluator
         string $segmentSalt,
         EvaluatorState $state
     ): bool {
-        $rulej = print_r($rule, true);
         foreach ($rule->getClauses() as $clause) {
             if (!$this->clauseMatchesContext($clause, $context, $state)) {
                 return false;

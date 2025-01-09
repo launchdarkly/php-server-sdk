@@ -3,6 +3,7 @@
 namespace LaunchDarkly\Tests;
 
 use InvalidArgumentException;
+use LaunchDarkly\BigSegmentEvaluationStatus;
 use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
 use LaunchDarkly\Impl\Model\FeatureFlag;
@@ -12,7 +13,11 @@ use LaunchDarkly\Migrations\Operation;
 use LaunchDarkly\Migrations\OpTracker;
 use LaunchDarkly\Migrations\Origin;
 use LaunchDarkly\Migrations\Stage;
+use LaunchDarkly\Subsystems\BigSegmentStatusListener;
 use LaunchDarkly\Tests\Impl\Evaluation\EvaluatorTestUtil;
+use LaunchDarkly\Types\BigSegmentConfig;
+use LaunchDarkly\Types\BigSegmentStoreMetadata;
+use LaunchDarkly\Types\BigSegmentStoreStatus;
 use Psr\Log\LoggerInterface;
 
 class LDClientTest extends \PHPUnit\Framework\TestCase
@@ -28,7 +33,12 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
     {
         $this->assertInstanceOf(LDClient::class, new LDClient("BOGUS_SDK_KEY"));
     }
-
+    /**
+     * @param mixed $key
+     * @param mixed $value
+     * @param mixed $samplingRatio
+     * @param mixed $excludeFromSummaries
+     */
     private function makeOffFlagWithValue($key, $value, $samplingRatio = 1, $excludeFromSummaries = false)
     {
         return ModelBuilders::flagBuilder($key)
@@ -41,7 +51,9 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
             ->excludeFromSummaries($excludeFromSummaries)
             ->build();
     }
-
+    /**
+     * @param mixed $key
+     */
     private function makeFlagThatEvaluatesToNull($key)
     {
         return ModelBuilders::flagBuilder($key)
@@ -51,14 +63,15 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
             ->fallthroughVariation(0)
             ->build();
     }
-
-    private function makeClient($overrideOptions = [])
+    /**
+     * @param mixed $overrideOptions
+     */
+    private function makeClient($overrideOptions = []): LDClient
     {
         $options = [
             'feature_requester' => $this->mockRequester,
             'event_processor' => new MockEventProcessor()
         ];
-        $x = array_merge($options, $overrideOptions);
         return new LDClient("someKey", array_merge($options, $overrideOptions));
     }
 
@@ -973,5 +986,266 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals($stage, $result['stage']);
         $this->assertInstanceOf(OpTracker::class, $result['tracker']);
+    }
+
+    public function testCanCheckBigSegmentStatus(): void
+    {
+        $store = new BigSegmentStoreImpl([
+            new BigSegmentStoreMetadata(lastUpToDate: 0),
+        ], []);
+
+        $config = new BigSegmentConfig(store: $store);
+        $client = $this->makeClient(['big_segments' => $config]);
+        $provider = $client->getBigSegmentStatusProvider();
+
+        $status = $provider->status();
+        $this->assertTrue($status->isAvailable());
+        $this->assertTrue($status->isStale());
+    }
+
+    public function testCanCheckBigSegmentStatusWhenUnconfigured(): void
+    {
+        $client = $this->makeClient();
+        $provider = $client->getBigSegmentStatusProvider();
+
+        $status = $provider->status();
+        $this->assertFalse($status->isAvailable());
+        $this->assertFalse($status->isStale());
+    }
+
+    public function testEachCheckCausesALookup(): void
+    {
+        $store = new BigSegmentStoreImpl([
+            new BigSegmentStoreMetadata(lastUpToDate: 0),
+            new BigSegmentStoreMetadata(lastUpToDate: time()),
+        ], []);
+
+        $config = new BigSegmentConfig(store: $store);
+        $client = $this->makeClient(['big_segments' => $config]);
+        $provider = $client->getBigSegmentStatusProvider();
+
+        $status = $provider->status();
+        $this->assertTrue($status->isAvailable());
+        $this->assertTrue($status->isStale());
+
+        $status = $provider->status();
+        $this->assertTrue($status->isAvailable());
+        $this->assertFalse($status->isStale());
+    }
+
+    public function testCanControlFreshnessThroughConfig(): void
+    {
+        $now = time();
+        $store = new BigSegmentStoreImpl([
+            new BigSegmentStoreMetadata(lastUpToDate: $now - 100),
+            new BigSegmentStoreMetadata(lastUpToDate: $now - 1_000),
+        ], []);
+
+        $config = new BigSegmentConfig(store: $store, staleAfter: 500);
+        $client = $this->makeClient(['big_segments' => $config]);
+        $provider = $client->getBigSegmentStatusProvider();
+
+        $status = $provider->status();
+        $this->assertFalse($status->isStale());
+
+        $status = $provider->status();
+        $this->assertTrue($status->isStale());
+    }
+
+    public function testReportsUnconfiguredBigSegmentEvaluation(): void
+    {
+        $segment = ModelBuilders::segmentBuilder('test')
+            ->generation(100)
+            ->unbounded(true)
+            ->build();
+        $flag = ModelBuilders::booleanFlagWithClauses(
+            ModelBuilders::clauseMatchingSegment($segment)
+        );
+        $this->mockRequester->addFlag($flag);
+        $this->mockRequester->addSegment($segment);
+
+        $client = $this->makeClient();
+        $detail = $client->variationDetail($flag->getKey(), LDContext::create('userkey'), false);
+
+        $this->assertEquals(BigSegmentEvaluationStatus::NOT_CONFIGURED, $detail->getReason()->bigSegmentEvaluationStatus());
+    }
+
+    public function testReportsHealthyBigSegmentEvaluationStatus(): void
+    {
+        $segment = ModelBuilders::segmentBuilder('test')
+            ->generation(100)
+            ->unbounded(true)
+            ->build();
+        $flag = ModelBuilders::booleanFlagWithClauses(
+            ModelBuilders::clauseMatchingSegment($segment)
+        );
+        $this->mockRequester->addFlag($flag);
+        $this->mockRequester->addSegment($segment);
+
+        $store = new BigSegmentStoreImpl([
+            new BigSegmentStoreMetadata(lastUpToDate: time()),
+        ], []);
+
+        $config = new BigSegmentConfig(store: $store);
+        $client = $this->makeClient(['big_segments' => $config]);
+        $detail = $client->variationDetail($flag->getKey(), LDContext::create('userkey'), false);
+
+        $this->assertEquals(BigSegmentEvaluationStatus::HEALTHY, $detail->getReason()->bigSegmentEvaluationStatus());
+    }
+
+    public function testReportsStaleBigSegmentEvaluationStatus(): void
+    {
+        $segment = ModelBuilders::segmentBuilder('test')
+            ->generation(100)
+            ->unbounded(true)
+            ->build();
+        $flag = ModelBuilders::booleanFlagWithClauses(
+            ModelBuilders::clauseMatchingSegment($segment)
+        );
+        $this->mockRequester->addFlag($flag);
+        $this->mockRequester->addSegment($segment);
+
+        $store = new BigSegmentStoreImpl([
+            new BigSegmentStoreMetadata(lastUpToDate: time() - 1_000),
+        ], []);
+
+        $config = new BigSegmentConfig(store: $store, staleAfter: 100);
+        $client = $this->makeClient(['big_segments' => $config]);
+        $detail = $client->variationDetail($flag->getKey(), LDContext::create('userkey'), false);
+
+        $this->assertEquals(BigSegmentEvaluationStatus::STALE, $detail->getReason()->bigSegmentEvaluationStatus());
+    }
+
+    public function testCheckingBigSegmentStatusPreventsEvaluationFromNeedingTo(): void
+    {
+        $segment = ModelBuilders::segmentBuilder('test')
+            ->generation(100)
+            ->unbounded(true)
+            ->build();
+        $flag = ModelBuilders::booleanFlagWithClauses(
+            ModelBuilders::clauseMatchingSegment($segment)
+        );
+        $this->mockRequester->addFlag($flag);
+        $this->mockRequester->addSegment($segment);
+
+        $store = new BigSegmentStoreImpl([
+            new BigSegmentStoreMetadata(lastUpToDate: time()),
+            new BigSegmentStoreMetadata(lastUpToDate: time() - 1000),
+        ], []);
+
+        $config = new BigSegmentConfig(store: $store, staleAfter: 500);
+        $client = $this->makeClient(['big_segments' => $config]);
+        $provider = $client->getBigSegmentStatusProvider();
+
+        $status = $provider->status();
+        $this->assertTrue($status->isAvailable());
+        $this->assertFalse($status->isStale());
+
+        // Should be STALE if it actually made a new request. However, it isn't
+        // configured to make another status check that fast, so it uses what
+        // it last knew, which is that it isn't stale.
+        $detail = $client->variationDetail($flag->getKey(), LDContext::create('userkey'), false);
+        $this->assertEquals(BigSegmentEvaluationStatus::HEALTHY, $detail->getReason()->bigSegmentEvaluationStatus());
+
+        $status = $provider->status();
+        $this->assertTrue($status->isAvailable());
+        $this->assertTrue($status->isStale());
+    }
+
+    public function testBigSegmentStatusListeners(): void
+    {
+        $segment = ModelBuilders::segmentBuilder('test')
+            ->generation(100)
+            ->unbounded(true)
+            ->build();
+        $flag = ModelBuilders::booleanFlagWithClauses(
+            ModelBuilders::clauseMatchingSegment($segment)
+        );
+        $this->mockRequester->addFlag($flag);
+        $this->mockRequester->addSegment($segment);
+
+        $now = time();
+        $store = new BigSegmentStoreImpl([
+            new BigSegmentStoreMetadata(lastUpToDate: $now),
+            new BigSegmentStoreMetadata(lastUpToDate: $now - 1000),
+            new BigSegmentStoreMetadata(lastUpToDate: $now),
+        ], []);
+
+        $config = new BigSegmentConfig(store: $store, staleAfter: 500);
+        $client = $this->makeClient(['big_segments' => $config]);
+        $provider = $client->getBigSegmentStatusProvider();
+
+        $subjects = [];
+        $listener = new MockBigSegmentStatusListener(
+            function (?BigSegmentStoreStatus $old, BigSegmentStoreStatus $new) use (&$subjects) {
+                $subjects[] = ['old' => $old, 'new' => $new];
+            }
+        );
+        $provider->attach($listener);
+
+        // Triggers a status lookup
+        $client->variationDetail($flag->getKey(), LDContext::create('userkey'), false);
+
+        // Force 2 more
+        $provider->status();
+        $provider->status();
+
+        $this->assertCount(3, $subjects);
+
+        $old = $subjects[0]['old'];
+        $new = $subjects[0]['new'];
+        $this->assertNull($old);
+        $this->assertFalse($new->isStale());
+
+        $old = $subjects[1]['old'];
+        $new = $subjects[1]['new'];
+        $this->assertFalse($old->isStale());
+        $this->assertTrue($new->isStale());
+
+        $old = $subjects[2]['old'];
+        $new = $subjects[2]['new'];
+        $this->assertTrue($old->isStale());
+        $this->assertFalse($new->isStale());
+    }
+
+    public function testBigSegmentStatusListenerExceptionsDoNotHaltException(): void
+    {
+        $now = time();
+        $store = new BigSegmentStoreImpl([
+            new BigSegmentStoreMetadata(lastUpToDate: $now),
+        ], []);
+
+        $config = new BigSegmentConfig(store: $store, staleAfter: 500);
+        $client = $this->makeClient(['big_segments' => $config]);
+        $provider = $client->getBigSegmentStatusProvider();
+
+        $listener = new MockBigSegmentStatusListener(fn () => throw new \Exception('oops'));
+        $provider->attach($listener);
+
+        try {
+            $provider->status();
+        } catch (\Exception) {
+            $this->fail('The SDK should have swallowed the exception.');
+        }
+
+        $this->assertTrue(true, 'confirming that we did in fact get this far');
+    }
+}
+
+class MockBigSegmentStatusListener implements BigSegmentStatusListener
+{
+    private $fn;
+
+    /**
+     * @param callable(BigSegmentStoreStatus, BigSegmentStoreStatus): void $fn
+     */
+    public function __construct(callable $fn)
+    {
+        $this->fn = $fn;
+    }
+
+    public function statusChanged(?BigSegmentStoreStatus $old, BigSegmentStoreStatus $new): void
+    {
+        ($this->fn)($old, $new);
     }
 }

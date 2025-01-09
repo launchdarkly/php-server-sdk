@@ -96,6 +96,7 @@ class EvaluationReason implements \JsonSerializable
     private ?string $_ruleId;
     private ?string $_prerequisiteKey;
     private bool $_inExperiment;
+    private ?BigSegmentEvaluationStatus $_bigSegmentEvaluationStatus;
 
     /**
      * Creates a new instance of the OFF reason.
@@ -164,7 +165,8 @@ class EvaluationReason implements \JsonSerializable
         ?int $ruleIndex = null,
         ?string $ruleId = null,
         ?string $prerequisiteKey = null,
-        bool $inExperiment = false
+        bool $inExperiment = false,
+        BigSegmentEvaluationStatus $bigSegmentEvaluationStatus = null
     ) {
         $this->_kind = $kind;
         $this->_errorKind = $errorKind;
@@ -172,6 +174,28 @@ class EvaluationReason implements \JsonSerializable
         $this->_ruleId = $ruleId;
         $this->_prerequisiteKey = $prerequisiteKey;
         $this->_inExperiment = $inExperiment;
+        $this->_bigSegmentEvaluationStatus = $bigSegmentEvaluationStatus;
+    }
+
+    /**
+     * Returns a new EvaluationReason instance matching all the properties of
+     * this one, except for the big segment evaluation status.
+     */
+    public function withBigSegmentEvaluationStatus(BigSegmentEvaluationStatus $bigSegmentEvaluationStatus): EvaluationReason
+    {
+        if ($this->_bigSegmentEvaluationStatus == $bigSegmentEvaluationStatus) {
+            return $this;
+        }
+
+        return new EvaluationReason(
+            $this->_kind,
+            $this->_errorKind,
+            $this->_ruleIndex,
+            $this->_ruleId,
+            $this->_prerequisiteKey,
+            $this->_inExperiment,
+            $bigSegmentEvaluationStatus
+        );
     }
 
     /**
@@ -234,6 +258,21 @@ class EvaluationReason implements \JsonSerializable
     }
 
     /**
+    * Describes the validity of Big Segment information, if and only if the
+    * flag evaluation required querying at least one Big Segment. Otherwise it
+    * returns null. Possible values are defined by {@see
+    * BigSegmentEvaluationStatus}.
+    *
+    * Big Segments are a specific kind of context segments. For more
+    * information, read the LaunchDarkly documentation:
+    * https://docs.launchdarkly.com/home/users/big-segments
+    */
+    public function bigSegmentEvaluationStatus(): ?BigSegmentEvaluationStatus
+    {
+        return $this->_bigSegmentEvaluationStatus;
+    }
+
+    /**
      * Returns a simple string representation of this object.
      */
     public function __toString(): string
@@ -271,6 +310,9 @@ class EvaluationReason implements \JsonSerializable
         }
         if ($this->_inExperiment) {
             $ret['inExperiment'] = $this->_inExperiment;
+        }
+        if ($this->_bigSegmentEvaluationStatus !== null) {
+            $ret['bigSegmentsStatus'] = $this->_bigSegmentEvaluationStatus->value;
         }
         return $ret;
     }

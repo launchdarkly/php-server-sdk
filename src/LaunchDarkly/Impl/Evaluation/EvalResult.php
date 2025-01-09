@@ -34,6 +34,11 @@ class EvalResult
         return new EvalResult($this->_detail, $this->_forceReasonTracking, $state);
     }
 
+    public function withDetail(EvaluationDetail $detail): EvalResult
+    {
+        return new EvalResult($detail, $this->_forceReasonTracking, $this->_state);
+    }
+
     public function getDetail(): EvaluationDetail
     {
         return $this->_detail;

@@ -13,17 +13,19 @@ use LaunchDarkly\Migrations\ExecutionOrder;
 use LaunchDarkly\Migrations\MigratorBuilder;
 use LaunchDarkly\Migrations\Operation;
 use LaunchDarkly\Migrations\Stage;
+use LaunchDarkly\Types\BigSegmentConfig;
 use LaunchDarkly\Types\Result;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 class SdkClientEntity
 {
     private LDClient $_client;
     private Logger $_logger;
 
-    public function __construct($params)
+    public function __construct($params, bool $resetBigSegmentStore)
     {
         $tag = $params['tag'];
 
@@ -35,10 +37,10 @@ class SdkClientEntity
         $logger->pushHandler($stream);
         $this->_logger = $logger;
 
-        $this->_client = self::createSdkClient($params, $logger);
+        $this->_client = self::createSdkClient($params, $resetBigSegmentStore, $logger);
     }
 
-    public static function createSdkClient($params, $logger): LDClient
+    public static function createSdkClient($params, bool $resetBigSegmentStore, $logger): LDClient
     {
         $config = $params['configuration'];
 
@@ -56,6 +58,40 @@ class SdkClientEntity
         $options['events_uri'] = $eventsConfig['baseUri'] ?? null;
         $options['all_attributes_private'] = $eventsConfig['allAttributesPrivate'] ?? false;
         $options['private_attribute_names'] = $eventsConfig['globalPrivateAttributes'] ?? null;
+
+        $bigSegments = $config['bigSegments'] ?? null;
+        if ($bigSegments) {
+            $store = new BigSegmentStoreGuzzle(new Client(), $bigSegments['callbackUri']);
+
+            $contextCacheTime = $bigSegments['userCacheTimeMs'] ?? 0;
+            if ($contextCacheTime) {
+                $contextCacheTime /= 1_000;
+            }
+            $statusPollInterval = $bigSegments['statusPollIntervalMs'] ?? null;
+            if ($statusPollInterval) {
+                $statusPollInterval /= 1_000;
+            }
+            $staleAfter = $bigSegments['staleAfterMs'] ?? null;
+            if ($staleAfter) {
+                $staleAfter /= 1_000;
+            }
+
+
+            $cache = new FilesystemAdapter(defaultLifetime: $contextCacheTime);
+
+            if ($resetBigSegmentStore) {
+                $cache->clear();
+            }
+
+            $bigSegmentConfig = new BigSegmentConfig(
+                store: $store,
+                cache: $cache,
+                statusPollInterval: $statusPollInterval,
+                staleAfter: $staleAfter
+            );
+
+            $options['big_segments'] = $bigSegmentConfig;
+        }
 
         return new LDClient($sdkKey, $options);
     }
@@ -103,6 +139,9 @@ class SdkClientEntity
 
             case 'migrationOperation':
                 return $this->doMigrationOperation($commandParams);
+
+            case 'getBigSegmentStoreStatus':
+                return $this->doBigSegmentStoreStatus();
 
             default:
                 return false;  // means invalid command
@@ -299,6 +338,16 @@ class SdkClientEntity
         );
 
         return ['result' => $result->authoritative->isSuccessful() ? $result->authoritative->value : $result->authoritative->error];
+    }
+
+    private function doBigSegmentStoreStatus(): array
+    {
+        $status = $this->_client->getBigSegmentStatusProvider()->status();
+
+        return [
+            'available' => $status->isAvailable(),
+            'stale' => $status->isStale(),
+        ];
     }
 
     private function makeContext(array $data): LDContext
