@@ -25,7 +25,7 @@ class SdkClientEntity
     private LDClient $_client;
     private Logger $_logger;
 
-    public function __construct($params, bool $resetBigSegmentStore)
+    public function __construct($params, bool $resetBigSegmentsStore)
     {
         $tag = $params['tag'];
 
@@ -37,10 +37,10 @@ class SdkClientEntity
         $logger->pushHandler($stream);
         $this->_logger = $logger;
 
-        $this->_client = self::createSdkClient($params, $resetBigSegmentStore, $logger);
+        $this->_client = self::createSdkClient($params, $resetBigSegmentsStore, $logger);
     }
 
-    public static function createSdkClient($params, bool $resetBigSegmentStore, $logger): LDClient
+    public static function createSdkClient($params, bool $resetBigSegmentsStore, $logger): LDClient
     {
         $config = $params['configuration'];
 
@@ -61,7 +61,7 @@ class SdkClientEntity
 
         $bigSegments = $config['bigSegments'] ?? null;
         if ($bigSegments) {
-            $store = new BigSegmentStoreGuzzle(new Client(), $bigSegments['callbackUri']);
+            $store = new BigSegmentsStoreGuzzle(new Client(), $bigSegments['callbackUri']);
 
             $contextCacheTime = $bigSegments['userCacheTimeMs'] ?? 0;
             if ($contextCacheTime) {
@@ -79,7 +79,7 @@ class SdkClientEntity
 
             $cache = new FilesystemAdapter(defaultLifetime: $contextCacheTime);
 
-            if ($resetBigSegmentStore) {
+            if ($resetBigSegmentsStore) {
                 $cache->clear();
             }
 
@@ -140,8 +140,8 @@ class SdkClientEntity
             case 'migrationOperation':
                 return $this->doMigrationOperation($commandParams);
 
-            case 'getBigSegmentStoreStatus':
-                return $this->doBigSegmentStoreStatus();
+            case 'getBigSegmentsStoreStatus':
+                return $this->doBigSegmentsStoreStatus();
 
             default:
                 return false;  // means invalid command
@@ -340,7 +340,7 @@ class SdkClientEntity
         return ['result' => $result->authoritative->isSuccessful() ? $result->authoritative->value : $result->authoritative->error];
     }
 
-    private function doBigSegmentStoreStatus(): array
+    private function doBigSegmentsStoreStatus(): array
     {
         $status = $this->_client->getBigSegmentStatusProvider()->status();
 

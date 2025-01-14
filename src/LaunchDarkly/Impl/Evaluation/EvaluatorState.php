@@ -24,7 +24,7 @@ class EvaluatorState
     * boolean indicating whether the user is a member of the corresponding
     * segment.
     *
-    * If the value is null, no big segment was referenced for this evaluation.
+    * If the value is null, no big segments was referenced for this evaluation.
     *
     * @var ?array<string, ?array<string, bool>>
     */

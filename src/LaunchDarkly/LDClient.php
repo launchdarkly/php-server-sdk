@@ -53,7 +53,7 @@ class LDClient
     protected FeatureRequester $_featureRequester;
     protected EventFactory $_eventFactoryDefault;
     protected EventFactory $_eventFactoryWithReasons;
-    protected BigSegments\StoreManager $_bigSegmentStoreManager;
+    protected BigSegments\StoreManager $_bigSegmentsStoreManager;
     protected BigSegmentStatusProvider $_bigSegmentStatusProvider;
 
     /**
@@ -145,8 +145,8 @@ class LDClient
         if (!$bigSegmentConfig instanceof BigSegmentConfig) {
             $bigSegmentConfig = new BigSegmentConfig(store: null);
         }
-        $this->_bigSegmentStoreManager = new BigSegments\StoreManager($bigSegmentConfig, $this->_logger);
-        $this->_bigSegmentStatusProvider = $this->_bigSegmentStoreManager->getStatusProvider();
+        $this->_bigSegmentsStoreManager = new BigSegments\StoreManager($bigSegmentConfig, $this->_logger);
+        $this->_bigSegmentStatusProvider = $this->_bigSegmentsStoreManager->getStatusProvider();
 
         $this->_eventFactoryDefault = new EventFactory(false);
         $this->_eventFactoryWithReasons = new EventFactory(true);
@@ -165,7 +165,7 @@ class LDClient
 
         $this->_featureRequester = $this->getFeatureRequester($sdkKey, $options);
 
-        $this->_evaluator = new Evaluator($this->_featureRequester, $this->_bigSegmentStoreManager, $this->_logger);
+        $this->_evaluator = new Evaluator($this->_featureRequester, $this->_bigSegmentsStoreManager, $this->_logger);
     }
 
     public function getLogger(): LoggerInterface
@@ -176,7 +176,7 @@ class LDClient
     /**
     * Returns an interface for tracking the status of a Big Segment store.
     *
-    * The {@see BigSegmentStoreStatusProvider} has methods for checking whether
+    * The {@see BigSegmentsStoreStatusProvider} has methods for checking whether
     * the Big Segment store is (as far as the SDK knows) currently operational
     * and tracking changes in this status.
     */
@@ -515,7 +515,7 @@ class LDClient
 
         $preloadedRequester = new PreloadedFeatureRequester($this->_featureRequester, $flags);
         // This saves us from doing repeated queries for prerequisite flags during evaluation
-        $tempEvaluator = new Evaluator($preloadedRequester, $this->_bigSegmentStoreManager);
+        $tempEvaluator = new Evaluator($preloadedRequester, $this->_bigSegmentsStoreManager);
 
         $state = new FeatureFlagsState(true);
         $clientOnly = !!($options['clientSideOnly'] ?? false);

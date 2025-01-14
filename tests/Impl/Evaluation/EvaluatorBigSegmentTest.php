@@ -6,12 +6,12 @@ use LaunchDarkly\Impl\BigSegments\StoreManager;
 use LaunchDarkly\Impl\Evaluation\Evaluator;
 use LaunchDarkly\Impl\Model\Segment;
 use LaunchDarkly\LDContext;
-use LaunchDarkly\Subsystems\BigSegmentStore;
-use LaunchDarkly\Tests\BigSegmentStoreImpl;
+use LaunchDarkly\Subsystems\BigSegmentsStore;
+use LaunchDarkly\Tests\BigSegmentsStoreImpl;
 use LaunchDarkly\Tests\MockFeatureRequester;
 use LaunchDarkly\Tests\ModelBuilders;
 use LaunchDarkly\Types\BigSegmentConfig;
-use LaunchDarkly\Types\BigSegmentStoreMetadata;
+use LaunchDarkly\Types\BigSegmentsStoreMetadata;
 use PHPUnit\Framework\TestCase;
 
 $defaultContext = LDContext::create('foo');
@@ -26,9 +26,9 @@ class EvaluatorBigSegmentTest extends TestCase
             ->unbounded(true)
             ->build();
 
-        $store = new BigSegmentStoreImpl([new BigSegmentStoreMetadata(10)], [['test.g100' => true]]);
+        $store = new BigSegmentsStoreImpl([new BigSegmentsStoreMetadata(10)], [['test.g100' => true]]);
 
-        $this->assertTrue(self::bigSegmentMatchesContext($store, $segment, $defaultContext));
+        $this->assertTrue(self::bigSegmentsMatchesContext($store, $segment, $defaultContext));
     }
 
     public function testExplicitExcludeContext(): void
@@ -39,9 +39,9 @@ class EvaluatorBigSegmentTest extends TestCase
             ->unbounded(true)
             ->build();
 
-        $store = new BigSegmentStoreImpl([new BigSegmentStoreMetadata(10)], [['test.g100' => false]]);
+        $store = new BigSegmentsStoreImpl([new BigSegmentsStoreMetadata(10)], [['test.g100' => false]]);
 
-        $this->assertFalse(self::bigSegmentMatchesContext($store, $segment, $defaultContext));
+        $this->assertFalse(self::bigSegmentsMatchesContext($store, $segment, $defaultContext));
     }
 
     public function testImplicitExcludeContext(): void
@@ -53,9 +53,9 @@ class EvaluatorBigSegmentTest extends TestCase
             ->build();
 
         // The membership query is successful, but has no segment data. We consider this a miss.
-        $store = new BigSegmentStoreImpl([new BigSegmentStoreMetadata(10)], [[]]);
+        $store = new BigSegmentsStoreImpl([new BigSegmentsStoreMetadata(10)], [[]]);
 
-        $this->assertFalse(self::bigSegmentMatchesContext($store, $segment, $defaultContext));
+        $this->assertFalse(self::bigSegmentsMatchesContext($store, $segment, $defaultContext));
     }
 
     public function testMissingGenerationCausesMiss(): void
@@ -65,9 +65,9 @@ class EvaluatorBigSegmentTest extends TestCase
             ->unbounded(true)
             ->build();
 
-        $store = new BigSegmentStoreImpl([new BigSegmentStoreMetadata(10)], [['test.g100' => true]]);
+        $store = new BigSegmentsStoreImpl([new BigSegmentsStoreMetadata(10)], [['test.g100' => true]]);
 
-        $this->assertFalse(self::bigSegmentMatchesContext($store, $segment, $defaultContext));
+        $this->assertFalse(self::bigSegmentsMatchesContext($store, $segment, $defaultContext));
     }
 
     public function testWrongContextCausesMiss(): void
@@ -79,9 +79,9 @@ class EvaluatorBigSegmentTest extends TestCase
             ->unboundedContextKind('org')
             ->build();
 
-        $store = new BigSegmentStoreImpl([new BigSegmentStoreMetadata(10)], [['test.g100' => true]]);
+        $store = new BigSegmentsStoreImpl([new BigSegmentsStoreMetadata(10)], [['test.g100' => true]]);
 
-        $this->assertFalse(self::bigSegmentMatchesContext($store, $segment, $defaultContext));
+        $this->assertFalse(self::bigSegmentsMatchesContext($store, $segment, $defaultContext));
     }
 
     public function testCanQueryForMembershipMultipleTimes(): void
@@ -92,10 +92,10 @@ class EvaluatorBigSegmentTest extends TestCase
             ->unbounded(true)
             ->build();
 
-        $store = new BigSegmentStoreImpl([new BigSegmentStoreMetadata(10), new BigSegmentStoreMetadata(10)], [['test.g100' => false], ['test.g100' => true]]);
+        $store = new BigSegmentsStoreImpl([new BigSegmentsStoreMetadata(10), new BigSegmentsStoreMetadata(10)], [['test.g100' => false], ['test.g100' => true]]);
 
-        $this->assertFalse(self::bigSegmentMatchesContext($store, $segment, $defaultContext));
-        $this->assertTrue(self::bigSegmentMatchesContext($store, $segment, $defaultContext));
+        $this->assertFalse(self::bigSegmentsMatchesContext($store, $segment, $defaultContext));
+        $this->assertTrue(self::bigSegmentsMatchesContext($store, $segment, $defaultContext));
     }
 
     public function testMembershipIsRememberedForLengthOfEvaluation(): void
@@ -110,7 +110,7 @@ class EvaluatorBigSegmentTest extends TestCase
             ->unbounded(true)
             ->build();
 
-        $store = new BigSegmentStoreImpl([new BigSegmentStoreMetadata(10)], [['test1.g100' => true, 'test2.g300' => true], ['test1.g100' => true, 'test2.g300' => false]]);
+        $store = new BigSegmentsStoreImpl([new BigSegmentsStoreMetadata(10)], [['test1.g100' => true, 'test2.g300' => true], ['test1.g100' => true, 'test2.g300' => false]]);
         $evaluator = self::getEvaluator($store, $defaultContext, [$segment1, $segment2]);
         $flag = ModelBuilders::booleanFlagWithClauses(ModelBuilders::clauseMatchingSegment($segment1), ModelBuilders::clauseMatchingSegment($segment2));
 
@@ -135,12 +135,12 @@ class EvaluatorBigSegmentTest extends TestCase
             )
             ->build();
 
-        $store = new BigSegmentStoreImpl([new BigSegmentStoreMetadata(10)], [null]);
+        $store = new BigSegmentsStoreImpl([new BigSegmentsStoreMetadata(10)], [null]);
 
-        $this->assertTrue(self::bigSegmentMatchesContext($store, $segment, $defaultContext));
+        $this->assertTrue(self::bigSegmentsMatchesContext($store, $segment, $defaultContext));
     }
 
-    private static function bigSegmentMatchesContext(BigSegmentStore $store, Segment $segment, LDContext $context): bool
+    private static function bigSegmentsMatchesContext(BigSegmentsStore $store, Segment $segment, LDContext $context): bool
     {
         $evaluator = self::getEvaluator($store, $context, [$segment]);
         $flag = ModelBuilders::booleanFlagWithClauses(ModelBuilders::clauseMatchingSegment($segment));
@@ -152,7 +152,7 @@ class EvaluatorBigSegmentTest extends TestCase
         return $detail->getValue();
     }
 
-    private static function getEvaluator(BigSegmentStore $store, LDContext $context, array $segments): Evaluator
+    private static function getEvaluator(BigSegmentsStore $store, LDContext $context, array $segments): Evaluator
     {
         $logger = EvaluatorTestUtil::testLogger();
         $config = new BigSegmentConfig(store: $store);

@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace LaunchDarkly\Tests;
 
-use LaunchDarkly\Subsystems\BigSegmentStore;
-use LaunchDarkly\Types\BigSegmentStoreMetadata;
+use LaunchDarkly\Subsystems\BigSegmentsStore;
+use LaunchDarkly\Types\BigSegmentsStoreMetadata;
 
-class BigSegmentStoreImpl implements BigSegmentStore
+class BigSegmentsStoreImpl implements BigSegmentsStore
 {
     /**
-    * @param array<BigSegmentStoreMetadata> $metadata
+    * @param array<BigSegmentsStoreMetadata> $metadata
     * @param array<?array<string, bool>> $memberships
     */
     public function __construct(private array $metadata, private array $memberships)
     {
     }
 
-    public function getMetadata(): BigSegmentStoreMetadata
+    public function getMetadata(): BigSegmentsStoreMetadata
     {
         return array_shift($this->metadata);
     }

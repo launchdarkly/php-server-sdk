@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace LaunchDarkly\Types;
 
 /**
- * Information about the status of a Big Segment store, provided by {@see LaunchDarkly\BigSegmentStoreStatusProvider}.
+ * Information about the status of a Big Segment store, provided by {@see LaunchDarkly\BigSegmentsStoreStatusProvider}.
  *
  * Big Segments are a specific type of segments. For more information, read the LaunchDarkly
  * documentation: https://docs.launchdarkly.com/home/users/big-segments
  */
-class BigSegmentStoreStatus
+class BigSegmentsStoreStatus
 {
     public function __construct(private bool $available, private bool $stale)
     {

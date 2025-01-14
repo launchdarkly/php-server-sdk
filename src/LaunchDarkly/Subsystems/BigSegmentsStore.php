@@ -9,14 +9,14 @@ use LaunchDarkly\Types;
 /**
  * Interface for a store that provides access to Big Segments data.
  */
-interface BigSegmentStore
+interface BigSegmentsStore
 {
     /**
      * Returns information about the overall state of the store. This method
      * will be called only when the SDK needs the latest state, so it should
      * not be cached.
      */
-    public function getMetadata(): Types\BigSegmentStoreMetadata;
+    public function getMetadata(): Types\BigSegmentsStoreMetadata;
 
     /**
      * Queries the store for a snapshot of the current segment state for a

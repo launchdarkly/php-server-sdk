@@ -16,8 +16,8 @@ use LaunchDarkly\Migrations\Stage;
 use LaunchDarkly\Subsystems\BigSegmentStatusListener;
 use LaunchDarkly\Tests\Impl\Evaluation\EvaluatorTestUtil;
 use LaunchDarkly\Types\BigSegmentConfig;
-use LaunchDarkly\Types\BigSegmentStoreMetadata;
-use LaunchDarkly\Types\BigSegmentStoreStatus;
+use LaunchDarkly\Types\BigSegmentsStoreMetadata;
+use LaunchDarkly\Types\BigSegmentsStoreStatus;
 use Psr\Log\LoggerInterface;
 
 class LDClientTest extends \PHPUnit\Framework\TestCase
@@ -990,8 +990,8 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
 
     public function testCanCheckBigSegmentStatus(): void
     {
-        $store = new BigSegmentStoreImpl([
-            new BigSegmentStoreMetadata(lastUpToDate: 0),
+        $store = new BigSegmentsStoreImpl([
+            new BigSegmentsStoreMetadata(lastUpToDate: 0),
         ], []);
 
         $config = new BigSegmentConfig(store: $store);
@@ -1015,9 +1015,9 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
 
     public function testEachCheckCausesALookup(): void
     {
-        $store = new BigSegmentStoreImpl([
-            new BigSegmentStoreMetadata(lastUpToDate: 0),
-            new BigSegmentStoreMetadata(lastUpToDate: time()),
+        $store = new BigSegmentsStoreImpl([
+            new BigSegmentsStoreMetadata(lastUpToDate: 0),
+            new BigSegmentsStoreMetadata(lastUpToDate: time()),
         ], []);
 
         $config = new BigSegmentConfig(store: $store);
@@ -1036,9 +1036,9 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
     public function testCanControlFreshnessThroughConfig(): void
     {
         $now = time();
-        $store = new BigSegmentStoreImpl([
-            new BigSegmentStoreMetadata(lastUpToDate: $now - 100),
-            new BigSegmentStoreMetadata(lastUpToDate: $now - 1_000),
+        $store = new BigSegmentsStoreImpl([
+            new BigSegmentsStoreMetadata(lastUpToDate: $now - 100),
+            new BigSegmentsStoreMetadata(lastUpToDate: $now - 1_000),
         ], []);
 
         $config = new BigSegmentConfig(store: $store, staleAfter: 500);
@@ -1082,8 +1082,8 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $this->mockRequester->addFlag($flag);
         $this->mockRequester->addSegment($segment);
 
-        $store = new BigSegmentStoreImpl([
-            new BigSegmentStoreMetadata(lastUpToDate: time()),
+        $store = new BigSegmentsStoreImpl([
+            new BigSegmentsStoreMetadata(lastUpToDate: time()),
         ], []);
 
         $config = new BigSegmentConfig(store: $store);
@@ -1105,8 +1105,8 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $this->mockRequester->addFlag($flag);
         $this->mockRequester->addSegment($segment);
 
-        $store = new BigSegmentStoreImpl([
-            new BigSegmentStoreMetadata(lastUpToDate: time() - 1_000),
+        $store = new BigSegmentsStoreImpl([
+            new BigSegmentsStoreMetadata(lastUpToDate: time() - 1_000),
         ], []);
 
         $config = new BigSegmentConfig(store: $store, staleAfter: 100);
@@ -1128,9 +1128,9 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $this->mockRequester->addFlag($flag);
         $this->mockRequester->addSegment($segment);
 
-        $store = new BigSegmentStoreImpl([
-            new BigSegmentStoreMetadata(lastUpToDate: time()),
-            new BigSegmentStoreMetadata(lastUpToDate: time() - 1000),
+        $store = new BigSegmentsStoreImpl([
+            new BigSegmentsStoreMetadata(lastUpToDate: time()),
+            new BigSegmentsStoreMetadata(lastUpToDate: time() - 1000),
         ], []);
 
         $config = new BigSegmentConfig(store: $store, staleAfter: 500);
@@ -1165,10 +1165,10 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $this->mockRequester->addSegment($segment);
 
         $now = time();
-        $store = new BigSegmentStoreImpl([
-            new BigSegmentStoreMetadata(lastUpToDate: $now),
-            new BigSegmentStoreMetadata(lastUpToDate: $now - 1000),
-            new BigSegmentStoreMetadata(lastUpToDate: $now),
+        $store = new BigSegmentsStoreImpl([
+            new BigSegmentsStoreMetadata(lastUpToDate: $now),
+            new BigSegmentsStoreMetadata(lastUpToDate: $now - 1000),
+            new BigSegmentsStoreMetadata(lastUpToDate: $now),
         ], []);
 
         $config = new BigSegmentConfig(store: $store, staleAfter: 500);
@@ -1177,7 +1177,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
 
         $subjects = [];
         $listener = new MockBigSegmentStatusListener(
-            function (?BigSegmentStoreStatus $old, BigSegmentStoreStatus $new) use (&$subjects) {
+            function (?BigSegmentsStoreStatus $old, BigSegmentsStoreStatus $new) use (&$subjects) {
                 $subjects[] = ['old' => $old, 'new' => $new];
             }
         );
@@ -1211,8 +1211,8 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
     public function testBigSegmentStatusListenerExceptionsDoNotHaltException(): void
     {
         $now = time();
-        $store = new BigSegmentStoreImpl([
-            new BigSegmentStoreMetadata(lastUpToDate: $now),
+        $store = new BigSegmentsStoreImpl([
+            new BigSegmentsStoreMetadata(lastUpToDate: $now),
         ], []);
 
         $config = new BigSegmentConfig(store: $store, staleAfter: 500);
@@ -1237,14 +1237,14 @@ class MockBigSegmentStatusListener implements BigSegmentStatusListener
     private $fn;
 
     /**
-     * @param callable(BigSegmentStoreStatus, BigSegmentStoreStatus): void $fn
+     * @param callable(BigSegmentsStoreStatus, BigSegmentsStoreStatus): void $fn
      */
     public function __construct(callable $fn)
     {
         $this->fn = $fn;
     }
 
-    public function statusChanged(?BigSegmentStoreStatus $old, BigSegmentStoreStatus $new): void
+    public function statusChanged(?BigSegmentsStoreStatus $old, BigSegmentsStoreStatus $new): void
     {
         ($this->fn)($old, $new);
     }

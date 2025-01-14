@@ -38,7 +38,7 @@ class BigSegmentConfig
     public readonly int $staleAfter;
 
     public function __construct(
-        public readonly ?Subsystems\BigSegmentStore $store,
+        public readonly ?Subsystems\BigSegmentsStore $store,
         public readonly ?Cache\CacheItemPoolInterface $cache = null,
         /**
          * If provided, each item inserted into the provided cache will expire

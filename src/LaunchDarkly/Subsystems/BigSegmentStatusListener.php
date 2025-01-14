@@ -19,7 +19,7 @@ interface BigSegmentStatusListener
      * new status will be the current status.
      */
     public function statusChanged(
-        ?Types\BigSegmentStoreStatus $old,
-        Types\BigSegmentStoreStatus $new
+        ?Types\BigSegmentsStoreStatus $old,
+        Types\BigSegmentsStoreStatus $new
     ): void;
 }

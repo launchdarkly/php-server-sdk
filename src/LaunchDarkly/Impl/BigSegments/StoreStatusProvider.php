@@ -14,14 +14,14 @@ class StoreStatusProvider implements Subsystems\BigSegmentStatusProvider
 {
     private SplObjectStorage $listeners;
     /**
-     * @var callable(): Types\BigSegmentStoreStatus
+     * @var callable(): Types\BigSegmentsStoreStatus
      */
     private $statusFn;
-    private ?Types\BigSegmentStoreStatus $lastStatus;
+    private ?Types\BigSegmentsStoreStatus $lastStatus;
     private LoggerInterface $logger;
 
     /**
-     * @param callable(): Types\BigSegmentStoreStatus $statusFn
+     * @param callable(): Types\BigSegmentsStoreStatus $statusFn
      */
     public function __construct(callable $statusFn, LoggerInterface $logger)
     {
@@ -44,7 +44,7 @@ class StoreStatusProvider implements Subsystems\BigSegmentStatusProvider
     /**
     * @internal
     */
-    public function updateStatus(Types\BigSegmentStoreStatus $status): void
+    public function updateStatus(Types\BigSegmentsStoreStatus $status): void
     {
         if ($this->lastStatus != $status) {
             $old = $this->lastStatus;
@@ -54,24 +54,24 @@ class StoreStatusProvider implements Subsystems\BigSegmentStatusProvider
         }
     }
 
-    private function notify(?Types\BigSegmentStoreStatus $old, Types\BigSegmentStoreStatus $new): void
+    private function notify(?Types\BigSegmentsStoreStatus $old, Types\BigSegmentsStoreStatus $new): void
     {
         /** @var Subsystems\BigSegmentStatusListener $listener */
         foreach ($this->listeners as $listener) {
             try {
                 $listener->statusChanged($old, $new);
             } catch (Exception $e) {
-                $this->logger->warning('A big segment status listener threw an exception', ['exception' => $e->getMessage()]);
+                $this->logger->warning('A big segments status listener threw an exception', ['exception' => $e->getMessage()]);
             }
         }
     }
 
-    public function lastStatus(): ?Types\BigSegmentStoreStatus
+    public function lastStatus(): ?Types\BigSegmentsStoreStatus
     {
         return $this->lastStatus;
     }
 
-    public function status(): Types\BigSegmentStoreStatus
+    public function status(): Types\BigSegmentsStoreStatus
     {
         return ($this->statusFn)();
     }

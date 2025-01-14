@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace LaunchDarkly\Types;
 
 /**
- * Metadata about the state of a big segment store.
+ * Metadata about the state of a big segments store.
  */
-class BigSegmentStoreMetadata
+class BigSegmentsStoreMetadata
 {
     public function __construct(private ?int $lastUpToDate)
     {
     }
 
     /**
-     * The unix timestamp of the last update to the big segment store. It is
+     * The unix timestamp of the last update to the big segments store. It is
      * null if the store has never been updated.
      */
     public function getLastUpToDate(): ?int

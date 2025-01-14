@@ -15,9 +15,9 @@ use Psr\Log\LoggerInterface;
 class StoreManager
 {
     private Types\BigSegmentConfig $config;
-    private ?Subsystems\BigSegmentStore $store;
+    private ?Subsystems\BigSegmentsStore $store;
     private Impl\BigSegments\StoreStatusProvider $statusProvider;
-    private ?Types\BigSegmentStoreStatus $lastStatus;
+    private ?Types\BigSegmentsStoreStatus $lastStatus;
     private ?DateTimeImmutable $lastStatusPollTime;
 
     public function __construct(Types\BigSegmentConfig $config, private readonly LoggerInterface $logger)
@@ -84,13 +84,13 @@ class StoreManager
         return new Impl\BigSegments\MembershipResult($membership, $status->isStale() ? BigSegmentEvaluationStatus::STALE : BigSegmentEvaluationStatus::HEALTHY);
     }
 
-    private function pollAndUpdateStatus(): Types\BigSegmentStoreStatus
+    private function pollAndUpdateStatus(): Types\BigSegmentsStoreStatus
     {
-        $newStatus = new Types\BigSegmentStoreStatus(false, false);
+        $newStatus = new Types\BigSegmentsStoreStatus(false, false);
         if ($this->store !== null) {
             try {
                 $metadata = $this->store->getMetadata();
-                $newStatus = new Types\BigSegmentStoreStatus(
+                $newStatus = new Types\BigSegmentsStoreStatus(
                     available: true,
                     stale: $metadata->isStale($this->config->staleAfter)
                 );

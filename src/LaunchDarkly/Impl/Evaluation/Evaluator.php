@@ -29,13 +29,13 @@ use Psr\Log\LoggerInterface;
 class Evaluator
 {
     private FeatureRequester $_featureRequester;
-    private BigSegments\StoreManager $_bigSegmentStoreManager;
+    private BigSegments\StoreManager $_bigSegmentsStoreManager;
     private LoggerInterface $_logger;
 
-    public function __construct(FeatureRequester $featureRequester, BigSegments\StoreManager $bigSegmentStoreManager, ?LoggerInterface $logger = null)
+    public function __construct(FeatureRequester $featureRequester, BigSegments\StoreManager $bigSegmentsStoreManager, ?LoggerInterface $logger = null)
     {
         $this->_featureRequester = $featureRequester;
-        $this->_bigSegmentStoreManager = $bigSegmentStoreManager;
+        $this->_bigSegmentsStoreManager = $bigSegmentsStoreManager;
         $this->_logger = $logger ?: Util::makeNullLogger();
     }
 
@@ -266,7 +266,7 @@ class Evaluator
     private function segmentMatchesContext(Segment $segment, LDContext $context, EvaluatorState $state): bool
     {
         if ($segment->getUnbounded()) {
-            return $this->bigSegmentContextMatch($segment, $context, $state);
+            return $this->bigSegmentsContextMatch($segment, $context, $state);
         }
 
         return $this->simpleSegmentContextMatch($segment, $context, $state, true);
@@ -315,7 +315,7 @@ class Evaluator
         return false;
     }
 
-    private function bigSegmentContextMatch(Segment $segment, LDContext $context, EvaluatorState $state): bool
+    private function bigSegmentsContextMatch(Segment $segment, LDContext $context, EvaluatorState $state): bool
     {
         if ($segment->getGeneration() === null) {
             $state->bigSegmentEvaluationStatus = BigSegmentEvaluationStatus::NOT_CONFIGURED;
@@ -341,7 +341,7 @@ class Evaluator
             // includes an "org" context with the same key X, it is fine to say
             // that the membership for key X is segment A and segment B-- there
             // is no ambiguity.
-            $result = $this->_bigSegmentStoreManager->getContextMembership($matchedContext->getKey());
+            $result = $this->_bigSegmentsStoreManager->getContextMembership($matchedContext->getKey());
             if ($result !== null) {
                 $state->bigSegmentEvaluationStatus = $result->status;
 

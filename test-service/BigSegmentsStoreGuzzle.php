@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace Tests;
 
 use GuzzleHttp\Client;
-use LaunchDarkly\Subsystems\BigSegmentStore;
-use LaunchDarkly\Types\BigSegmentStoreMetadata;
+use LaunchDarkly\Subsystems\BigSegmentsStore;
+use LaunchDarkly\Types\BigSegmentsStoreMetadata;
 
-class BigSegmentStoreGuzzle implements BigSegmentStore
+class BigSegmentsStoreGuzzle implements BigSegmentsStore
 {
     public function __construct(private Client $client, private string $uri)
     {
     }
 
-    public function getMetadata(): BigSegmentStoreMetadata
+    public function getMetadata(): BigSegmentsStoreMetadata
     {
         $response = $this->client->request('POST', $this->uri . '/getMetadata');
 
@@ -27,7 +27,7 @@ class BigSegmentStoreGuzzle implements BigSegmentStore
             $lastUpToDate = (int) $lastUpToDate;
         }
 
-        return new BigSegmentStoreMetadata($lastUpToDate);
+        return new BigSegmentsStoreMetadata($lastUpToDate);
     }
 
     /**

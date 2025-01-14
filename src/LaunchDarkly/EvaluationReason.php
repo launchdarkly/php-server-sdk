@@ -179,7 +179,7 @@ class EvaluationReason implements \JsonSerializable
 
     /**
      * Returns a new EvaluationReason instance matching all the properties of
-     * this one, except for the big segment evaluation status.
+     * this one, except for the big segments evaluation status.
      */
     public function withBigSegmentEvaluationStatus(BigSegmentEvaluationStatus $bigSegmentEvaluationStatus): EvaluationReason
     {

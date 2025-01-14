@@ -29,7 +29,7 @@ use LaunchDarkly\Types;
  * has become stale (the Relay Proxy has stopped updating it with new data),
  * since then flag evaluations that reference a Big Segment might return
  * incorrect values. To allow finding out about status changes as soon as
- * possible, BigSegmentStoreStatusProvider provides an observer pattern: you
+ * possible, BigSegmentsStoreStatusProvider provides an observer pattern: you
  * can attach an observer that will be notified whenever the status changes.
  *
  * This listener is called inline with the status check as soon as it has been
@@ -40,12 +40,12 @@ use LaunchDarkly\Types;
 interface BigSegmentStatusProvider
 {
     /**
-     * Gets the current status of the big segment store.
+     * Gets the current status of the big segments store.
      *
      * Calling this method will trigger a query to the backing store to get the
      * current status.
      */
-    public function status(): Types\BigSegmentStoreStatus;
+    public function status(): Types\BigSegmentsStoreStatus;
 
     /**
     * Attaches a listener to be notified of status changes.
