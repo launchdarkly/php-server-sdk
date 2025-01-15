@@ -140,7 +140,7 @@ class SdkClientEntity
             case 'migrationOperation':
                 return $this->doMigrationOperation($commandParams);
 
-            case 'getBigSegmentsStoreStatus':
+            case 'getBigSegmentStoreStatus':
                 return $this->doBigSegmentsStoreStatus();
 
             default:
