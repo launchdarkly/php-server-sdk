@@ -270,7 +270,6 @@ class Evaluator
         }
 
         return $this->simpleSegmentContextMatch($segment, $context, $state, true);
-
     }
 
     private function simpleSegmentContextMatch(Segment $segment, LDContext $context, EvaluatorState $state, bool $useIncludes): bool
