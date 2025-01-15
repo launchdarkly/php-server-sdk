@@ -43,17 +43,19 @@ class StoreManager
             return null;
         }
 
-        $cachedItem = $this->config->cache?->getItem($contextKey);
+        $cachedItem = null;
+        try {
+            $cachedItem = $this->config->cache?->getItem($contextKey);
+        } catch (Exception $e) {
+            $this->logger->warning("Failed to retrieve cached item for big segment", ['contextKey' => $contextKey, 'exception' => $e->getMessage()]);
+        }
         /** @var ?array */
         $membership = $cachedItem?->get();
 
         if ($membership === null) {
             try {
                 $membership = $this->store->getMembership(StoreManager::hashForContextKey($contextKey));
-                if ($this->config->cache !== null) {
-                    /**
-                     * @psalm-suppress PossiblyNullArgument
-                     */
+                if ($this->config->cache !== null && $cachedItem !== null) {
                     $cachedItem->set($membership)->expiresAfter($this->config->contextCacheTime);
 
                     if (!$this->config->cache->save($cachedItem)) {
