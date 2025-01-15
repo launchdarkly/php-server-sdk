@@ -54,11 +54,7 @@ class StoreManager
                     /**
                      * @psalm-suppress PossiblyNullArgument
                      */
-                    $cachedItem = $this->config
-                        ->cache
-                        ->getItem($contextKey)
-                        ->set($membership)
-                        ->expiresAfter($this->config->contextCacheTime);
+                    $cachedItem->set($membership)->expiresAfter($this->config->contextCacheTime);
 
                     if (!$this->config->cache->save($cachedItem)) {
                         $this->logger->warning("Failed to save Big Segment membership to cache", ['contextKey' => $contextKey]);
