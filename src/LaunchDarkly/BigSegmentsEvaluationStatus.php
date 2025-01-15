@@ -8,7 +8,7 @@ namespace LaunchDarkly;
  * A status enum which represents the result of a Big Segment query involved in
  * a flag evaluation.
  */
-enum BigSegmentEvaluationStatus: string
+enum BigSegmentsEvaluationStatus: string
 {
     /**
      * Indicates that the Big Segment query involved in the flag evaluation was

@@ -10,13 +10,13 @@ use LaunchDarkly\Subsystems\BigSegmentsStore;
 use LaunchDarkly\Tests\BigSegmentsStoreImpl;
 use LaunchDarkly\Tests\MockFeatureRequester;
 use LaunchDarkly\Tests\ModelBuilders;
-use LaunchDarkly\Types\BigSegmentConfig;
+use LaunchDarkly\Types\BigSegmentsConfig;
 use LaunchDarkly\Types\BigSegmentsStoreMetadata;
 use PHPUnit\Framework\TestCase;
 
 $defaultContext = LDContext::create('foo');
 
-class EvaluatorBigSegmentTest extends TestCase
+class EvaluatorBigSegmentsTest extends TestCase
 {
     public function testExplicitIncludeContext(): void
     {
@@ -155,7 +155,7 @@ class EvaluatorBigSegmentTest extends TestCase
     private static function getEvaluator(BigSegmentsStore $store, LDContext $context, array $segments): Evaluator
     {
         $logger = EvaluatorTestUtil::testLogger();
-        $config = new BigSegmentConfig(store: $store);
+        $config = new BigSegmentsConfig(store: $store);
         $manager = new StoreManager(config: $config, logger: $logger);
 
         $requester = new MockFeatureRequester();

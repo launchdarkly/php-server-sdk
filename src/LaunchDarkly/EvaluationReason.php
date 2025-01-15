@@ -96,7 +96,7 @@ class EvaluationReason implements \JsonSerializable
     private ?string $_ruleId;
     private ?string $_prerequisiteKey;
     private bool $_inExperiment;
-    private ?BigSegmentEvaluationStatus $_bigSegmentEvaluationStatus;
+    private ?BigSegmentsEvaluationStatus $_bigSegmentsEvaluationStatus;
 
     /**
      * Creates a new instance of the OFF reason.
@@ -166,7 +166,7 @@ class EvaluationReason implements \JsonSerializable
         ?string $ruleId = null,
         ?string $prerequisiteKey = null,
         bool $inExperiment = false,
-        BigSegmentEvaluationStatus $bigSegmentEvaluationStatus = null
+        BigSegmentsEvaluationStatus $bigSegmentsEvaluationStatus = null
     ) {
         $this->_kind = $kind;
         $this->_errorKind = $errorKind;
@@ -174,16 +174,16 @@ class EvaluationReason implements \JsonSerializable
         $this->_ruleId = $ruleId;
         $this->_prerequisiteKey = $prerequisiteKey;
         $this->_inExperiment = $inExperiment;
-        $this->_bigSegmentEvaluationStatus = $bigSegmentEvaluationStatus;
+        $this->_bigSegmentsEvaluationStatus = $bigSegmentsEvaluationStatus;
     }
 
     /**
      * Returns a new EvaluationReason instance matching all the properties of
      * this one, except for the big segments evaluation status.
      */
-    public function withBigSegmentEvaluationStatus(BigSegmentEvaluationStatus $bigSegmentEvaluationStatus): EvaluationReason
+    public function withBigSegmentsEvaluationStatus(BigSegmentsEvaluationStatus $bigSegmentsEvaluationStatus): EvaluationReason
     {
-        if ($this->_bigSegmentEvaluationStatus == $bigSegmentEvaluationStatus) {
+        if ($this->_bigSegmentsEvaluationStatus == $bigSegmentsEvaluationStatus) {
             return $this;
         }
 
@@ -194,7 +194,7 @@ class EvaluationReason implements \JsonSerializable
             $this->_ruleId,
             $this->_prerequisiteKey,
             $this->_inExperiment,
-            $bigSegmentEvaluationStatus
+            $bigSegmentsEvaluationStatus
         );
     }
 
@@ -261,15 +261,15 @@ class EvaluationReason implements \JsonSerializable
     * Describes the validity of Big Segment information, if and only if the
     * flag evaluation required querying at least one Big Segment. Otherwise it
     * returns null. Possible values are defined by {@see
-    * BigSegmentEvaluationStatus}.
+    * BigSegmentsEvaluationStatus}.
     *
     * Big Segments are a specific kind of context segments. For more
     * information, read the LaunchDarkly documentation:
     * https://docs.launchdarkly.com/home/users/big-segments
     */
-    public function bigSegmentEvaluationStatus(): ?BigSegmentEvaluationStatus
+    public function bigSegmentsEvaluationStatus(): ?BigSegmentsEvaluationStatus
     {
-        return $this->_bigSegmentEvaluationStatus;
+        return $this->_bigSegmentsEvaluationStatus;
     }
 
     /**
@@ -311,8 +311,8 @@ class EvaluationReason implements \JsonSerializable
         if ($this->_inExperiment) {
             $ret['inExperiment'] = $this->_inExperiment;
         }
-        if ($this->_bigSegmentEvaluationStatus !== null) {
-            $ret['bigSegmentsStatus'] = $this->_bigSegmentEvaluationStatus->value;
+        if ($this->_bigSegmentsEvaluationStatus !== null) {
+            $ret['bigSegmentsStatus'] = $this->_bigSegmentsEvaluationStatus->value;
         }
         return $ret;
     }

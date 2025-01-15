@@ -7,7 +7,7 @@ use LaunchDarkly\Impl\Evaluation\Evaluator;
 use LaunchDarkly\Integrations\Files;
 use LaunchDarkly\LDContext;
 use LaunchDarkly\Tests\Impl\Evaluation\EvaluatorTestUtil;
-use LaunchDarkly\Types\BigSegmentConfig;
+use LaunchDarkly\Types\BigSegmentsConfig;
 use PHPUnit\Framework\TestCase;
 
 class FileDataFeatureRequesterTest extends TestCase
@@ -38,7 +38,7 @@ class FileDataFeatureRequesterTest extends TestCase
         $fr = Files::featureRequester("./tests/filedata/all-properties.json");
         $flag2 = $fr->getFeature("flag2");
         $this->assertEquals("flag2", $flag2->getKey());
-        $storeManager = new StoreManager(config: new BigSegmentConfig(store: null), logger: EvaluatorTestUtil::testLogger());
+        $storeManager = new StoreManager(config: new BigSegmentsConfig(store: null), logger: EvaluatorTestUtil::testLogger());
         $evaluator = new Evaluator($fr, $storeManager);
         $result = $evaluator->evaluate($flag2, LDContext::create("user"), null);
         $this->assertEquals("value2", $result->getDetail()->getValue());

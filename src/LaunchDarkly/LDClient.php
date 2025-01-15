@@ -21,7 +21,7 @@ use LaunchDarkly\Migrations\Stage;
 use LaunchDarkly\Subsystems\BigSegmentStatusProvider;
 use LaunchDarkly\Subsystems\FeatureRequester;
 use LaunchDarkly\Types\ApplicationInfo;
-use LaunchDarkly\Types\BigSegmentConfig;
+use LaunchDarkly\Types\BigSegmentsConfig;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
@@ -141,11 +141,11 @@ class LDClient
             }
         }
 
-        $bigSegmentConfig = $options['big_segments'] ?? null;
-        if (!$bigSegmentConfig instanceof BigSegmentConfig) {
-            $bigSegmentConfig = new BigSegmentConfig(store: null);
+        $bigSegmentsConfig = $options['big_segments'] ?? null;
+        if (!$bigSegmentsConfig instanceof BigSegmentsConfig) {
+            $bigSegmentsConfig = new BigSegmentsConfig(store: null);
         }
-        $this->_bigSegmentsStoreManager = new BigSegments\StoreManager($bigSegmentConfig, $this->_logger);
+        $this->_bigSegmentsStoreManager = new BigSegments\StoreManager($bigSegmentsConfig, $this->_logger);
         $this->_bigSegmentStatusProvider = $this->_bigSegmentsStoreManager->getStatusProvider();
 
         $this->_eventFactoryDefault = new EventFactory(false);

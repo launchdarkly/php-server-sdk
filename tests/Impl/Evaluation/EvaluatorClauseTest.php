@@ -9,7 +9,7 @@ use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\LDContext;
 use LaunchDarkly\Tests\MockFeatureRequester;
 use LaunchDarkly\Tests\ModelBuilders;
-use LaunchDarkly\Types\BigSegmentConfig;
+use LaunchDarkly\Types\BigSegmentsConfig;
 use PHPUnit\Framework\TestCase;
 
 class EvaluatorClauseTest extends TestCase
@@ -138,7 +138,7 @@ class EvaluatorClauseTest extends TestCase
         $requester = new MockFeatureRequester();
         $requester->addSegment($segment);
 
-        $storeManager = new StoreManager(config: new BigSegmentConfig(store: null), logger: EvaluatorTestUtil::testLogger());
+        $storeManager = new StoreManager(config: new BigSegmentsConfig(store: null), logger: EvaluatorTestUtil::testLogger());
         $evaluator = new Evaluator($requester, $storeManager);
 
         $clause = ModelBuilders::clauseMatchingSegment($segment);
@@ -151,7 +151,7 @@ class EvaluatorClauseTest extends TestCase
         $context = LDContext::create('key');
         $requester = new MockFeatureRequester();
         $requester->expectQueryForUnknownSegment('segkey');
-        $storeManager = new StoreManager(config: new BigSegmentConfig(store: null), logger: EvaluatorTestUtil::testLogger());
+        $storeManager = new StoreManager(config: new BigSegmentsConfig(store: null), logger: EvaluatorTestUtil::testLogger());
         $evaluator = new Evaluator($requester, $storeManager);
 
         $clause = ModelBuilders::clause(null, '', 'segmentMatch', 'segkey');

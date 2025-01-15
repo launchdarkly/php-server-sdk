@@ -13,7 +13,7 @@ use LaunchDarkly\Migrations\ExecutionOrder;
 use LaunchDarkly\Migrations\MigratorBuilder;
 use LaunchDarkly\Migrations\Operation;
 use LaunchDarkly\Migrations\Stage;
-use LaunchDarkly\Types\BigSegmentConfig;
+use LaunchDarkly\Types\BigSegmentsConfig;
 use LaunchDarkly\Types\Result;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
@@ -83,14 +83,14 @@ class SdkClientEntity
                 $cache->clear();
             }
 
-            $bigSegmentConfig = new BigSegmentConfig(
+            $bigSegmentsConfig = new BigSegmentsConfig(
                 store: $store,
                 cache: $cache,
                 statusPollInterval: $statusPollInterval,
                 staleAfter: $staleAfter
             );
 
-            $options['big_segments'] = $bigSegmentConfig;
+            $options['big_segments'] = $bigSegmentsConfig;
         }
 
         return new LDClient($sdkKey, $options);

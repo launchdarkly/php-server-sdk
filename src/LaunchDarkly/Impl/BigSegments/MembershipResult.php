@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LaunchDarkly\Impl\BigSegments;
 
-use LaunchDarkly\BigSegmentEvaluationStatus;
+use LaunchDarkly\BigSegmentsEvaluationStatus;
 
 class MembershipResult
 {
@@ -13,7 +13,7 @@ class MembershipResult
     */
     public function __construct(
         public readonly ?array $membership,
-        public readonly BigSegmentEvaluationStatus $status
+        public readonly BigSegmentsEvaluationStatus $status
     ) {
     }
 }

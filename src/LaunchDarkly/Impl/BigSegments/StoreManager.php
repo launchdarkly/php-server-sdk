@@ -6,7 +6,7 @@ namespace LaunchDarkly\Impl\BigSegments;
 
 use DateTimeImmutable;
 use Exception;
-use LaunchDarkly\BigSegmentEvaluationStatus;
+use LaunchDarkly\BigSegmentsEvaluationStatus;
 use LaunchDarkly\Impl;
 use LaunchDarkly\Subsystems;
 use LaunchDarkly\Types;
@@ -14,13 +14,13 @@ use Psr\Log\LoggerInterface;
 
 class StoreManager
 {
-    private Types\BigSegmentConfig $config;
+    private Types\BigSegmentsConfig $config;
     private ?Subsystems\BigSegmentsStore $store;
     private Impl\BigSegments\StoreStatusProvider $statusProvider;
     private ?Types\BigSegmentsStoreStatus $lastStatus;
     private ?DateTimeImmutable $lastStatusPollTime;
 
-    public function __construct(Types\BigSegmentConfig $config, private readonly LoggerInterface $logger)
+    public function __construct(Types\BigSegmentsConfig $config, private readonly LoggerInterface $logger)
     {
         $this->config = $config;
         $this->store = $config->store;
@@ -64,7 +64,7 @@ class StoreManager
                 }
             } catch (Exception $e) {
                 $this->logger->warning("Failed to retrieve Big Segment membership", ['contextKey' => $contextKey, 'exception' => $e->getMessage()]);
-                return new Impl\BigSegments\MembershipResult(null, BigSegmentEvaluationStatus::STORE_ERROR);
+                return new Impl\BigSegments\MembershipResult(null, BigSegmentsEvaluationStatus::STORE_ERROR);
             }
         }
 
@@ -76,10 +76,10 @@ class StoreManager
         }
 
         if ($status === null || !$status->isAvailable()) {
-            return new Impl\BigSegments\MembershipResult($membership, BigSegmentEvaluationStatus::STORE_ERROR);
+            return new Impl\BigSegments\MembershipResult($membership, BigSegmentsEvaluationStatus::STORE_ERROR);
         }
 
-        return new Impl\BigSegments\MembershipResult($membership, $status->isStale() ? BigSegmentEvaluationStatus::STALE : BigSegmentEvaluationStatus::HEALTHY);
+        return new Impl\BigSegments\MembershipResult($membership, $status->isStale() ? BigSegmentsEvaluationStatus::STALE : BigSegmentsEvaluationStatus::HEALTHY);
     }
 
     private function pollAndUpdateStatus(): Types\BigSegmentsStoreStatus

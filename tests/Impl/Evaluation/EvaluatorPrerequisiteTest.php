@@ -9,7 +9,7 @@ use LaunchDarkly\Impl\Evaluation\Evaluator;
 use LaunchDarkly\LDContext;
 use LaunchDarkly\Tests\MockFeatureRequester;
 use LaunchDarkly\Tests\ModelBuilders;
-use LaunchDarkly\Types\BigSegmentConfig;
+use LaunchDarkly\Types\BigSegmentsConfig;
 use PHPUnit\Framework\TestCase;
 
 $defaultContext = LDContext::create('foo');
@@ -32,7 +32,7 @@ class EvaluatorPrerequisiteTest extends TestCase
 
         $requester = new MockFeatureRequester();
         $requester->expectQueryForUnknownFlag('feature1');
-        $storeManager = new StoreManager(config: new BigSegmentConfig(store: null), logger: EvaluatorTestUtil::testLogger());
+        $storeManager = new StoreManager(config: new BigSegmentsConfig(store: null), logger: EvaluatorTestUtil::testLogger());
         $evaluator = new Evaluator($requester, $storeManager);
 
         $result = $evaluator->evaluate($flag, LDContext::create('user'), EvaluatorTestUtil::expectNoPrerequisiteEvals());
@@ -53,7 +53,7 @@ class EvaluatorPrerequisiteTest extends TestCase
 
         $requester = new MockFeatureRequester();
         $requester->addFlag($flag1);
-        $storeManager = new StoreManager(config: new BigSegmentConfig(store: null), logger: EvaluatorTestUtil::testLogger());
+        $storeManager = new StoreManager(config: new BigSegmentsConfig(store: null), logger: EvaluatorTestUtil::testLogger());
         $evaluator = new Evaluator($requester, $storeManager);
         $recorder = EvaluatorTestUtil::prerequisiteRecorder();
 
@@ -80,7 +80,7 @@ class EvaluatorPrerequisiteTest extends TestCase
 
         $requester = new MockFeatureRequester();
         $requester->addFlag($flag1);
-        $storeManager = new StoreManager(config: new BigSegmentConfig(store: null), logger: EvaluatorTestUtil::testLogger());
+        $storeManager = new StoreManager(config: new BigSegmentsConfig(store: null), logger: EvaluatorTestUtil::testLogger());
         $evaluator = new Evaluator($requester, $storeManager);
         $recorder = EvaluatorTestUtil::prerequisiteRecorder();
 
@@ -107,7 +107,7 @@ class EvaluatorPrerequisiteTest extends TestCase
 
         $requester = new MockFeatureRequester();
         $requester->addFlag($flag1);
-        $storeManager = new StoreManager(config: new BigSegmentConfig(store: null), logger: EvaluatorTestUtil::testLogger());
+        $storeManager = new StoreManager(config: new BigSegmentsConfig(store: null), logger: EvaluatorTestUtil::testLogger());
         $evaluator = new Evaluator($requester, $storeManager);
         $recorder = EvaluatorTestUtil::prerequisiteRecorder();
 
@@ -146,7 +146,7 @@ class EvaluatorPrerequisiteTest extends TestCase
             $flags[] = $flag;
             $requester->addFlag($flag);
         }
-        $storeManager = new StoreManager(config: new BigSegmentConfig(store: null), logger: EvaluatorTestUtil::testLogger());
+        $storeManager = new StoreManager(config: new BigSegmentsConfig(store: null), logger: EvaluatorTestUtil::testLogger());
         $evaluator = new Evaluator($requester, $storeManager);
 
         $result = $evaluator->evaluate($flags[0], LDContext::create('user'), EvaluatorTestUtil::expectNoPrerequisiteEvals());

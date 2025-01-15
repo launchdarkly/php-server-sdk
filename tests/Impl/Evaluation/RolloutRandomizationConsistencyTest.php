@@ -11,7 +11,7 @@ use LaunchDarkly\Impl\Evaluation\EvaluatorBucketing;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\LDContext;
 use LaunchDarkly\Tests\MockFeatureRequester;
-use LaunchDarkly\Types\BigSegmentConfig;
+use LaunchDarkly\Types\BigSegmentsConfig;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -88,7 +88,7 @@ class RolloutRandomizationConsistencyTest extends TestCase
             false
         );
 
-        $storeManager = new StoreManager(config: new BigSegmentConfig(store: null), logger: EvaluatorTestUtil::testLogger());
+        $storeManager = new StoreManager(config: new BigSegmentsConfig(store: null), logger: EvaluatorTestUtil::testLogger());
         $evaluator = new Evaluator(static::$requester, $storeManager);
 
         $context1 = LDContext::create('userKeyA');

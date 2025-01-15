@@ -19,7 +19,7 @@ use Psr\Cache;
  * use, and then pass the `BigSegmentsConfig` object as the `big_segments`
  * parameter when creating a {@see LaunchDarkly\LDClient}.
  */
-class BigSegmentConfig
+class BigSegmentsConfig
 {
     const DEFAULT_STATUS_POLL_INTERVAL = 5;
     const DEFAULT_STALE_AFTER = 2 * 60;

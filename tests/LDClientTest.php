@@ -3,7 +3,7 @@
 namespace LaunchDarkly\Tests;
 
 use InvalidArgumentException;
-use LaunchDarkly\BigSegmentEvaluationStatus;
+use LaunchDarkly\BigSegmentsEvaluationStatus;
 use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
 use LaunchDarkly\Impl\Model\FeatureFlag;
@@ -15,7 +15,7 @@ use LaunchDarkly\Migrations\Origin;
 use LaunchDarkly\Migrations\Stage;
 use LaunchDarkly\Subsystems\BigSegmentStatusListener;
 use LaunchDarkly\Tests\Impl\Evaluation\EvaluatorTestUtil;
-use LaunchDarkly\Types\BigSegmentConfig;
+use LaunchDarkly\Types\BigSegmentsConfig;
 use LaunchDarkly\Types\BigSegmentsStoreMetadata;
 use LaunchDarkly\Types\BigSegmentsStoreStatus;
 use Psr\Log\LoggerInterface;
@@ -994,7 +994,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
             new BigSegmentsStoreMetadata(lastUpToDate: 0),
         ], []);
 
-        $config = new BigSegmentConfig(store: $store);
+        $config = new BigSegmentsConfig(store: $store);
         $client = $this->makeClient(['big_segments' => $config]);
         $provider = $client->getBigSegmentStatusProvider();
 
@@ -1020,7 +1020,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
             new BigSegmentsStoreMetadata(lastUpToDate: time()),
         ], []);
 
-        $config = new BigSegmentConfig(store: $store);
+        $config = new BigSegmentsConfig(store: $store);
         $client = $this->makeClient(['big_segments' => $config]);
         $provider = $client->getBigSegmentStatusProvider();
 
@@ -1041,7 +1041,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
             new BigSegmentsStoreMetadata(lastUpToDate: $now - 1_000),
         ], []);
 
-        $config = new BigSegmentConfig(store: $store, staleAfter: 500);
+        $config = new BigSegmentsConfig(store: $store, staleAfter: 500);
         $client = $this->makeClient(['big_segments' => $config]);
         $provider = $client->getBigSegmentStatusProvider();
 
@@ -1052,7 +1052,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($status->isStale());
     }
 
-    public function testReportsUnconfiguredBigSegmentEvaluation(): void
+    public function testReportsUnconfiguredBigSegmentsEvaluation(): void
     {
         $segment = ModelBuilders::segmentBuilder('test')
             ->generation(100)
@@ -1067,10 +1067,10 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $client = $this->makeClient();
         $detail = $client->variationDetail($flag->getKey(), LDContext::create('userkey'), false);
 
-        $this->assertEquals(BigSegmentEvaluationStatus::NOT_CONFIGURED, $detail->getReason()->bigSegmentEvaluationStatus());
+        $this->assertEquals(BigSegmentsEvaluationStatus::NOT_CONFIGURED, $detail->getReason()->bigSegmentsEvaluationStatus());
     }
 
-    public function testReportsHealthyBigSegmentEvaluationStatus(): void
+    public function testReportsHealthyBigSegmentsEvaluationStatus(): void
     {
         $segment = ModelBuilders::segmentBuilder('test')
             ->generation(100)
@@ -1086,14 +1086,14 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
             new BigSegmentsStoreMetadata(lastUpToDate: time()),
         ], []);
 
-        $config = new BigSegmentConfig(store: $store);
+        $config = new BigSegmentsConfig(store: $store);
         $client = $this->makeClient(['big_segments' => $config]);
         $detail = $client->variationDetail($flag->getKey(), LDContext::create('userkey'), false);
 
-        $this->assertEquals(BigSegmentEvaluationStatus::HEALTHY, $detail->getReason()->bigSegmentEvaluationStatus());
+        $this->assertEquals(BigSegmentsEvaluationStatus::HEALTHY, $detail->getReason()->bigSegmentsEvaluationStatus());
     }
 
-    public function testReportsStaleBigSegmentEvaluationStatus(): void
+    public function testReportsStaleBigSegmentsEvaluationStatus(): void
     {
         $segment = ModelBuilders::segmentBuilder('test')
             ->generation(100)
@@ -1109,11 +1109,11 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
             new BigSegmentsStoreMetadata(lastUpToDate: time() - 1_000),
         ], []);
 
-        $config = new BigSegmentConfig(store: $store, staleAfter: 100);
+        $config = new BigSegmentsConfig(store: $store, staleAfter: 100);
         $client = $this->makeClient(['big_segments' => $config]);
         $detail = $client->variationDetail($flag->getKey(), LDContext::create('userkey'), false);
 
-        $this->assertEquals(BigSegmentEvaluationStatus::STALE, $detail->getReason()->bigSegmentEvaluationStatus());
+        $this->assertEquals(BigSegmentsEvaluationStatus::STALE, $detail->getReason()->bigSegmentsEvaluationStatus());
     }
 
     public function testCheckingBigSegmentStatusPreventsEvaluationFromNeedingTo(): void
@@ -1133,7 +1133,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
             new BigSegmentsStoreMetadata(lastUpToDate: time() - 1000),
         ], []);
 
-        $config = new BigSegmentConfig(store: $store, staleAfter: 500);
+        $config = new BigSegmentsConfig(store: $store, staleAfter: 500);
         $client = $this->makeClient(['big_segments' => $config]);
         $provider = $client->getBigSegmentStatusProvider();
 
@@ -1145,7 +1145,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         // configured to make another status check that fast, so it uses what
         // it last knew, which is that it isn't stale.
         $detail = $client->variationDetail($flag->getKey(), LDContext::create('userkey'), false);
-        $this->assertEquals(BigSegmentEvaluationStatus::HEALTHY, $detail->getReason()->bigSegmentEvaluationStatus());
+        $this->assertEquals(BigSegmentsEvaluationStatus::HEALTHY, $detail->getReason()->bigSegmentsEvaluationStatus());
 
         $status = $provider->status();
         $this->assertTrue($status->isAvailable());
@@ -1171,7 +1171,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
             new BigSegmentsStoreMetadata(lastUpToDate: $now),
         ], []);
 
-        $config = new BigSegmentConfig(store: $store, staleAfter: 500);
+        $config = new BigSegmentsConfig(store: $store, staleAfter: 500);
         $client = $this->makeClient(['big_segments' => $config]);
         $provider = $client->getBigSegmentStatusProvider();
 
@@ -1215,7 +1215,7 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
             new BigSegmentsStoreMetadata(lastUpToDate: $now),
         ], []);
 
-        $config = new BigSegmentConfig(store: $store, staleAfter: 500);
+        $config = new BigSegmentsConfig(store: $store, staleAfter: 500);
         $client = $this->makeClient(['big_segments' => $config]);
         $provider = $client->getBigSegmentStatusProvider();
 

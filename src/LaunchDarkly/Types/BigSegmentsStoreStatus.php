@@ -36,7 +36,7 @@ class BigSegmentsStoreStatus
     /**
      * True if the Big Segment store is available, but has not been updated
      * within the amount of time specified by {@see
-     * LaunchDarkly\Types\BigSegmentConfig::$staleAfter}.
+     * LaunchDarkly\Types\BigSegmentsConfig::$staleAfter}.
      *
      * This may indicate that the LaunchDarkly Relay Proxy, which populates the
      * store, has stopped running or has become unable to receive fresh data

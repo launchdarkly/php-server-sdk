@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LaunchDarkly\Impl\Evaluation;
 
-use LaunchDarkly\BigSegmentEvaluationStatus;
+use LaunchDarkly\BigSegmentsEvaluationStatus;
 use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
 use LaunchDarkly\Impl\BigSegments;
@@ -57,8 +57,8 @@ class Evaluator
             $evalResult = $this->evaluateInternal($flag, $context, $prereqEvalSink, $state)
                 ->withState($state);
 
-            if ($state->bigSegmentEvaluationStatus !== null) {
-                $reason = $evalResult->getDetail()->getReason()->withBigSegmentEvaluationStatus($state->bigSegmentEvaluationStatus);
+            if ($state->bigSegmentsEvaluationStatus !== null) {
+                $reason = $evalResult->getDetail()->getReason()->withBigSegmentsEvaluationStatus($state->bigSegmentsEvaluationStatus);
                 $detail = new EvaluationDetail(
                     $evalResult->getDetail()->getValue(),
                     $evalResult->getDetail()->getVariationIndex(),
@@ -317,7 +317,7 @@ class Evaluator
     private function bigSegmentsContextMatch(Segment $segment, LDContext $context, EvaluatorState $state): bool
     {
         if ($segment->getGeneration() === null) {
-            $state->bigSegmentEvaluationStatus = BigSegmentEvaluationStatus::NOT_CONFIGURED;
+            $state->bigSegmentsEvaluationStatus = BigSegmentsEvaluationStatus::NOT_CONFIGURED;
             return false;
         }
 
@@ -328,8 +328,8 @@ class Evaluator
 
         /** @var ?array<string, bool> */
         $membership = null;
-        if ($state->bigSegmentMembership !== null) {
-            $membership = $state->bigSegmentMembership[$matchedContext->getKey()] ?? null;
+        if ($state->bigSegmentsMembership !== null) {
+            $membership = $state->bigSegmentsMembership[$matchedContext->getKey()] ?? null;
         }
 
         if ($membership === null) {
@@ -342,21 +342,21 @@ class Evaluator
             // is no ambiguity.
             $result = $this->_bigSegmentsStoreManager->getContextMembership($matchedContext->getKey());
             if ($result !== null) {
-                $state->bigSegmentEvaluationStatus = $result->status;
+                $state->bigSegmentsEvaluationStatus = $result->status;
 
                 $membership = $result->membership;
-                if ($state->bigSegmentMembership === null) {
-                    $state->bigSegmentMembership = [];
+                if ($state->bigSegmentsMembership === null) {
+                    $state->bigSegmentsMembership = [];
                 }
-                $state->bigSegmentMembership[$matchedContext->getKey()] = $membership;
+                $state->bigSegmentsMembership[$matchedContext->getKey()] = $membership;
             } else {
-                $state->bigSegmentEvaluationStatus = BigSegmentEvaluationStatus::NOT_CONFIGURED;
+                $state->bigSegmentsEvaluationStatus = BigSegmentsEvaluationStatus::NOT_CONFIGURED;
             }
         }
 
         $membershipResult = null;
         if ($membership !== null) {
-            $segmentRef = Evaluator::makeBigSegmentRef($segment);
+            $segmentRef = Evaluator::makeBigSegmentsRef($segment);
             $membershipResult = $membership[$segmentRef] ?? false;
         }
 
@@ -367,7 +367,7 @@ class Evaluator
         return $this->simpleSegmentContextMatch($segment, $context, $state, false);
     }
 
-    private static function makeBigSegmentRef(Segment $segment): string
+    private static function makeBigSegmentsRef(Segment $segment): string
     {
         // The format of Big Segment references is independent of what store
         // implementation is being used; the store implementation receives only

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LaunchDarkly\Impl\Evaluation;
 
-use LaunchDarkly\BigSegmentEvaluationStatus;
+use LaunchDarkly\BigSegmentsEvaluationStatus;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 
 /**
@@ -17,7 +17,7 @@ class EvaluatorState
     public ?array $segmentStack = null;
     public ?array $prerequisites = null;
     public int $depth = 0;
-    public ?BigSegmentEvaluationStatus $bigSegmentEvaluationStatus = null;
+    public ?BigSegmentsEvaluationStatus $bigSegmentsEvaluationStatus = null;
 
     /**
     * An associative array, indexed by an LDContext's key. Each value is a
@@ -28,7 +28,7 @@ class EvaluatorState
     *
     * @var ?array<string, ?array<string, bool>>
     */
-    public ?array $bigSegmentMembership = null;
+    public ?array $bigSegmentsMembership = null;
 
     public function __construct(public FeatureFlag $originalFlag)
     {
