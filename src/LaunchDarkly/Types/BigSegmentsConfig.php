@@ -21,11 +21,14 @@ use Psr\Cache;
  */
 class BigSegmentsConfig
 {
+    /** @var int Default polling interval (in seconds) */
     const DEFAULT_STATUS_POLL_INTERVAL = 5;
+    /** @var int Default staleness period (in seconds) */
     const DEFAULT_STALE_AFTER = 2 * 60;
 
     /**
-     * The frequency the SDK should automatically check the backing store for the latest status.
+     * The frequency (in seconds) the SDK should automatically check the
+     * backing store for the latest status.
      *
      * This duration is only valid for the lifetime of the request, and is
      * only useful to prevent excessive checking in long-running scripts.
@@ -33,7 +36,8 @@ class BigSegmentsConfig
     public readonly int $statusPollInterval;
 
     /**
-     * The maximum age of the metadata before it is considered stale.
+     * The maximum age of the metadata before it is considered stale (in
+     * seconds).
      */
     public readonly int $staleAfter;
 
