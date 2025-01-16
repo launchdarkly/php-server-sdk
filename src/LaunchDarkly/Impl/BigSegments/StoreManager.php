@@ -37,6 +37,10 @@ class StoreManager
         return $this->statusProvider;
     }
 
+    /**
+     * Retrieves the membership of a context key in a Big Segment, if a backing
+     * big segments store has been configured.
+     */
     public function getContextMembership(string $contextKey): ?Impl\BigSegments\MembershipResult
     {
         if ($this->store === null) {
@@ -49,7 +53,7 @@ class StoreManager
         } catch (Exception $e) {
             $this->logger->warning("Failed to retrieve cached item for big segment", ['contextKey' => $contextKey, 'exception' => $e->getMessage()]);
         }
-        /** @var ?array */
+        /** @var ?array<string, bool> */
         $membership = $cachedItem?->get();
 
         if ($membership === null) {

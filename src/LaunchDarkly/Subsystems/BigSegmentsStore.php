@@ -28,9 +28,9 @@ interface BigSegmentsStore
      * because it deals only with already-hashed keys, but the string can be
      * assumed to only contain characters that are valid in base64.
      *
-     * The return value should be either a array, or nil if the context is not
-     * referenced in any big segments. Each key in the array is a "segment
-     * reference", which is how segments are identified in Big Segment data.
+     * The return value should be either a array, or null in the event of an
+     * error. Each key in the array is a "segment reference", which is how
+     * segments are identified in Big Segment data.
      *
      * This string is not identical to the segment key-- the SDK will add other
      * information. The store implementation should not be concerned with the
