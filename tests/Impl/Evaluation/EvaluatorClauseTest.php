@@ -2,12 +2,14 @@
 
 namespace LaunchDarkly\Tests\Impl\Evaluation;
 
+use LaunchDarkly\Impl\BigSegments\StoreManager;
 use LaunchDarkly\Impl\Evaluation\Evaluator;
 use LaunchDarkly\Impl\Model\Clause;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\LDContext;
 use LaunchDarkly\Tests\MockFeatureRequester;
 use LaunchDarkly\Tests\ModelBuilders;
+use LaunchDarkly\Types\BigSegmentsConfig;
 use PHPUnit\Framework\TestCase;
 
 class EvaluatorClauseTest extends TestCase
@@ -29,7 +31,7 @@ class EvaluatorClauseTest extends TestCase
     {
         self::assertMatch($eval, ModelBuilders::booleanFlagWithClauses($clause), $context, $expectMatch);
     }
-      
+
     public function testClauseCanMatchBuiltInAttribute()
     {
         $clause = ModelBuilders::clause(null, 'name', 'in', 'Bob');
@@ -135,7 +137,9 @@ class EvaluatorClauseTest extends TestCase
         $segment = ModelBuilders::segmentBuilder('segkey')->included($context->getKey())->build();
         $requester = new MockFeatureRequester();
         $requester->addSegment($segment);
-        $evaluator = new Evaluator($requester);
+
+        $storeManager = new StoreManager(config: new BigSegmentsConfig(store: null), logger: EvaluatorTestUtil::testLogger());
+        $evaluator = new Evaluator($requester, $storeManager);
 
         $clause = ModelBuilders::clauseMatchingSegment($segment);
 
@@ -147,8 +151,9 @@ class EvaluatorClauseTest extends TestCase
         $context = LDContext::create('key');
         $requester = new MockFeatureRequester();
         $requester->expectQueryForUnknownSegment('segkey');
-        $evaluator = new Evaluator($requester);
-        
+        $storeManager = new StoreManager(config: new BigSegmentsConfig(store: null), logger: EvaluatorTestUtil::testLogger());
+        $evaluator = new Evaluator($requester, $storeManager);
+
         $clause = ModelBuilders::clause(null, '', 'segmentMatch', 'segkey');
 
         self::assertMatchClause($evaluator, $clause, $context, false);

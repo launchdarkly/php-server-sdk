@@ -78,7 +78,8 @@ class TestService
                 'event-sampling',
                 'inline-context',
                 'anonymous-redaction',
-                'client-prereq-events'
+                'client-prereq-events',
+                'big-segments'
             ],
             'clientVersion' => \LaunchDarkly\LDClient::VERSION
         ];
@@ -88,7 +89,7 @@ class TestService
     {
         $this->_logger->info("Creating client with parameters: " . json_encode($params));
 
-        $client = new SdkClientEntity($params, $this->_logger); // just to verify that the config is valid
+        $client = new SdkClientEntity($params, true, $this->_logger); // just to verify that the config is valid
 
         return $this->_store->addClientParams($params);
     }
@@ -110,7 +111,8 @@ class TestService
         if ($params === null) {
             return null;
         }
-        return new SdkClientEntity($params);
+
+        return new SdkClientEntity($params, false);
     }
 
     // The following methods for normalizing parsed JSON are a workaround for PHP's inability to distinguish

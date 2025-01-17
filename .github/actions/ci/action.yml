@@ -55,4 +55,4 @@ runs:
       with:
         test_service_port: 8000
         token: ${{ inputs.token }}
-        extra_params: "-skip 'evaluation/parameterized/attribute references/array index is not supported'"
+        extra_params: "-skip 'evaluation/parameterized/attribute references/array index is not supported' -skip 'big segments/membership caching/context cache eviction (cache size)'"

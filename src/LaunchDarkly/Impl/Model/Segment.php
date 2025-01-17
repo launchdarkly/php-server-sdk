@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace LaunchDarkly\Impl\Model;
 
+use LaunchDarkly\LDContext;
+
 /**
  * Internal data model class that describes a user segment.
  *
@@ -24,6 +26,9 @@ class Segment
     protected array $_includedContexts;
     /** @var SegmentTarget[] */
     protected array $_excludedContexts;
+    protected bool $_unbounded;
+    protected string $_unboundedContextKind;
+    protected ?int $_generation;
     protected string $_salt;
     /** @var SegmentRule[] */
     protected array $_rules = [];
@@ -36,6 +41,9 @@ class Segment
         array $excluded,
         array $includedContexts,
         array $excludedContexts,
+        bool $unbounded,
+        ?string $unboundedContextKind,
+        ?int $generation,
         string $salt,
         array $rules,
         bool $deleted
@@ -46,6 +54,9 @@ class Segment
         $this->_excluded = $excluded;
         $this->_includedContexts = $includedContexts;
         $this->_excludedContexts = $excludedContexts;
+        $this->_unbounded = $unbounded;
+        $this->_unboundedContextKind = $unboundedContextKind ?? LDContext::DEFAULT_KIND;
+        $this->_generation = $generation;
         $this->_salt = $salt;
         $this->_rules = $rules;
         $this->_deleted = $deleted;
@@ -61,6 +72,9 @@ class Segment
                 $v['excluded'] ?: [],
                 array_map(SegmentTarget::getDecoder(), $v['includedContexts'] ?? []),
                 array_map(SegmentTarget::getDecoder(), $v['excludedContexts'] ?? []),
+                $v['unbounded'] ?? false,
+                $v['unboundedContextKind'] ?? null,
+                $v['generation'] ?? null,
                 $v['salt'],
                 array_map(SegmentRule::getDecoder(), $v['rules'] ?: []),
                 $v['deleted']
@@ -99,6 +113,21 @@ class Segment
     public function getIncludedContexts(): array
     {
         return $this->_includedContexts;
+    }
+
+    public function getUnbounded(): bool
+    {
+        return $this->_unbounded;
+    }
+
+    public function getUnboundedContextKind(): string
+    {
+        return $this->_unboundedContextKind;
+    }
+
+    public function getGeneration(): ?int
+    {
+        return $this->_generation;
     }
 
     public function getKey(): string

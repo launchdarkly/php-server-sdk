@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LaunchDarkly;
 
+use LaunchDarkly\Impl\BigSegments;
 use LaunchDarkly\Impl\Evaluation\EvalResult;
 use LaunchDarkly\Impl\Evaluation\Evaluator;
 use LaunchDarkly\Impl\Evaluation\PrerequisiteEvaluationRecord;
@@ -17,8 +18,10 @@ use LaunchDarkly\Impl\Util;
 use LaunchDarkly\Integrations\Guzzle;
 use LaunchDarkly\Migrations\OpTracker;
 use LaunchDarkly\Migrations\Stage;
+use LaunchDarkly\Subsystems\BigSegmentStatusProvider;
 use LaunchDarkly\Subsystems\FeatureRequester;
 use LaunchDarkly\Types\ApplicationInfo;
+use LaunchDarkly\Types\BigSegmentsConfig;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
@@ -50,6 +53,8 @@ class LDClient
     protected FeatureRequester $_featureRequester;
     protected EventFactory $_eventFactoryDefault;
     protected EventFactory $_eventFactoryWithReasons;
+    protected BigSegments\StoreManager $_bigSegmentsStoreManager;
+    protected BigSegmentStatusProvider $_bigSegmentStatusProvider;
 
     /**
      * Creates a new client instance that connects to LaunchDarkly.
@@ -80,6 +85,7 @@ class LDClient
      * per-user basis in the LDContext builder.
      * - `wrapper_name`: For use by wrapper libraries to set an identifying name for the wrapper being used. This will be sent in User-Agent headers during requests to the LaunchDarkly servers to allow recording metrics on the usage of these wrapper libraries.
      * - `wrapper_version`: For use by wrapper libraries to report the version of the library in use. If `wrapper_name` is not set, this field will be ignored. Otherwise the version string will be included in the User-Agent headers along with the `wrapper_name` during requests to the LaunchDarkly servers.
+     * - `big_segments`: An option {@see \LaunchDarkly\Types\BigSegmentsConfig} instance.
      * - Other options may be available depending on any features you are using from the `LaunchDarkly\Integrations` namespace.
      *
      * @return LDClient
@@ -135,6 +141,13 @@ class LDClient
             }
         }
 
+        $bigSegmentsConfig = $options['big_segments'] ?? null;
+        if (!$bigSegmentsConfig instanceof BigSegmentsConfig) {
+            $bigSegmentsConfig = new BigSegmentsConfig(store: null);
+        }
+        $this->_bigSegmentsStoreManager = new BigSegments\StoreManager($bigSegmentsConfig, $this->_logger);
+        $this->_bigSegmentStatusProvider = $this->_bigSegmentsStoreManager->getStatusProvider();
+
         $this->_eventFactoryDefault = new EventFactory(false);
         $this->_eventFactoryWithReasons = new EventFactory(true);
 
@@ -152,12 +165,24 @@ class LDClient
 
         $this->_featureRequester = $this->getFeatureRequester($sdkKey, $options);
 
-        $this->_evaluator = new Evaluator($this->_featureRequester, $this->_logger);
+        $this->_evaluator = new Evaluator($this->_featureRequester, $this->_bigSegmentsStoreManager, $this->_logger);
     }
 
     public function getLogger(): LoggerInterface
     {
         return $this->_logger;
+    }
+
+    /**
+    * Returns an interface for tracking the status of a Big Segment store.
+    *
+    * The {@see BigSegmentsStoreStatusProvider} has methods for checking whether
+    * the Big Segment store is (as far as the SDK knows) currently operational
+    * and tracking changes in this status.
+    */
+    public function getBigSegmentStatusProvider(): BigSegmentStatusProvider
+    {
+        return $this->_bigSegmentStatusProvider;
     }
 
     /**
@@ -490,7 +515,7 @@ class LDClient
 
         $preloadedRequester = new PreloadedFeatureRequester($this->_featureRequester, $flags);
         // This saves us from doing repeated queries for prerequisite flags during evaluation
-        $tempEvaluator = new Evaluator($preloadedRequester);
+        $tempEvaluator = new Evaluator($preloadedRequester, $this->_bigSegmentsStoreManager);
 
         $state = new FeatureFlagsState(true);
         $clientOnly = !!($options['clientSideOnly'] ?? false);

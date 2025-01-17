@@ -13,8 +13,14 @@ TEMP_TEST_OUTPUT=/tmp/sse-contract-test-service.log
 # - "evaluation/parameterized/attribute references/array index is not supported": Due to how PHP
 #   arrays work, there's no way to disallow an array index lookup without breaking object property
 #   lookups for properties that are numeric strings.
+#
+# - "big segments/membership caching/context cache eviction (cache size)": Caching is provided through
+#   PSR-6 (psr/cache) interface. This interface does not provide a way to limit the cache size. The
+#   test harness expects the cache to evict items when the cache size is exceeded. This is not possible
+#   with the current implementation.
 TEST_HARNESS_PARAMS := $(TEST_HARNESS_PARAMS) \
-	-skip 'evaluation/parameterized/attribute references/array index is not supported'
+	-skip 'evaluation/parameterized/attribute references/array index is not supported' \
+	-skip 'big segments/membership caching/context cache eviction (cache size)'
 
 build-contract-tests:
 	@cd test-service && composer install --no-progress

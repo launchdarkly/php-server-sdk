@@ -12,21 +12,33 @@ use LaunchDarkly\LDContext;
 
 class ModelBuilders
 {
+    /**
+    * @return FlagBuilder
+    */
     public static function flagBuilder(string $key)
     {
         return new FlagBuilder($key);
     }
 
+    /**
+    * @return FlagRuleBuilder
+    */
     public static function flagRuleBuilder()
     {
         return new FlagRuleBuilder();
     }
 
+    /**
+    * @return SegmentBuilder
+    */
     public static function segmentBuilder(string $key)
     {
         return new SegmentBuilder($key);
     }
 
+    /**
+    * @return SegmentRuleBuilder
+    */
     public static function segmentRuleBuilder()
     {
         return new SegmentRuleBuilder();
@@ -68,7 +80,7 @@ class ModelBuilders
     {
         return self::flagRuleBuilder()->variation($variation)->clauses($clauses)->build();
     }
-    
+
     public static function negate(Clause $clause): Clause
     {
         return new Clause($clause->getContextKind(), $clause->getAttribute(), $clause->getOp(), $clause->getValues(), true);

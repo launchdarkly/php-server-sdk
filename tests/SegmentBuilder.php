@@ -18,6 +18,9 @@ class SegmentBuilder
     private array $_includedContexts = [];
     /** @var SegmentTarget[] */
     private array $_excludedContexts = [];
+    private bool $_unbounded = false;
+    private ?string $_unboundedContextKind = null;
+    private ?int $_generation = null;
     private string $_salt = '';
     /** @var SegmentRule[] */
     private array $_rules = [];
@@ -37,6 +40,9 @@ class SegmentBuilder
             $this->_excluded,
             $this->_includedContexts,
             $this->_excludedContexts,
+            $this->_unbounded,
+            $this->_unboundedContextKind,
+            $this->_generation,
             $this->_salt,
             $this->_rules,
             $this->_deleted
@@ -82,6 +88,24 @@ class SegmentBuilder
     public function salt(string $salt): SegmentBuilder
     {
         $this->_salt = $salt;
+        return $this;
+    }
+
+    public function unbounded(bool $unbounded): SegmentBuilder
+    {
+        $this->_unbounded = $unbounded;
+        return $this;
+    }
+
+    public function unboundedContextKind(?string $unboundedContextKind): SegmentBuilder
+    {
+        $this->_unboundedContextKind = $unboundedContextKind;
+        return $this;
+    }
+
+    public function generation(?int $generation): SegmentBuilder
+    {
+        $this->_generation = $generation;
         return $this;
     }
 }

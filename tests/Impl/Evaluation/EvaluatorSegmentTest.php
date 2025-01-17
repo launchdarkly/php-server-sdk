@@ -3,12 +3,14 @@
 namespace LaunchDarkly\Tests\Impl\Evaluation;
 
 use LaunchDarkly\EvaluationReason;
+use LaunchDarkly\Impl\BigSegments\StoreManager;
 use LaunchDarkly\Impl\Evaluation\Evaluator;
 use LaunchDarkly\Impl\Evaluation\EvaluatorBucketing;
 use LaunchDarkly\Impl\Model\Segment;
 use LaunchDarkly\LDContext;
 use LaunchDarkly\Tests\MockFeatureRequester;
 use LaunchDarkly\Tests\ModelBuilders;
+use LaunchDarkly\Types\BigSegmentsConfig;
 use PHPUnit\Framework\TestCase;
 
 $defaultContext = LDContext::create('foo');
@@ -68,7 +70,7 @@ class EvaluatorSegmentTest extends TestCase
         $this->assertTrue(self::segmentMatchesContext($segment, $c2));
         $this->assertFalse(self::segmentMatchesContext($segment, $multi));
     }
-    
+
     public function testMatchingRuleWithFullRollout()
     {
         global $defaultContext;
@@ -213,7 +215,8 @@ class EvaluatorSegmentTest extends TestCase
             $segments[] = $segment;
             $requester->addSegment($segment);
         }
-        $evaluator = new Evaluator($requester);
+        $storeManager = new StoreManager(config: new BigSegmentsConfig(store: null), logger: EvaluatorTestUtil::testLogger());
+        $evaluator = new Evaluator($requester, $storeManager);
 
         $flag = ModelBuilders::booleanFlagWithClauses(ModelBuilders::clauseMatchingSegment($segments[0]));
 
@@ -243,7 +246,8 @@ class EvaluatorSegmentTest extends TestCase
             $segments[] = $segment;
             $requester->addSegment($segment);
         }
-        $evaluator = new Evaluator($requester);
+        $storeManager = new StoreManager(config: new BigSegmentsConfig(store: null), logger: EvaluatorTestUtil::testLogger());
+        $evaluator = new Evaluator($requester, $storeManager);
 
         $flag = ModelBuilders::booleanFlagWithClauses(ModelBuilders::clauseMatchingSegment($segments[0]));
 
@@ -257,7 +261,8 @@ class EvaluatorSegmentTest extends TestCase
 
         $requester = new MockFeatureRequester();
         $requester->addSegment($segment);
-        $evaluator = new Evaluator($requester, EvaluatorTestUtil::testLogger());
+        $storeManager = new StoreManager(config: new BigSegmentsConfig(store: null), logger: EvaluatorTestUtil::testLogger());
+        $evaluator = new Evaluator($requester, $storeManager);
 
         $detail = $evaluator->evaluate($flag, $context, EvaluatorTestUtil::expectNoPrerequisiteEvals())->getDetail();
         if ($detail->getValue() === null) {

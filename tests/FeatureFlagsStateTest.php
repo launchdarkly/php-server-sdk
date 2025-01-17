@@ -38,7 +38,7 @@ class FeatureFlagsStateTest extends \PHPUnit\Framework\TestCase
         'trackEvents' => true,
         'debugEventsUntilDate' => 1000
     ];
-    
+
     private static function irrelevantReason(): EvaluationReason
     {
         return EvaluationReason::off();
@@ -56,7 +56,7 @@ class FeatureFlagsStateTest extends \PHPUnit\Framework\TestCase
     public function testUnknownFlagReturnsNullValue()
     {
         $state = new FeatureFlagsState(true);
-        
+
         $this->assertNull($state->getFlagValue('key1'));
     }
 
