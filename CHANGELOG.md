@@ -2,6 +2,13 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [6.4.0](https://github.com/launchdarkly/php-server-sdk/compare/6.3.0...6.4.0) (2025-01-17)
+
+
+### Features
+
+* Add support for big segments ([#213](https://github.com/launchdarkly/php-server-sdk/issues/213)) ([bd6c50c](https://github.com/launchdarkly/php-server-sdk/commit/bd6c50c427e7bbb78171d00a6c1d337792822264))
+
 ## [6.3.0](https://github.com/launchdarkly/php-server-sdk/compare/6.2.0...6.3.0) (2024-10-22)
 
 
