@@ -44,7 +44,7 @@ jobs:
 
     strategy:
       matrix:
-        php-version: [8.1.26, 8.2.13]
+        php-version: ['8.1', '8.2']
 
     env:
       LD_INCLUDE_INTEGRATION_TESTS: 1
@@ -54,14 +54,13 @@ jobs:
         with:
           fetch-depth: 0 # If you only need the current version keep this.
 
+      - name: Setup PHP
+        uses: shivammathur/setup-php@e6f75134d35752277f093989e72e140eaa222f35
+        with:
+          php-version: ${{ matrix.php-version }}
+
       - name: Install java support
         run: choco install -y javaruntime
-
-      - name: Install php support
-        run: choco install -y php --version=${{ matrix.php-version }} --force
-
-      - name: Install composer
-        run: choco install -y composer
 
       - name: Download wiremock
         run: Invoke-WebRequest -Uri https://repo1.maven.org/maven2/com/github/tomakehurst/wiremock-jre8-standalone/2.31.0/wiremock-jre8-standalone-2.31.0.jar -UseBasicParsing -OutFile wiremock.jar

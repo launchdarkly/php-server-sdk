@@ -140,7 +140,7 @@ class OpTracker
         $event = [
             'kind' => 'migration_op',
             'creationDate' => Util::currentTimeUnixMillis(),
-            'contextKeys' => $this->context->getKeys(),
+            'context' => $this->context,
             'operation' => $this->operation->value,
             'evaluation' => [
                 'key' => $this->key,

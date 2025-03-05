@@ -76,7 +76,7 @@ class TestService
                 'secure-mode-hash',
                 'migrations',
                 'event-sampling',
-                'inline-context',
+                'inline-context-all',
                 'anonymous-redaction',
                 'client-prereq-events',
                 'big-segments'
