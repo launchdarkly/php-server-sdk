@@ -166,7 +166,7 @@ class EvaluationReason implements \JsonSerializable
         ?string $ruleId = null,
         ?string $prerequisiteKey = null,
         bool $inExperiment = false,
-        BigSegmentsEvaluationStatus $bigSegmentsEvaluationStatus = null
+        ?BigSegmentsEvaluationStatus $bigSegmentsEvaluationStatus = null
     ) {
         $this->_kind = $kind;
         $this->_errorKind = $errorKind;
