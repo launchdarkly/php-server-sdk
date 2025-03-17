@@ -22,7 +22,7 @@ class EvalResult
      * @param EvaluationDetail $detail
      * @param bool $forceReasonTracking
      */
-    public function __construct(EvaluationDetail $detail, bool $forceReasonTracking = false, EvaluatorState $state = null)
+    public function __construct(EvaluationDetail $detail, bool $forceReasonTracking = false, ?EvaluatorState $state = null)
     {
         $this->_detail = $detail;
         $this->_state = $state;
