@@ -80,7 +80,7 @@ class CurlEventPublisher implements EventPublisher
     {
         $scheme = $this->_ssl ? "https://" : "http://";
         $args = " -X POST";
-        $args.= " --connect-timeout " . $this->_connectTimeout;
+        $args.= " --max-time " . $this->_connectTimeout;
 
         foreach ($this->_eventHeaders as $key => $value) {
             if ($key == 'Authorization') {
