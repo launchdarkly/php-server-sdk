@@ -34,6 +34,7 @@ class EventPublisherTest extends TestCase
             'connect_timeout' => 3,
             'application_info' => $appInfo,
             'logger' => $logger,
+            'instance_id' => 'my-instance-id',
         ];
 
         $curlPublisher = new Integrations\CurlEventPublisher('sdk-key', $config);
@@ -90,5 +91,6 @@ class EventPublisherTest extends TestCase
         $this->assertEquals(EventPublisher::CURRENT_SCHEMA_VERSION, $headers['X-LaunchDarkly-Event-Schema']);
         $this->assertArrayHasKey('X-LaunchDarkly-Unsummarized', $headers);
         $this->assertEquals('application-id/my-id application-version/my-version', $headers['X-LaunchDarkly-Tags']);
+        $this->assertEquals('my-instance-id', $headers['X-LaunchDarkly-Instance-Id']);
     }
 }
