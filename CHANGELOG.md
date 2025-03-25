@@ -2,6 +2,13 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [6.5.2](https://github.com/launchdarkly/php-server-sdk/compare/6.5.1...6.5.2) (2025-03-25)
+
+
+### Bug Fixes
+
+* Honor `timeout` configuration for CurlEventPublisher ([#216](https://github.com/launchdarkly/php-server-sdk/issues/216)) ([1c969be](https://github.com/launchdarkly/php-server-sdk/commit/1c969be38e01e80dc29e202b1a46373dfeb35196))
+
 ## [6.5.1](https://github.com/launchdarkly/php-server-sdk/compare/6.5.0...6.5.1) (2025-03-17)
 
 
