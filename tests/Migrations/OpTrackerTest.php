@@ -47,7 +47,7 @@ class OpTrackerTest extends \PHPUnit\Framework\TestCase
         $this->assertIsArray($result, 'tracker failed to build event');
         $this->assertEquals('migration_op', $result['kind']);
         $this->assertEquals('read', $result['operation']);
-        $this->assertSame(['user' => 'user-key'], $result['contextKeys']);
+        $this->assertEquals(LDContext::create('user-key'), $result['context']);
 
         $evaluation = $result['evaluation'];
         $this->assertEquals('flag', $evaluation['key']);
