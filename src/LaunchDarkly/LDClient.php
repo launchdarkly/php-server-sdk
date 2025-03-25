@@ -25,6 +25,7 @@ use LaunchDarkly\Types\BigSegmentsConfig;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
+use Ramsey\Uuid\Uuid;
 
 /**
  * A client for the LaunchDarkly API.
@@ -92,6 +93,17 @@ class LDClient
      */
     public function __construct(string $sdkKey, array $options = [])
     {
+        $apcuLoaded = extension_loaded('apcu');
+
+        if ($apcuLoaded && \apcu_enabled()) {
+            $options['instance_id'] = \apcu_entry('ld::instanceid', function ($key) {
+                $uuid = Uuid::uuid4()->toString();
+                return $uuid;
+            });
+        } elseif (php_sapi_name() === 'cli') {
+            $options['instance_id'] = Uuid::uuid4()->toString();
+        }
+
         $this->_sdkKey = $sdkKey;
         if (!isset($options['base_uri'])) {
             $this->_baseUri = self::DEFAULT_BASE_URI;

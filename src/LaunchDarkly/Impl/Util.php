@@ -120,6 +120,10 @@ class Util
             }
         }
 
+        if (!empty($options['instance_id'])) {
+            $headers['X-LaunchDarkly-Instance-Id'] = $options['instance_id'];
+        }
+
         return $headers;
     }
 

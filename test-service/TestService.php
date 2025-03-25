@@ -77,6 +77,7 @@ class TestService
                 'migrations',
                 'event-sampling',
                 'inline-context-all',
+                'instance-id',
                 'anonymous-redaction',
                 'client-prereq-events',
                 'big-segments'
