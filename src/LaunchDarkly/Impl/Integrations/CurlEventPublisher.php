@@ -22,6 +22,7 @@ class CurlEventPublisher implements EventPublisher
     private bool $_ssl;
     private string $_curl = '/usr/bin/env curl';
     private int $_connectTimeout;
+    private int $_timeout;
     private bool $_isWindows;
 
     /** @var array<string, string> */
@@ -51,6 +52,7 @@ class CurlEventPublisher implements EventPublisher
 
         $this->_eventHeaders = Util::eventHeaders($sdkKey, $options);
         $this->_connectTimeout = $options['connect_timeout'];
+        $this->_timeout = $options['timeout'];
         $this->_isWindows = PHP_OS_FAMILY == 'Windows';
     }
 
@@ -80,7 +82,8 @@ class CurlEventPublisher implements EventPublisher
     {
         $scheme = $this->_ssl ? "https://" : "http://";
         $args = " -X POST";
-        $args.= " --max-time " . $this->_connectTimeout;
+        $args.= " --connect-timeout " . $this->_connectTimeout;
+        $args.= " --max-time " . $this->_timeout;
 
         foreach ($this->_eventHeaders as $key => $value) {
             if ($key == 'Authorization') {
