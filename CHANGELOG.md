@@ -2,6 +2,13 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [6.6.0](https://github.com/launchdarkly/php-server-sdk/compare/6.5.2...6.6.0) (2025-04-01)
+
+
+### Features
+
+* Include instance ID header across API requests ([#221](https://github.com/launchdarkly/php-server-sdk/issues/221)) ([4f87f4c](https://github.com/launchdarkly/php-server-sdk/commit/4f87f4cd37bdf93b61f8c9270d3d5821decf8b1b))
+
 ## [6.5.2](https://github.com/launchdarkly/php-server-sdk/compare/6.5.1...6.5.2) (2025-03-25)
 
 
