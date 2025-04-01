@@ -32,6 +32,7 @@ class GuzzleFeatureRequesterTest extends TestCase
             'timeout' => 3,
             'connect_timeout' => 3,
             'application_info' => $appInfo,
+            'instance_id' => 'my-instance-id',
         ];
 
         $requester = new GuzzleFeatureRequester('http://localhost:8080', 'sdk-key', $config);
@@ -71,6 +72,7 @@ class GuzzleFeatureRequesterTest extends TestCase
         $this->assertEquals('sdk-key', $headers['Authorization']);
         $this->assertEquals('PHPClient/' . LDClient::VERSION, $headers['User-Agent']);
         $this->assertEquals('application-id/my-id application-version/my-version', $headers['X-LaunchDarkly-Tags']);
+        $this->assertEquals('my-instance-id', $headers['X-LaunchDarkly-Instance-Id']);
     }
 
     public function wrapperProvider(): array
