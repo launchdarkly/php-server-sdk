@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LaunchDarkly\Impl\Integrations;
 
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\HandlerStack;
@@ -75,6 +76,9 @@ class GuzzleFeatureRequester implements FeatureRequester
                 $this->handleUnexpectedStatus($code, "GuzzleFeatureRequester::get");
             }
             return null;
+        } catch (Exception $e) {
+            $this->_logger->error("GuzzleFeatureRequester::get encountered an exception retrieving flag key {$key}: " . $e->getMessage());
+            return null;
         }
     }
 
@@ -99,6 +103,9 @@ class GuzzleFeatureRequester implements FeatureRequester
                 $this->handleUnexpectedStatus($code, "GuzzleFeatureRequester::get");
             }
             return null;
+        } catch (Exception $e) {
+            $this->_logger->error("GuzzleFeatureRequester::get encountered an exception retrieving segment key {$key}: " . $e->getMessage());
+            return null;
         }
     }
 
@@ -116,6 +123,9 @@ class GuzzleFeatureRequester implements FeatureRequester
         } catch (BadResponseException $e) {
             /** @psalm-suppress PossiblyNullReference (resolved in guzzle 7) */
             $this->handleUnexpectedStatus($e->getResponse()->getStatusCode(), "GuzzleFeatureRequester::getAll");
+            return null;
+        } catch (Exception $e) {
+            $this->_logger->error("GuzzleFeatureRequester::getAll encountered an exception retrieving all flags: " . $e->getMessage());
             return null;
         }
     }
