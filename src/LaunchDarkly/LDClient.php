@@ -277,9 +277,7 @@ class LDClient
     public function migrationVariation(string $key, LDContext $context, Stage $defaultStage): array
     {
         $result = $this->variationDetailInternal($key, $context, $defaultStage->value, $this->_eventFactoryDefault);
-        /** @var EvaluationDetail $detail */
         $detail = $result['detail'];
-        /** @var ?FeatureFlag $flag */
         $flag = $result['flag'];
 
         $value = $detail->getValue();

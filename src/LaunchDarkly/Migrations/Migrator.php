@@ -37,9 +37,7 @@ class Migrator
         mixed $payload = null
     ): OperationResult {
         $variationResult = $this->client->migrationVariation($key, $context, $defaultStage);
-        /** @var Stage */
         $stage = $variationResult['stage'];
-        /** @var OpTracker */
         $tracker = $variationResult['tracker'];
         $tracker->operation(Operation::READ);
 
@@ -70,9 +68,7 @@ class Migrator
         mixed $payload = null
     ): WriteResult {
         $variationResult = $this->client->migrationVariation($key, $context, $defaultStage);
-        /** @var Stage */
         $stage = $variationResult['stage'];
-        /** @var OpTracker */
         $tracker = $variationResult['tracker'];
         $tracker->operation(Operation::WRITE);
 
