@@ -157,9 +157,6 @@
       <code><![CDATA[public function enqueue(array $event): bool]]></code>
       <code><![CDATA[public function flush(): bool]]></code>
     </MissingOverrideAttribute>
-    <UnusedClass>
-      <code><![CDATA[NullEventProcessor]]></code>
-    </UnusedClass>
   </file>
   <file src="src/LaunchDarkly/Impl/Integrations/ApcuFeatureRequesterCache.php">
     <ClassMustBeFinal>
