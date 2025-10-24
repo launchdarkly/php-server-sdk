@@ -144,4 +144,37 @@ class GuzzleFeatureRequesterTest extends TestCase
             $this->assertNotContains('X-LaunchDarkly-Wrapper', $headers);
         }
     }
+
+    public function testTimeoutReturnsDefaultValue(): void
+    {
+        /** @var LoggerInterface **/
+        $logger = $this->getMockBuilder(LoggerInterface::class)->getMock();
+
+        $config = [
+            'logger' => $logger,
+            'timeout' => 1, // Set a very short timeout
+            'connect_timeout' => 1,
+        ];
+
+        $client = new Client();
+        // Configure the mock server to delay the response by 2 seconds
+        $delayRule = [
+            'request' => [
+                'url' => '/sdk/flags/delayed-flag',
+            ],
+            'response' => [
+                'fixedDelayMilliseconds' => 2000,
+                'status' => 200,
+                'body' => '{"key": "delayed-flag", "version": 1}'
+            ]
+        ];
+
+        $client->request('POST', 'http://localhost:8080/__admin/mappings', ['json' => $delayRule]);
+
+        $requester = new GuzzleFeatureRequester('http://localhost:8080', 'sdk-key', $config);
+        $result = $requester->getFeature("delayed-flag");
+
+        // The request should timeout and return null (default value) instead of throwing an exception
+        $this->assertNull($result);
+    }
 }
