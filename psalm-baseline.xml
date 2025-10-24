@@ -1,0 +1,613 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="6.13.1@1e3b7f0a8ab32b23197b91107adc0a7ed8a05b51">
+  <file src="src/LaunchDarkly/EvaluationDetail.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[EvaluationDetail]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/LaunchDarkly/EvaluationReason.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[EvaluationReason]]></code>
+    </ClassMustBeFinal>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function jsonSerialize(): array]]></code>
+    </MissingOverrideAttribute>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[bigSegmentsEvaluationStatus]]></code>
+      <code><![CDATA[getErrorKind]]></code>
+      <code><![CDATA[getPrerequisiteKey]]></code>
+      <code><![CDATA[isInExperiment]]></code>
+    </PossiblyUnusedMethod>
+    <RiskyTruthyFalsyComparison>
+      <code><![CDATA[$this->_errorKind]]></code>
+      <code><![CDATA[$this->_prerequisiteKey]]></code>
+      <code><![CDATA[$this->_ruleId]]></code>
+      <code><![CDATA[$this->_ruleIndex]]></code>
+    </RiskyTruthyFalsyComparison>
+  </file>
+  <file src="src/LaunchDarkly/FeatureFlagsState.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[FeatureFlagsState]]></code>
+    </ClassMustBeFinal>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function jsonSerialize(): array]]></code>
+    </MissingOverrideAttribute>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[getFlagReason]]></code>
+      <code><![CDATA[getFlagValue]]></code>
+      <code><![CDATA[isValid]]></code>
+      <code><![CDATA[toValuesMap]]></code>
+    </PossiblyUnusedMethod>
+    <RiskyTruthyFalsyComparison>
+      <code><![CDATA[!$flag->getDebugEventsUntilDate()]]></code>
+      <code><![CDATA[$flag->getDebugEventsUntilDate()]]></code>
+      <code><![CDATA[$meta['reason'] ?? null]]></code>
+      <code><![CDATA[$prerequisites]]></code>
+    </RiskyTruthyFalsyComparison>
+  </file>
+  <file src="src/LaunchDarkly/Impl/BigSegments/MembershipResult.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[MembershipResult]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/LaunchDarkly/Impl/BigSegments/StoreManager.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[StoreManager]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/LaunchDarkly/Impl/BigSegments/StoreStatusProvider.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[StoreStatusProvider]]></code>
+    </ClassMustBeFinal>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function attach(Subsystems\BigSegmentStatusListener $listener): void]]></code>
+      <code><![CDATA[public function detach(Subsystems\BigSegmentStatusListener $listener): void]]></code>
+      <code><![CDATA[public function status(): Types\BigSegmentsStoreStatus]]></code>
+    </MissingOverrideAttribute>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[lastStatus]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Evaluation/EvalResult.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[EvalResult]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Evaluation/Evaluator.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[Evaluator]]></code>
+    </ClassMustBeFinal>
+    <InvalidOperand>
+      <code><![CDATA[$rule->getWeight() / 100000.0]]></code>
+    </InvalidOperand>
+    <RiskyTruthyFalsyComparison>
+      <code><![CDATA[$rule->getBucketBy()]]></code>
+      <code><![CDATA[$t->getContextKind()]]></code>
+    </RiskyTruthyFalsyComparison>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Evaluation/EvaluatorBucketing.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[EvaluatorBucketing]]></code>
+    </ClassMustBeFinal>
+    <InvalidOperand>
+      <code><![CDATA[$wv->getWeight() / 100000.0]]></code>
+    </InvalidOperand>
+    <RiskyTruthyFalsyComparison>
+      <code><![CDATA[$rollout->isExperiment() ? null : $rollout->getBucketBy()]]></code>
+      <code><![CDATA[$salt]]></code>
+    </RiskyTruthyFalsyComparison>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Evaluation/EvaluatorHelpers.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[EvaluatorHelpers]]></code>
+    </ClassMustBeFinal>
+    <RiskyTruthyFalsyComparison>
+      <code><![CDATA[$contextKind]]></code>
+    </RiskyTruthyFalsyComparison>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Evaluation/EvaluatorState.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[EvaluatorState]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Evaluation/InvalidAttributeReferenceException.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[InvalidAttributeReferenceException]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Evaluation/Operators.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[Operators]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Evaluation/PrerequisiteEvaluationRecord.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[PrerequisiteEvaluationRecord]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Events/EventFactory.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[EventFactory]]></code>
+    </ClassMustBeFinal>
+    <RiskyTruthyFalsyComparison>
+      <code><![CDATA[$flag->getDebugEventsUntilDate()]]></code>
+    </RiskyTruthyFalsyComparison>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Events/EventProcessor.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[sendEvent]]></code>
+    </PossiblyUnusedMethod>
+    <RiskyTruthyFalsyComparison>
+      <code><![CDATA[!$ep]]></code>
+    </RiskyTruthyFalsyComparison>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Events/EventSerializer.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[EventSerializer]]></code>
+    </ClassMustBeFinal>
+    <RiskyTruthyFalsyComparison>
+      <code><![CDATA[!($options['all_attributes_private'] ?? false)]]></code>
+    </RiskyTruthyFalsyComparison>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Events/NullEventProcessor.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[NullEventProcessor]]></code>
+    </ClassMustBeFinal>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function enqueue(array $event): bool]]></code>
+      <code><![CDATA[public function flush(): bool]]></code>
+    </MissingOverrideAttribute>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Integrations/ApcuFeatureRequesterCache.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[ApcuFeatureRequesterCache]]></code>
+    </ClassMustBeFinal>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function getCachedString(string $cacheKey): ?string]]></code>
+      <code><![CDATA[public function putCachedString(string $cacheKey, ?string $data): void]]></code>
+    </MissingOverrideAttribute>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Integrations/CurlEventPublisher.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[CurlEventPublisher]]></code>
+    </ClassMustBeFinal>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function publish(string $payload): bool]]></code>
+    </MissingOverrideAttribute>
+    <PossiblyFalseArgument>
+      <code><![CDATA[iconv('ISO-8859-1', 'UTF-16LE', $args)]]></code>
+    </PossiblyFalseArgument>
+    <RiskyTruthyFalsyComparison>
+      <code><![CDATA[!$baseUri]]></code>
+    </RiskyTruthyFalsyComparison>
+    <UnusedReturnValue>
+      <code><![CDATA[bool]]></code>
+    </UnusedReturnValue>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Integrations/FeatureRequesterBase.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[FeatureRequesterBase]]></code>
+    </ClassMustBeFinal>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function getAllFeatures(): ?array]]></code>
+      <code><![CDATA[public function getFeature(string $key): ?FeatureFlag]]></code>
+      <code><![CDATA[public function getSegment(string $key): ?Segment]]></code>
+    </MissingOverrideAttribute>
+    <PossiblyFalseArgument>
+      <code><![CDATA[json_encode($values)]]></code>
+    </PossiblyFalseArgument>
+    <PossiblyUnusedParam>
+      <code><![CDATA[$key]]></code>
+      <code><![CDATA[$namespace]]></code>
+      <code><![CDATA[$namespace]]></code>
+    </PossiblyUnusedParam>
+    <RiskyTruthyFalsyComparison>
+      <code><![CDATA[!$values]]></code>
+      <code><![CDATA[$json]]></code>
+      <code><![CDATA[$json]]></code>
+      <code><![CDATA[$options['logger'] ?? null]]></code>
+      <code><![CDATA[$raw]]></code>
+    </RiskyTruthyFalsyComparison>
+    <UnusedClass>
+      <code><![CDATA[FeatureRequesterBase]]></code>
+    </UnusedClass>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Integrations/FileDataFeatureRequester.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[FileDataFeatureRequester]]></code>
+    </ClassMustBeFinal>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function getAllFeatures(): ?array]]></code>
+      <code><![CDATA[public function getFeature(string $key): ?FeatureFlag]]></code>
+      <code><![CDATA[public function getSegment(string $key): ?Segment]]></code>
+    </MissingOverrideAttribute>
+    <PossiblyFalseArgument>
+      <code><![CDATA[$content]]></code>
+    </PossiblyFalseArgument>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Integrations/GuzzleEventPublisher.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[GuzzleEventPublisher]]></code>
+    </ClassMustBeFinal>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function publish(string $payload): bool]]></code>
+    </MissingOverrideAttribute>
+    <RiskyTruthyFalsyComparison>
+      <code><![CDATA[!$baseUri]]></code>
+    </RiskyTruthyFalsyComparison>
+    <UnusedProperty>
+      <code><![CDATA[$_sdkKey]]></code>
+    </UnusedProperty>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Integrations/GuzzleFeatureRequester.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[GuzzleFeatureRequester]]></code>
+    </ClassMustBeFinal>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function getAllFeatures(): ?array]]></code>
+      <code><![CDATA[public function getFeature(string $key): ?FeatureFlag]]></code>
+      <code><![CDATA[public function getSegment(string $key): ?Segment]]></code>
+    </MissingOverrideAttribute>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Migrations/Executor.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[Executor]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Model/Clause.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[Clause]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Model/FeatureFlag.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[FeatureFlag]]></code>
+    </ClassMustBeFinal>
+    <RiskyTruthyFalsyComparison>
+      <code><![CDATA[!($v['clientSide'] ?? false)]]></code>
+      <code><![CDATA[!($v['excludeFromSummaries'] ?? false)]]></code>
+      <code><![CDATA[!($v['trackEvents'] ?? false)]]></code>
+      <code><![CDATA[!($v['trackEventsFallthrough'] ?? false)]]></code>
+    </RiskyTruthyFalsyComparison>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Model/MigrationSettings.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[MigrationSettings]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Model/Prerequisite.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[Prerequisite]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Model/Rollout.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[Rollout]]></code>
+    </ClassMustBeFinal>
+    <RiskyTruthyFalsyComparison>
+      <code><![CDATA[$kind]]></code>
+    </RiskyTruthyFalsyComparison>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Model/Rule.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[Rule]]></code>
+    </ClassMustBeFinal>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public static function getDecoder(): \Closure]]></code>
+    </MissingOverrideAttribute>
+    <RiskyTruthyFalsyComparison>
+      <code><![CDATA[!($v['trackEvents'] ?? false)]]></code>
+    </RiskyTruthyFalsyComparison>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Model/Segment.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[Segment]]></code>
+    </ClassMustBeFinal>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[getVersion]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Model/SegmentRule.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[SegmentRule]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Model/SegmentTarget.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[SegmentTarget]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Model/Target.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[Target]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Model/WeightedVariation.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[WeightedVariation]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/LaunchDarkly/Impl/PreloadedFeatureRequester.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[PreloadedFeatureRequester]]></code>
+    </ClassMustBeFinal>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function getAllFeatures(): ?array]]></code>
+      <code><![CDATA[public function getFeature(string $key): ?FeatureFlag]]></code>
+      <code><![CDATA[public function getSegment(string $key): ?Segment]]></code>
+    </MissingOverrideAttribute>
+  </file>
+  <file src="src/LaunchDarkly/Impl/SemanticVersion.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[SemanticVersion]]></code>
+    </ClassMustBeFinal>
+    <PossiblyUnusedProperty>
+      <code><![CDATA[$build]]></code>
+    </PossiblyUnusedProperty>
+  </file>
+  <file src="src/LaunchDarkly/Impl/UnrecoverableHTTPStatusException.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[UnrecoverableHTTPStatusException]]></code>
+    </ClassMustBeFinal>
+    <PossiblyUnusedProperty>
+      <code><![CDATA[$status]]></code>
+    </PossiblyUnusedProperty>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Util.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[Util]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/LaunchDarkly/Integrations/Curl.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[Curl]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/LaunchDarkly/Integrations/Files.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[Files]]></code>
+    </ClassMustBeFinal>
+    <UnusedClass>
+      <code><![CDATA[Files]]></code>
+    </UnusedClass>
+  </file>
+  <file src="src/LaunchDarkly/Integrations/Guzzle.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[Guzzle]]></code>
+    </ClassMustBeFinal>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[eventPublisher]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/LaunchDarkly/Integrations/TestData.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[TestData]]></code>
+    </ClassMustBeFinal>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function getAllFeatures(): ?array]]></code>
+      <code><![CDATA[public function getFeature(string $key): ?FeatureFlag]]></code>
+      <code><![CDATA[public function getSegment(string $key): ?Segment]]></code>
+    </MissingOverrideAttribute>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[dataSource]]></code>
+      <code><![CDATA[flag]]></code>
+      <code><![CDATA[update]]></code>
+    </PossiblyUnusedMethod>
+    <RiskyTruthyFalsyComparison>
+      <code><![CDATA[$oldFlag]]></code>
+    </RiskyTruthyFalsyComparison>
+  </file>
+  <file src="src/LaunchDarkly/Integrations/TestData/FlagBuilder.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[FlagBuilder]]></code>
+    </ClassMustBeFinal>
+    <PossiblyFalseArgument>
+      <code><![CDATA[json_encode($value)]]></code>
+    </PossiblyFalseArgument>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[excludeFromSummaries]]></code>
+      <code><![CDATA[ifMatch]]></code>
+      <code><![CDATA[ifNotMatch]]></code>
+      <code><![CDATA[migrationSettings]]></code>
+      <code><![CDATA[samplingRatio]]></code>
+      <code><![CDATA[valueForAll]]></code>
+      <code><![CDATA[variationForUser]]></code>
+    </PossiblyUnusedMethod>
+    <UnusedForeachValue>
+      <code><![CDATA[$value]]></code>
+    </UnusedForeachValue>
+  </file>
+  <file src="src/LaunchDarkly/Integrations/TestData/FlagRuleBuilder.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[FlagRuleBuilder]]></code>
+    </ClassMustBeFinal>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[andMatch]]></code>
+      <code><![CDATA[andNotMatch]]></code>
+      <code><![CDATA[build]]></code>
+      <code><![CDATA[thenReturn]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/LaunchDarkly/Integrations/TestData/MigrationSettingsBuilder.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[MigrationSettingsBuilder]]></code>
+    </ClassMustBeFinal>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[setCheckRatio]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/LaunchDarkly/LDClient.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[LDClient]]></code>
+    </ClassMustBeFinal>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[allFlagsState]]></code>
+      <code><![CDATA[flush]]></code>
+      <code><![CDATA[getBigSegmentStatusProvider]]></code>
+      <code><![CDATA[getLogger]]></code>
+      <code><![CDATA[identify]]></code>
+      <code><![CDATA[secureModeHash]]></code>
+      <code><![CDATA[track]]></code>
+      <code><![CDATA[variation]]></code>
+      <code><![CDATA[variationDetail]]></code>
+    </PossiblyUnusedMethod>
+    <PossiblyUnusedProperty>
+      <code><![CDATA[$_eventsUri]]></code>
+    </PossiblyUnusedProperty>
+    <RiskyTruthyFalsyComparison>
+      <code><![CDATA[!$this->_send_events]]></code>
+      <code><![CDATA[!($options['clientSideOnly'] ?? false)]]></code>
+      <code><![CDATA[!($options['detailsOnlyForTrackedFlags'] ?? false)]]></code>
+      <code><![CDATA[!($options['withReasons'] ?? false)]]></code>
+    </RiskyTruthyFalsyComparison>
+    <UnusedClosureParam>
+      <code><![CDATA[$key]]></code>
+    </UnusedClosureParam>
+  </file>
+  <file src="src/LaunchDarkly/LDContext.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[LDContext]]></code>
+    </ClassMustBeFinal>
+    <FalsableReturnStatement>
+      <code><![CDATA[json_encode($this)]]></code>
+    </FalsableReturnStatement>
+    <InvalidToString>
+      <code><![CDATA[string]]></code>
+    </InvalidToString>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function jsonSerialize(): array]]></code>
+    </MissingOverrideAttribute>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[create]]></code>
+      <code><![CDATA[createMulti]]></code>
+      <code><![CDATA[equals]]></code>
+      <code><![CDATA[fromJson]]></code>
+      <code><![CDATA[getKeys]]></code>
+    </PossiblyUnusedMethod>
+    <RiskyTruthyFalsyComparison>
+      <code><![CDATA[!$this->_error]]></code>
+      <code><![CDATA[$error]]></code>
+      <code><![CDATA[$errors]]></code>
+      <code><![CDATA[$kindError]]></code>
+      <code><![CDATA[$this->_attributes]]></code>
+      <code><![CDATA[$this->_error]]></code>
+      <code><![CDATA[$this->_multiContexts]]></code>
+    </RiskyTruthyFalsyComparison>
+  </file>
+  <file src="src/LaunchDarkly/LDContextBuilder.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[LDContextBuilder]]></code>
+    </ClassMustBeFinal>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[anonymous]]></code>
+      <code><![CDATA[key]]></code>
+      <code><![CDATA[name]]></code>
+      <code><![CDATA[set]]></code>
+    </PossiblyUnusedMethod>
+    <PossiblyUnusedReturnValue>
+      <code><![CDATA[LDContextBuilder]]></code>
+    </PossiblyUnusedReturnValue>
+    <RiskyTruthyFalsyComparison>
+      <code><![CDATA[$this->_kind]]></code>
+    </RiskyTruthyFalsyComparison>
+  </file>
+  <file src="src/LaunchDarkly/LDContextMultiBuilder.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[LDContextMultiBuilder]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/LaunchDarkly/Migrations/MigrationConfig.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[MigrationConfig]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/LaunchDarkly/Migrations/Migrator.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[Migrator]]></code>
+    </ClassMustBeFinal>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[read]]></code>
+      <code><![CDATA[write]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/LaunchDarkly/Migrations/MigratorBuilder.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[MigratorBuilder]]></code>
+    </ClassMustBeFinal>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[build]]></code>
+      <code><![CDATA[read]]></code>
+      <code><![CDATA[readExecutionOrder]]></code>
+      <code><![CDATA[trackErrors]]></code>
+      <code><![CDATA[trackLatency]]></code>
+      <code><![CDATA[write]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/LaunchDarkly/Migrations/OpTracker.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[OpTracker]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/LaunchDarkly/Migrations/OperationResult.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[OperationResult]]></code>
+    </ClassMustBeFinal>
+    <PossiblyUnusedProperty>
+      <code><![CDATA[$error]]></code>
+      <code><![CDATA[$exception]]></code>
+      <code><![CDATA[$origin]]></code>
+    </PossiblyUnusedProperty>
+  </file>
+  <file src="src/LaunchDarkly/Migrations/WriteResult.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[WriteResult]]></code>
+    </ClassMustBeFinal>
+    <PossiblyUnusedProperty>
+      <code><![CDATA[$authoritative]]></code>
+      <code><![CDATA[$nonauthoritative]]></code>
+    </PossiblyUnusedProperty>
+  </file>
+  <file src="src/LaunchDarkly/Subsystems/BigSegmentStatusProvider.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[attach]]></code>
+      <code><![CDATA[detach]]></code>
+      <code><![CDATA[status]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/LaunchDarkly/Types/ApplicationInfo.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[withId]]></code>
+      <code><![CDATA[withVersion]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/LaunchDarkly/Types/AttributeReference.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[AttributeReference]]></code>
+    </ClassMustBeFinal>
+    <RiskyTruthyFalsyComparison>
+      <code><![CDATA[$this->_singleComponent]]></code>
+    </RiskyTruthyFalsyComparison>
+  </file>
+  <file src="src/LaunchDarkly/Types/BigSegmentsConfig.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[BigSegmentsConfig]]></code>
+    </ClassMustBeFinal>
+  </file>
+  <file src="src/LaunchDarkly/Types/BigSegmentsStoreMetadata.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[BigSegmentsStoreMetadata]]></code>
+    </ClassMustBeFinal>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[getLastUpToDate]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/LaunchDarkly/Types/BigSegmentsStoreStatus.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[BigSegmentsStoreStatus]]></code>
+    </ClassMustBeFinal>
+  </file>
+</files>
