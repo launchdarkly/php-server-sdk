@@ -47,7 +47,7 @@ class CurlEventPublisher implements EventPublisher
         $this->_path = $url['path'] ?? '';
 
         if (array_key_exists('curl', $options)) {
-            $this->_curl = $options['curl'];
+            $this->_curl = escapeshellcmd($options['curl']);
         }
 
         $this->_eventHeaders = Util::eventHeaders($sdkKey, $options);
