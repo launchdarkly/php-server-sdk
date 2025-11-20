@@ -2,6 +2,18 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [6.6.2](https://github.com/launchdarkly/php-server-sdk/compare/6.6.1...6.6.2) (2025-11-20)
+
+
+### Bug Fixes
+
+* Improve escaping for curl event publisher ([#230](https://github.com/launchdarkly/php-server-sdk/issues/230)) ([bff2a4a](https://github.com/launchdarkly/php-server-sdk/commit/bff2a4af6bc475cee23b850f9234ebe5e35cc861))
+
+
+### Miscellaneous Chores
+
+* Add latest versions of PHP to CI ([#227](https://github.com/launchdarkly/php-server-sdk/issues/227)) ([9836192](https://github.com/launchdarkly/php-server-sdk/commit/9836192cedae0e392823de60de00076adee89a50))
+
 ## [6.6.1](https://github.com/launchdarkly/php-server-sdk/compare/6.6.0...6.6.1) (2025-10-20)
 
 
