@@ -73,7 +73,6 @@ class CurlEventPublisher implements EventPublisher
         };
 
         $args = $this->createPowershellArgs($tmpfile);
-        echo "@@@@@ power shell arguments are $args" . PHP_EOL;
         $this->makePowershellRequest($args);
 
         return true;
