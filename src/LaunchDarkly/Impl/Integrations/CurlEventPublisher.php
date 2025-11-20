@@ -100,7 +100,7 @@ class CurlEventPublisher implements EventPublisher
     private function makeCurlRequest(string $args): bool
     {
         $cmd = $this->_curl . " " . $args . ">> /dev/null 2>&1 &";
-        shell_exec(escapeshellcmd($cmd));
+        shell_exec($cmd);
         return true;
     }
 
