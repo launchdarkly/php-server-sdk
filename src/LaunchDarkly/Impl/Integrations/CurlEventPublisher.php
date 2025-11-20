@@ -108,17 +108,19 @@ class CurlEventPublisher implements EventPublisher
     {
         $headerString = "";
         foreach ($this->_eventHeaders as $key => $value) {
-            $headerString .= sprintf("'%s'='%s';", $key, $value);
+            $escapedKey = str_replace("'", "''", $key);
+            $escapedValue = str_replace("'", "''", $value);
+            $headerString .= sprintf('"%s"="%s";', $escapedKey, $escapedValue);
         }
 
         $scheme = $this->_ssl ? "https://" : "http://";
         $args = " Invoke-WebRequest";
         $args.= " -Method POST";
         $args.= " -UseBasicParsing";
-        $args.= " -InFile $payloadFile";
-        $args.= " -H @{" . $headerString . "}";
+        $args.= " -InFile '$payloadFile'";
+        $args.= " -H '@{" . $headerString . "}'";
         $args.= " -Uri " . escapeshellarg($scheme . $this->_host . ":" . $this->_port . $this->_path . "/bulk");
-        $args.= " ; Remove-Item $payloadFile";
+        $args.= " ; Remove-Item '$payloadFile'";
 
         return $args;
     }
