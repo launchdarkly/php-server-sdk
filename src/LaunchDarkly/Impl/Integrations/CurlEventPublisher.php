@@ -116,7 +116,7 @@ class CurlEventPublisher implements EventPublisher
         $args.= " -Method POST";
         $args.= " -UseBasicParsing";
         $args.= " -InFile $payloadFile";
-        $args.= " -H " . escapeshellarg("@{" . $headerString . "}");
+        $args.= " -H @{" . $headerString . "}";
         $args.= " -Uri " . escapeshellarg($scheme . $this->_host . ":" . $this->_port . $this->_path . "/bulk");
         $args.= " ; Remove-Item $payloadFile";
 
