@@ -47,12 +47,12 @@ class CurlEventPublisher implements EventPublisher
         $this->_path = $url['path'] ?? '';
 
         if (array_key_exists('curl', $options)) {
-            $this->_curl = $options['curl'];
+            $this->_curl = escapeshellcmd($options['curl']);
         }
 
         $this->_eventHeaders = Util::eventHeaders($sdkKey, $options);
-        $this->_connectTimeout = $options['connect_timeout'];
-        $this->_timeout = $options['timeout'];
+        $this->_connectTimeout = intval($options['connect_timeout']);
+        $this->_timeout = intval($options['timeout']);
         $this->_isWindows = PHP_OS_FAMILY == 'Windows';
     }
 
@@ -86,11 +86,7 @@ class CurlEventPublisher implements EventPublisher
         $args.= " --max-time " . $this->_timeout;
 
         foreach ($this->_eventHeaders as $key => $value) {
-            if ($key == 'Authorization') {
-                $args.= " -H " . escapeshellarg("Authorization: " . $value);
-            } else {
-                $args.= " -H '$key: $value'";
-            }
+            $args.= " -H " . escapeshellarg("$key: $value");
         }
 
         $args.= " -d " . escapeshellarg($payload);
@@ -112,17 +108,19 @@ class CurlEventPublisher implements EventPublisher
     {
         $headerString = "";
         foreach ($this->_eventHeaders as $key => $value) {
-            $headerString .= sprintf("'%s'='%s';", $key, $value);
+            $escapedKey = str_replace("'", "''", $key);
+            $escapedValue = str_replace("'", "''", strval($value));
+            $headerString .= sprintf("'%s'='%s';", $escapedKey, $escapedValue);
         }
 
         $scheme = $this->_ssl ? "https://" : "http://";
         $args = " Invoke-WebRequest";
         $args.= " -Method POST";
         $args.= " -UseBasicParsing";
-        $args.= " -InFile $payloadFile";
+        $args.= " -InFile '$payloadFile'";
         $args.= " -H @{" . $headerString . "}";
         $args.= " -Uri " . escapeshellarg($scheme . $this->_host . ":" . $this->_port . $this->_path . "/bulk");
-        $args.= " ; Remove-Item $payloadFile";
+        $args.= " ; Remove-Item '$payloadFile'";
 
         return $args;
     }
