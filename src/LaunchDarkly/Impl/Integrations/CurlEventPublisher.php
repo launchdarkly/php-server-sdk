@@ -51,8 +51,8 @@ class CurlEventPublisher implements EventPublisher
         }
 
         $this->_eventHeaders = Util::eventHeaders($sdkKey, $options);
-        $this->_connectTimeout = $options['connect_timeout'];
-        $this->_timeout = $options['timeout'];
+        $this->_connectTimeout = intval($options['connect_timeout']);
+        $this->_timeout = intval($options['timeout']);
         $this->_isWindows = PHP_OS_FAMILY == 'Windows';
     }
 
@@ -100,7 +100,7 @@ class CurlEventPublisher implements EventPublisher
     private function makeCurlRequest(string $args): bool
     {
         $cmd = $this->_curl . " " . $args . ">> /dev/null 2>&1 &";
-        shell_exec($cmd);
+        shell_exec(escapeshellcmd($cmd));
         return true;
     }
 
@@ -116,7 +116,7 @@ class CurlEventPublisher implements EventPublisher
         $args.= " -Method POST";
         $args.= " -UseBasicParsing";
         $args.= " -InFile $payloadFile";
-        $args.= " -H @{" . $headerString . "}";
+        $args.= " -H " . escapeshellarg("@{" . $headerString . "}");
         $args.= " -Uri " . escapeshellarg($scheme . $this->_host . ":" . $this->_port . $this->_path . "/bulk");
         $args.= " ; Remove-Item $payloadFile";
 
