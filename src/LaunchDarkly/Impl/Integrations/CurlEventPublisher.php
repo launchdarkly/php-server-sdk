@@ -109,7 +109,7 @@ class CurlEventPublisher implements EventPublisher
         $headerString = "";
         foreach ($this->_eventHeaders as $key => $value) {
             $escapedKey = str_replace("'", "''", $key);
-            $escapedValue = str_replace("'", "''", $value);
+            $escapedValue = str_replace("'", "''", strval($value));
             $headerString .= sprintf('"%s"="%s";', $escapedKey, $escapedValue);
         }
 
