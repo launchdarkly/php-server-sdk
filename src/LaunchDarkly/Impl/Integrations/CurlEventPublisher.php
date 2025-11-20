@@ -86,11 +86,7 @@ class CurlEventPublisher implements EventPublisher
         $args.= " --max-time " . $this->_timeout;
 
         foreach ($this->_eventHeaders as $key => $value) {
-            if ($key == 'Authorization') {
-                $args.= " -H " . escapeshellarg("Authorization: " . $value);
-            } else {
-                $args.= " -H '$key: $value'";
-            }
+            $args.= " -H " . escapeshellarg("$key: $value");
         }
 
         $args.= " -d " . escapeshellarg($payload);
