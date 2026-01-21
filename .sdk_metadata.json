@@ -7,7 +7,69 @@
       "languages": [
         "PHP"
       ],
-      "userAgents": ["PHPClient"]
+      "userAgents": ["PHPClient"],
+      "features": {
+        "allFlags": {
+          "introduced": "1.6"
+        },
+        "appMetadata": {
+          "introduced": "4.3"
+        },
+        "bigSegments": {
+          "introduced": "6.4"
+        },
+        "contexts": {
+          "introduced": "5.0"
+        },
+        "experimentation": {
+          "introduced": "4.1"
+        },
+        "fileDataSource": {
+          "introduced": "3.5"
+        },
+        "inlineContextCustomEvents": {
+          "introduced": "6.5"
+        },
+        "migrations": {
+          "introduced": "6.0"
+        },
+        "offlineMode": {
+          "introduced": "1.0"
+        },
+        "privateAttrs": {
+          "introduced": "2.4"
+        },
+        "relayProxyDaemon": {
+          "introduced": "1.0"
+        },
+        "relayProxyProxy": {
+          "introduced": "1.0"
+        },
+        "secureMode": {
+          "introduced": "1.0"
+        },
+        "storingData": {
+          "introduced": "1.0"
+        },
+        "storingDataConsul": {
+          "introduced": "3.5"
+        },
+        "storingDataDynamodb": {
+          "introduced": "3.5"
+        },
+        "storingDataRedis": {
+          "introduced": "1.0"
+        },
+        "testDataSource": {
+          "introduced": "4.2"
+        },
+        "track": {
+          "introduced": "1.0"
+        },
+        "variationDetail": {
+          "introduced": "3.4"
+        }
+      }
     }
   }
 }
