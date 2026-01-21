@@ -2,6 +2,13 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [6.6.3](https://github.com/launchdarkly/php-server-sdk/compare/6.6.2...6.6.3) (2026-01-21)
+
+
+### Miscellaneous Chores
+
+* Update sdk_metadata features ([#231](https://github.com/launchdarkly/php-server-sdk/issues/231)) ([0eba0ab](https://github.com/launchdarkly/php-server-sdk/commit/0eba0abe3ec7d00a6c6b9461a88c6da8eec156ec))
+
 ## [6.6.2](https://github.com/launchdarkly/php-server-sdk/compare/6.6.1...6.6.2) (2025-11-20)
 
 
