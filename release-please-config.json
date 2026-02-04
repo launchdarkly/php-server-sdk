@@ -6,6 +6,10 @@
       "versioning": "default",
       "include-v-in-tag": false,
       "include-component-in-tag": false,
+      "changelog-sections": [
+        {"type": "feat", "section": "Features"},
+        {"type": "fix", "section": "Bug Fixes"}
+      ],
       "extra-files": [
         ".github/actions/build-docs/action.yml",
         "src/LaunchDarkly/LDClient.php"
