@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="6.13.1@1e3b7f0a8ab32b23197b91107adc0a7ed8a05b51">
+<files psalm-version="6.15.1@28dc127af1b5aecd52314f6f645bafc10d0e11f9">
   <file src="src/LaunchDarkly/EvaluationDetail.php">
     <ClassMustBeFinal>
       <code><![CDATA[EvaluationDetail]]></code>
@@ -247,6 +247,15 @@
       <code><![CDATA[public function getAllFeatures(): ?array]]></code>
       <code><![CDATA[public function getFeature(string $key): ?FeatureFlag]]></code>
       <code><![CDATA[public function getSegment(string $key): ?Segment]]></code>
+    </MissingOverrideAttribute>
+  </file>
+  <file src="src/LaunchDarkly/Impl/Integrations/Psr6FeatureRequesterCache.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[Psr6FeatureRequesterCache]]></code>
+    </ClassMustBeFinal>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function getCachedString(string $cacheKey): ?string]]></code>
+      <code><![CDATA[public function putCachedString(string $cacheKey, ?string $data): void]]></code>
     </MissingOverrideAttribute>
   </file>
   <file src="src/LaunchDarkly/Impl/Migrations/Executor.php">

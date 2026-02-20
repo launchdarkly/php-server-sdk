@@ -7,6 +7,7 @@ namespace LaunchDarkly\Impl\Integrations;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Impl\Model\Segment;
 use LaunchDarkly\Subsystems\FeatureRequester;
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -71,6 +72,22 @@ class FeatureRequesterBase implements FeatureRequester
      */
     protected function createCache(array $options): ?FeatureRequesterCache
     {
+        // NOTE: The LDClient constructor accepts a cache parameter. This has
+        // historically been only for the GuzzleFeatureRequester.
+        //
+        // However, that property may be overwritten by the config options
+        // provided to things like the Redis implementation. In those
+        // situations, the config is expected to be PSR-6 compatible.
+        //
+        // If it is, we will use it here. If it isn't, we will fall back to the
+        // backwards-compatible behavior of using the 'apc_expiration' option
+        // to determine whether to use APCu caching.
+        $cache = $options['cache'] ?? null;
+        if ($cache instanceof CacheItemPoolInterface) {
+            $ttl = $options['cache_ttl'] ?? null;
+            return new Psr6FeatureRequesterCache($cache, $ttl);
+        }
+
         $expiration = (int)($options['apc_expiration'] ?? 0);
         return ($expiration > 0) ? new ApcuFeatureRequesterCache($expiration) : null;
     }
