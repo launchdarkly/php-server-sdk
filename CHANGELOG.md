@@ -2,6 +2,13 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [6.7.0](https://github.com/launchdarkly/php-server-sdk/compare/6.6.2...6.7.0) (2026-02-23)
+
+
+### Features
+
+* Allow providing PSR-6 cache for feature requesters ([#235](https://github.com/launchdarkly/php-server-sdk/issues/235)) ([2328808](https://github.com/launchdarkly/php-server-sdk/commit/232880881e5895815d3ddad994e1fc66e8fa1d7b)), closes [#234](https://github.com/launchdarkly/php-server-sdk/issues/234)
+
 ## [6.6.2](https://github.com/launchdarkly/php-server-sdk/compare/6.6.1...6.6.2) (2025-11-20)
 
 
