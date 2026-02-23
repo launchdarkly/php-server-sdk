@@ -2,7 +2,9 @@
 
 namespace LaunchDarkly\Tests\Impl\Integrations;
 
+use Beste\Cache\InMemoryCache;
 use GuzzleHttp\Client;
+use Kevinrob\GuzzleCache\Storage\Psr6CacheStorage;
 use LaunchDarkly\Impl\Integrations\GuzzleFeatureRequester;
 use LaunchDarkly\LDClient;
 use LaunchDarkly\Types\ApplicationInfo;
@@ -176,5 +178,129 @@ class GuzzleFeatureRequesterTest extends TestCase
 
         // The request should timeout and return null (default value) instead of throwing an exception
         $this->assertNull($result);
+    }
+
+    // --- Cache integration tests ---
+
+    private function configureCacheableFlag(string $flagKey): void
+    {
+        $flagJson = json_encode([
+            'key' => $flagKey,
+            'version' => 1,
+            'on' => false,
+            'prerequisites' => [],
+            'salt' => '',
+            'targets' => [],
+            'rules' => [],
+            'fallthrough' => ['variation' => 0],
+            'offVariation' => 0,
+            'variations' => [true],
+            'deleted' => false,
+        ]);
+
+        $mapping = [
+            'request' => [
+                'method' => 'GET',
+                'url' => '/sdk/flags/' . $flagKey,
+            ],
+            'response' => [
+                'status' => 200,
+                'body' => $flagJson,
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Cache-Control' => 'public, max-age=300',
+                ],
+            ],
+        ];
+
+        $client = new Client();
+        $client->request('POST', 'http://localhost:8080/__admin/mappings', ['json' => $mapping]);
+    }
+
+    private function getServerRequestCount(): int
+    {
+        $client = new Client();
+        $response = $client->request('GET', 'http://localhost:8080/__admin/requests');
+        $body = json_decode($response->getBody()->getContents(), true);
+        return count($body['requests']);
+    }
+
+    public function testDefaultCacheServesFromCacheOnSecondRequest(): void
+    {
+        $this->configureCacheableFlag('default-cache-flag');
+
+        /** @var LoggerInterface **/
+        $logger = $this->getMockBuilder(LoggerInterface::class)->getMock();
+
+        $requester = new GuzzleFeatureRequester('http://localhost:8080', 'sdk-key', [
+            'logger' => $logger,
+            'timeout' => 3,
+            'connect_timeout' => 3,
+        ]);
+
+        $flag1 = $requester->getFeature('default-cache-flag');
+        $flag2 = $requester->getFeature('default-cache-flag');
+
+        $this->assertNotNull($flag1);
+        $this->assertNotNull($flag2);
+        $this->assertEquals('default-cache-flag', $flag1->getKey());
+        $this->assertEquals('default-cache-flag', $flag2->getKey());
+
+        // Only one request should have reached the server — the second was served from cache
+        $this->assertEquals(1, $this->getServerRequestCount());
+    }
+
+    public function testPsr6CacheServesFromCacheOnSecondRequest(): void
+    {
+        $this->configureCacheableFlag('psr6-cache-flag');
+
+        /** @var LoggerInterface **/
+        $logger = $this->getMockBuilder(LoggerInterface::class)->getMock();
+
+        $pool = new InMemoryCache();
+        $requester = new GuzzleFeatureRequester('http://localhost:8080', 'sdk-key', [
+            'cache' => $pool,
+            'logger' => $logger,
+            'timeout' => 3,
+            'connect_timeout' => 3,
+        ]);
+
+        $flag1 = $requester->getFeature('psr6-cache-flag');
+        $flag2 = $requester->getFeature('psr6-cache-flag');
+
+        $this->assertNotNull($flag1);
+        $this->assertNotNull($flag2);
+        $this->assertEquals('psr6-cache-flag', $flag1->getKey());
+        $this->assertEquals('psr6-cache-flag', $flag2->getKey());
+
+        // Only one request should have reached the server — the second was served from PSR-6 cache
+        $this->assertEquals(1, $this->getServerRequestCount());
+    }
+
+    public function testCacheStorageInterfaceServesFromCacheOnSecondRequest(): void
+    {
+        $this->configureCacheableFlag('storage-cache-flag');
+
+        /** @var LoggerInterface **/
+        $logger = $this->getMockBuilder(LoggerInterface::class)->getMock();
+
+        $storage = new Psr6CacheStorage(new InMemoryCache());
+        $requester = new GuzzleFeatureRequester('http://localhost:8080', 'sdk-key', [
+            'cache' => $storage,
+            'logger' => $logger,
+            'timeout' => 3,
+            'connect_timeout' => 3,
+        ]);
+
+        $flag1 = $requester->getFeature('storage-cache-flag');
+        $flag2 = $requester->getFeature('storage-cache-flag');
+
+        $this->assertNotNull($flag1);
+        $this->assertNotNull($flag2);
+        $this->assertEquals('storage-cache-flag', $flag1->getKey());
+        $this->assertEquals('storage-cache-flag', $flag2->getKey());
+
+        // Only one request should have reached the server — the second was served from CacheStorage cache
+        $this->assertEquals(1, $this->getServerRequestCount());
     }
 }

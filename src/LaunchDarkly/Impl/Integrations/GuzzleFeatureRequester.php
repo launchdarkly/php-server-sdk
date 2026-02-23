@@ -15,6 +15,7 @@ use LaunchDarkly\Impl\Model\Segment;
 use LaunchDarkly\Impl\UnrecoverableHTTPStatusException;
 use LaunchDarkly\Impl\Util;
 use LaunchDarkly\Subsystems\FeatureRequester;
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -35,9 +36,13 @@ class GuzzleFeatureRequester implements FeatureRequester
         $this->_logger = $options['logger'];
         $stack = HandlerStack::create();
         if (class_exists('\Kevinrob\GuzzleCache\CacheMiddleware')) {
+            $cache = $options['cache'] ?? null;
+            if ($cache !== null && $cache instanceof CacheItemPoolInterface) {
+                $cache = new \Kevinrob\GuzzleCache\Storage\Psr6CacheStorage($cache);
+            }
             $stack->push(
                 new CacheMiddleware(
-                    new PublicCacheStrategy($options['cache'] ?? null)
+                    new PublicCacheStrategy($cache)
                 ),
                 'cache'
             );
