@@ -14,7 +14,7 @@ use LaunchDarkly\Hooks\TrackSeriesContext;
 
 /**
  * Contract-test hook. Posts each stage invocation to a callback URL; optionally throws
- * from configured stages. Parallels the hook implementations in the other SDKs'
+ * from configured stages.
  * contract test services.
  */
 class PostingHook extends Hook
