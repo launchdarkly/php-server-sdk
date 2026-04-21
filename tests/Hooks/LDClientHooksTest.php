@@ -55,7 +55,7 @@ class LDClientHooksTest extends TestCase
     public function testVariationInvokesBeforeAndAfterInOrder(): void
     {
         $this->addFlag('flag', 'v');
-        $shared = [];
+        $shared = new CallLog();
         $a = new RecordingHook('A', $shared);
         $b = new RecordingHook('B', $shared);
 
@@ -64,7 +64,7 @@ class LDClientHooksTest extends TestCase
 
         $this->assertSame(
             ['A:beforeEvaluation', 'B:beforeEvaluation', 'B:afterEvaluation', 'A:afterEvaluation'],
-            array_map(fn ($e) => $e['hook'] . ':' . $e['stage'], $shared),
+            array_map(fn ($e) => $e['hook'] . ':' . $e['stage'], $shared->calls),
         );
     }
 
@@ -243,7 +243,7 @@ class LDClientHooksTest extends TestCase
     public function testHookRegisteredViaAllMechanismsAllFire(): void
     {
         $this->addFlag('flag', 'v');
-        $shared = [];
+        $shared = new CallLog();
         $a = new RecordingHook('A', $shared);
         $b = new RecordingHook('B', $shared);
         $client = $this->makeClient(['hooks' => [$a]]);
@@ -252,7 +252,7 @@ class LDClientHooksTest extends TestCase
         $client->variation('flag', LDContext::create('u'), 'default');
         $this->assertSame(
             ['A:beforeEvaluation', 'B:beforeEvaluation', 'B:afterEvaluation', 'A:afterEvaluation'],
-            array_map(fn ($e) => $e['hook'] . ':' . $e['stage'], $shared),
+            array_map(fn ($e) => $e['hook'] . ':' . $e['stage'], $shared->calls),
         );
     }
 

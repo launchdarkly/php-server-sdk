@@ -20,8 +20,8 @@ class RecordingHook extends Hook
     public array $calls = [];
 
     /**
-     * @param array<int, array<string, mixed>>|null $sharedLog When provided, all hooks sharing this list append
-     *   to it in the order of invocation. Allows cross-hook ordering assertions.
+     * @param CallLog|null $sharedLog When provided, all hooks sharing the same CallLog append to it
+     *   in invocation order. Allows cross-hook ordering assertions.
      * @param array<string, \Throwable> $throwFrom Maps stage name ('beforeEvaluation'|'afterEvaluation'|'afterTrack')
      *   to the exception that should be thrown when that stage runs.
      * @param array<string, array<string, mixed>> $returnData Additional data to merge into the return value of
@@ -29,7 +29,7 @@ class RecordingHook extends Hook
      */
     public function __construct(
         private readonly string $name,
-        private ?array &$sharedLog = null,
+        private readonly ?CallLog $sharedLog = null,
         private readonly array $throwFrom = [],
         private readonly array $returnData = [],
     ) {
@@ -76,8 +76,6 @@ class RecordingHook extends Hook
     {
         $entry = ['hook' => $this->name, 'stage' => $stage] + $payload;
         $this->calls[] = $entry;
-        if ($this->sharedLog !== null) {
-            $this->sharedLog[] = $entry;
-        }
+        $this->sharedLog?->append($entry);
     }
 }

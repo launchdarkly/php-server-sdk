@@ -33,19 +33,19 @@ class HookRunnerTest extends TestCase
 
     public function testBeforeEvaluationRunsInRegistrationOrder(): void
     {
-        $shared = [];
+        $shared = new CallLog();
         $a = new RecordingHook('A', $shared);
         $b = new RecordingHook('B', $shared);
         $runner = new HookRunner($this->nullLogger(), [$a, $b]);
 
         $runner->beforeEvaluation($this->ctx());
 
-        $this->assertSame(['A', 'B'], array_column($shared, 'hook'));
+        $this->assertSame(['A', 'B'], array_column($shared->calls, 'hook'));
     }
 
     public function testAfterEvaluationRunsInReverseRegistrationOrder(): void
     {
-        $shared = [];
+        $shared = new CallLog();
         $a = new RecordingHook('A', $shared);
         $b = new RecordingHook('B', $shared);
         $runner = new HookRunner($this->nullLogger(), [$a, $b]);
@@ -56,7 +56,7 @@ class HookRunnerTest extends TestCase
         // beforeEvaluation: A, B; afterEvaluation: B, A.
         $this->assertSame(
             ['A:beforeEvaluation', 'B:beforeEvaluation', 'B:afterEvaluation', 'A:afterEvaluation'],
-            array_map(fn ($e) => $e['hook'] . ':' . $e['stage'], $shared),
+            array_map(fn ($e) => $e['hook'] . ':' . $e['stage'], $shared->calls),
         );
     }
 
@@ -117,14 +117,14 @@ class HookRunnerTest extends TestCase
 
     public function testAfterTrackRunsInRegistrationOrder(): void
     {
-        $shared = [];
+        $shared = new CallLog();
         $a = new RecordingHook('A', $shared);
         $b = new RecordingHook('B', $shared);
         $runner = new HookRunner($this->nullLogger(), [$a, $b]);
 
         $runner->afterTrack(new TrackSeriesContext(LDContext::create('u'), 'event', null, null));
 
-        $this->assertSame(['A', 'B'], array_column($shared, 'hook'));
+        $this->assertSame(['A', 'B'], array_column($shared->calls, 'hook'));
     }
 
     public function testAfterTrackExceptionIsLoggedAndIsolated(): void
@@ -146,7 +146,7 @@ class HookRunnerTest extends TestCase
 
     public function testAddHookAppendsToEndOfOrder(): void
     {
-        $shared = [];
+        $shared = new CallLog();
         $a = new RecordingHook('A', $shared);
         $runner = new HookRunner($this->nullLogger(), [$a]);
 
@@ -154,7 +154,7 @@ class HookRunnerTest extends TestCase
         $runner->addHook($b);
 
         $runner->beforeEvaluation($this->ctx());
-        $this->assertSame(['A', 'B'], array_column($shared, 'hook'));
+        $this->assertSame(['A', 'B'], array_column($shared->calls, 'hook'));
     }
 
     public function testHasHooksReflectsRegistrationState(): void
