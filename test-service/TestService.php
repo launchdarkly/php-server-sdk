@@ -80,7 +80,9 @@ class TestService
                 'instance-id',
                 'anonymous-redaction',
                 'client-prereq-events',
-                'big-segments'
+                'big-segments',
+                'evaluation-hooks',
+                'track-hooks'
             ],
             'clientVersion' => \LaunchDarkly\LDClient::VERSION
         ];

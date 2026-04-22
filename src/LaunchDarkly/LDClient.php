@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace LaunchDarkly;
 
+use LaunchDarkly\Hooks\EvaluationSeriesContext;
+use LaunchDarkly\Hooks\Hook;
+use LaunchDarkly\Hooks\TrackSeriesContext;
 use LaunchDarkly\Impl\BigSegments;
 use LaunchDarkly\Impl\Evaluation\EvalResult;
 use LaunchDarkly\Impl\Evaluation\Evaluator;
@@ -11,6 +14,7 @@ use LaunchDarkly\Impl\Evaluation\PrerequisiteEvaluationRecord;
 use LaunchDarkly\Impl\Events\EventFactory;
 use LaunchDarkly\Impl\Events\EventProcessor;
 use LaunchDarkly\Impl\Events\NullEventProcessor;
+use LaunchDarkly\Impl\Hooks\HookRunner;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Impl\PreloadedFeatureRequester;
 use LaunchDarkly\Impl\UnrecoverableHTTPStatusException;
@@ -56,6 +60,7 @@ class LDClient
     protected EventFactory $_eventFactoryWithReasons;
     protected BigSegments\StoreManager $_bigSegmentsStoreManager;
     protected BigSegmentStatusProvider $_bigSegmentStatusProvider;
+    protected HookRunner $_hookRunner;
 
     /**
      * Creates a new client instance that connects to LaunchDarkly.
@@ -87,6 +92,9 @@ class LDClient
      * - `wrapper_name`: For use by wrapper libraries to set an identifying name for the wrapper being used. This will be sent in User-Agent headers during requests to the LaunchDarkly servers to allow recording metrics on the usage of these wrapper libraries.
      * - `wrapper_version`: For use by wrapper libraries to report the version of the library in use. If `wrapper_name` is not set, this field will be ignored. Otherwise the version string will be included in the User-Agent headers along with the `wrapper_name` during requests to the LaunchDarkly servers.
      * - `big_segments`: An option {@see \LaunchDarkly\Types\BigSegmentsConfig} instance.
+     * - `hooks`: An optional list of {@see \LaunchDarkly\Hooks\Hook} implementations. Entries that are not Hook
+     * instances are logged and ignored. Additional hooks can be registered after construction via
+     * {@see \LaunchDarkly\LDClient::addHook()}.
      * - Other options may be available depending on any features you are using from the `LaunchDarkly\Integrations` namespace.
      *
      * @return LDClient
@@ -178,6 +186,28 @@ class LDClient
         $this->_featureRequester = $this->getFeatureRequester($sdkKey, $options);
 
         $this->_evaluator = new Evaluator($this->_featureRequester, $this->_bigSegmentsStoreManager, $this->_logger);
+
+        $hooks = [];
+        foreach ($options['hooks'] ?? [] as $hook) {
+            if ($hook instanceof Hook) {
+                $hooks[] = $hook;
+            } else {
+                $this->_logger->warning("Ignoring non-Hook entry in 'hooks' option");
+            }
+        }
+        $this->_hookRunner = new HookRunner($this->_logger, $hooks);
+    }
+
+    /**
+     * Registers a hook with the client.
+     *
+     * Hooks registered here are invoked in addition to any hooks provided via the `hooks`
+     * constructor option. Prefer the constructor option for hooks that need to observe every
+     * evaluation from the start of the client's lifetime.
+     */
+    public function addHook(Hook $hook): void
+    {
+        $this->_hookRunner->addHook($hook);
     }
 
     public function getLogger(): LoggerInterface
@@ -240,7 +270,7 @@ class LDClient
      */
     public function variation(string $key, LDContext $context, mixed $defaultValue = false): mixed
     {
-        $detail = $this->variationDetailInternal($key, $context, $defaultValue, $this->_eventFactoryDefault)['detail'];
+        $detail = $this->variationDetailInternal($key, $context, $defaultValue, $this->_eventFactoryDefault, 'variation')['detail'];
         return $detail->getValue();
     }
 
@@ -260,7 +290,7 @@ class LDClient
      */
     public function variationDetail(string $key, LDContext $context, mixed $defaultValue = false): EvaluationDetail
     {
-        return $this->variationDetailInternal($key, $context, $defaultValue, $this->_eventFactoryWithReasons)['detail'];
+        return $this->variationDetailInternal($key, $context, $defaultValue, $this->_eventFactoryWithReasons, 'variationDetail')['detail'];
     }
 
     /**
@@ -276,7 +306,7 @@ class LDClient
      */
     public function migrationVariation(string $key, LDContext $context, Stage $defaultStage): array
     {
-        $result = $this->variationDetailInternal($key, $context, $defaultStage->value, $this->_eventFactoryDefault);
+        $result = $this->variationDetailInternal($key, $context, $defaultStage->value, $this->_eventFactoryDefault, 'migrationVariation');
         $detail = $result['detail'];
         $flag = $result['flag'];
 
@@ -321,13 +351,37 @@ class LDClient
      * @param LDContext $context
      * @param mixed $default
      * @param EventFactory $eventFactory
+     * @param string $method Name of the calling public variation method, passed to hooks.
      *
      * @psalm-return array{'detail': EvaluationDetail, 'flag': ?FeatureFlag}
      */
-    private function variationDetailInternal(string $key, LDContext $context, mixed $default, EventFactory $eventFactory): array
+    private function variationDetailInternal(string $key, LDContext $context, mixed $default, EventFactory $eventFactory, string $method): array
     {
         $default = $this->_get_default($key, $default);
 
+        if (!$this->_hookRunner->hasHooks()) {
+            return $this->evaluateInternal($key, $context, $default, $eventFactory);
+        }
+
+        $seriesContext = new EvaluationSeriesContext($key, $context, $default, $method);
+        $beforeData = $this->_hookRunner->beforeEvaluation($seriesContext);
+        $result = $this->evaluateInternal($key, $context, $default, $eventFactory);
+        $this->_hookRunner->afterEvaluation($seriesContext, $beforeData, $result['detail']);
+        return $result;
+    }
+
+    /**
+     * Core evaluation logic, wrapped by {@see variationDetailInternal} which adds hook execution.
+     *
+     * @param string $key
+     * @param LDContext $context
+     * @param mixed $default
+     * @param EventFactory $eventFactory
+     *
+     * @psalm-return array{'detail': EvaluationDetail, 'flag': ?FeatureFlag}
+     */
+    private function evaluateInternal(string $key, LDContext $context, mixed $default, EventFactory $eventFactory): array
+    {
         $errorDetail = fn (string $errorKind): EvaluationDetail =>
             new EvaluationDetail($default, null, EvaluationReason::error($errorKind));
         $sendEvent = function (EvalResult $result, ?FeatureFlag $flag) use ($key, $context, $default, $eventFactory): void {
@@ -393,7 +447,7 @@ class LDClient
             }
             $sendEvent($evalResult, $flag);
             return ['detail' => $detail, 'flag' => $flag];
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Util::logExceptionAtErrorLevel($this->_logger, $e, "Unexpected error evaluating flag $key");
             $result = $errorDetail(EvaluationReason::EXCEPTION_ERROR);
             $sendEvent(new EvalResult($result, false), null);
@@ -432,6 +486,10 @@ class LDClient
             return;
         }
         $this->_eventProcessor->enqueue($this->_eventFactoryDefault->newCustomEvent($eventName, $context, $data, $metricValue));
+
+        if ($this->_hookRunner->hasHooks()) {
+            $this->_hookRunner->afterTrack(new TrackSeriesContext($context, $eventName, $metricValue, $data));
+        }
     }
 
     /**

@@ -59,6 +59,19 @@ class SdkClientEntity
         $options['all_attributes_private'] = $eventsConfig['allAttributesPrivate'] ?? false;
         $options['private_attribute_names'] = $eventsConfig['globalPrivateAttributes'] ?? null;
 
+        $hooks = $config['hooks']['hooks'] ?? null;
+        if ($hooks) {
+            $options['hooks'] = array_map(
+                fn (array $h) => new PostingHook(
+                    $h['name'],
+                    $h['callbackUri'],
+                    $h['data'] ?? [],
+                    $h['errors'] ?? [],
+                ),
+                $hooks
+            );
+        }
+
         $bigSegments = $config['bigSegments'] ?? null;
         if ($bigSegments) {
             $store = new BigSegmentsStoreGuzzle(new Client(), $bigSegments['callbackUri']);
