@@ -145,12 +145,11 @@ class LDClientHooksTest extends TestCase
         $this->assertSame('v', $value);
     }
 
-    public function testAfterEvaluationFiresEvenWhenEvaluationThrowsThrowable(): void
+    public function testAfterEvaluationFiresWhenEvaluationThrowsNonExceptionThrowable(): void
     {
-        // evaluateInternal only catches \Exception, but spec 1.3.4 requires afterEvaluation
-        // to always run after beforeEvaluation. Simulate a non-Exception \Throwable
-        // propagating from the feature requester and assert afterEvaluation still fires
-        // with a detail whose reason indicates an exception.
+        // evaluateInternal catches \Throwable so a non-Exception error (e.g. TypeError)
+        // from a downstream component is converted into an EXCEPTION_ERROR detail rather
+        // than propagating. Hooks must still fire, and afterEvaluation must see that detail.
         $throwingRequester = new class extends MockFeatureRequester {
             public function getFeature(string $key): ?\LaunchDarkly\Impl\Model\FeatureFlag
             {
@@ -160,12 +159,8 @@ class LDClientHooksTest extends TestCase
         $hook = new RecordingHook('A');
         $client = $this->makeClient(['feature_requester' => $throwingRequester, 'hooks' => [$hook]]);
 
-        try {
-            $client->variation('flag', LDContext::create('u'), 'default');
-            $this->fail('expected TypeError to propagate');
-        } catch (\TypeError) {
-            // expected
-        }
+        $value = $client->variation('flag', LDContext::create('u'), 'default');
+        $this->assertSame('default', $value);
 
         $this->assertCount(2, $hook->calls);
         $this->assertSame('beforeEvaluation', $hook->calls[0]['stage']);
