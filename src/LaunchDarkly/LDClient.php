@@ -365,9 +365,18 @@ class LDClient
 
         $seriesContext = new EvaluationSeriesContext($key, $context, $default, $method);
         $beforeData = $this->_hookRunner->beforeEvaluation($seriesContext);
-        $result = $this->evaluateInternal($key, $context, $default, $eventFactory);
-        $this->_hookRunner->afterEvaluation($seriesContext, $beforeData, $result['detail']);
-        return $result;
+
+        // Default to an exception-error detail so afterEvaluation still fires (spec 1.3.4)
+        // if evaluateInternal propagates a \Throwable that evaluateInternal's own catch(\Exception)
+        // did not handle (e.g. a \TypeError).
+        $detail = new EvaluationDetail($default, null, EvaluationReason::error(EvaluationReason::EXCEPTION_ERROR));
+        try {
+            $result = $this->evaluateInternal($key, $context, $default, $eventFactory);
+            $detail = $result['detail'];
+            return $result;
+        } finally {
+            $this->_hookRunner->afterEvaluation($seriesContext, $beforeData, $detail);
+        }
     }
 
     /**
