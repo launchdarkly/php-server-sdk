@@ -84,8 +84,10 @@ class HookRunnerTest extends TestCase
         $runner->afterEvaluation($this->ctx(), $before, $this->detail());
 
         // Hook A's afterEvaluation receives [] because its beforeEvaluation failed.
-        $this->assertSame([], $a->calls[0]['data']);
-        // Hook B is unaffected.
+        $this->assertSame('afterEvaluation', $a->calls[1]['stage']);
+        $this->assertSame([], $a->calls[1]['data']);
+        // Hook B is unaffected; its afterEvaluation sees the data returned from its beforeEvaluation.
+        $this->assertSame('afterEvaluation', $b->calls[1]['stage']);
         $this->assertSame(['from-b' => 2], $b->calls[1]['data']);
     }
 
