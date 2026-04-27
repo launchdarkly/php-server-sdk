@@ -8,6 +8,7 @@ use LaunchDarkly\Hooks\EvaluationSeriesContext;
 use LaunchDarkly\Hooks\Hook;
 use LaunchDarkly\Hooks\TrackSeriesContext;
 use LaunchDarkly\Impl\BigSegments;
+use LaunchDarkly\Impl\EnvironmentIdProvider;
 use LaunchDarkly\Impl\Evaluation\EvalResult;
 use LaunchDarkly\Impl\Evaluation\Evaluator;
 use LaunchDarkly\Impl\Evaluation\PrerequisiteEvaluationRecord;
@@ -61,6 +62,7 @@ class LDClient
     protected BigSegments\StoreManager $_bigSegmentsStoreManager;
     protected BigSegmentStatusProvider $_bigSegmentStatusProvider;
     protected HookRunner $_hookRunner;
+    protected EnvironmentIdProvider $_environmentIdProvider;
 
     /**
      * Creates a new client instance that connects to LaunchDarkly.
@@ -182,6 +184,9 @@ class LDClient
         } else {
             $this->_eventProcessor = new EventProcessor($sdkKey, $options);
         }
+
+        $this->_environmentIdProvider = new EnvironmentIdProvider();
+        $options['_environment_id_provider'] = $this->_environmentIdProvider;
 
         $this->_featureRequester = $this->getFeatureRequester($sdkKey, $options);
 
@@ -363,10 +368,15 @@ class LDClient
             return $this->evaluateInternal($key, $context, $default, $eventFactory);
         }
 
-        $seriesContext = new EvaluationSeriesContext($key, $context, $default, $method);
-        $beforeData = $this->_hookRunner->beforeEvaluation($seriesContext);
+        // Build the series context for beforeEvaluation with whatever env ID the SDK already
+        // knows. On the first variation call in a PHP process this is null; the fetch inside
+        // evaluateInternal may populate it before afterEvaluation runs.
+        $beforeContext = new EvaluationSeriesContext($key, $context, $default, $method, $this->_environmentIdProvider->get());
+        $beforeData = $this->_hookRunner->beforeEvaluation($beforeContext);
         $result = $this->evaluateInternal($key, $context, $default, $eventFactory);
-        $this->_hookRunner->afterEvaluation($seriesContext, $beforeData, $result['detail']);
+        // Re-read the env ID so afterEvaluation sees a value captured during this call's fetch.
+        $afterContext = new EvaluationSeriesContext($key, $context, $default, $method, $this->_environmentIdProvider->get());
+        $this->_hookRunner->afterEvaluation($afterContext, $beforeData, $result['detail']);
         return $result;
     }
 

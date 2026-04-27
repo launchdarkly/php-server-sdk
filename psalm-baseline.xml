@@ -49,6 +49,7 @@
     <PossiblyUnusedProperty>
       <code><![CDATA[$context]]></code>
       <code><![CDATA[$defaultValue]]></code>
+      <code><![CDATA[$environmentId]]></code>
       <code><![CDATA[$method]]></code>
     </PossiblyUnusedProperty>
   </file>
