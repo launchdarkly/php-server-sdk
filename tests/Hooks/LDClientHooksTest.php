@@ -306,4 +306,57 @@ class LDClientHooksTest extends TestCase
         $value = $client->variation('flag', LDContext::create('u'), 'default');
         $this->assertSame('v', $value);
     }
+
+    public function testEnvironmentIdAvailableInAfterEvaluationOnFirstCall(): void
+    {
+        // Simulate what GuzzleFeatureRequester does: write to the env ID holder during the
+        // fetch that happens inside variation(). beforeEvaluation runs prior to the fetch
+        // and sees null; afterEvaluation runs after and sees the captured ID.
+        $factory = function (string $baseUri, string $sdkKey, array $options) {
+            return new EnvIdSettingFeatureRequester($options, 'env-from-fetch');
+        };
+        $hook = new RecordingHook('A');
+        $client = $this->makeClient(['feature_requester' => $factory, 'hooks' => [$hook]]);
+
+        $client->variation('any-flag', LDContext::create('u'), 'default');
+
+        $this->assertCount(2, $hook->calls);
+        $this->assertNull($hook->calls[0]['ctx']->environmentId);
+        $this->assertSame('env-from-fetch', $hook->calls[1]['ctx']->environmentId);
+    }
+
+    public function testEnvironmentIdAvailableInBothStagesOnSubsequentCalls(): void
+    {
+        // After the first variation populates the holder, subsequent calls within the same
+        // LDClient lifetime see the env ID in beforeEvaluation as well.
+        $factory = function (string $baseUri, string $sdkKey, array $options) {
+            return new EnvIdSettingFeatureRequester($options, 'env-from-fetch');
+        };
+        $hook = new RecordingHook('A');
+        $client = $this->makeClient(['feature_requester' => $factory, 'hooks' => [$hook]]);
+
+        $client->variation('flag-1', LDContext::create('u'), 'default');
+        $hook->calls = [];
+        $client->variation('flag-2', LDContext::create('u'), 'default');
+
+        $this->assertCount(2, $hook->calls);
+        $this->assertSame('env-from-fetch', $hook->calls[0]['ctx']->environmentId);
+        $this->assertSame('env-from-fetch', $hook->calls[1]['ctx']->environmentId);
+    }
+
+    public function testEnvironmentIdNullWhenRequesterDoesNotPopulate(): void
+    {
+        // Persistent-store feature requesters do not write to the holder. Hooks see null
+        // for environmentId in both stages, regardless of how many calls occur.
+        $hook = new RecordingHook('A');
+        $this->addFlag('flag', 'v');
+        $client = $this->makeClient(['hooks' => [$hook]]);
+
+        $client->variation('flag', LDContext::create('u'), 'default');
+        $client->variation('flag', LDContext::create('u'), 'default');
+
+        foreach ($hook->calls as $call) {
+            $this->assertNull($call['ctx']->environmentId);
+        }
+    }
 }

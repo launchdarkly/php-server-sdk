@@ -10,12 +10,14 @@ use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\HandlerStack;
 use Kevinrob\GuzzleCache\CacheMiddleware;
 use Kevinrob\GuzzleCache\Strategy\PublicCacheStrategy;
+use LaunchDarkly\Impl\EnvironmentIdProvider;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Impl\Model\Segment;
 use LaunchDarkly\Impl\UnrecoverableHTTPStatusException;
 use LaunchDarkly\Impl\Util;
 use LaunchDarkly\Subsystems\FeatureRequester;
 use Psr\Cache\CacheItemPoolInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -26,14 +28,18 @@ class GuzzleFeatureRequester implements FeatureRequester
 {
     const SDK_FLAGS = "sdk/flags";
     const SDK_SEGMENTS = "sdk/segments";
+    const ENVIRONMENT_ID_HEADER = "X-Ld-Envid";
     private Client $_client;
     private LoggerInterface $_logger;
+    private ?EnvironmentIdProvider $_environmentIdProvider;
 
     public function __construct(string $baseUri, string $sdkKey, array $options)
     {
         $baseUri = \LaunchDarkly\Impl\Util::adjustBaseUri($baseUri);
 
         $this->_logger = $options['logger'];
+        $envIdProvider = $options['_environment_id_provider'] ?? null;
+        $this->_environmentIdProvider = $envIdProvider instanceof EnvironmentIdProvider ? $envIdProvider : null;
         $stack = HandlerStack::create();
         if (class_exists('\Kevinrob\GuzzleCache\CacheMiddleware')) {
             $cache = $options['cache'] ?? null;
@@ -70,11 +76,14 @@ class GuzzleFeatureRequester implements FeatureRequester
     {
         try {
             $response = $this->_client->get(self::SDK_FLAGS . "/" . $key);
+            $this->captureEnvironmentId($response);
             $body = $response->getBody();
             return FeatureFlag::decode(json_decode($body->getContents(), true));
         } catch (BadResponseException $e) {
             /** @psalm-suppress PossiblyNullReference (resolved in guzzle 7) */
-            $code = $e->getResponse()->getStatusCode();
+            $response = $e->getResponse();
+            $this->captureEnvironmentId($response);
+            $code = $response->getStatusCode();
             if ($code == 404) {
                 $this->_logger->warning("GuzzleFeatureRequester::get returned 404. Feature flag does not exist for key: " . $key);
             } else {
@@ -97,11 +106,14 @@ class GuzzleFeatureRequester implements FeatureRequester
     {
         try {
             $response = $this->_client->get(self::SDK_SEGMENTS . "/" . $key);
+            $this->captureEnvironmentId($response);
             $body = $response->getBody();
             return Segment::decode(json_decode($body->getContents(), true));
         } catch (BadResponseException $e) {
             /** @psalm-suppress PossiblyNullReference (resolved in guzzle 7) */
-            $code = $e->getResponse()->getStatusCode();
+            $response = $e->getResponse();
+            $this->captureEnvironmentId($response);
+            $code = $response->getStatusCode();
             if ($code == 404) {
                 $this->_logger->warning("GuzzleFeatureRequester::get returned 404. Segment does not exist for key: " . $key);
             } else {
@@ -123,11 +135,14 @@ class GuzzleFeatureRequester implements FeatureRequester
     {
         try {
             $response = $this->_client->get(self::SDK_FLAGS);
+            $this->captureEnvironmentId($response);
             $body = $response->getBody();
             return array_map(FeatureFlag::getDecoder(), json_decode($body->getContents(), true));
         } catch (BadResponseException $e) {
             /** @psalm-suppress PossiblyNullReference (resolved in guzzle 7) */
-            $this->handleUnexpectedStatus($e->getResponse()->getStatusCode(), "GuzzleFeatureRequester::getAll");
+            $response = $e->getResponse();
+            $this->captureEnvironmentId($response);
+            $this->handleUnexpectedStatus($response->getStatusCode(), "GuzzleFeatureRequester::getAll");
             return null;
         } catch (Exception $e) {
             $this->_logger->error("GuzzleFeatureRequester::getAll encountered an exception retrieving all flags: " . $e->getMessage());
@@ -141,5 +156,10 @@ class GuzzleFeatureRequester implements FeatureRequester
         if (!Util::isHttpErrorRecoverable($code)) {
             throw new UnrecoverableHTTPStatusException($code);
         }
+    }
+
+    private function captureEnvironmentId(ResponseInterface $response): void
+    {
+        $this->_environmentIdProvider?->set($response->getHeaderLine(self::ENVIRONMENT_ID_HEADER));
     }
 }
