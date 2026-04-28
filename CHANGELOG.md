@@ -2,6 +2,14 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [6.8.0](https://github.com/launchdarkly/php-server-sdk/compare/6.7.0...6.8.0) (2026-04-28)
+
+
+### Features
+
+* add hooks support ([#240](https://github.com/launchdarkly/php-server-sdk/issues/240)) ([77a644d](https://github.com/launchdarkly/php-server-sdk/commit/77a644de60421f44077d51023bbc0ba29c631d91))
+* expose environmentId on EvaluationSeriesContext ([#242](https://github.com/launchdarkly/php-server-sdk/issues/242)) ([5fcbce4](https://github.com/launchdarkly/php-server-sdk/commit/5fcbce42d4d100a4b81193a99d755ffd6bcb618d))
+
 ## [6.7.0](https://github.com/launchdarkly/php-server-sdk/compare/6.6.2...6.7.0) (2026-02-23)
 
 
