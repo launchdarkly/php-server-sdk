@@ -45,7 +45,7 @@ class LDClient
      * The current SDK version.
      * @var string
      */
-    const VERSION = '6.7.0'; // x-release-please-version
+    const VERSION = '6.8.0'; // x-release-please-version
 
     protected string $_sdkKey;
     protected string $_baseUri;
