@@ -2,6 +2,13 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [6.8.1](https://github.com/launchdarkly/php-server-sdk/compare/6.8.0...6.8.1) (2026-06-08)
+
+
+### Bug Fixes
+
+* Cast X-LaunchDarkly-Event-Schema header to string ([#247](https://github.com/launchdarkly/php-server-sdk/issues/247)) ([affb882](https://github.com/launchdarkly/php-server-sdk/commit/affb882f23a57fdb1ed44df2b5e0c20cf74c1d7b))
+
 ## [6.8.0](https://github.com/launchdarkly/php-server-sdk/compare/6.7.0...6.8.0) (2026-04-28)
 
 
