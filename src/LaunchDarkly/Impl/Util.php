@@ -138,7 +138,7 @@ class Util
     public static function eventHeaders(string $sdkKey, array $options): array
     {
         $headers = Util::defaultHeaders($sdkKey, $options);
-        $headers['X-LaunchDarkly-Event-Schema'] = EventPublisher::CURRENT_SCHEMA_VERSION;
+        $headers['X-LaunchDarkly-Event-Schema'] = (string) EventPublisher::CURRENT_SCHEMA_VERSION;
         // Only the presence of this header is important. We encode a string
         // value of 'true' to ensure it isn't dropped along the way.
         $headers['X-LaunchDarkly-Unsummarized'] = 'true';

@@ -26,4 +26,16 @@ class UtilTest extends TestCase
 
         $this->assertEquals(504, $counts);
     }
+
+    public function testEventHeaderValuesAreStrings(): void
+    {
+        // guzzlehttp/guzzle 7.11+ deprecates non-string header values and
+        // guzzle 8.0 will reject them, so every event header value must be a
+        // string. See https://github.com/launchdarkly/php-server-sdk/issues/246
+        $headers = Util::eventHeaders('sdk-key', []);
+
+        foreach ($headers as $name => $value) {
+            $this->assertIsString($value, "header '$name' should be a string");
+        }
+    }
 }
