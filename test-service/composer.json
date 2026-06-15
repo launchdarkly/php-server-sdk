@@ -6,7 +6,7 @@
     }
   ],
   "require": {
-    "doctrine/cache": "^1.0",
+    "doctrine/cache": "^2.2",
     "guzzlehttp/guzzle": "^7",
     "kevinrob/guzzle-cache-middleware": "^4.0",
     "launchdarkly/server-sdk": "*",
