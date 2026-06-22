@@ -29,7 +29,7 @@ jobs:
       LD_INCLUDE_INTEGRATION_TESTS: 1
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.3
         with:
           fetch-depth: 0 # If you only need the current version keep this.
 
@@ -51,12 +51,12 @@ jobs:
       LD_INCLUDE_INTEGRATION_TESTS: 1
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.3
         with:
           fetch-depth: 0 # If you only need the current version keep this.
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@e6f75134d35752277f093989e72e140eaa222f35
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240
         with:
           php-version: ${{ matrix.php-version }}
 
