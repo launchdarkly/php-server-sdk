@@ -32,7 +32,7 @@
     },
     "suggest": {
         "guzzlehttp/guzzle": "(^6.3 | ^7) Required when using GuzzleEventPublisher or the default FeatureRequester",
-        "kevinrob/guzzle-cache-middleware": "(^3) Recommended for performance when using the default FeatureRequester"
+        "kevinrob/guzzle-cache-middleware": "(^7) Recommended for performance when using the default FeatureRequester"
     },
     "autoload": {
         "psr-4": {
