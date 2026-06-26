@@ -63,8 +63,19 @@ jobs:
       - name: Install java support
         run: choco install -y javaruntime
 
+      - name: Cache wiremock
+        id: cache-wiremock
+        uses: actions/cache@v4
+        with:
+          path: wiremock.jar
+          key: wiremock-jre8-standalone-2.31.0
+
       - name: Download wiremock
-        run: Invoke-WebRequest -Uri https://repo1.maven.org/maven2/com/github/tomakehurst/wiremock-jre8-standalone/2.31.0/wiremock-jre8-standalone-2.31.0.jar -UseBasicParsing -OutFile wiremock.jar
+        if: steps.cache-wiremock.outputs.cache-hit != 'true'
+        # Use the Google-hosted Maven Central mirror rather than repo1.maven.org.
+        # Maven Central blocks GitHub's shared runner IPs for automated consumption,
+        # while the GCS mirror serves the identical artifact without that limit.
+        run: Invoke-WebRequest -Uri https://maven-central.storage-download.googleapis.com/maven2/com/github/tomakehurst/wiremock-jre8-standalone/2.31.0/wiremock-jre8-standalone-2.31.0.jar -UseBasicParsing -OutFile wiremock.jar
 
       - name: Verify checksum
         shell: bash
