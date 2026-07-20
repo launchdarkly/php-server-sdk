@@ -48,10 +48,10 @@ class EventSerializer
 
     private function filterEvent(array $e): array
     {
-        // Feature and migration op events inline the full context, so anonymous context
-        // attributes must be redacted for both. Other event kinds do not redact anonymous
+        // Feature, custom, and migration op events inline the full context, so anonymous context
+        // attributes must be redacted for all of them. Other event kinds do not redact anonymous
         // attributes.
-        $redactAnonymousAttributes = in_array($e['kind'] ?? '', ['feature', 'migration_op'], true);
+        $redactAnonymousAttributes = in_array($e['kind'] ?? '', ['feature', 'custom', 'migration_op'], true);
 
         $ret = [];
         foreach ($e as $key => $value) {

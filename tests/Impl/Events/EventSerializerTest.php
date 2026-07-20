@@ -157,6 +157,30 @@ class EventSerializerTest extends TestCase
         $this->assertEquals([$expected], json_decode($json, true));
     }
 
+    public function testRedactsAllAttributesFromAnonymousContextWithCustomEvent()
+    {
+        $anonymousContext = LDContext::builder('abc')
+            ->anonymous(true)
+            ->set('bizzle', 'def')
+            ->set('dizzle', 'ghi')
+            ->set('firstName', 'Sue')
+            ->build();
+
+        $es = new EventSerializer([]);
+        $event = $this->makeEvent($anonymousContext);
+        $event['kind'] = 'custom';
+        $json = $es->serializeEvents([$event]);
+
+        // Custom events inline the full context, so anonymous attributes must be redacted.
+        $expectedContextOutput = $this->getContextResultWithAllAttrsHidden();
+        $expectedContextOutput['anonymous'] = true;
+
+        $expected = $this->makeEvent($expectedContextOutput);
+        $expected['kind'] = 'custom';
+
+        $this->assertEquals([$expected], json_decode($json, true));
+    }
+
     public function testDoesNotRedactAttributesFromAnonymousContextWithNonFeatureEvent()
     {
         $anonymousContext = LDContext::builder('abc')
