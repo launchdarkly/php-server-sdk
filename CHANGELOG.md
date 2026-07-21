@@ -2,6 +2,13 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [6.8.2](https://github.com/launchdarkly/php-server-sdk/compare/6.8.1...6.8.2) (2026-07-21)
+
+
+### Bug Fixes
+
+* Redact anonymous context attributes in migration op and custom events ([#262](https://github.com/launchdarkly/php-server-sdk/issues/262)) ([19ce6c4](https://github.com/launchdarkly/php-server-sdk/commit/19ce6c4339208bcef1f7147df3db52d64428d6cf))
+
 ## [6.8.1](https://github.com/launchdarkly/php-server-sdk/compare/6.8.0...6.8.1) (2026-06-08)
 
 
