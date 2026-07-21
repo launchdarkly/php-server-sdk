@@ -48,12 +48,15 @@ class EventSerializer
 
     private function filterEvent(array $e): array
     {
-        $isFeatureEvent = ($e['kind'] ?? '') == 'feature';
+        // Feature, custom, and migration op events inline the full context, so anonymous context
+        // attributes must be redacted for all of them. Other event kinds do not redact anonymous
+        // attributes.
+        $redactAnonymousAttributes = in_array($e['kind'] ?? '', ['feature', 'custom', 'migration_op'], true);
 
         $ret = [];
         foreach ($e as $key => $value) {
             if ($key == 'context') {
-                $ret[$key] = $this->serializeContext($value, $isFeatureEvent);
+                $ret[$key] = $this->serializeContext($value, $redactAnonymousAttributes);
             } else {
                 $ret[$key] = $value;
             }
