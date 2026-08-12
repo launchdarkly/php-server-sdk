@@ -82,6 +82,7 @@ class TestService
                 'client-prereq-events',
                 'big-segments',
                 'evaluation-hooks',
+                'hook-environment-id',
                 'track-hooks'
             ],
             'clientVersion' => \LaunchDarkly\LDClient::VERSION
