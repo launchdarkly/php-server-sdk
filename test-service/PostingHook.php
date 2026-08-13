@@ -83,6 +83,7 @@ class PostingHook extends Hook
                 'context' => json_decode(json_encode($seriesContext->context), true),
                 'defaultValue' => $seriesContext->defaultValue,
                 'method' => $seriesContext->method,
+                'environmentId' => $seriesContext->environmentId,
             ],
             'evaluationSeriesData' => (object) $data,
             'stage' => $stage,
