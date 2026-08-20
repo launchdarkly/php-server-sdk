@@ -105,7 +105,7 @@ class FeatureRequesterBase implements FeatureRequester
             // Check the deleted marker before decoding. Some store writers
             // persist tombstones that omit most of the schema, and the model
             // decoder requires the full schema.
-            if ($json['deleted'] ?? false) {
+            if (($json['deleted'] ?? false) === true) {
                 $this->_logger->warning("FeatureRequester: Attempted to get deleted feature with key: " . $key);
                 return null;
             }
@@ -126,7 +126,7 @@ class FeatureRequesterBase implements FeatureRequester
     {
         $json = $this->getJsonItem(self::SEGMENTS_NAMESPACE, $key);
         if ($json) {
-            if ($json['deleted'] ?? false) {
+            if (($json['deleted'] ?? false) === true) {
                 $this->_logger->warning("FeatureRequester: Attempted to get deleted segment with key: " . $key);
                 return null;
             }
@@ -147,7 +147,7 @@ class FeatureRequesterBase implements FeatureRequester
         $jsonList = $this->getJsonItemList(self::FEATURES_NAMESPACE);
         $itemsOut = [];
         foreach ($jsonList as $json) {
-            if ($json['deleted'] ?? false) {
+            if (($json['deleted'] ?? false) === true) {
                 continue;
             }
             $flag = FeatureFlag::decode($json);
