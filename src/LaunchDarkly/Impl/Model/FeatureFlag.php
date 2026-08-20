@@ -145,10 +145,6 @@ class FeatureFlag
     }
 
     /**
-     * The requester checks the deleted marker on the raw JSON before it
-     * decodes, so this accessor has no internal callers. It stays because the
-     * model mirrors the flag schema.
-     *
      * @psalm-suppress PossiblyUnusedMethod
      */
     public function isDeleted(): bool
