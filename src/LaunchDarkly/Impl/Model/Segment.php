@@ -86,6 +86,9 @@ class Segment
         return static::getDecoder()($v);
     }
 
+    /**
+     * @psalm-suppress PossiblyUnusedMethod
+     */
     public function isDeleted(): bool
     {
         return $this->_deleted;

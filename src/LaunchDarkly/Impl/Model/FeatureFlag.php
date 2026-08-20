@@ -144,6 +144,9 @@ class FeatureFlag
         return $this->_debugEventsUntilDate;
     }
 
+    /**
+     * @psalm-suppress PossiblyUnusedMethod
+     */
     public function isDeleted(): bool
     {
         return $this->_deleted;

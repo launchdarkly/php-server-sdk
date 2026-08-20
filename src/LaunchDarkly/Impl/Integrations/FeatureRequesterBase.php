@@ -102,12 +102,14 @@ class FeatureRequesterBase implements FeatureRequester
     {
         $json = $this->getJsonItem(self::FEATURES_NAMESPACE, $key);
         if ($json) {
-            $flag = FeatureFlag::decode($json);
-            if ($flag->isDeleted()) {
+            // Check the deleted marker before decoding. Some store writers
+            // persist tombstones that omit most of the schema, and the model
+            // decoder requires the full schema.
+            if (($json['deleted'] ?? false) === true) {
                 $this->_logger->warning("FeatureRequester: Attempted to get deleted feature with key: " . $key);
                 return null;
             }
-            return $flag;
+            return FeatureFlag::decode($json);
         } else {
             $this->_logger->warning("FeatureRequester: Attempted to get missing feature with key: " . $key);
             return null;
@@ -124,12 +126,11 @@ class FeatureRequesterBase implements FeatureRequester
     {
         $json = $this->getJsonItem(self::SEGMENTS_NAMESPACE, $key);
         if ($json) {
-            $segment = Segment::decode($json);
-            if ($segment->isDeleted()) {
+            if (($json['deleted'] ?? false) === true) {
                 $this->_logger->warning("FeatureRequester: Attempted to get deleted segment with key: " . $key);
                 return null;
             }
-            return $segment;
+            return Segment::decode($json);
         } else {
             $this->_logger->warning("FeatureRequester: Attempted to get missing segment with key: " . $key);
             return null;
@@ -146,10 +147,11 @@ class FeatureRequesterBase implements FeatureRequester
         $jsonList = $this->getJsonItemList(self::FEATURES_NAMESPACE);
         $itemsOut = [];
         foreach ($jsonList as $json) {
-            $flag = FeatureFlag::decode($json);
-            if (!$flag->isDeleted()) {
-                $itemsOut[$flag->getKey()] = $flag;
+            if (($json['deleted'] ?? false) === true) {
+                continue;
             }
+            $flag = FeatureFlag::decode($json);
+            $itemsOut[$flag->getKey()] = $flag;
         }
         return $itemsOut;
     }
