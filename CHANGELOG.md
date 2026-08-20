@@ -2,6 +2,13 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [6.8.3](https://github.com/launchdarkly/php-server-sdk/compare/6.8.2...6.8.3) (2026-08-20)
+
+
+### Bug Fixes
+
+* Check the deleted marker before decoding items from a persistent store ([#266](https://github.com/launchdarkly/php-server-sdk/issues/266)) ([a40614b](https://github.com/launchdarkly/php-server-sdk/commit/a40614beae519ef2e225b985e30bab19275b3a35))
+
 ## [6.8.2](https://github.com/launchdarkly/php-server-sdk/compare/6.8.1...6.8.2) (2026-07-21)
 
 
