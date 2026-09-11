@@ -2,6 +2,13 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [6.9.0](https://github.com/launchdarkly/php-server-sdk/compare/6.8.3...6.9.0) (2026-09-11)
+
+
+### Features
+
+* Add payload_temp_dir option to send large event payloads via a file ([#268](https://github.com/launchdarkly/php-server-sdk/issues/268)) ([5c7298a](https://github.com/launchdarkly/php-server-sdk/commit/5c7298a0dd9398ecad3a76c6f559b8a4aa9f9663))
+
 ## [6.8.3](https://github.com/launchdarkly/php-server-sdk/compare/6.8.2...6.8.3) (2026-08-20)
 
 
