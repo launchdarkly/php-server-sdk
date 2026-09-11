@@ -38,10 +38,15 @@ class EventPublisherTest extends TestCase
         ];
 
         $curlPublisher = new Integrations\CurlEventPublisher('sdk-key', $config);
+        $curlFilePublisher = new Integrations\CurlEventPublisher(
+            'sdk-key',
+            array_merge($config, ['payload_temp_dir' => true])
+        );
         $guzzlePublisher = new Integrations\GuzzleEventPublisher('sdk-key', $config);
 
         return [
             [$curlPublisher],
+            [$curlFilePublisher],
             [$guzzlePublisher],
         ];
     }

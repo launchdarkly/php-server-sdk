@@ -208,9 +208,6 @@
     <RiskyTruthyFalsyComparison>
       <code><![CDATA[!$baseUri]]></code>
     </RiskyTruthyFalsyComparison>
-    <UnusedReturnValue>
-      <code><![CDATA[bool]]></code>
-    </UnusedReturnValue>
   </file>
   <file src="src/LaunchDarkly/Impl/Integrations/FeatureRequesterBase.php">
     <ClassMustBeFinal>
