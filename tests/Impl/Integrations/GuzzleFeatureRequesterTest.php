@@ -77,6 +77,49 @@ class GuzzleFeatureRequesterTest extends TestCase
         $this->assertEquals('my-instance-id', $headers['X-LaunchDarkly-Instance-Id']);
     }
 
+    public function testSendsRequestThroughHttpProxy(): void
+    {
+        /** @var LoggerInterface **/
+        $logger = $this->getMockBuilder(LoggerInterface::class)->getMock();
+
+        $config = [
+            'logger' => $logger,
+            'timeout' => 3,
+            'connect_timeout' => 3,
+            'http_proxy' => 'http://localhost:8080',
+        ];
+
+        // The host does not resolve, so the request can only arrive through the proxy.
+        $requester = new GuzzleFeatureRequester('http://not.valid.local', 'sdk-key', $config);
+        $requester->getFeature("flag-key");
+
+        $requests = [];
+        $client = new Client();
+
+        // Provide time for the curl to execute
+        $start = time();
+        while (time() - $start < 5) {
+            $response = $client->request('GET', 'http://localhost:8080/__admin/requests');
+            $body = json_decode($response->getBody()->getContents(), true);
+            $requests = $body['requests'];
+
+            if ($requests) {
+                break;
+            }
+            usleep(100);
+        }
+
+        if (!$requests) {
+            $this->fail("Unable to connect to endpoint within specified timeout");
+        }
+
+        $this->assertCount(1, $requests);
+
+        $request = $requests[0]['request'];
+        $this->assertEquals('/sdk/flags/flag-key', $request['url']);
+        $this->assertEquals('not.valid.local', $request['headers']['Host']);
+    }
+
     public function wrapperProvider(): array
     {
         return [

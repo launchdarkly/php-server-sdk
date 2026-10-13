@@ -34,6 +34,9 @@ class Curl
      * with `Argument exceeds the allowed length of N bytes`. On Windows the payload always goes into a
      * file, and this option only names the directory; the default there is the system temporary
      * directory.
+     *   - `http_proxy`: URL of a web proxy for the requests; see {@see \LaunchDarkly\LDClient::__construct()}.
+     * On Windows, PowerShell does not read credentials from the proxy URL. Use a proxy that does not
+     * require authentication there.
      * @return mixed  an object to be stored in the `event_publisher` configuration property
      */
     public static function eventPublisher(array $options = []): mixed

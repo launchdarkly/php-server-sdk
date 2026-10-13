@@ -74,6 +74,9 @@ class LDClient
      * - `events_uri`: Base URI for sending events to LaunchDarkly. Change this if you are forwarding events through a Relay Proxy instance.
      * - `timeout`: The maximum length of an HTTP request in seconds. Defaults to 3.
      * - `connect_timeout`: The maximum number of seconds to wait while trying to connect to a server. Defaults to 3.
+     * - `http_proxy`: The URL of a web proxy for all connections to LaunchDarkly, for example `http://my-proxy:8080`
+     * or `http://user:pass@my-proxy:8080`. This value has priority over the proxy environment variables, such as
+     * `HTTPS_PROXY`, for SDK connections only. If you do not set it, the SDK uses those environment variables.
      * - `cache`: An optional implementation of Guzzle's [CacheStorageInterface](https://github.com/Kevinrob/guzzle-cache-middleware/blob/master/src/Storage/CacheStorageInterface.php).
      * Defaults to an in-memory cache.
      * - `send_events`: If set to false, disables the sending of events to LaunchDarkly. Defaults to true.

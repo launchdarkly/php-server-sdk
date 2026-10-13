@@ -159,4 +159,22 @@ class CurlEventPublisherTest extends TestCase
 
         $this->assertEmpty(glob($dir . '/ld-*') ?: []);
     }
+
+    public function testPassesHttpProxyToCurl()
+    {
+        $publisher = $this->makePublisher(['http_proxy' => 'http://user:pass@my-proxy:8080']);
+        $this->assertTrue($publisher->publish(self::PAYLOAD));
+
+        $args = $this->awaitRecordedArgs();
+        $index = array_search('--proxy', $args, true);
+        $this->assertNotFalse($index);
+        $this->assertEquals('http://user:pass@my-proxy:8080', $args[$index + 1]);
+    }
+
+    public function testDoesNotPassProxyByDefault()
+    {
+        $this->assertTrue($this->makePublisher()->publish(self::PAYLOAD));
+
+        $this->assertNotContains('--proxy', $this->awaitRecordedArgs());
+    }
 }
