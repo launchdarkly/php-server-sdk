@@ -52,7 +52,6 @@ class SdkClientEntity
 
         $pollingConfig = $config['polling'] ?? [];
         $options['base_uri'] = $pollingConfig['baseUri'] ?? null;
-        $options['http_proxy'] = $config['proxy']['httpProxy'] ?? null;
 
         $options['send_events'] = ($config['events'] ?? null) !== null;
         $eventsConfig = $config['events'] ?? [];

@@ -60,7 +60,7 @@ class CurlEventPublisher implements EventPublisher
         $this->_connectTimeout = intval($options['connect_timeout']);
         $this->_timeout = intval($options['timeout']);
         $this->_isWindows = PHP_OS_FAMILY == 'Windows';
-        $this->_httpProxy = $options['http_proxy'] ?? null;
+        $this->_httpProxy = Util::httpProxy($options);
         $this->_payloadTempDir = $this->resolvePayloadTempDir($options['payload_temp_dir'] ?? null);
     }
 

@@ -177,4 +177,15 @@ class CurlEventPublisherTest extends TestCase
 
         $this->assertNotContains('--proxy', $this->awaitRecordedArgs());
     }
+
+    /**
+     * @testWith [false]
+     *           [""]
+     */
+    public function testIgnoresInvalidHttpProxy(mixed $proxy)
+    {
+        $this->assertTrue($this->makePublisher(['http_proxy' => $proxy])->publish(self::PAYLOAD));
+
+        $this->assertNotContains('--proxy', $this->awaitRecordedArgs());
+    }
 }

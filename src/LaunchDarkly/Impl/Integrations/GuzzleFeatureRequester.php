@@ -62,8 +62,9 @@ class GuzzleFeatureRequester implements FeatureRequester
             'debug' => $options['debug'] ?? false,
             'base_uri' => $baseUri
         ];
-        if (isset($options['http_proxy'])) {
-            $defaults['proxy'] = $options['http_proxy'];
+        $proxy = Util::httpProxy($options);
+        if ($proxy !== null) {
+            $defaults['proxy'] = $proxy;
         }
 
         $this->_client = new Client($defaults);
