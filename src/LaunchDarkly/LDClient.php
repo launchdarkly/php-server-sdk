@@ -78,7 +78,8 @@ class LDClient
      * `http://my-proxy.com:1234` or `http://user:pass@my-proxy.com:1234`. The SDK uses the proxy for HTTP and HTTPS
      * targets. This option overrides the `HTTPS_PROXY` and `HTTP_PROXY` environment variables, but only for SDK
      * connections. The `NO_PROXY` environment variable still applies, because libcurl reads it. On Windows, the
-     * default event publisher uses PowerShell, which does not read credentials from the proxy URL.
+     * default event publisher uses PowerShell, which does not read credentials from the proxy URL. See
+     * {@see \LaunchDarkly\Integrations\Curl::eventPublisher()}.
      * - `cache`: An optional implementation of Guzzle's [CacheStorageInterface](https://github.com/Kevinrob/guzzle-cache-middleware/blob/master/src/Storage/CacheStorageInterface.php).
      * Defaults to an in-memory cache.
      * - `send_events`: If set to false, disables the sending of events to LaunchDarkly. Defaults to true.
