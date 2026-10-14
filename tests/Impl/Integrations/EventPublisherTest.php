@@ -51,6 +51,63 @@ class EventPublisherTest extends TestCase
         ];
     }
 
+    public function getProxiedEventPublisher(): array
+    {
+        /** @var LoggerInterface **/
+        $logger = $this->getMockBuilder(LoggerInterface::class)->getMock();
+
+        // The host does not resolve, so the request can only arrive through the proxy.
+        $config = [
+            'events_uri' => 'http://not.valid.local',
+            'timeout' => 3,
+            'connect_timeout' => 3,
+            'logger' => $logger,
+            'http_proxy' => 'http://localhost:8080',
+        ];
+
+        return [
+            [new Integrations\CurlEventPublisher('sdk-key', $config)],
+            [new Integrations\CurlEventPublisher('sdk-key', array_merge($config, ['payload_temp_dir' => true]))],
+            [new Integrations\GuzzleEventPublisher('sdk-key', $config)],
+        ];
+    }
+
+    /**
+     * @dataProvider getProxiedEventPublisher
+     */
+    public function testSendsThroughHttpProxy($publisher)
+    {
+        $event = json_encode(["key" => "user-key"]);
+        $publisher->publish($event);
+
+        $requests = [];
+        $client = new Client();
+
+        // Provide time for the curl to execute
+        $start = time();
+        while (time() - $start < 5) {
+            $response = $client->request('GET', 'http://localhost:8080/__admin/requests');
+            $body = json_decode($response->getBody()->getContents(), true);
+            $requests = $body['requests'];
+
+            if ($requests) {
+                break;
+            }
+            usleep(100);
+        }
+
+        if (!$requests) {
+            $this->fail("Unable to connect to endpoint within specified timeout");
+        }
+
+        $this->assertCount(1, $requests);
+
+        $request = $requests[0]['request'];
+        $this->assertEquals($event, $request['body']);
+        $this->assertEquals('/bulk', $request['url']);
+        $this->assertEquals('not.valid.local', $request['headers']['Host']);
+    }
+
     /**
      * @dataProvider getEventPublisher
      */

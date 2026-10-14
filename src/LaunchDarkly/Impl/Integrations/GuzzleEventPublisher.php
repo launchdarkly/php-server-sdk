@@ -38,6 +38,10 @@ class GuzzleEventPublisher implements EventPublisher
             'timeout' => $options['timeout'],
             'connect_timeout' => $options['connect_timeout']
         ];
+        $proxy = Util::httpProxy($options);
+        if ($proxy !== null) {
+            $this->_requestOptions['proxy'] = $proxy;
+        }
     }
 
     public function publish(string $payload): bool

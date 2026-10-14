@@ -82,6 +82,27 @@ class Util
         );
     }
 
+    /**
+     * Reads the http_proxy option.
+     *
+     * A value that is not a non-empty string is ignored, so the proxy environment variables apply.
+     *
+     * @return ?string the proxy URL, or null if there is no valid value
+     */
+    public static function httpProxy(array $options): ?string
+    {
+        $proxy = $options['http_proxy'] ?? null;
+        if ($proxy === null || (is_string($proxy) && $proxy !== '')) {
+            return $proxy;
+        }
+
+        $logger = $options['logger'] ?? null;
+        if ($logger instanceof LoggerInterface) {
+            $logger->warning('The http_proxy option is not a non-empty string. The SDK ignores it.');
+        }
+        return null;
+    }
+
     public static function makeNullLogger(): LoggerInterface
     {
         return new Logger('', [new NullHandler()]);

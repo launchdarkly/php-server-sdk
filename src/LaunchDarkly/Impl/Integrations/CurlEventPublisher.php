@@ -24,6 +24,7 @@ class CurlEventPublisher implements EventPublisher
     private int $_connectTimeout;
     private int $_timeout;
     private bool $_isWindows;
+    private ?string $_httpProxy;
 
     /**
      * The directory named by the payload_temp_dir option, or null if the option is not set.
@@ -59,6 +60,7 @@ class CurlEventPublisher implements EventPublisher
         $this->_connectTimeout = intval($options['connect_timeout']);
         $this->_timeout = intval($options['timeout']);
         $this->_isWindows = PHP_OS_FAMILY == 'Windows';
+        $this->_httpProxy = Util::httpProxy($options);
         $this->_payloadTempDir = $this->resolvePayloadTempDir($options['payload_temp_dir'] ?? null);
     }
 
@@ -138,6 +140,9 @@ class CurlEventPublisher implements EventPublisher
         $args = " -X POST";
         $args.= " --connect-timeout " . $this->_connectTimeout;
         $args.= " --max-time " . $this->_timeout;
+        if ($this->_httpProxy !== null) {
+            $args.= " --proxy " . escapeshellarg($this->_httpProxy);
+        }
 
         foreach ($this->_eventHeaders as $key => $value) {
             $args.= " -H " . escapeshellarg("$key: $value");
@@ -178,13 +183,18 @@ class CurlEventPublisher implements EventPublisher
         }
 
         $scheme = $this->_ssl ? "https://" : "http://";
+        $escapedFile = str_replace("'", "''", $payloadFile);
+        $escapedUri = str_replace("'", "''", $scheme . $this->_host . ":" . $this->_port . $this->_path . "/bulk");
         $args = " Invoke-WebRequest";
         $args.= " -Method POST";
         $args.= " -UseBasicParsing";
-        $args.= " -InFile '$payloadFile'";
+        $args.= " -InFile '$escapedFile'";
         $args.= " -H @{" . $headerString . "}";
-        $args.= " -Uri " . escapeshellarg($scheme . $this->_host . ":" . $this->_port . $this->_path . "/bulk");
-        $args.= " ; Remove-Item '$payloadFile'";
+        if ($this->_httpProxy !== null) {
+            $args.= " -Proxy '" . str_replace("'", "''", $this->_httpProxy) . "'";
+        }
+        $args.= " -Uri '$escapedUri'";
+        $args.= " ; Remove-Item '$escapedFile'";
 
         $cmd = base64_encode(iconv('ISO-8859-1', 'UTF-16LE', $args));
         shell_exec("start /B powershell.exe -encodedCommand $cmd > nul 2>&1");

@@ -25,6 +25,9 @@ class Curl
      * This implementation forks a process for each event payload. Alternatively, you can use
      * {@see \LaunchDarkly\Integrations\Guzzle::eventPublisher()}, which makes synchronous requests.
      *
+     * On Windows, this publisher does not use curl. It sends events with the PowerShell `Invoke-WebRequest`
+     * command, and it ignores the `curl` option.
+     *
      * @param array $options  Configuration settings (can also be passed in the main client configuration):
      *   - `curl`: command for executing `curl`; defaults to `/usr/bin/env curl`
      *   - `payload_temp_dir`: directory for the temporary file that holds the event payload. Use `true`
@@ -34,6 +37,9 @@ class Curl
      * with `Argument exceeds the allowed length of N bytes`. On Windows the payload always goes into a
      * file, and this option only names the directory; the default there is the system temporary
      * directory.
+     *   - `http_proxy`: URL of a web proxy for the requests; see {@see \LaunchDarkly\LDClient::__construct()}.
+     * On Windows, `Invoke-WebRequest` does not read credentials from the proxy URL. To use a proxy that
+     * requires authentication on Windows, use {@see \LaunchDarkly\Integrations\Guzzle::eventPublisher()}.
      * @return mixed  an object to be stored in the `event_publisher` configuration property
      */
     public static function eventPublisher(array $options = []): mixed
