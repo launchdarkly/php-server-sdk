@@ -2,6 +2,18 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [6.10.0](https://github.com/launchdarkly/php-server-sdk/compare/6.9.0...6.10.0) (2026-10-14)
+
+
+### Features
+
+* Add http_proxy option to route SDK requests through a web proxy ([#270](https://github.com/launchdarkly/php-server-sdk/issues/270)) ([fa5b955](https://github.com/launchdarkly/php-server-sdk/commit/fa5b955546edc70de2b5a4d848030b67d8f7a20e))
+
+
+### Bug Fixes
+
+* Prevent special characters in the events URI or temp file path from ([fa5b955](https://github.com/launchdarkly/php-server-sdk/commit/fa5b955546edc70de2b5a4d848030b67d8f7a20e))
+
 ## [6.9.0](https://github.com/launchdarkly/php-server-sdk/compare/6.8.3...6.9.0) (2026-09-11)
 
 
