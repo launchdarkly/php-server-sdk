@@ -4,7 +4,7 @@ inputs:
   php-version:
     description: 'Which version of PHP should we setup?'
     required: false
-    default: 8.1
+    default: 8.2
   use-lowest-dependencies:
     description: 'Should we prefer the lowest dependency version?'
     type: boolean

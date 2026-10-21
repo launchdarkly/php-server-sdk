@@ -12,7 +12,7 @@
 
 ## Supported PHP versions
 
-This version of the LaunchDarkly SDK is compatible with PHP 8.1 and higher.
+This version of the LaunchDarkly SDK is compatible with PHP 8.2 and higher.
 
 ## Getting started
 
