@@ -7,7 +7,7 @@
   ],
   "require": {
     "doctrine/cache": "^2.2",
-    "guzzlehttp/guzzle": "^7",
+    "guzzlehttp/guzzle": "^8",
     "kevinrob/guzzle-cache-middleware": "^8.0",
     "launchdarkly/server-sdk": "*",
     "mikecao/flight": "^3",
