@@ -83,7 +83,14 @@ class TestService
                 'big-segments',
                 'evaluation-hooks',
                 'hook-environment-id',
-                'track-hooks'
+                'track-hooks',
+                'service-endpoints',
+                'server-side-polling',
+                'filtering',
+                'filtering-strict',
+                'http-proxy',
+                'tags',
+                'wrapper'
             ],
             'clientVersion' => \LaunchDarkly\LDClient::VERSION
         ];
