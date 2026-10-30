@@ -51,6 +51,20 @@ class SdkClientEntity
         ];
 
         $pollingConfig = $config['polling'] ?? [];
+        if ($pollingConfig === [] && isset($config['dataSystem']) && is_array($config['dataSystem'])) {
+            // The cross-platform harness (sdk-test-harness v3 and later) delivers the data
+            // source as the v3 `dataSystem` shape (initializers + synchronizers), not as a
+            // top-level `polling` object. The SDK itself is polling-only, so the test
+            // service maps the first polling carrier it finds onto the client's base_uri;
+            // without this mapping every evaluation runs against the default endpoint.
+            $ds = $config['dataSystem'];
+            foreach (array_merge($ds['synchronizers'] ?? [], $ds['initializers'] ?? []) as $carrier) {
+                if (is_array($carrier) && isset($carrier['polling']['baseUri'])) {
+                    $pollingConfig = $carrier['polling'];
+                    break;
+                }
+            }
+        }
         $options['base_uri'] = $pollingConfig['baseUri'] ?? null;
 
         $options['send_events'] = ($config['events'] ?? null) !== null;
