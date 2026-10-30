@@ -111,13 +111,19 @@ class LDClient
     {
         $apcuLoaded = extension_loaded('apcu');
 
-        if ($apcuLoaded && \apcu_enabled()) {
-            $options['instance_id'] = \apcu_entry('ld::instanceid', function ($key) {
-                $uuid = Uuid::uuid4()->toString();
-                return $uuid;
-            });
-        } elseif (php_sapi_name() === 'cli') {
-            $options['instance_id'] = Uuid::uuid4()->toString();
+        if (!isset($options['instance_id'])) {
+            // Every client instance must send an `X-LaunchDarkly-Instance-Id` header; the
+            // apcu case shares a per-process id, any other process (CLI and
+            // long-running SAPIs, including PHP's built-in web server cli-server)
+            // mints a fresh UUID per client.
+            if ($apcuLoaded && \apcu_enabled()) {
+                $options['instance_id'] = \apcu_entry('ld::instanceid', function ($key) {
+                    $uuid = Uuid::uuid4()->toString();
+                    return $uuid;
+                });
+            } else {
+                $options['instance_id'] = Uuid::uuid4()->toString();
+            }
         }
 
         $this->_sdkKey = $sdkKey;
