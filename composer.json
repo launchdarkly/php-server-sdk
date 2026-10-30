@@ -21,7 +21,7 @@
         "ramsey/uuid": "^4.7"
     },
     "require-dev": {
-        "beste/clock": "^3.0",
+        "beste/clock": "^4.0",
         "beste/in-memory-cache": "^1.4",
         "friendsofphp/php-cs-fixer": "^3.80.0",
         "guzzlehttp/guzzle": "^7",
