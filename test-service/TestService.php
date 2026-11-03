@@ -83,7 +83,8 @@ class TestService
                 'big-segments',
                 'evaluation-hooks',
                 'hook-environment-id',
-                'track-hooks'
+                'track-hooks',
+                'tls:verify-peer'
             ],
             'clientVersion' => \LaunchDarkly\LDClient::VERSION
         ];
