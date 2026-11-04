@@ -141,7 +141,7 @@ class Evaluator
                 $prereqKey = $prereq->getKey();
 
                 if ($prereqKey === $state->originalFlag->getKey() ||
-                    ($state->prerequisiteStack !== null && in_array($prereqKey, $state->prerequisiteStack))) {
+                    ($state->prerequisiteStack !== null && in_array($prereqKey, $state->prerequisiteStack, true))) {
                     throw new EvaluationException(
                         "prerequisite relationship to \"$prereqKey\" caused a circular reference; this is probably a temporary condition due to an incomplete update",
                         EvaluationReason::MALFORMED_FLAG_ERROR
@@ -198,7 +198,7 @@ class Evaluator
                     return null;
                 }
                 foreach ($userTargets as $t) {
-                    if (in_array($userContext->getKey(), $t->getValues())) {
+                    if (in_array($userContext->getKey(), $t->getValues(), true)) {
                         return EvaluatorHelpers::targetMatchResult($flag, $t);
                     }
                 }
@@ -215,7 +215,7 @@ class Evaluator
                 $userKey = $userContext->getKey();
                 foreach ($userTargets as $ut) {
                     if ($ut->getVariation() === $t->getVariation()) {
-                        if (in_array($userKey, $ut->getValues())) {
+                        if (in_array($userKey, $ut->getValues(), true)) {
                             return EvaluatorHelpers::targetMatchResult($flag, $ut);
                         }
                         break;
@@ -245,7 +245,7 @@ class Evaluator
     {
         if ($clause->getOp() === 'segmentMatch') {
             foreach ($clause->getValues() as $segmentKey) {
-                if ($state->segmentStack !== null && in_array($segmentKey, $state->segmentStack)) {
+                if ($state->segmentStack !== null && in_array($segmentKey, $state->segmentStack, true)) {
                     throw new EvaluationException(
                         "segment rule referencing segment \"$segmentKey\" caused a circular reference; this is probably a temporary condition due to an incomplete update",
                         EvaluationReason::MALFORMED_FLAG_ERROR
@@ -357,7 +357,7 @@ class Evaluator
         $membershipResult = null;
         if ($membership !== null) {
             $segmentRef = Evaluator::makeBigSegmentsRef($segment);
-            $membershipResult = $membership[$segmentRef] ?? false;
+            $membershipResult = $membership[$segmentRef] ?? null;
         }
 
         if ($membershipResult !== null) {

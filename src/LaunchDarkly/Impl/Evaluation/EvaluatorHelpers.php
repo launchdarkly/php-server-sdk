@@ -29,7 +29,7 @@ class EvaluatorHelpers
             return false;
         }
         $matchContext = $context->getIndividualContext($contextKind ?: LDContext::DEFAULT_KIND);
-        return $matchContext !== null && in_array($matchContext->getKey(), $keys);
+        return $matchContext !== null && in_array($matchContext->getKey(), $keys, true);
     }
   
     public static function evaluationDetailForVariation(

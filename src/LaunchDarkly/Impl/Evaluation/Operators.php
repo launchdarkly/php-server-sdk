@@ -35,7 +35,7 @@ class Operators
                     if ($u === $c) {
                         return true;
                     }
-                    if (is_numeric($u) && is_numeric($c)) {
+                    if (self::is_numeric($u) && self::is_numeric($c)) {
                         return $u == $c;
                     }
                     break;

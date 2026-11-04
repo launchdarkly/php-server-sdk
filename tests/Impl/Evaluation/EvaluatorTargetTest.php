@@ -55,6 +55,24 @@ class EvaluatorTargetTest extends TestCase
         );
     }
 
+    public function testTargetKeysAreComparedAsExactStrings()
+    {
+        $f = self::baseFlagBuilder()
+            ->target(self::MATCH_VAR_1, '7', '10')
+            ->contextTarget('dog', self::MATCH_VAR_2, '7')
+            ->contextTarget(LDContext::DEFAULT_KIND, self::MATCH_VAR_1)
+            ->build();
+
+        // Keys that are different strings do not match, even when PHP would compare them as equal numbers.
+        self::expectMatch($f, LDContext::create('7'), self::MATCH_VAR_1);
+        self::expectFallthrough($f, LDContext::create('007'));
+        self::expectFallthrough($f, LDContext::create('7.0'));
+        self::expectFallthrough($f, LDContext::create(' 7'));
+        self::expectFallthrough($f, LDContext::create('1e1'));
+        self::expectMatch($f, LDContext::create('7', 'dog'), self::MATCH_VAR_2);
+        self::expectFallthrough($f, LDContext::create('007', 'dog'));
+    }
+
     public function userTargetsAndContextTargets()
     {
         $f = self::baseFlagBuilder()
