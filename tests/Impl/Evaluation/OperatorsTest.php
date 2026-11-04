@@ -20,6 +20,16 @@ class OperatorsTest extends TestCase
         $this->assertFalse(Operators::apply("in", false, true));
     }
 
+    public function testInDoesNotCoerceStringsAndNumbers()
+    {
+        $this->assertFalse(Operators::apply("in", "1", 1));
+        $this->assertFalse(Operators::apply("in", 1, "1"));
+        $this->assertFalse(Operators::apply("in", "1.0", "1"));
+        $this->assertFalse(Operators::apply("in", "007", "7"));
+        $this->assertFalse(Operators::apply("in", "1e3", "1000"));
+        $this->assertFalse(Operators::apply("in", " 1", "1"));
+    }
+
     public function testStartsWith()
     {
         $this->assertTrue(Operators::apply("startsWith", "start", "start"));

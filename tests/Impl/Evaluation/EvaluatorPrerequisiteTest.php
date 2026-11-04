@@ -122,6 +122,33 @@ class EvaluatorPrerequisiteTest extends TestCase
         self::assertEquals($flag0, $eval->getPrereqOfFlag());
     }
 
+    public function testPrerequisiteKeysThatLookLikeTheSameNumberAreNotACycle()
+    {
+        $flag2 = ModelBuilders::flagBuilder('1e1')->variations('nogo', 'go')
+            ->on(true)->fallthroughVariation(1)
+            ->build();
+        $flag1 = ModelBuilders::flagBuilder('10')->variations('nogo', 'go')
+            ->on(true)->fallthroughVariation(1)
+            ->prerequisite($flag2->getKey(), 1)
+            ->build();
+        $flag0 = ModelBuilders::flagBuilder('feature0')->variations('fall', 'off', 'on')
+            ->on(true)->offVariation(1)->fallthroughVariation(0)
+            ->prerequisite($flag1->getKey(), 1)
+            ->build();
+
+        $requester = new MockFeatureRequester();
+        $requester->addFlag($flag1);
+        $requester->addFlag($flag2);
+        $storeManager = new StoreManager(config: new BigSegmentsConfig(store: null), logger: EvaluatorTestUtil::testLogger());
+        $evaluator = new Evaluator($requester, $storeManager);
+        $recorder = EvaluatorTestUtil::prerequisiteRecorder();
+
+        // Flag "10" has prerequisite "1e1", which is a different key, not a circular reference.
+        $result = $evaluator->evaluate($flag0, LDContext::create('user'), $recorder->record());
+        // Both prerequisites are met, so the flag falls through.
+        self::assertEquals(new EvaluationDetail('fall', 0, EvaluationReason::fallthrough()), $result->getDetail());
+    }
+
     public function recursionDepth()
     {
         return [[1], [2], [3], [4]];

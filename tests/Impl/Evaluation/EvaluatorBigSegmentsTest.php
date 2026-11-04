@@ -140,6 +140,26 @@ class EvaluatorBigSegmentsTest extends TestCase
         $this->assertTrue(self::bigSegmentsMatchesContext($store, $segment, $defaultContext));
     }
 
+    public function testSegmentLogicFallsThroughToRulesWhenMembershipHasNoEntryForSegment(): void
+    {
+        global $defaultContext;
+        $segment = ModelBuilders::segmentBuilder('test')
+            ->generation(100)
+            ->unbounded(true)
+            ->rule(
+                ModelBuilders::segmentRuleBuilder()
+                    ->clause(ModelBuilders::clauseMatchingContext($defaultContext))
+                    ->weight(100000)
+                    ->build()
+            )
+            ->build();
+
+        // The membership query succeeds and has data for another segment, but none for this one.
+        $store = new BigSegmentsStoreImpl([new BigSegmentsStoreMetadata(10)], [['other.g1' => true]]);
+
+        $this->assertTrue(self::bigSegmentsMatchesContext($store, $segment, $defaultContext));
+    }
+
     private static function bigSegmentsMatchesContext(BigSegmentsStore $store, Segment $segment, LDContext $context): bool
     {
         $evaluator = self::getEvaluator($store, $context, [$segment]);

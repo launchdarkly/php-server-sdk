@@ -71,6 +71,14 @@ class EvaluatorSegmentTest extends TestCase
         $this->assertFalse(self::segmentMatchesContext($segment, $multi));
     }
 
+    public function testIncludedKeysAreComparedAsExactStrings()
+    {
+        $segment = ModelBuilders::segmentBuilder('test')->included('7')->build();
+        $this->assertTrue(self::segmentMatchesContext($segment, LDContext::create('7')));
+        $this->assertFalse(self::segmentMatchesContext($segment, LDContext::create('007')));
+        $this->assertFalse(self::segmentMatchesContext($segment, LDContext::create('7.0')));
+    }
+
     public function testMatchingRuleWithFullRollout()
     {
         global $defaultContext;
@@ -253,6 +261,31 @@ class EvaluatorSegmentTest extends TestCase
 
         $result = $evaluator->evaluate($flag, $context, EvaluatorTestUtil::expectNoPrerequisiteEvals());
         self::assertEquals(EvaluationReason::error(EvaluationReason::MALFORMED_FLAG_ERROR), $result->getDetail()->getReason());
+    }
+
+    public function testSegmentKeysThatLookLikeTheSameNumberAreNotACycle()
+    {
+        $context = LDContext::create('foo');
+        $segment1 = ModelBuilders::segmentBuilder('1e2')->included($context->getKey())->build();
+        $segment0 = ModelBuilders::segmentBuilder('100')
+            ->rule(
+                ModelBuilders::segmentRuleBuilder()
+                    ->clause(ModelBuilders::clause(null, '', 'segmentMatch', $segment1->getKey()))
+                    ->build()
+            )
+            ->build();
+
+        $requester = new MockFeatureRequester();
+        $requester->addSegment($segment0);
+        $requester->addSegment($segment1);
+        $storeManager = new StoreManager(config: new BigSegmentsConfig(store: null), logger: EvaluatorTestUtil::testLogger());
+        $evaluator = new Evaluator($requester, $storeManager);
+        $flag = ModelBuilders::booleanFlagWithClauses(ModelBuilders::clauseMatchingSegment($segment0));
+
+        // Segment "100" refers to segment "1e2", which is a different key, not a circular reference.
+        $result = $evaluator->evaluate($flag, $context, EvaluatorTestUtil::expectNoPrerequisiteEvals());
+        // The context is included in segment "1e2", so the flag's rule matches.
+        self::assertTrue($result->getDetail()->getValue());
     }
 
     private static function segmentMatchesContext(Segment $segment, LDContext $context): bool
