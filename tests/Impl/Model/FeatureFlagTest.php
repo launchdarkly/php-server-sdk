@@ -141,8 +141,8 @@ class FeatureFlagTest extends TestCase
 
     public function testDecode()
     {
-        $this->assertInstanceOf(FeatureFlag::class, FeatureFlag::decode(\GuzzleHttp\json_decode(FeatureFlagTest::$json1, true)));
-        $this->assertInstanceOf(FeatureFlag::class, FeatureFlag::decode(\GuzzleHttp\json_decode(FeatureFlagTest::$json2, true)));
+        $this->assertInstanceOf(FeatureFlag::class, FeatureFlag::decode(json_decode(FeatureFlagTest::$json1, true)));
+        $this->assertInstanceOf(FeatureFlag::class, FeatureFlag::decode(json_decode(FeatureFlagTest::$json2, true)));
     }
     
     public function dataDecodeMulti()
