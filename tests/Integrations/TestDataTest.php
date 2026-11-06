@@ -435,4 +435,24 @@ class TestDataTest extends TestCase
         $context3 = LDContext::builder("x")->set("firstName", "Patsy")->set("lastName", "Smith")->build();
         $this->assertTrue($client->variation("flag", $context3));
     }
+
+    public function testValueForAllReturnsValueWhetherTargetingIsOnOrOff()
+    {
+        $td = new TestData();
+        $flag = $td->flag('flag')->valueForAll('x');
+
+        $this->assertEquals(['x'], $flag->build(1)['variations']);
+        $this->assertEquals(0, $flag->build(1)['offVariation']);
+
+        $td->update($flag->on(false));
+
+        $options = [
+            'feature_requester' => $td,
+            'event_processor' => new Tests\MockEventProcessor()
+        ];
+        $client = new LDClient("someKey", $options);
+
+        $context = LDContext::create("user-key");
+        $this->assertEquals('x', $client->variation('flag', $context, 'default'));
+    }
 }

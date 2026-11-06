@@ -223,7 +223,7 @@ class FlagBuilder
      */
     public function valueForAll(mixed $value): FlagBuilder
     {
-        return $this->variations($value)->variationForAll(0);
+        return $this->variations($value)->variationForAll(0)->offVariation(0);
     }
 
     /**
