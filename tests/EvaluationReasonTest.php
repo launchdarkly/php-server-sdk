@@ -3,6 +3,7 @@
 namespace LaunchDarkly\Tests;
 
 use LaunchDarkly\BigSegmentsEvaluationStatus;
+use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
 
 class EvaluationReasonTest extends \PHPUnit\Framework\TestCase
@@ -122,6 +123,24 @@ class EvaluationReasonTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(EvaluationReason::ERROR, $restored->getKind());
         $this->assertEquals(EvaluationReason::EXCEPTION_ERROR, $restored->getErrorKind());
         $this->assertSame(BigSegmentsEvaluationStatus::STALE, $restored->bigSegmentsEvaluationStatus());
+    }
+
+    public function testSerializeDetailOmitsException()
+    {
+        $detail = new EvaluationDetail(
+            'default',
+            null,
+            EvaluationReason::exception(new \RuntimeException('store unavailable'))
+        );
+
+        $serialized = serialize($detail);
+        $restored = unserialize($serialized);
+
+        $this->assertStringNotContainsString('store unavailable', $serialized);
+        $this->assertEquals('default', $restored->getValue());
+        $this->assertNull($restored->getVariationIndex());
+        $this->assertEquals(EvaluationReason::EXCEPTION_ERROR, $restored->getReason()->getErrorKind());
+        $this->assertNull($restored->getReason()->getException());
     }
 
     public function testSerializeKeepsReasonFields()

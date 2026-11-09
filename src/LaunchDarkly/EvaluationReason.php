@@ -78,7 +78,7 @@ class EvaluationReason implements \JsonSerializable
 
     /**
      * A possible value for getErrorKind(): indicates that an unexpected exception stopped flag
-     * evaluation. The exception is available from getException().
+     * evaluation. The exception may be available from getException().
      * @var string
      */
     const EXCEPTION_ERROR = 'EXCEPTION';
@@ -214,8 +214,11 @@ class EvaluationReason implements \JsonSerializable
     }
 
     /**
-     * Returns the original exception that caused the evaluation to fail, if any.
-     * The exception is available for diagnostics but is not included in JSON serialization.
+     * Returns the original exception that caused the evaluation to fail, if it is known.
+     *
+     * The value is non-null only when getKind() is ERROR and getErrorKind() is EXCEPTION_ERROR.
+     * It is null for a reason made with error(EXCEPTION_ERROR), and after unserialize(). The
+     * exception is for diagnostics only. It is not included in JSON or serialize() output.
      *
      * @return \Throwable|null
      */
