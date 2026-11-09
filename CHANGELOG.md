@@ -2,6 +2,18 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [6.12.0](https://github.com/launchdarkly/php-server-sdk/compare/6.11.0...6.12.0) (2026-11-09)
+
+
+### Features
+
+* Expose exceptions on evaluation reasons ([#290](https://github.com/launchdarkly/php-server-sdk/issues/290)) ([e36a6fd](https://github.com/launchdarkly/php-server-sdk/commit/e36a6fd22d1dad3dfe3444657e9a9ea2278b424c))
+
+
+### Bug Fixes
+
+* Fix loose key and value comparisons and big segment rule fall-through ([#286](https://github.com/launchdarkly/php-server-sdk/issues/286)) ([4eb7394](https://github.com/launchdarkly/php-server-sdk/commit/4eb7394c491c43e302eb038da1b5475afa0e848a))
+
 ## [6.11.0](https://github.com/launchdarkly/php-server-sdk/compare/6.10.0...6.11.0) (2026-10-21)
 
 
