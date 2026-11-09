@@ -78,7 +78,7 @@ class EvaluationReason implements \JsonSerializable
 
     /**
      * A possible value for getErrorKind(): indicates that an unexpected exception stopped flag
-     * evaluation.
+     * evaluation. The exception is available from getException().
      * @var string
      */
     const EXCEPTION_ERROR = 'EXCEPTION';
@@ -97,6 +97,7 @@ class EvaluationReason implements \JsonSerializable
     private ?string $_prerequisiteKey;
     private bool $_inExperiment;
     private ?BigSegmentsEvaluationStatus $_bigSegmentsEvaluationStatus;
+    private ?\Throwable $_exception;
 
     /**
      * Creates a new instance of the OFF reason.
@@ -159,6 +160,17 @@ class EvaluationReason implements \JsonSerializable
         return new EvaluationReason(self::ERROR, $errorKind);
     }
 
+    /**
+     * Creates an ERROR reason with error kind EXCEPTION_ERROR, retaining its cause.
+     *
+     * @param \Throwable $exception the exception that stopped flag evaluation
+     * @return EvaluationReason
+     */
+    public static function exception(\Throwable $exception): EvaluationReason
+    {
+        return new EvaluationReason(self::ERROR, self::EXCEPTION_ERROR, exception: $exception);
+    }
+
     private function __construct(
         string $kind,
         ?string $errorKind = null,
@@ -166,7 +178,8 @@ class EvaluationReason implements \JsonSerializable
         ?string $ruleId = null,
         ?string $prerequisiteKey = null,
         bool $inExperiment = false,
-        ?BigSegmentsEvaluationStatus $bigSegmentsEvaluationStatus = null
+        ?BigSegmentsEvaluationStatus $bigSegmentsEvaluationStatus = null,
+        ?\Throwable $exception = null
     ) {
         $this->_kind = $kind;
         $this->_errorKind = $errorKind;
@@ -175,6 +188,7 @@ class EvaluationReason implements \JsonSerializable
         $this->_prerequisiteKey = $prerequisiteKey;
         $this->_inExperiment = $inExperiment;
         $this->_bigSegmentsEvaluationStatus = $bigSegmentsEvaluationStatus;
+        $this->_exception = $exception;
     }
 
     /**
@@ -194,8 +208,20 @@ class EvaluationReason implements \JsonSerializable
             $this->_ruleId,
             $this->_prerequisiteKey,
             $this->_inExperiment,
-            $bigSegmentsEvaluationStatus
+            $bigSegmentsEvaluationStatus,
+            $this->_exception
         );
+    }
+
+    /**
+     * Returns the original exception that caused the evaluation to fail, if any.
+     * The exception is available for diagnostics but is not included in JSON serialization.
+     *
+     * @return \Throwable|null
+     */
+    public function getException(): ?\Throwable
+    {
+        return $this->_exception;
     }
 
     /**

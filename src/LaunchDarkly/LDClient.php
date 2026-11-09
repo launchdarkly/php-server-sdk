@@ -291,6 +291,8 @@ class LDClient
      *
      * The "reason" property in the result will also be included in analytics events, if you are capturing
      * detailed event data for this flag.
+     * If evaluation fails with an unexpected exception, the original Throwable is available through
+     * {@see EvaluationReason::getException()}. It is not included in analytics events or reason JSON.
      *
      * @param string $key the unique key for the feature flag
      * @param LDContext $context the evaluation context
@@ -434,7 +436,7 @@ class LDClient
                 $flag = $this->_featureRequester->getFeature($key);
             } catch (UnrecoverableHTTPStatusException $e) {
                 $this->handleUnrecoverableError();
-                return ['detail' => $errorDetail(EvaluationReason::EXCEPTION_ERROR), 'flag' => null];
+                return ['detail' => new EvaluationDetail($default, null, EvaluationReason::exception($e)), 'flag' => null];
             }
 
             if (is_null($flag)) {
@@ -465,7 +467,7 @@ class LDClient
             return ['detail' => $detail, 'flag' => $flag];
         } catch (\Throwable $e) {
             Util::logExceptionAtErrorLevel($this->_logger, $e, "Unexpected error evaluating flag $key");
-            $result = $errorDetail(EvaluationReason::EXCEPTION_ERROR);
+            $result = new EvaluationDetail($default, null, EvaluationReason::exception($e));
             $sendEvent(new EvalResult($result, false), null);
             return ['detail' => $result, 'flag' => $flag];
         }

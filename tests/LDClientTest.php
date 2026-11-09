@@ -7,6 +7,7 @@ use LaunchDarkly\BigSegmentsEvaluationStatus;
 use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
 use LaunchDarkly\Impl\Model\FeatureFlag;
+use LaunchDarkly\Impl\UnrecoverableHTTPStatusException;
 use LaunchDarkly\LDClient;
 use LaunchDarkly\LDContext;
 use LaunchDarkly\Migrations\Operation;
@@ -96,6 +97,60 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($detail->isDefaultValue());
         $this->assertEquals(1, $detail->getVariationIndex());
         $this->assertEquals(EvaluationReason::off(), $detail->getReason());
+    }
+
+    public function evaluationExceptions(): array
+    {
+        return [
+            'unexpected exception' => [new \RuntimeException('store unavailable')],
+            'PHP error' => [new \Error('requester failed')],
+            'unauthorized' => [new UnrecoverableHTTPStatusException(401)],
+            'forbidden' => [new UnrecoverableHTTPStatusException(403)],
+        ];
+    }
+
+    /** @dataProvider evaluationExceptions */
+    public function testVariationDetailRetainsExceptionOnFallback(\Throwable $exception): void
+    {
+        $requester = $this->createMock(MockFeatureRequester::class);
+        $requester->method('getFeature')->willThrowException($exception);
+        $client = $this->makeClient(['feature_requester' => $requester]);
+
+        $detail = $client->variationDetail('feature', LDContext::create('userkey'), 'default');
+        $reason = $detail->getReason();
+
+        $this->assertSame('default', $detail->getValue());
+        $this->assertTrue($detail->isDefaultValue());
+        $this->assertSame(EvaluationReason::ERROR, $reason->getKind());
+        $this->assertSame(EvaluationReason::EXCEPTION_ERROR, $reason->getErrorKind());
+        $this->assertSame($exception, $reason->getException());
+        $this->assertEquals(
+            ['kind' => 'ERROR', 'errorKind' => 'EXCEPTION'],
+            json_decode(json_encode($reason), true)
+        );
+    }
+
+    public function unrecoverableHTTPStatuses(): array
+    {
+        return [[401], [403]];
+    }
+
+    /** @dataProvider unrecoverableHTTPStatuses */
+    public function testUnrecoverableHTTPErrorStillTakesClientOffline(int $status): void
+    {
+        $exception = new UnrecoverableHTTPStatusException($status);
+        $requester = $this->createMock(MockFeatureRequester::class);
+        $requester->expects($this->once())->method('getFeature')->willThrowException($exception);
+        $client = $this->makeClient(['feature_requester' => $requester]);
+        $context = LDContext::create('userkey');
+
+        $first = $client->variationDetail('feature', $context, 'first default');
+        $this->assertSame($exception, $first->getReason()->getException());
+
+        $second = $client->variationDetail('feature', $context, 'second default');
+        $this->assertSame('second default', $second->getValue());
+        $this->assertSame(EvaluationReason::CLIENT_NOT_READY_ERROR, $second->getReason()->getErrorKind());
+        $this->assertNull($second->getReason()->getException());
     }
 
     public function testVariationReturnsDefaultIfFlagEvaluatesToNull()
