@@ -97,7 +97,7 @@ class EvaluationReason implements \JsonSerializable
     private ?string $_prerequisiteKey;
     private bool $_inExperiment;
     private ?BigSegmentsEvaluationStatus $_bigSegmentsEvaluationStatus;
-    private ?\Throwable $_exception;
+    private ?\Throwable $_exception = null;
 
     /**
      * Creates a new instance of the OFF reason.
@@ -222,6 +222,28 @@ class EvaluationReason implements \JsonSerializable
     public function getException(): ?\Throwable
     {
         return $this->_exception;
+    }
+
+    /**
+     * Returns the properties that serialize() stores.
+     *
+     * The exception is not stored. Its stack trace can contain closures, which serialize() does
+     * not accept, and objects that hold diagnostic data. After unserialize(), getException()
+     * returns null.
+     *
+     * @return string[]
+     */
+    public function __sleep(): array
+    {
+        return [
+            '_kind',
+            '_errorKind',
+            '_ruleIndex',
+            '_ruleId',
+            '_prerequisiteKey',
+            '_inExperiment',
+            '_bigSegmentsEvaluationStatus',
+        ];
     }
 
     /**

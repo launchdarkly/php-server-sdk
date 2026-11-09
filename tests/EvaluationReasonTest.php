@@ -104,6 +104,33 @@ class EvaluationReasonTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('ERROR(EXCEPTION)', (string)$reason);
     }
 
+    public function testSerializeOmitsException()
+    {
+        $previous = ini_set('zend.exception_ignore_args', '0');
+        try {
+            // The closure argument is kept in the stack trace of the exception.
+            $exception = (fn (callable $callback) => new \RuntimeException('store unavailable'))(fn () => null);
+        } finally {
+            ini_set('zend.exception_ignore_args', $previous);
+        }
+        $reason = EvaluationReason::exception($exception)
+            ->withBigSegmentsEvaluationStatus(BigSegmentsEvaluationStatus::STALE);
+
+        $restored = unserialize(serialize($reason));
+
+        $this->assertNull($restored->getException());
+        $this->assertEquals(EvaluationReason::ERROR, $restored->getKind());
+        $this->assertEquals(EvaluationReason::EXCEPTION_ERROR, $restored->getErrorKind());
+        $this->assertSame(BigSegmentsEvaluationStatus::STALE, $restored->bigSegmentsEvaluationStatus());
+    }
+
+    public function testSerializeKeepsReasonFields()
+    {
+        $reason = EvaluationReason::ruleMatch(1, 'id', true);
+
+        $this->assertEquals($reason, unserialize(serialize($reason)));
+    }
+
     public function testBigSegmentsStatusPreservesException()
     {
         $exception = new \RuntimeException('store unavailable');
