@@ -70,11 +70,24 @@ class Evaluator
 
             return $evalResult;
         } catch (EvaluationException $e) {
-            return new EvalResult(new EvaluationDetail(null, null, EvaluationReason::error($e->getErrorKind())), false, $state);
+            $reason = self::withBigSegmentsStatus(EvaluationReason::error($e->getErrorKind()), $state);
+            return new EvalResult(new EvaluationDetail(null, null, $reason), false, $state);
         } catch (\Throwable $e) {
             Util::logExceptionAtErrorLevel($this->_logger, $e, 'Unexpected error when evaluating flag ' . $flag->getKey());
-            return new EvalResult(new EvaluationDetail(null, null, EvaluationReason::exception($e)), false, $state);
+            $reason = self::withBigSegmentsStatus(EvaluationReason::exception($e), $state);
+            return new EvalResult(new EvaluationDetail(null, null, $reason), false, $state);
         }
+    }
+
+    /**
+     * Adds the big segments status to an error reason. A big segment query can run before the error occurs.
+     */
+    private static function withBigSegmentsStatus(EvaluationReason $reason, EvaluatorState $state): EvaluationReason
+    {
+        if ($state->bigSegmentsEvaluationStatus === null) {
+            return $reason;
+        }
+        return $reason->withBigSegmentsEvaluationStatus($state->bigSegmentsEvaluationStatus);
     }
 
     private function evaluateInternal(
