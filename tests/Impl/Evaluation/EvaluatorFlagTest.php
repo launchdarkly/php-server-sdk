@@ -4,11 +4,14 @@ namespace LaunchDarkly\Tests\Impl\Evaluation;
 
 use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
+use LaunchDarkly\Impl\BigSegments\StoreManager;
 use LaunchDarkly\Impl\Evaluation\Evaluator;
 use LaunchDarkly\Impl\Evaluation\EvaluatorBucketing;
 use LaunchDarkly\Impl\Model\Rollout;
 use LaunchDarkly\LDContext;
+use LaunchDarkly\Tests\MockFeatureRequester;
 use LaunchDarkly\Tests\ModelBuilders;
+use LaunchDarkly\Types\BigSegmentsConfig;
 use PHPUnit\Framework\TestCase;
 
 const RULE_ID = 'ruleid';
@@ -32,6 +35,30 @@ class EvaluatorFlagTest extends TestCase
     public static function setUpBeforeClass(): void
     {
         static::$basicEvaluator = EvaluatorTestUtil::basicEvaluator();
+    }
+
+    public function testPrerequisiteLookupExceptionIsRetained(): void
+    {
+        $exception = new \RuntimeException('prerequisite store unavailable');
+        $requester = $this->createMock(MockFeatureRequester::class);
+        $requester->method('getFeature')->willThrowException($exception);
+        $logger = EvaluatorTestUtil::testLogger();
+        $evaluator = new Evaluator(
+            $requester,
+            new StoreManager(config: new BigSegmentsConfig(store: null), logger: $logger),
+            $logger
+        );
+        $flag = ModelBuilders::flagBuilder('feature')->on(true)->variations(false, true)
+            ->fallthroughVariation(0)->prerequisite('prerequisite', 0)->build();
+
+        $detail = $evaluator->evaluate($flag, LDContext::create('user'), null)->getDetail();
+        $reason = $detail->getReason();
+
+        self::assertNull($detail->getValue());
+        self::assertTrue($detail->isDefaultValue());
+        self::assertSame(EvaluationReason::ERROR, $reason->getKind());
+        self::assertSame(EvaluationReason::EXCEPTION_ERROR, $reason->getErrorKind());
+        self::assertSame($exception, $reason->getException());
     }
 
     public function testFlagReturnsOffVariationIfFlagIsOff()

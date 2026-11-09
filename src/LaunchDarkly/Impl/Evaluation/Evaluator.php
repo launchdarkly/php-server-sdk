@@ -73,7 +73,7 @@ class Evaluator
             return new EvalResult(new EvaluationDetail(null, null, EvaluationReason::error($e->getErrorKind())), false, $state);
         } catch (\Throwable $e) {
             Util::logExceptionAtErrorLevel($this->_logger, $e, 'Unexpected error when evaluating flag ' . $flag->getKey());
-            return new EvalResult(new EvaluationDetail(null, null, EvaluationReason::error(EvaluationReason::EXCEPTION_ERROR)), false, $state);
+            return new EvalResult(new EvaluationDetail(null, null, EvaluationReason::exception($e)), false, $state);
         }
     }
 

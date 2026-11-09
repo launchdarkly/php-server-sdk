@@ -2,6 +2,8 @@
 
 namespace LaunchDarkly\Tests;
 
+use LaunchDarkly\BigSegmentsEvaluationStatus;
+use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
 
 class EvaluationReasonTest extends \PHPUnit\Framework\TestCase
@@ -88,6 +90,95 @@ class EvaluationReasonTest extends \PHPUnit\Framework\TestCase
             json_decode($json, true)
         );
         $this->assertEquals('PREREQUISITE_FAILED(key)', (string)$reason);
+    }
+
+    public function testErrorReasonRetainsExceptionWithoutSerializingIt()
+    {
+        $exception = new \RuntimeException('sensitive diagnostic details');
+        $reason = EvaluationReason::exception($exception);
+
+        $this->assertSame($exception, $reason->getException());
+        $this->assertEquals(
+            ['kind' => 'ERROR', 'errorKind' => 'EXCEPTION'],
+            json_decode(json_encode($reason), true)
+        );
+        $this->assertEquals('ERROR(EXCEPTION)', (string)$reason);
+    }
+
+    public function testSerializeOmitsException()
+    {
+        $previous = ini_set('zend.exception_ignore_args', '0');
+        try {
+            // The closure argument is kept in the stack trace of the exception.
+            $exception = (fn (callable $callback) => new \RuntimeException('store unavailable'))(fn () => null);
+        } finally {
+            ini_set('zend.exception_ignore_args', $previous);
+        }
+        $reason = EvaluationReason::exception($exception)
+            ->withBigSegmentsEvaluationStatus(BigSegmentsEvaluationStatus::STALE);
+
+        $restored = unserialize(serialize($reason));
+
+        $this->assertNull($restored->getException());
+        $this->assertEquals(EvaluationReason::ERROR, $restored->getKind());
+        $this->assertEquals(EvaluationReason::EXCEPTION_ERROR, $restored->getErrorKind());
+        $this->assertSame(BigSegmentsEvaluationStatus::STALE, $restored->bigSegmentsEvaluationStatus());
+    }
+
+    public function testSerializeDetailOmitsException()
+    {
+        $detail = new EvaluationDetail(
+            'default',
+            null,
+            EvaluationReason::exception(new \RuntimeException('store unavailable'))
+        );
+
+        $serialized = serialize($detail);
+        $restored = unserialize($serialized);
+
+        $this->assertStringNotContainsString('store unavailable', $serialized);
+        $this->assertEquals('default', $restored->getValue());
+        $this->assertNull($restored->getVariationIndex());
+        $this->assertEquals(EvaluationReason::EXCEPTION_ERROR, $restored->getReason()->getErrorKind());
+        $this->assertNull($restored->getReason()->getException());
+    }
+
+    public function testSerializeKeepsReasonFields()
+    {
+        $reason = EvaluationReason::ruleMatch(1, 'id', true);
+
+        $this->assertEquals($reason, unserialize(serialize($reason)));
+    }
+
+    public function testBigSegmentsStatusPreservesException()
+    {
+        $exception = new \RuntimeException('store unavailable');
+        $reason = EvaluationReason::exception($exception)
+            ->withBigSegmentsEvaluationStatus(BigSegmentsEvaluationStatus::STALE);
+
+        $this->assertSame($exception, $reason->getException());
+        $this->assertSame(BigSegmentsEvaluationStatus::STALE, $reason->bigSegmentsEvaluationStatus());
+        $this->assertEquals(
+            ['kind' => 'ERROR', 'errorKind' => 'EXCEPTION', 'bigSegmentsStatus' => 'STALE'],
+            json_decode(json_encode($reason), true)
+        );
+    }
+
+    public function testReasonsWithoutExceptionsReturnNull()
+    {
+        $reasons = [
+            EvaluationReason::off(),
+            EvaluationReason::fallthrough(),
+            EvaluationReason::targetMatch(),
+            EvaluationReason::ruleMatch(0, 'rule'),
+            EvaluationReason::prerequisiteFailed('prerequisite'),
+            EvaluationReason::error(EvaluationReason::FLAG_NOT_FOUND_ERROR),
+            EvaluationReason::error(EvaluationReason::EXCEPTION_ERROR),
+        ];
+
+        foreach ($reasons as $reason) {
+            $this->assertNull($reason->getException());
+        }
     }
 
     public function testErrorReasonSerialization()

@@ -15,6 +15,7 @@
     <PossiblyUnusedMethod>
       <code><![CDATA[bigSegmentsEvaluationStatus]]></code>
       <code><![CDATA[getErrorKind]]></code>
+      <code><![CDATA[getException]]></code>
       <code><![CDATA[getPrerequisiteKey]]></code>
       <code><![CDATA[isInExperiment]]></code>
     </PossiblyUnusedMethod>
