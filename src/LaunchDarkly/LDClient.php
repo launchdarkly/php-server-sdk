@@ -594,6 +594,9 @@ class LDClient
         } catch (UnrecoverableHTTPStatusException $e) {
             $this->handleUnrecoverableError();
             return new FeatureFlagsState(false);
+        } catch (\Throwable $e) {
+            Util::logExceptionAtErrorLevel($this->_logger, $e, "Unable to retrieve flags for allFlagsState");
+            return new FeatureFlagsState(false);
         }
         if ($flags === null) {
             return new FeatureFlagsState(false);
