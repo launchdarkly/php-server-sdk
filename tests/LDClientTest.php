@@ -2,10 +2,14 @@
 
 namespace LaunchDarkly\Tests;
 
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 use InvalidArgumentException;
 use LaunchDarkly\BigSegmentsEvaluationStatus;
 use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
+use LaunchDarkly\Impl\Integrations\GuzzleFeatureRequester;
 use LaunchDarkly\Impl\Model\FeatureFlag;
 use LaunchDarkly\Impl\UnrecoverableHTTPStatusException;
 use LaunchDarkly\LDClient;
@@ -20,6 +24,7 @@ use LaunchDarkly\Types\BigSegmentsConfig;
 use LaunchDarkly\Types\BigSegmentsStoreMetadata;
 use LaunchDarkly\Types\BigSegmentsStoreStatus;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 class LDClientTest extends \PHPUnit\Framework\TestCase
 {
@@ -151,6 +156,30 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('second default', $second->getValue());
         $this->assertSame(EvaluationReason::CLIENT_NOT_READY_ERROR, $second->getReason()->getErrorKind());
         $this->assertNull($second->getReason()->getException());
+    }
+
+    /** @dataProvider unrecoverableHTTPStatuses */
+    public function testVariationDetailExposesHTTPStatusInException(int $status): void
+    {
+        $requester = new GuzzleFeatureRequester('http://example.invalid', 'sdk-key', [
+            'logger' => new NullLogger(),
+            'timeout' => 3,
+            'connect_timeout' => 3,
+        ]);
+        $mock = new MockHandler([new Response($status)]);
+        $httpClient = new \GuzzleHttp\Client(['handler' => HandlerStack::create($mock)]);
+        (new \ReflectionProperty($requester, '_client'))->setValue($requester, $httpClient);
+        $client = $this->makeClient(['feature_requester' => $requester]);
+
+        $detail = $client->variationDetail('feature', LDContext::create('userkey'), 'default');
+        $exception = $detail->getReason()->getException();
+
+        $this->assertInstanceOf(UnrecoverableHTTPStatusException::class, $exception);
+        $this->assertSame("HTTP error $status", $exception->getMessage());
+        $this->assertSame($status, $exception->getCode());
+        $this->assertSame($status, $exception->status);
+        // The Guzzle exception holds the request and its Authorization header.
+        $this->assertNull($exception->getPrevious());
     }
 
     public function testVariationReturnsDefaultIfFlagEvaluatesToNull()
