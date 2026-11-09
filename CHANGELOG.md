@@ -2,12 +2,6 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
-## Unreleased
-
-### Features
-
-* Expose the original exception on `EXCEPTION` evaluation reasons through `EvaluationReason::getException()`, including HTTP 401/403 failures. Exception details are excluded from JSON and analytics events.
-
 ## [6.11.0](https://github.com/launchdarkly/php-server-sdk/compare/6.10.0...6.11.0) (2026-10-21)
 
 
