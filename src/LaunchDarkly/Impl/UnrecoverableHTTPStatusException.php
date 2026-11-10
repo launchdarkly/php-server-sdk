@@ -16,6 +16,8 @@ class UnrecoverableHTTPStatusException extends \Exception
 
     public function __construct(int $status)
     {
+        // Do not chain the Guzzle exception. Its request has the SDK key.
+        parent::__construct("HTTP error $status", $status);
         $this->status = $status;
     }
 }
