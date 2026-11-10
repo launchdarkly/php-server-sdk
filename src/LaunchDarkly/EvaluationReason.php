@@ -259,7 +259,7 @@ class EvaluationReason implements \JsonSerializable
     }
 
     /**
-     * Returns a constant indicating the nature of the error, if getKind() is OFF. Otherwise
+     * Returns a constant indicating the nature of the error, if getKind() is ERROR. Otherwise
      * returns null.
      * @return string|null
      */
