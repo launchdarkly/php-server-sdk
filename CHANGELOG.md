@@ -2,6 +2,16 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [6.12.1](https://github.com/launchdarkly/php-server-sdk/compare/6.12.0...6.12.1) (2026-11-10)
+
+
+### Bug Fixes
+
+* Include the big segments status on evaluation reasons for failed evaluations ([#292](https://github.com/launchdarkly/php-server-sdk/issues/292)) ([2f2b1fe](https://github.com/launchdarkly/php-server-sdk/commit/2f2b1feae14665936576b50b58736fb6e1732dc8))
+* Include the HTTP status in exceptions on evaluation reasons ([#291](https://github.com/launchdarkly/php-server-sdk/issues/291)) ([52d3303](https://github.com/launchdarkly/php-server-sdk/commit/52d33035190574bae61273643cbe94488fe69c5b))
+* Make TestData valueForAll return its value when targeting is off ([#288](https://github.com/launchdarkly/php-server-sdk/issues/288)) ([b8a9522](https://github.com/launchdarkly/php-server-sdk/commit/b8a9522d4b6ef02c62692f9c9b9b2dcb79078c25))
+* Prevent allFlagsState from throwing when retrieving flags fails ([#294](https://github.com/launchdarkly/php-server-sdk/issues/294)) ([2b65bf2](https://github.com/launchdarkly/php-server-sdk/commit/2b65bf2a661512f2482e01e1dcf79e0af4cde953))
+
 ## [6.12.0](https://github.com/launchdarkly/php-server-sdk/compare/6.11.0...6.12.0) (2026-11-09)
 
 
