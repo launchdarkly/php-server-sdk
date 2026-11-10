@@ -904,6 +904,47 @@ class LDClientTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedState, $state->jsonSerialize());
     }
 
+    public function allFlagsStateRequesterExceptions(): array
+    {
+        return [
+            'unexpected exception' => [new \RuntimeException('store unavailable')],
+            'PHP error' => [new \Error('requester failed')],
+        ];
+    }
+
+    /** @dataProvider allFlagsStateRequesterExceptions */
+    public function testAllFlagsStateReturnsInvalidStateWhenRequesterThrows(\Throwable $exception): void
+    {
+        $requester = $this->createMock(MockFeatureRequester::class);
+        $requester->method('getAllFeatures')->willThrowException($exception);
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects($this->once())
+            ->method('error')
+            ->with($this->stringContains($exception->getMessage()), ['exception' => $exception]);
+        $client = $this->makeClient(['feature_requester' => $requester, 'logger' => $logger]);
+
+        $state = $client->allFlagsState(LDContext::create('userkey'));
+
+        $this->assertFalse($state->isValid());
+        $this->assertEquals([], $state->toValuesMap());
+        $this->assertFalse($client->isOffline());
+    }
+
+    /** @dataProvider unrecoverableHTTPStatuses */
+    public function testAllFlagsStateUnrecoverableHTTPErrorTakesClientOffline(int $status): void
+    {
+        $requester = $this->createMock(MockFeatureRequester::class);
+        $requester->expects($this->once())
+            ->method('getAllFeatures')
+            ->willThrowException(new UnrecoverableHTTPStatusException($status));
+        $client = $this->makeClient(['feature_requester' => $requester]);
+        $context = LDContext::create('userkey');
+
+        $this->assertFalse($client->allFlagsState($context)->isValid());
+        $this->assertTrue($client->isOffline());
+        $this->assertFalse($client->allFlagsState($context)->isValid());
+    }
+
     public function testIdentifySendsEvent()
     {
         $ep = new MockEventProcessor();
