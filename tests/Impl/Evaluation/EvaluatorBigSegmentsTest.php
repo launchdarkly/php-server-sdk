@@ -2,6 +2,8 @@
 
 namespace LaunchDarkly\Tests\Impl\Evaluation;
 
+use LaunchDarkly\BigSegmentsEvaluationStatus;
+use LaunchDarkly\EvaluationReason;
 use LaunchDarkly\Impl\BigSegments\StoreManager;
 use LaunchDarkly\Impl\Evaluation\Evaluator;
 use LaunchDarkly\Impl\Model\Segment;
@@ -158,6 +160,61 @@ class EvaluatorBigSegmentsTest extends TestCase
         $store = new BigSegmentsStoreImpl([new BigSegmentsStoreMetadata(10)], [['other.g1' => true]]);
 
         $this->assertTrue(self::bigSegmentsMatchesContext($store, $segment, $defaultContext));
+    }
+
+    public function testBigSegmentsStatusIsKeptWhenLaterSegmentCausesEvaluationError(): void
+    {
+        global $defaultContext;
+        $bigSegment = ModelBuilders::segmentBuilder('big')
+            ->generation(100)
+            ->unbounded(true)
+            ->build();
+        // The circular segment causes an EvaluationException after the big segment query.
+        $circularSegment = ModelBuilders::segmentBuilder('circular')
+            ->rule(
+                ModelBuilders::segmentRuleBuilder()
+                    ->clause(ModelBuilders::clause(null, '', 'segmentMatch', 'circular'))
+                    ->build()
+            )
+            ->build();
+
+        $store = new BigSegmentsStoreImpl([new BigSegmentsStoreMetadata(10)], [[]]);
+        $evaluator = self::getEvaluator($store, $defaultContext, [$bigSegment, $circularSegment]);
+        $flag = ModelBuilders::booleanFlagWithRules(
+            ModelBuilders::flagRuleWithClauses(1, ModelBuilders::clauseMatchingSegment($bigSegment)),
+            ModelBuilders::flagRuleWithClauses(1, ModelBuilders::clauseMatchingSegment($circularSegment))
+        );
+
+        $reason = $evaluator->evaluate($flag, $defaultContext, EvaluatorTestUtil::expectNoPrerequisiteEvals())
+            ->getDetail()->getReason();
+        $this->assertEquals(EvaluationReason::ERROR, $reason->getKind());
+        $this->assertEquals(EvaluationReason::MALFORMED_FLAG_ERROR, $reason->getErrorKind());
+        $this->assertEquals(BigSegmentsEvaluationStatus::STALE, $reason->bigSegmentsEvaluationStatus());
+    }
+
+    public function testBigSegmentsStatusIsKeptWhenLaterSegmentLookupThrows(): void
+    {
+        global $defaultContext;
+        $bigSegment = ModelBuilders::segmentBuilder('big')
+            ->generation(100)
+            ->unbounded(true)
+            ->build();
+        // The requester does not know this segment, so the lookup throws.
+        $unknownSegment = ModelBuilders::segmentBuilder('unknown')->build();
+
+        $store = new BigSegmentsStoreImpl([new BigSegmentsStoreMetadata(10)], [[]]);
+        $evaluator = self::getEvaluator($store, $defaultContext, [$bigSegment]);
+        $flag = ModelBuilders::booleanFlagWithRules(
+            ModelBuilders::flagRuleWithClauses(1, ModelBuilders::clauseMatchingSegment($bigSegment)),
+            ModelBuilders::flagRuleWithClauses(1, ModelBuilders::clauseMatchingSegment($unknownSegment))
+        );
+
+        $reason = $evaluator->evaluate($flag, $defaultContext, EvaluatorTestUtil::expectNoPrerequisiteEvals())
+            ->getDetail()->getReason();
+        $this->assertEquals(EvaluationReason::ERROR, $reason->getKind());
+        $this->assertEquals(EvaluationReason::EXCEPTION_ERROR, $reason->getErrorKind());
+        $this->assertInstanceOf(\InvalidArgumentException::class, $reason->getException());
+        $this->assertEquals(BigSegmentsEvaluationStatus::STALE, $reason->bigSegmentsEvaluationStatus());
     }
 
     private static function bigSegmentsMatchesContext(BigSegmentsStore $store, Segment $segment, LDContext $context): bool
