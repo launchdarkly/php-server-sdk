@@ -14,6 +14,8 @@ use LaunchDarkly\EvaluationDetail;
  * without breaking existing implementations.
  *
  * Only `getMetadata` is abstract; subclasses override just the stages they need.
+ *
+ * @psalm-api
  */
 abstract class Hook
 {

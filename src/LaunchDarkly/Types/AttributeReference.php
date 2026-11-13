@@ -21,6 +21,8 @@ namespace LaunchDarkly\Types;
  * or "~" in a path component are escaped as "~1" or "~0" respectively. This syntax
  * deliberately resembles JSON Pointer, but no JSON Pointer behaviors other than those
  * mentioned here are supported.
+ *
+ * @psalm-api
  */
 class AttributeReference
 {

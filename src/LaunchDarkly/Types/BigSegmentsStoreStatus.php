@@ -9,6 +9,8 @@ namespace LaunchDarkly\Types;
  *
  * Big Segments are a specific type of segments. For more information, read the LaunchDarkly
  * documentation: https://docs.launchdarkly.com/home/users/big-segments
+ *
+ * @psalm-api
  */
 class BigSegmentsStoreStatus
 {

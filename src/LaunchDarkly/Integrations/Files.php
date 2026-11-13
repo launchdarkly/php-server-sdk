@@ -7,6 +7,8 @@ namespace LaunchDarkly\Integrations;
 /**
  * Integration with filesystem data.
  * @since 3.5.0
+ *
+ * @psalm-api
  */
 class Files
 {

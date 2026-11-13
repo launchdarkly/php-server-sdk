@@ -21,6 +21,8 @@ use LaunchDarkly\LDContext;
  * `thenReturn(int)` to finish defining the rule.
  *
  * @see \LaunchDarkly\Integrations\TestData\FlagBuilder
+ *
+ * @psalm-api
  */
 class FlagRuleBuilder
 {

@@ -12,6 +12,8 @@ use LaunchDarkly\Types\Result;
  * customer defined read or write operations on old or new origins of
  * information. For read operations, an optional comparison function also be
  * defined.
+ *
+ * @psalm-api
  */
 class MigrationConfig
 {

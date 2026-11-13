@@ -26,6 +26,8 @@ use LaunchDarkly\Types\AttributeReference;
  * ```
  *
  * @see \LaunchDarkly\LDContext
+ *
+ * @psalm-api
  */
 class LDContextBuilder
 {

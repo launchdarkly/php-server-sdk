@@ -6,6 +6,8 @@ namespace LaunchDarkly\Migrations;
 
 /**
  * The WriteResult pairs an origin with a result.
+ *
+ * @psalm-api
  */
 class WriteResult
 {

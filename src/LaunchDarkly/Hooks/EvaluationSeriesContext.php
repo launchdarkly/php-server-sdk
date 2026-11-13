@@ -15,6 +15,8 @@ use LaunchDarkly\LDContext;
  * flag data from LaunchDarkly at least once, so the first variation call's
  * `beforeEvaluation` typically sees `null` while its `afterEvaluation` sees the
  * captured value. See {@see \LaunchDarkly\Hooks\EvaluationSeriesContext::$environmentId}.
+ *
+ * @psalm-api
  */
 final class EvaluationSeriesContext
 {

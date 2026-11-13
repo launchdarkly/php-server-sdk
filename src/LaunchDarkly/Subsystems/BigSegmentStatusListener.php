@@ -8,6 +8,8 @@ use LaunchDarkly\Types;
 
 /**
  * Interface for a listener that will be notified when the status of the Big Segment store changes.
+ *
+ * @psalm-api
  */
 interface BigSegmentStatusListener
 {

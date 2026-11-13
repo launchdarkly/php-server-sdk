@@ -17,6 +17,8 @@ use LaunchDarkly\Impl\Model\Segment;
  * - Database integrations provided in separate packages. See: https://docs.launchdarkly.com/sdk/features/storing-data#php
  * - A mechanism for reading data from the filesystem: {@see \LaunchDarkly\Integrations\Files}
  * - A mechanism for injecting test data: {@see \LaunchDarkly\Integrations\TestData}
+ *
+ * @psalm-api
  */
 interface FeatureRequester
 {

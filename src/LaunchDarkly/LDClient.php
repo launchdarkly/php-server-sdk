@@ -34,6 +34,8 @@ use Ramsey\Uuid\Uuid;
 
 /**
  * A client for the LaunchDarkly API.
+ *
+ * @psalm-api
  */
 class LDClient
 {

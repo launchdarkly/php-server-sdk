@@ -8,6 +8,8 @@ namespace LaunchDarkly\Migrations;
  * Depending on the migration stage, reads may operate against both old and new
  * origins. In this situation, the execution order can be defined to specify
  * how these individual reads are coordinated.
+ *
+ * @psalm-api
  */
 enum ExecutionOrder: string
 {

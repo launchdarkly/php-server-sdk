@@ -18,6 +18,8 @@ use Psr\Cache;
  * BigSegmentsConfig that at a minimum specifies what database integration to
  * use, and then pass the `BigSegmentsConfig` object as the `big_segments`
  * parameter when creating a {@see LaunchDarkly\LDClient}.
+ *
+ * @psalm-api
  */
 class BigSegmentsConfig
 {

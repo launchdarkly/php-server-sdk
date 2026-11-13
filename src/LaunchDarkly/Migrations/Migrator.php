@@ -14,6 +14,8 @@ use LaunchDarkly\LDContext;
  *
  * This class is not intended to be instanced directly, but instead should be constructed
  * using the {@see MigratorBuilder}.
+ *
+ * @psalm-api
  */
 class Migrator
 {

@@ -8,6 +8,8 @@ use LaunchDarkly\Types;
 
 /**
  * Interface for a store that provides access to Big Segments data.
+ *
+ * @psalm-api
  */
 interface BigSegmentsStore
 {

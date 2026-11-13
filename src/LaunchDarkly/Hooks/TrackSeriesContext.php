@@ -8,6 +8,8 @@ use LaunchDarkly\LDContext;
 
 /**
  * Contextual information provided to the afterTrack stage of the track series.
+ *
+ * @psalm-api
  */
 final class TrackSeriesContext
 {
