@@ -84,6 +84,7 @@ class TestService
                 'evaluation-hooks',
                 'hook-environment-id',
                 'track-hooks',
+                'polling-gzip',
                 'tls:verify-peer'
             ],
             'clientVersion' => \LaunchDarkly\LDClient::VERSION
