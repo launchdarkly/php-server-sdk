@@ -8,6 +8,8 @@ namespace LaunchDarkly;
  * Describes the reason that a flag evaluation produced a particular value.
  *
  * This is part of the {@see \LaunchDarkly\EvaluationDetail} object returned by {@see \LaunchDarkly\LDClient::variationDetail()}.
+ *
+ * @psalm-api
  */
 class EvaluationReason implements \JsonSerializable
 {

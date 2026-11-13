@@ -7,6 +7,8 @@ namespace LaunchDarkly\Migrations;
 /**
  * The operation enum is used to record the type of migration operation that
  * occurred.
+ *
+ * @psalm-api
  */
 enum Operation: string
 {

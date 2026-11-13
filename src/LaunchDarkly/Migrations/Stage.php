@@ -9,6 +9,8 @@ namespace LaunchDarkly\Migrations;
  * part of, progressing through the following order.
  *
  * OFF -> DUALWRITE -> SHADOW -> LIVE -> RAMPDOWN -> COMPLETE
+ *
+ * @psalm-api
  */
 enum Stage: string
 {

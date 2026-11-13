@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace LaunchDarkly\Integrations\TestData;
 
+/**
+ * @psalm-api
+ */
 class MigrationSettingsBuilder
 {
     protected ?int $checkRatio = null;

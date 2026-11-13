@@ -6,6 +6,8 @@ namespace LaunchDarkly\Types;
 
 /**
  * Metadata about the state of a big segments store.
+ *
+ * @psalm-api
  */
 class BigSegmentsStoreMetadata
 {

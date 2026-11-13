@@ -24,6 +24,8 @@ namespace LaunchDarkly;
  * ```
  *
  * @see \LaunchDarkly\LDContext
+ *
+ * @psalm-api
  */
 class LDContextMultiBuilder
 {

@@ -36,6 +36,8 @@ use LaunchDarkly\Types;
  * determined to have changed. This included during evaluation or when the
  * status is checked directly. Listeners are encouraged to be as fast as
  * possible.
+ *
+ * @psalm-api
  */
 interface BigSegmentStatusProvider
 {

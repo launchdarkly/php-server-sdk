@@ -14,6 +14,7 @@ use Psr\Log\NullLogger;
 /**
  * @ignore
  * @internal
+ * @psalm-api
  */
 class FeatureRequesterBase implements FeatureRequester
 {

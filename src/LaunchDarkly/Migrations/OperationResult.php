@@ -9,6 +9,8 @@ use LaunchDarkly\Types\Result;
 
 /**
  * The OperationResult pairs an origin with a result.
+ *
+ * @psalm-api
  */
 class OperationResult
 {

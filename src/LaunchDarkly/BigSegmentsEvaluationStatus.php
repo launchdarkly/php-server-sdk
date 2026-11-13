@@ -7,6 +7,8 @@ namespace LaunchDarkly;
 /**
  * A status enum which represents the result of a Big Segment query involved in
  * a flag evaluation.
+ *
+ * @psalm-api
  */
 enum BigSegmentsEvaluationStatus: string
 {

@@ -9,6 +9,9 @@ use LaunchDarkly\Impl\Model\Segment;
 use LaunchDarkly\Integrations\TestData\FlagBuilder;
 use LaunchDarkly\Subsystems\FeatureRequester;
 
+/**
+ * @psalm-api
+ */
 class TestData implements FeatureRequester
 {
     protected array $_flagBuilders;

@@ -8,6 +8,8 @@ namespace LaunchDarkly;
  * An object that combines the result of a flag evaluation with an explanation of how it was calculated.
  *
  * This is returned by {@see \LaunchDarkly\LDClient::variationDetail()}.
+ *
+ * @psalm-api
  */
 class EvaluationDetail
 {

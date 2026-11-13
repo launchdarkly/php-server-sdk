@@ -16,6 +16,8 @@ use Exception;
  *
  * If the operation fails, the Result will contain an error describing the
  * value. An optional exception may also be provided.
+ *
+ * @psalm-api
  */
 final class Result
 {

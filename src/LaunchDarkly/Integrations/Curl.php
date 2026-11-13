@@ -7,6 +7,8 @@ namespace LaunchDarkly\Integrations;
 /**
  * Integration with the curl HTTP client.
  * @since 3.5.0
+ *
+ * @psalm-api
  */
 class Curl
 {

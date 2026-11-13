@@ -19,6 +19,8 @@ use LaunchDarkly\Types\AttributeReference;
  *
  * An LDContext can be in an error state if it was built with invalid attributes. See
  * {@see \LaunchDarkly\LDContext::isValid()} and {@see \LaunchDarkly\LDContext::getError()}.
+ *
+ * @psalm-api
  */
 class LDContext implements \JsonSerializable
 {

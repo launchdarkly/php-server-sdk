@@ -15,6 +15,8 @@ define('FALSE_VARIATION_INDEX', 1);
  *
  * @see \LaunchDarkly\Integrations\TestData::flag()
  * @see \LaunchDarkly\Integrations\TestData::update()
+ *
+ * @psalm-api
  */
 class FlagBuilder
 {

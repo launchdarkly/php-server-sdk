@@ -15,6 +15,8 @@ namespace LaunchDarkly\Types;
  * - Cannot be empty
  * - Cannot exceed 64 characters in length
  * - Can only contain a-z, A-Z, 0-9, period (.), dash (-), and underscore (_).
+ *
+ * @psalm-api
  */
 final class ApplicationInfo
 {

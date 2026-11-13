@@ -11,6 +11,8 @@ namespace LaunchDarkly\Subsystems;
  *
  * - {@see \LaunchDarkly\Integrations\Curl::eventPublisher()} (the default)
  * - {@see \LaunchDarkly\Integrations\Guzzle::eventPublisher()}
+ *
+ * @psalm-api
  */
 interface EventPublisher
 {

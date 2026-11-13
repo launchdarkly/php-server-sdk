@@ -12,6 +12,8 @@ use LaunchDarkly\Types\Result;
  * The migration builder is used to configure and construct an instance of a
  * {@see Migrator}. This migrator can be used to perform LaunchDarkly assisted
  * technology migrations through the use of migration-based feature flags.
+ *
+ * @psalm-api
  */
 class MigratorBuilder
 {

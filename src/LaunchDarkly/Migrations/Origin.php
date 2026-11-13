@@ -7,6 +7,8 @@ namespace LaunchDarkly\Migrations;
 /**
  * The origin enum is used to denote which source of data should be affected
  * by a particular operation.
+ *
+ * @psalm-api
  */
 enum Origin: string
 {

@@ -20,6 +20,8 @@ use Psr\Log\LoggerInterface;
  * The OpTracker is not expected to be instantiated directly. Consumers should
  * instead call {@see \LaunchDarkly\LDClient:migration_variation()} and use the
  * returned tracker instance.
+ *
+ * @psalm-api
  */
 class OpTracker
 {
