@@ -2,6 +2,13 @@
 
 All notable changes to the LaunchDarkly PHP SDK will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
+## [6.13.0](https://github.com/launchdarkly/php-server-sdk/compare/6.12.1...6.13.0) (2026-11-16)
+
+
+### Features
+
+* Request and decode gzip-compressed polling responses ([#297](https://github.com/launchdarkly/php-server-sdk/issues/297)) ([a71080c](https://github.com/launchdarkly/php-server-sdk/commit/a71080c825ba2bd602705bd24d77015f74aa29c3))
+
 ## [6.12.1](https://github.com/launchdarkly/php-server-sdk/compare/6.12.0...6.12.1) (2026-11-10)
 
 
