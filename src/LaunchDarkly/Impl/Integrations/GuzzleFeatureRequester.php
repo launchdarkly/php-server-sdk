@@ -59,6 +59,8 @@ class GuzzleFeatureRequester implements FeatureRequester
             'timeout' => $options['timeout'],
             'connect_timeout' => $options['connect_timeout'],
             'handler' => $stack,
+            // Guzzle sends "Accept-Encoding: gzip" and decodes a gzip response body.
+            'decode_content' => 'gzip',
             'debug' => $options['debug'] ?? false,
             'base_uri' => $baseUri
         ];
