@@ -18,7 +18,7 @@ runs:
   using: composite
   steps:
     - name: Setup PHP
-      uses: shivammathur/setup-php@e6f75134d35752277f093989e72e140eaa222f35
+      uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
       with:
         php-version: ${{ inputs.php-version }}
         extensions: xdebug
