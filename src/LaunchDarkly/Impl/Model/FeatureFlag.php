@@ -98,19 +98,20 @@ class FeatureFlag
                 $migrationSettings = call_user_func(MigrationSettings::getDecoder(), $v['migration']);
             }
 
+            // An optional property that is null or omitted takes its default value.
             return new FeatureFlag(
                 $v['key'],
                 $v['version'],
                 $v['on'],
-                array_map(Prerequisite::getDecoder(), $v['prerequisites'] ?: []),
-                $v['salt'],
-                array_map(Target::getDecoder(), $v['targets'] ?: []),
+                array_map(Prerequisite::getDecoder(), $v['prerequisites'] ?? []),
+                $v['salt'] ?? '',
+                array_map(Target::getDecoder(), $v['targets'] ?? []),
                 array_map(Target::getDecoder(), $v['contextTargets'] ?? []),
-                array_map(Rule::getDecoder(), $v['rules'] ?: []),
+                array_map(Rule::getDecoder(), $v['rules'] ?? []),
                 call_user_func(VariationOrRollout::getDecoder(), $v['fallthrough']),
-                $v['offVariation'],
+                $v['offVariation'] ?? null,
                 $v['variations'] ?: [],
-                $v['deleted'],
+                !!($v['deleted'] ?? false),
                 !!($v['trackEvents'] ?? false),
                 !!($v['trackEventsFallthrough'] ?? false),
                 $v['debugEventsUntilDate'] ?? null,

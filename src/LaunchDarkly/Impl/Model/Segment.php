@@ -65,19 +65,20 @@ class Segment
     public static function getDecoder(): \Closure
     {
         return fn (array $v) =>
+            // An optional property that is null or omitted takes its default value.
             new Segment(
                 $v['key'],
                 $v['version'],
-                $v['included'] ?: [],
-                $v['excluded'] ?: [],
+                $v['included'] ?? [],
+                $v['excluded'] ?? [],
                 array_map(SegmentTarget::getDecoder(), $v['includedContexts'] ?? []),
                 array_map(SegmentTarget::getDecoder(), $v['excludedContexts'] ?? []),
                 $v['unbounded'] ?? false,
                 $v['unboundedContextKind'] ?? null,
                 $v['generation'] ?? null,
-                $v['salt'],
-                array_map(SegmentRule::getDecoder(), $v['rules'] ?: []),
-                $v['deleted']
+                $v['salt'] ?? '',
+                array_map(SegmentRule::getDecoder(), $v['rules'] ?? []),
+                !!($v['deleted'] ?? false)
             );
     }
 
