@@ -34,7 +34,7 @@ class Clause
      */
     public static function getDecoder(): \Closure
     {
-        return fn ($v) => new Clause($v['contextKind'] ?? null, $v['attribute'], $v['op'], $v['values'], $v['negate']);
+        return fn ($v) => new Clause($v['contextKind'] ?? null, $v['attribute'], $v['op'], $v['values'], !!($v['negate'] ?? false));
     }
 
     public function getAttribute(): ?string
