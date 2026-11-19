@@ -291,6 +291,62 @@ class EventSerializerTest extends TestCase
         $this->assertEquals([$expected], json_decode($json, true));
     }
 
+    public function testObjectPropertyRedactionInContextParsedFromJsonString()
+    {
+        $es = new EventSerializer([]);
+        $context = LDContext::fromJson(json_encode([
+            'kind' => 'user',
+            'key' => 'user-key',
+            'address' => ['street' => 'secret', 'city' => 'x'],
+            '_meta' => ['privateAttributes' => ['/address/street']],
+        ]));
+        $json = $es->serializeEvents([$this->makeEvent($context)]);
+        $expected = $this->makeEvent([
+            'kind' => 'user',
+            'key' => 'user-key',
+            'address' => ['city' => 'x'],
+            '_meta' => [
+                'redactedAttributes' => ['/address/street']
+            ]
+        ]);
+        $this->assertEquals([$expected], json_decode($json, true));
+    }
+
+    public function testObjectPropertyRedactionWithStdClassValues()
+    {
+        $es = new EventSerializer(['private_attribute_names' => ['/b/prop1', '/c/prop2/sub1', '/d/0']]);
+        $context = LDContext::builder('user-key')
+            ->set('b', (object)['prop1' => true, 'prop2' => 3])
+            ->set('c', (object)['prop1' => (object)['sub1' => true], 'prop2' => (object)['sub1' => 4, 'sub2' => 5]])
+            ->set('d', (object)['0' => 'secret', '1' => 'visible'])
+            ->build();
+        $json = $es->serializeEvents([$this->makeEvent($context)]);
+        $expected = $this->makeEvent([
+            'kind' => 'user',
+            'key' => 'user-key',
+            'b' => ['prop2' => 3],
+            'c' => ['prop1' => ['sub1' => true], 'prop2' => ['sub2' => 5]],
+            'd' => ['1' => 'visible'],
+            '_meta' => [
+                'redactedAttributes' => ['/b/prop1', '/c/prop2/sub1', '/d/0']
+            ]
+        ]);
+        $this->assertEquals([$expected], json_decode($json, true));
+        // The redacted object with a numeric property name must remain a JSON object, not an array.
+        $this->assertStringContainsString('"d":{"1":"visible"}', $json);
+    }
+
+    public function testRedactingEveryPropertyOfStdClassValueLeavesEmptyObject()
+    {
+        $es = new EventSerializer(['private_attribute_names' => ['/b/prop1']]);
+        $context = LDContext::builder('user-key')
+            ->set('b', (object)['prop1' => true])
+            ->build();
+        $json = $es->serializeEvents([$this->makeEvent($context)]);
+        $this->assertStringContainsString('"b":{}', $json);
+        $this->assertSame(['/b/prop1'], json_decode($json, true)[0]['context']['_meta']['redactedAttributes']);
+    }
+
     public function testContextKey()
     {
         $context = LDContext::create("foo@bar.com");

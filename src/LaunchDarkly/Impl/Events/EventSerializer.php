@@ -124,20 +124,32 @@ class EventSerializer
 
     private static function redactJsonValue(?array $parentPath, string $name, mixed $value, array $allPrivate, array &$redactedOut): mixed
     {
-        if (!is_array($value) || count($value) === 0) {
+        // A JSON object can be a stdClass instead of an associative array, for instance in a context
+        // that LDContext::fromJson() decoded from a string. Its properties are always object properties,
+        // even when their names are numeric.
+        $isObject = $value instanceof \stdClass;
+        if ($isObject) {
+            $properties = get_object_vars($value);
+        } elseif (is_array($value)) {
+            $properties = $value;
+        } else {
+            return $value;
+        }
+        if (count($properties) === 0) {
             return $value;
         }
         $ret = [];
         $currentPath = $parentPath ?? [];
         $currentPath[] = $name;
-        foreach ($value as $k => $v) {
-            if (is_int($k)) {
+        foreach ($properties as $k => $v) {
+            if (!$isObject && is_int($k)) {
                 // This is a regular array, not an object with string properties-- redactions don't apply. Technically,
                 // that's not a 100% solid assumption because in PHP, an array could have a mix of int and string keys.
                 // But that's not true in JSON or in pretty much any other SDK, so there wouldn't really be any clear
                 // way to apply our redaction logic in that case anyway.
                 return $value;
             }
+            $k = (string)$k;
             $wasRedacted = false;
             foreach ($allPrivate as $p) {
                 if ($p->getDepth() !== count($currentPath) + 1) {
@@ -167,6 +179,7 @@ class EventSerializer
             // Substitute an empty object here, because an empty array would serialize as [] rather than {}
             return new \stdClass();
         }
-        return $ret;
+        // Return an object for an object, so that numeric property names still serialize as a JSON object.
+        return $isObject ? (object)$ret : $ret;
     }
 }
