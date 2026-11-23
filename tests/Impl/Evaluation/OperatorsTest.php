@@ -71,6 +71,39 @@ class OperatorsTest extends TestCase
         $this->assertEquals(null, Operators::parseTime([]));
     }
 
+    /**
+     * @testWith ["1970-01-01T00:00:01.1234Z", 1123]
+     *           ["1970-01-01T00:00:01.12345Z", 1123]
+     *           ["1970-01-01T00:00:01.123456Z", 1123]
+     *           ["1970-01-01T00:00:01.123456789Z", 1123]
+     *           ["1970-01-01T00:00:01.999999999Z", 1999]
+     *           ["1970-01-01T09:00:01.123456+09:00", 1123]
+     *           ["1970-01-01T00:00:01.1234567890123Z", 1123]
+     */
+    public function testParseTimeWithMoreThanThreeFractionDigits(string $input, int $expected)
+    {
+        // RFC 3339 allows any number of fractional digits. Digits below milliseconds are truncated.
+        $this->assertSame($expected, Operators::parseTime($input));
+    }
+
+    /**
+     * @testWith ["1970-01-01T00:00:01.Z"]
+     *           ["1970-01-01T00:00:01.123456"]
+     *           ["1970-01-01T00:00.123456Z"]
+     *           ["1970-01-01 00:00:01.123456Z"]
+     */
+    public function testParseTimeRejectsMalformedTimestampWithFraction(string $input)
+    {
+        $this->assertNull(Operators::parseTime($input));
+    }
+
+    public function testDateOperatorsCompareTimestampsWithMicroseconds()
+    {
+        $this->assertTrue(Operators::apply('before', '2020-01-01T00:00:00.123456Z', '2020-01-01T00:00:00.124Z'));
+        $this->assertTrue(Operators::apply('after', '2020-01-01T00:00:00.125999Z', '2020-01-01T00:00:00.124Z'));
+        $this->assertFalse(Operators::apply('before', '2020-01-01T00:00:00.123456789Z', '2020-01-01T00:00:00.123Z'));
+    }
+
     public function testSemVer()
     {
         $this->assertTrue(Operators::apply("semVerEqual", "2.0.0", "2.0.0"));
