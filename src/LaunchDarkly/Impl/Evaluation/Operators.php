@@ -148,6 +148,14 @@ class Operators
                 $dateTime = DateTime::createFromFormat(DateTimeInterface::RFC3339, $in);
             }
             if ($dateTime == null) {
+                // RFC 3339 allows any number of fractional digits, but the formats above take at most
+                // three, and DateTime takes at most six. Truncate the fraction to microseconds.
+                $truncated = preg_replace('/(:\d{2}\.\d{6})\d+/', '$1', $in, 1);
+                if (is_string($truncated)) {
+                    $dateTime = DateTime::createFromFormat(self::RFC3339, $truncated);
+                }
+            }
+            if ($dateTime == null) {
                 return null;
             }
             return Util::dateTimeToUnixMillis($dateTime);
