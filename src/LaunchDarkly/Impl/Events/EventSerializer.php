@@ -15,6 +15,11 @@ use LaunchDarkly\Types\AttributeReference;
  */
 class EventSerializer
 {
+    // This is the default depth limit of json_encode. Redaction stops at the same depth. A value
+    // that is nested more deeply, or that contains a cycle, makes json_encode fail.
+    private const MAX_JSON_DEPTH = 512;
+
+
     private bool $_allAttributesPrivate;
     /** @var AttributeReference[] */
     private array $_privateAttributes;
@@ -39,7 +44,7 @@ class EventSerializer
         foreach ($events as $e) {
             $filtered[] = $this->filterEvent($e);
         }
-        $ret = json_encode($filtered);
+        $ret = json_encode($filtered, 0, self::MAX_JSON_DEPTH);
         if ($ret === false) {
             return '';
         }
@@ -124,31 +129,30 @@ class EventSerializer
 
     private static function redactJsonValue(?array $parentPath, string $name, mixed $value, array $allPrivate, array &$redactedOut): mixed
     {
-        // A JSON object can be a stdClass instead of an associative array, for instance in a context
-        // that LDContext::fromJson() decoded from a string. Its properties are always object properties,
-        // even when their names are numeric.
-        $isObject = $value instanceof \stdClass;
-        if ($isObject) {
-            $properties = get_object_vars($value);
-        } elseif (is_array($value)) {
-            $properties = $value;
+        // A JSON object can be a stdClass (for example, from json_decode) or an array. json_encode
+        // writes an array as a JSON list only if array_is_list is true for it. It writes any other
+        // array as a JSON object, and numeric keys become property names. We use the same rule.
+        // Attribute references do not index into lists, so we do not change a list.
+        if ($value instanceof \stdClass) {
+            $props = get_object_vars($value);
+        } elseif (is_array($value) && !array_is_list($value)) {
+            $props = $value;
         } else {
             return $value;
         }
-        if (count($properties) === 0) {
+        if (count($props) === 0) {
+            return $value;
+        }
+        $currentPath = $parentPath ?? [];
+        $currentPath[] = $name;
+        if (count($currentPath) >= self::MAX_JSON_DEPTH) {
+            // The event JSON wraps this value in more levels, so json_encode fails and sends
+            // nothing. This also stops the recursion on a value that contains a cycle.
             return $value;
         }
         $ret = [];
-        $currentPath = $parentPath ?? [];
-        $currentPath[] = $name;
-        foreach ($properties as $k => $v) {
-            if (!$isObject && is_int($k)) {
-                // This is a regular array, not an object with string properties-- redactions don't apply. Technically,
-                // that's not a 100% solid assumption because in PHP, an array could have a mix of int and string keys.
-                // But that's not true in JSON or in pretty much any other SDK, so there wouldn't really be any clear
-                // way to apply our redaction logic in that case anyway.
-                return $value;
-            }
+        foreach ($props as $k => $v) {
+            // PHP gives numeric keys as ints. Path components are strings.
             $k = (string)$k;
             $wasRedacted = false;
             foreach ($allPrivate as $p) {
@@ -175,11 +179,9 @@ class EventSerializer
                 $ret[$k] = self::redactJsonValue($currentPath, $k, $v, $allPrivate, $redactedOut);
             }
         }
-        if (count($ret) === 0) {
-            // Substitute an empty object here, because an empty array would serialize as [] rather than {}
-            return new \stdClass();
-        }
-        // Return an object for an object, so that numeric property names still serialize as a JSON object.
-        return $isObject ? (object)$ret : $ret;
+        // Return an object, so json_encode writes a JSON object. If we return an array, the result
+        // can be a list after redaction (for example, only key 0 is left), or empty, and
+        // json_encode then writes it as a JSON list.
+        return (object)$ret;
     }
 }
