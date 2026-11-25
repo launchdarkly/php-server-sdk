@@ -4,6 +4,7 @@ namespace LaunchDarkly\Tests\Impl\Events;
 
 use LaunchDarkly\Impl\Events\EventSerializer;
 use LaunchDarkly\LDContext;
+use LaunchDarkly\Types\AttributeReference;
 use PHPUnit\Framework\TestCase;
 
 class EventSerializerTest extends TestCase
@@ -289,6 +290,29 @@ class EventSerializerTest extends TestCase
             ]
         ]);
         $this->assertEquals([$expected], json_decode($json, true));
+    }
+
+    public function testRedactedAttributeNamesThatLookLikeReferencesAreEscaped()
+    {
+        $context = LDContext::builder('user-key')
+            ->set('/a', 'private')
+            ->set('/~x', 'private')
+            ->set('b', ['c' => 'public'])
+            ->private(AttributeReference::fromLiteral('/a'), AttributeReference::fromLiteral('/~x'))
+            ->build();
+        $json = $this->getJsonForContextBySerializingEvent($context);
+        $this->assertArrayNotHasKey('/a', $json);
+        $this->assertArrayNotHasKey('/~x', $json);
+        $this->assertEquals(['c' => 'public'], $json['b']);
+        $this->assertEquals(['/~1a', '/~1~0x'], $json['_meta']['redactedAttributes']);
+    }
+
+    public function testAllAttributesPrivateEscapesNamesThatLookLikeReferences()
+    {
+        $context = LDContext::builder('user-key')->set('/a', 'private')->set('b', 1)->build();
+        $es = new EventSerializer(['all_attributes_private' => true]);
+        $json = json_decode($es->serializeEvents([$this->makeEvent($context)]), true)[0]['context'];
+        $this->assertEquals(['/~1a', 'b'], $json['_meta']['redactedAttributes']);
     }
 
     public function testContextKey()

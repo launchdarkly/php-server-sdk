@@ -109,13 +109,15 @@ class EventSerializer
 
     private function checkWholeAttributePrivate(string $attr, array $allPrivate, array &$redactedOut, bool $redactAllAttributes): bool
     {
+        // redactedAttributes holds attribute references. A name such as "/a" must be escaped as
+        // "/~1a", or LaunchDarkly reads it as a reference to an attribute named "a".
         if ($redactAllAttributes) {
-            $redactedOut[] = $attr;
+            $redactedOut[] = AttributeReference::fromLiteral($attr)->getPath();
             return true;
         }
         foreach ($allPrivate as $p) {
             if ($p->getComponent(0) === $attr && $p->getDepth() === 1) {
-                $redactedOut[] = $attr;
+                $redactedOut[] = AttributeReference::fromLiteral($attr)->getPath();
                 return true;
             }
         }
